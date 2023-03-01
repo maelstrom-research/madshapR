@@ -360,6 +360,8 @@ Please refer to documentation."))
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_dataset <- function(object){
 
   object <- object
@@ -395,6 +397,8 @@ is_dataset <- function(object){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_study <- function(object){
 
   object <- object

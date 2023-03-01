@@ -36,6 +36,8 @@
 #' @import dplyr tidyr fabR
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_data_dict_variables <- function(data_dict){
 
   # test if enough data_dict
@@ -117,6 +119,8 @@ check_data_dict_variables <- function(data_dict){
 #' @import dplyr tidyr fabR
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_data_dict_categories <- function(data_dict){
 
   # test if enough data_dict
@@ -225,6 +229,8 @@ check_data_dict_categories <- function(data_dict){
 #' @import dplyr tidyr fabR
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_data_dict_missing_categories <- function(data_dict){
 
   # test if enough data_dict
@@ -314,9 +320,11 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @import dplyr tidyr fabR
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_data_dict_taxonomy <- function(data_dict, taxonomy){
 
-  # check_taxo_one_col <- function(col, taxonomy, na_allowed = TRUE){
+  # check_taxo_one_col function(col, taxonomy, na_allowed = TRUE){
   #
   #   if(na_allowed) col <- col[!is.na(col[2]),]
   #
@@ -543,6 +551,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_data_dict_valueType <- function(data_dict){
 
   # test if enough data_dict
@@ -669,6 +679,8 @@ check_data_dict_valueType <- function(data_dict){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_dataset_variables <- function(data, data_dict = NULL){
 
   if(is.null(data_dict)) data_dict <- data_dict_extract(data)
@@ -755,6 +767,8 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_dataset_categories <- function(data, data_dict = NULL){
 
   if(is.null(data_dict)) data_dict <-
@@ -909,6 +923,8 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FALSE){
 
   if(is.null(data_dict)) data_dict <- data_dict_extract(data,as_mlstr_data_dict = TRUE)
@@ -1009,6 +1025,8 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
 #' @import dplyr tidyr stringr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 check_name_standards <- function(var_names){
 
   var_names_valid <- make.names(

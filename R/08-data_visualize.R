@@ -331,6 +331,7 @@ datatable(data_dict$Categories, options = list(scrollX = TRUE),rownames = FALSE)
 #' @import dplyr stringr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#' @export
 identify_visual_type <- function(dataset, data_dict){
 
   try({
@@ -457,6 +458,8 @@ identify_visual_type <- function(dataset, data_dict){
 #' @import dplyr stringr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 identify_plot_type <- function(dataset = NULL, data_dict, group_by = NULL, out = "plotly"){
 
   if(! "viz_type" %in% colnames(data_dict$Variables)){

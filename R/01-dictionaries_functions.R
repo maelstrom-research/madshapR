@@ -2202,6 +2202,8 @@ new name: ",new_name)
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_data_dict_shape <- function(object){
 
   object <- object
@@ -2250,6 +2252,8 @@ is_data_dict_shape <- function(object){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_data_dict <- function(object){
 
   object <- object
@@ -2298,6 +2302,8 @@ is_data_dict <- function(object){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_mlstr_data_dict <- function(object){
 
   object <- object

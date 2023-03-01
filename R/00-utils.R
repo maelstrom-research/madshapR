@@ -29,47 +29,14 @@
 #' }
 "valueType_list"
 
-
-#' @title
-#' Give list of authorized valueType values
-#'
-#' @description
-#' Built-in tibbles showing the list of authorized valueType values, as described
-#' in Opal, and their data type (R wise) correspondancy. This tibble is designed
-#' for programmatic use.
-#'
-#' @details
-#' valueType is one of the property of a variable entity. It refers to
-#' the (Obiba internal) type of any variable. The valueType can be 'text',
-#' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-#' 'point', 'linestring', 'polygon'.
-#'
-#' @seealso
-#' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
-#'
-#' @format ## `tibble`
-#' A data frame with 12 rows and 6 columns:
-#' \describe{
-#'   \item{valueType}{data type as described in Opal}
-#'   \item{typeof}{data type provided by base::typeof}
-#'   \item{class}{data class provided by base::class}
-#'   \item{call}{function to transpose object according base::do.call function}
-#'   \item{toValueType}{ensemble data type as described in Opal}
-#'   \item{toTypeof}{ensemble data type provided by base::typeof}
-#'   \item{genericType}{ensemble data type which valueType belongs}
-#'   ...
-#' }
-"DEMO_files"
-
-
 #' @title
 #' Built-in tibbles and lists allowing the user to test the package with demo material.
 #'
 #' @description
 #' Built-in tibbles and lists allowing the user to test the package with demo material.
 #'
-#' @format ## `tibble`
-#' A list with 20 elements used for testing purpose (data frames and lists):
+#' @format ## `list`
+#' A list with 22 elements used for testing purpose (data frames and lists):
 #'
 #' \describe{
 #'   \item{DEMO_data_processing_elements - final}{Data processing element without error}
@@ -96,6 +63,7 @@
 #'   \item{Opal_taxonomy}{Opal Taxonomy}
 #'   ...
 #' }
+"DEMO_files"
 
 
 

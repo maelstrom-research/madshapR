@@ -718,6 +718,8 @@ in your Opal environment.")}
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_valueType <- function(object){
 
   object <- object
@@ -762,6 +764,8 @@ is_valueType <- function(object){
 #' @import dplyr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
+#' @export
 is_taxonomy <- function(object){
 
   object <- object
