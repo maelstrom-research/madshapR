@@ -1,4 +1,28 @@
 #' @title
+#' Call the help center for full documentation
+#'
+#' @description
+#' This feature is a direct call of the documentation in the repository hosting
+#' the package. The user accesses the description of the latest version of the
+#' package, the vignettes, and the list of functions.
+#'
+#' @examples
+#' \dontrun{
+#' # Example 1: call the help center!
+#' datashapR_help()
+#' }
+#'
+#' @importFrom utils browseURL
+#'
+#' @export
+datashapR_help <- function(){
+
+  browseURL("https://maelstrom-research.github.io/datashapR-documentation/")
+
+}
+
+
+#' @title
 #' Give list of authorized valueType values
 #'
 #' @description

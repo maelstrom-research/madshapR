@@ -5,9 +5,9 @@
 \alias{DEMO_files}
 \title{Built-in tibbles and lists allowing the user to test the package with demo material.}
 \format{
-\subsection{\code{tibble}}{
+\subsection{\code{list}}{
 
-A list with 20 elements used for testing purpose (data frames and lists):
+A list with 22 elements used for testing purpose (data frames and lists):
 
 \describe{
 \item{DEMO_data_processing_elements - final}{Data processing element without error}
