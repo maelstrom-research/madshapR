@@ -15,11 +15,10 @@ not a boolean.
 }
 \description{
 Generates a tibble that reports any categorical variable where
-'missing' column is not a boolean (or compatible value that can be coerced into
-a boolean).
-This tibble can be used to assist the user in the assessment of the data
-structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy or standard evaluation.
+'missing' column is not a boolean (or compatible value that can be coerced
+into a boolean). This tibble can be used to assist the user in the assessment
+of the data structure, fields investigation (mandatory or not), coherence
+across elements and taxonomy or standard evaluation.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

@@ -63,7 +63,7 @@
 #' [datashapR::open_visual_report()]
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Create index of files in one folder and read the files
 #' index_DEMO <- file_index_create(folder = ""DEMO"")
 #' file_index_read(index = index_DEMO, file_name = ""study_TOKYO"")
@@ -324,7 +324,7 @@ datatable(data_dict$Categories, options = list(scrollX = TRUE),rownames = FALSE)
 #' data dictionary provided as an input.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: viz type of iris dataset
 #' library(tidyverse)
 #' identify_visual_type(dataset = iris) %>% .$Variables %>% select(name,viz_type)
@@ -449,7 +449,7 @@ identify_visual_type <- function(dataset, data_dict){
 #' the data dictionary provided as an input.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: plot R stripts for iris variables.
 #' data_dict_extract(iris, categories = ""Species"") %>%
 #' identify_visual_type(data_dict = ., dataset = iris) %>%
@@ -571,7 +571,7 @@ identify_plot_type <- function(dataset = NULL, data_dict, group_by = NULL, out =
 #' folder in users environment) to be opened.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

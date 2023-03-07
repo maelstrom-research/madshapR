@@ -14,9 +14,9 @@ A list of tibble(s) identifying a data dictionary.
 }
 \description{
 Confirms that the input object is a valid data dictionary, and return it as a
-data dictionary with the appropriate mlstr_class attribute. This function mainly
-helps validate input within other functions of the package but could be used to
-check if a data dictionary is valid.
+data dictionary with the appropriate mlstr_class attribute. This function
+mainly helps validate input within other functions of the package but could
+be used to check if a data dictionary is valid.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

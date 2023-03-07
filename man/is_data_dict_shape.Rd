@@ -14,9 +14,9 @@ A logical.
 }
 \description{
 Confirms whether the input object is a valid enough or not to work with some
-functions involving data dictionary shaping. This function mainly helps validate
-input within other functions of the package but could be used to check if a
-data dictionary minimal stricture is valid.
+functions involving data dictionary shaping. This function mainly helps
+validate input within other functions of the package but could be used to
+check if a data dictionary minimal stricture is valid.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

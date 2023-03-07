@@ -2,12 +2,13 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_pivot_longer}
 \alias{data_dict_pivot_longer}
-\title{Transform column(s) in a data dictionary component into their longer equivalent}
+\title{Turn column(s) in a data dictionary component into their longer equivalent}
 \usage{
 data_dict_pivot_longer(data_dict, taxonomy)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed.}
 
 \item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
@@ -16,14 +17,13 @@ identifying the scheme used for variables classification as a tibble.}
 A list of tibble(s) identifying a data dictionary.
 }
 \description{
-Transforms column(s) in a data dictionary component into their longer equivalent.
-If any Opal taxonomy is provided, the correspondant colunms in the data dictionary
-will be converted to a format that contains fewer columns than an Opal format
-to work with.
-This operation is equivalent to perform a pivot_longer() to these columns
-following the taxonomy structure provided.
-The data dictionaries data dictionary provided must respect certain contrains
-such as name uniqueness across the variables names.
+Transforms column(s) in a data dictionary component into their longer
+equivalent. If any Opal taxonomy is provided, the correspondant colunms in
+the data dictionary will be converted to a format that contains fewer columns
+than an Opal format to work with. This operation is equivalent to perform a
+\code{\link[tidyr:pivot_longer]{tidyr::pivot_longer()}} to these columns following the taxonomy structure
+provided. The data dictionaries data dictionary provided must respect certain
+constrains such as name uniqueness across the variables names.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

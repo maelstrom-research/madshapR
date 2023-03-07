@@ -13,10 +13,10 @@ as_study(object)
 A list of tibble(s), each of them identifying datasets in a study.
 }
 \description{
-Confirms that the input object is a valid study, and return it as a study with
-the appropriate mlstr_class attribute. This function mainly helps validate input
-within other functions of the package but could be used to check if a study is
-valid.
+Confirms that the input object is a valid study, and return it as a study
+with the appropriate mlstr_class attribute. This function mainly helps
+validate input within other functions of the package but could be used to
+check if a study is valid.
 }
 \details{
 A study must be a named list containing at least one data frame or

@@ -2,7 +2,7 @@
 % Please edit documentation in R/05-unit_checks.R
 \name{check_data_dict_categories}
 \alias{check_data_dict_categories}
-\title{Return categorical variables which declaration has issues within a data dictionary}
+\title{Return categorical variables which has issues in a data dictionary}
 \usage{
 check_data_dict_categories(data_dict)
 }
@@ -16,9 +16,9 @@ data dictionary.
 \description{
 Generates a tibble that reports any categorical variable which
 name is in the 'Categories' but not present in the main list of variable
-names in 'Variables' component. It also reports any categorical variable which
-possible observation (the combination of 'variable' and 'name' in 'Categories')
-is not unique.
+names in 'Variables' component. It also reports any categorical variable
+which possible observation (the combination of 'variable' and 'name' in
+'Categories') is not unique.
 This tibble can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.

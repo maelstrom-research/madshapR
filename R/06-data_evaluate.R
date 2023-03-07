@@ -54,7 +54,7 @@
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -292,7 +292,7 @@ dataset_evaluate <- function(dataset, data_dict = NULL, taxonomy = NULL, .datase
 #' A list of tibbles of report for each study-specific dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -381,7 +381,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged

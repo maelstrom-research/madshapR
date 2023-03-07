@@ -33,7 +33,7 @@
 #' 'Variables' component of the data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -123,7 +123,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' A tibble identifying a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -174,7 +174,7 @@ dataset_zap_data_dict <- function(dataset){
 #' A list of tibble(s), each of them identifying datasets in a study.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -233,7 +233,7 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #' A tibble identifying a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -302,7 +302,7 @@ a data frame. Please refer to documentation.")
 #' A list of tibble(s), each of them identifying datasets in a study.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -361,7 +361,7 @@ Please refer to documentation."))
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -398,7 +398,7 @@ is_dataset <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'

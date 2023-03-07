@@ -52,7 +52,7 @@
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -409,7 +409,7 @@ dataset_summarize <- function(dataset, data_dict = NULL, taxonomy = NULL, .datas
 #' A list of tibbles of report for each study-specific dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -499,7 +499,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' data dictionary elements.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -678,7 +678,7 @@ resume_variables <- function(data, data_dict = NULL){
 #' a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -814,7 +814,7 @@ summary_variables <- function(data = NULL, data_dict = NULL, .resume_var = NULL)
 #' in a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -926,7 +926,7 @@ summary_variables_text <- function(data = NULL, data_dict = NULL, .resume_var = 
 #' in a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1047,7 +1047,7 @@ summary_variables_date <- function(data = NULL, data_dict = NULL, .resume_var = 
 #' present in a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1154,7 +1154,7 @@ summary_variables_numerical <- function(data = NULL, data_dict = NULL, .resume_v
 #' present in a dataset.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

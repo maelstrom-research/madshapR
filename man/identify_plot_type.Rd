@@ -18,8 +18,8 @@ associated dataset. Automatically generated if not provided.}
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
 
-\item{out}{parameter that specifies the graphical outputs expected in the report:
-can be either 'ggplot2' or 'ggplot2-code'.}
+\item{out}{parameter that specifies the graphical outputs expected in the
+report: can be either 'ggplot2' or 'ggplot2-code'.}
 }
 \value{
 A list of two tibbles which makes up the data dictionary in

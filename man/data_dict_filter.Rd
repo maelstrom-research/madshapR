@@ -12,13 +12,14 @@ data_dict_filter(
 )
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed.}
 
-\item{filter_var}{Expressions that is defined in the element 'Variables' in the
-data dictionary.}
+\item{filter_var}{Expressions that is defined in the element 'Variables' in
+the data dictionary.}
 
-\item{filter_cat}{Expressions that is defined in the element 'Categories' in the
-data dictionary.}
+\item{filter_cat}{Expressions that is defined in the element 'Categories' in
+the data dictionary.}
 
 \item{filter_all}{Expressions that is defined both in the 'Categories' and
 'Variables' in the data dictionary.}
@@ -28,8 +29,8 @@ A list of tibble(s) identifying a data dictionary - like structure.
 }
 \description{
 Subsets either or both the 'Variables' and the 'Categories' tibbles of a data
-dictionary. Rows are conserved if the value of one column satisfy a condition.
-This function is a wrapper analoguous to \code{\link[dplyr:filter]{dplyr::filter()}}.
+dictionary. Rows are conserved if the value of one column satisfy a
+condition. This function is a wrapper analoguous to \code{\link[dplyr:filter]{dplyr::filter()}}.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

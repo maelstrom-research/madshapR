@@ -7,7 +7,8 @@
 study_create(dataset_list, data_dict_apply = FALSE)
 }
 \arguments{
-\item{dataset_list}{A list of tibble(s), identifying the input data observations.}
+\item{dataset_list}{A list of tibble(s), identifying the input data
+observations.}
 
 \item{data_dict_apply}{whether to apply the data dictionary to its dataset.
 The resulting tibble will have for each column its associated meta data as

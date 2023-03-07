@@ -12,8 +12,8 @@ data_dict_flatten(
 )
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.
-Automatically generated if not provided.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed. Automatically generated if not provided.}
 
 \item{from}{Symbol identifying the name of the component (tibble) to take
 column(s) from. Default is 'Categories'.}
@@ -33,7 +33,8 @@ If the component 'to' exists, and contains any column 'xx' or 'yy', these
 columns will be added to the component 'from' under the names 'to:xx'
 and 'to:yy'. (unique names will be generated if necessary). Each element
 of these column will gather all information to process the reverse operation.
-Separator of each element is the following structure : 'name = xx1 ; name = xx2'.
+Separator of each element is the following structure :
+'name = xx1 ; name = xx2'.
 This function is the reversed operation of \code{\link[=data_dict_expand]{data_dict_expand()}}
 }
 \details{

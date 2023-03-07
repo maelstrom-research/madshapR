@@ -14,8 +14,8 @@ A logical.
 }
 \description{
 Confirms whether the input object is a valid dataset.
-This function mainly helps validate input within other functions of the package
-but could be used to check if a dataset is valid.
+This function mainly helps validate input within other functions of the
+package but could be used to check if a dataset is valid.
 }
 \details{
 A dataset must be a data frame or data frame extension (e.g. a tibble) and

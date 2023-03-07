@@ -13,10 +13,10 @@ as_taxonomy(object)
 A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 }
 \description{
-Confirms that the input object is a valid taxonomy, and return it as a taxonomy
-with the appropriate mlstr_class attribute. This function mainly helps validate
-input within other functions of the package but could be used to check if a
-taxonomy is valid.
+Confirms that the input object is a valid taxonomy, and return it as a
+taxonomy with the appropriate mlstr_class attribute. This function mainly
+helps validate input within other functions of the package but could be used
+to check if a taxonomy is valid.
 }
 \details{
 A taxonomy must be a data frame or data frame extension (e.g. a tibble).

@@ -29,7 +29,7 @@
 #' A tibble providing non unique variables across a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -112,7 +112,7 @@ check_data_dict_variables <- function(data_dict){
 #' data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -221,7 +221,7 @@ check_data_dict_categories <- function(data_dict){
 #' not a boolean.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -310,7 +310,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' A tibble providing non-standard taxonomy declared in a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #'
 #' data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
@@ -544,7 +544,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' A tibble providing non-standard valueType declared in a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -672,7 +672,7 @@ check_data_dict_valueType <- function(data_dict){
 #' A tibble providing undeclared variables across a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -760,7 +760,7 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' their data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -916,7 +916,7 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' their data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1018,7 +1018,7 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
 #' A tibble providing non-standard names across a vector.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

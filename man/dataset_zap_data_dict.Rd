@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{dataset_zap_data_dict}
 \alias{dataset_zap_data_dict}
-\title{Remove value labels of a data frame, leaving its unlabelled columns.}
+\title{Remove value labels of a data frame, leaving its unlabelled columns}
 \usage{
 dataset_zap_data_dict(dataset)
 }
@@ -14,7 +14,9 @@ its data dictionary.}
 A tibble identifying a dataset.
 }
 \description{
-Removes any attributes attached to a tibble. Any value in columns will be preserved.
+Removes any attributes attached to a tibble. Any value in columns will be
+preserved. Any 'Date' (typeof) column will be recasted as character to
+preserve information.
 }
 \details{
 A dataset must be a data frame or data frame extension (e.g. a tibble) and

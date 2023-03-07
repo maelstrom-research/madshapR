@@ -43,7 +43,7 @@
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -220,7 +220,7 @@ Example:
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -349,7 +349,7 @@ data_dict_flatten <- function(
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #'
 #'   data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
@@ -615,7 +615,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -840,7 +840,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -918,7 +918,7 @@ data_dict_filter <- function(data_dict, filter_var = NULL, filter_cat = NULL, fi
 #' A list of tibble(s) identifying a list of data dictionary - like structure.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1031,7 +1031,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1139,7 +1139,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1226,7 +1226,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1299,7 +1299,7 @@ data_dict_ungroup <- function(data_dict){
 #' variable as attributes.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1451,7 +1451,7 @@ crayon::bold("\n\nUseful tip:"),
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: create a data dictionary from any dataset
 #' data_dict_extract(iris)
 #' # use case 2: create a data dictionary with project and categorical variables
@@ -1568,7 +1568,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' identifying a data dictionary. Returns both in a list by defaut.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1634,7 +1634,7 @@ data_dict_match_dataset <- function(data, data_dict, data_dict_apply = FALSE, ou
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -1974,7 +1974,7 @@ crayon::bold("\n\nUseful tip:"),
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -2253,7 +2253,7 @@ new name: ",new_name)
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -2303,7 +2303,7 @@ is_data_dict_shape <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -2355,7 +2355,7 @@ is_data_dict <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'

@@ -30,13 +30,13 @@ its data dictionary.}
 
 \item{project_name}{A character string specifying the Opal project name.}
 
-\item{.force}{If the destination already exists, stop with an informative message
-if this flag is FALSE (default).}
+\item{.force}{If the destination already exists, stop with an informative
+message if this flag is FALSE (default).}
 
-\item{.overwrite}{If the destination table already exists, it will be replaced
-(deleted, re-created with associated permissions reinstated and then imported).
-Otherwise the table will be updated (data dictionaries merge may conflict).
-Default is FALSE.}
+\item{.overwrite}{If the destination table already exists, it will be
+replaced (deleted, re-created with associated permissions reinstated and then
+imported). Otherwise the table will be updated (data dictionaries merge may
+conflict). Default is FALSE.}
 }
 \value{
 A table in Opal.

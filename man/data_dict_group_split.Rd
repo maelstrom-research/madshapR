@@ -7,7 +7,8 @@
 data_dict_group_split(data_dict, ...)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed.}
 
 \item{...}{Column in the data dictionary to split it by. If not provided, the
 spliting will be done on the grouping element of a grouped data dictionary.}
@@ -16,11 +17,11 @@ spliting will be done on the grouping element of a grouped data dictionary.}
 A list of tibble(s) identifying a list of data dictionary - like structure.
 }
 \description{
-Divides the data dictionary both in the 'Variables' and 'Categories' (assuming
-the group is defined in both elements) into the groups defined by the query.
-The list is created analogously the user would do with \code{\link[dplyr:group_by]{dplyr::group_by()}} and
-\code{\link[dplyr:group_split]{dplyr::group_split()}}. Each element is named using the group values.
-\code{\link[=data_dict_list_nest]{data_dict_list_nest()}} reverses the effect of
+Divides the data dictionary both in the 'Variables' and 'Categories'
+(assuming the group is defined in both elements) into the groups defined by
+the query. The list is created analogously the user would do with
+\code{\link[dplyr:group_by]{dplyr::group_by()}} and \code{\link[dplyr:group_split]{dplyr::group_split()}}. Each element is named using
+the group values. \code{\link[=data_dict_list_nest]{data_dict_list_nest()}} reverses the effect of
 \code{\link[=data_dict_group_split]{data_dict_group_split()}}.
 }
 \details{

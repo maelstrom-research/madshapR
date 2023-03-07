@@ -23,9 +23,9 @@ A list of tibbles of report for one study-specific data dictionary.
 \description{
 Generates an Excel spreadsheet report for a data dictionary
 for each variable to facilitate the assessment of input data.
-This report can be used to assist the user in the assessment of the data structure,
-fields investigation (mandatory or not), coherence across elements and
-taxonomy, or standard evaluation. The summary associated provides data
+This report can be used to assist the user in the assessment of the data
+structure, fields investigation (mandatory or not), coherence across elements
+and taxonomy, or standard evaluation. The summary associated provides data
 dictionary composition, and evaluates coherence between elements.
 }
 \details{

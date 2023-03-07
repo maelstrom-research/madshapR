@@ -12,8 +12,8 @@ data_dict_expand(
 )
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.
-Automatically generated if not provided.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed. Automatically generated if not provided.}
 
 \item{from}{Symbol identifying the name of the component (tibble) to take
 column(s) from. Default is 'Variables'.}
@@ -32,9 +32,10 @@ A list of tibble(s) identifying a data dictionary.
 Transforms any columns in a data dictionary component to a new component.
 If the component 'from' contains any column starting with 'prefix', (xx,yy),
 these columns will be added as 'xx' and 'yy' in the component identified by
-'to'. This tibble will be created if necessary, and columns will be added, from
-left to right. (unique names will be generated if necessary).
-Separator of each element is the following structure : 'name = xx1 ; name = xx2'.
+'to'. This tibble will be created if necessary, and columns will be added,
+from left to right. (unique names will be generated if necessary).
+Separator of each element is the following structure :
+'name = xx1 ; name = xx2'.
 This function is the reversed operation of \code{\link[=data_dict_flatten]{data_dict_flatten()}}
 }
 \details{

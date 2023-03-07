@@ -7,12 +7,12 @@
 open_visual_report(report_name)
 }
 \arguments{
-\item{report_name}{A character string specifying the name of the report (a folder
-in users environment) to be opened.}
+\item{report_name}{A character string specifying the name of the report (a
+folder in users environment) to be opened.}
 }
 \description{
-The visual report previously generated in an HTML bookdown document can be opened
-using this short-cut function.
+The visual report previously generated in an HTML bookdown document can be
+opened using this short-cut function.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation. The summaries and figures associated

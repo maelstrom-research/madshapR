@@ -14,8 +14,8 @@ A tibble providing non-standard valueType declared in a data dictionary.
 }
 \description{
 Generates a tibble that reports any variable whose valueType is
-not present in the list of authorized valueType list. Additionally, it evaluates
-if the valueType is compatible with categorical values declared.
+not present in the list of authorized valueType list. Additionally, it
+evaluates if the valueType is compatible with categorical values declared.
 This tibble can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.

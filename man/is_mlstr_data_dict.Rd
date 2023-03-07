@@ -7,7 +7,8 @@
 is_mlstr_data_dict(object)
 }
 \arguments{
-\item{object}{A potential Maelstrom formatted data dictionary to be evaluated.}
+\item{object}{A potential Maelstrom formatted data dictionary to be
+evaluated.}
 }
 \value{
 A logical.
@@ -15,7 +16,8 @@ A logical.
 \description{
 Confirms whether the input object is a valid data dictionary compliant with
 Maelstrom Research format. This function mainly helps validate input within
-other functions of the package but could be used to check if a taxonomy is valid.
+other functions of the package but could be used to check if a taxonomy is
+valid.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

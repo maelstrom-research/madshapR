@@ -18,8 +18,9 @@ A tibble providing non-standard taxonomy declared in a data dictionary.
 \description{
 Generates a tibble that reports any variable whose taxonomy is
 not present in the list of authorized taxonomy list. This tibble can be used
-to assist the user in the assessment of the data structure, fields investigation
-(mandatory or not), coherence across elements and taxonomy or standard evaluation.
+to assist the user in the assessment of the data structure, fields
+investigation (mandatory or not), coherence across elements and taxonomy or
+standard evaluation.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

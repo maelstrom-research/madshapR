@@ -27,7 +27,7 @@
 #' A character string which is the valueType of the given object.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -114,7 +114,7 @@ valueType_of <- function(x){
 #' identifying a data dictionary, depending which the input refers to.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -296,7 +296,7 @@ valueType will remain as it is.")
 #' identifying a data dictionary, depending which is 'to'.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -424,7 +424,7 @@ valueType_adjust <- function(from, to = NULL){
 #' object.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: Apply valueType without specifying a data dictionary
 #' as_valueType(""1"") %>% typeof()
 #' tibble(iris %>% mutate(Species = as.character(Species))) %>%
@@ -510,7 +510,7 @@ valueType_guess <- function(x){
 #' The object coerced accordingly to the given valueType.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: Apply valueType without specifying a data dictionary
 #' as_valueType(""1"") %>% typeof()
 #' tibble(iris %>% mutate(Species = as.character(Species))) %>%
@@ -633,7 +633,7 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -696,7 +696,7 @@ present in your Opal environment.")}
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'
@@ -742,7 +742,7 @@ is_valueType <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # example
 #'}
 #'

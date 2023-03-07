@@ -19,10 +19,10 @@ A tibble identifying the dataset created from the variable names list in
 'Variables' component of the data dictionary.
 }
 \description{
-Creates an empty dataset using information contained in a data dictionary. The
-columns name are the 'name' provided in the 'Variables' tibble of the data
-dictionary. If a 'valueType' or alternatively 'typeof' column is provided,
-the class of each column is set accordingly (default is text).
+Creates an empty dataset using information contained in a data dictionary.
+The columns name are the 'name' provided in the 'Variables' tibble of the
+data dictionary. If a 'valueType' or alternatively 'typeof' column is
+provided, the class of each column is set accordingly (default is text).
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

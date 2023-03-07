@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{summary_variables_categorical}
 \alias{summary_variables_categorical}
-\title{Provide statistical description of 'categorical' variables present in a dataset}
+\title{Provide statistical description of 'categorical' variables of a dataset}
 \usage{
 summary_variables_categorical(
   data = NULL,
@@ -26,12 +26,13 @@ present in a dataset.
 }
 \description{
 Generates a tibble that summarises all categorical columns
-in a dataset with (if any) its data dictionary. The data dictionary (if present
-separates observations between open values, missing values, categorical values,
-and categorical missing values (which corresponds to the 'missing' column in the
-'Categories' sheet). Statistics are generated according to their valueTypes.
-This summary can be used to assist the user in the assessment of the dataset
-composition, with observation repartition and descriptive statistics.
+in a dataset with (if any) its data dictionary. The data dictionary (if
+present separates observations between open values, missing values,
+categorical values, and categorical missing values (which corresponds to the
+'missing' column in the Categories' sheet). Statistics are generated
+according to their valueTypes. This summary can be used to assist the user in
+the assessment of the dataset composition, with observation repartition and
+descriptive statistics.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

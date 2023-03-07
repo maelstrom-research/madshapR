@@ -19,8 +19,8 @@ their data dictionary.
 Generates a tibble that reports any categorical variable which
 categorical possible observation (the combination of 'variable' and 'name' in
 'Categories' sheet) is actually observed in the data observations. Likewise,
-the actual observations are evaluated to report any categorical variable which
-occurrence is not in the data dictionary categorical variables.
+the actual observations are evaluated to report any categorical variable
+which occurrence is not in the data dictionary categorical variables.
 This tibble can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.

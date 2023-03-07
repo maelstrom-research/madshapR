@@ -7,8 +7,8 @@
 data_dict_opalr_fix(data_dict)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.
-Automatically generated if not provided.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed. Automatically generated if not provided.}
 }
 \value{
 A list of tibble(s) identifying a data dictionary.

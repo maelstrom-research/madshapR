@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{resume_variables}
 \alias{resume_variables}
-\title{Generate a tibble resuming all variables in a dataset including its data dictionary}
+\title{Generate a tibble resuming all variables present in a dataset}
 \usage{
 resume_variables(data, data_dict = NULL)
 }
@@ -14,15 +14,15 @@ its data dictionary.}
 associated dataset. Automatically generated if not provided.}
 }
 \value{
-A tibble providing summary elements of a dataset, including its values and data
-dictionary elements.
+A tibble providing summary elements of a dataset, including its values and
+data dictionary elements.
 }
 \description{
 Generates a tibble that aggregates all columns
-in a dataset with (if any) its data dictionary. The data dictionary (if present
-separates observations between open values, missing values, categorical values ,
-and categorical missing values (which corresponds to the 'missing' column in the
-'Categories' sheet).
+in a dataset with (if any) its data dictionary. The data dictionary (if
+present separates observations between open values, missing values,
+categorical values , and categorical missing values (which corresponds to the
+'missing' column in the 'Categories' sheet).
 This internal function is used inside summary functions.
 }
 \details{

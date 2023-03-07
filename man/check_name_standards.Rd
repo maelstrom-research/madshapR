@@ -21,11 +21,11 @@ and taxonomy or standard evaluation.
 }
 \details{
 The user must provide element which respect a certain structure to work with
-the functions of the package or its environment (Maelstrom and/or Obiba suite).
-In addition, any element may follow Maelstrom research stardards, and its
-content can be evaluated accordingly, such as naming convention restriction,
-columns like 'valueType', , and 'label(:xx)', and/or any taxonomy
-provided.
+the functions of the package or its environment (Maelstrom and/or
+Obiba suite). In addition, any element may follow Maelstrom research
+stardards, and its content can be evaluated accordingly, such as naming
+convention restriction, columns like 'valueType', , and 'label(:xx)',
+and/or any taxonomy provided.
 }
 \examples{
 \dontrun{

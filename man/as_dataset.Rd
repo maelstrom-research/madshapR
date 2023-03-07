@@ -9,18 +9,18 @@ as_dataset(object, col_id = NULL)
 \arguments{
 \item{object}{A potential dataset to be coerced.}
 
-\item{col_id}{A character string specifying the name(s) of the column(s) which refer
-to key identificator of the dataset. The column(s) must be named of indicated
-by position.}
+\item{col_id}{A character string specifying the name(s) of the column(s)
+which refer to key identificator of the dataset. The column(s) must be named
+of indicated by position.}
 }
 \value{
 A tibble identifying a dataset.
 }
 \description{
 Confirms that the input object is a valid dataset, and return it as a dataset
-with the appropriate mlstr_class attribute. This function mainly helps validate
-input within other functions of the package but could be used to check if a
-dataset is valid.
+with the appropriate mlstr_class attribute. This function mainly helps
+validate input within other functions of the package but could be used to
+check if a dataset is valid.
 }
 \details{
 A dataset must be a data frame or data frame extension (e.g. a tibble) and

@@ -13,8 +13,9 @@ package, the vignettes, and the list of functions.
 }
 \examples{
 \dontrun{
-# Example 1: call the help center!
+
 datashapR_help()
+
 }
 
 }

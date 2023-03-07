@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{summary_variables_numerical}
 \alias{summary_variables_numerical}
-\title{Provide statistical description of 'numerical' variables present in a dataset}
+\title{Provide statistical description of 'numerical' variables of a dataset}
 \usage{
 summary_variables_numerical(data = NULL, data_dict = NULL, .resume_var = NULL)
 }
@@ -22,13 +22,14 @@ present in a dataset.
 }
 \description{
 Generates a tibble that summarises all 'numerical' columns
-in a dataset with (if any) its data dictionary. The data dictionary (if present
-separates observations between open values, missing values, categorical values,
-and categorical missing values (which corresponds to the 'missing' column in the
-'Categories' sheet). Statistics are generated according to their valueTypes.
-which can be 'integer', 'decimal', 'boolean' or 'binary'.
-This summary can be used to assist the user in the assessment of the dataset
-composition, with observation repartition and descriptive statistics.
+in a dataset with (if any) its data dictionary. The data dictionary (if
+present separates observations between open values, missing values,
+categorical values, and categorical missing values (which corresponds to the
+'missing' column in the Categories' sheet). Statistics are generated
+according to their valueTypes which can be 'integer', 'decimal', 'boolean' or
+'binary'. This summary can be used to assist the user in the assessment of
+the dataset composition, with observation repartition and descriptive
+statistics.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

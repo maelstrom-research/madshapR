@@ -9,9 +9,11 @@ opal_files_pull(opal, from, to = paste0(getwd(), "/opal_files"))
 \arguments{
 \item{opal}{Opal login attributes.}
 
-\item{from}{A character string of a path where the files will be taken from in R.}
+\item{from}{A character string of a path where the files will be taken from
+in R.}
 
-\item{to}{A character string of a path where the files will be placed to in Opal.}
+\item{to}{A character string of a path where the files will be placed to in
+Opal.}
 }
 \value{
 Folder(s) containing files coming from Opal in user R environment.

@@ -7,7 +7,7 @@
 #' package, the vignettes, and the list of functions.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'
 #' datashapR_help()
 #'
@@ -54,7 +54,7 @@ datashapR_help <- function(){
 #' }
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'
 #' valueType_list
 #'
@@ -111,7 +111,7 @@ datashapR_help <- function(){
 #'
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'
 #' valueType_list
 #'

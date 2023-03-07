@@ -27,7 +27,7 @@
 #' environment.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: create a project in Opal
 #' opal_project_create(project = ""DEMO"" ,tag = ""DEMO"")
 #' }
@@ -81,7 +81,7 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' The path to Opal needs to be pasted with Opal absolute path.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: place all files in a project (""home/project/"") or a user (""home/administrator/"")
 #' opal_files_push(
 #' opal = o,
@@ -137,7 +137,7 @@ opal_files_push <- function(opal, from, to){
 #' A table in Opal.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case: send to Opal tables with the data dictionary (not mandatory)
 #' opal_tables_push(
 #' opal = o,
@@ -276,7 +276,7 @@ opal_tables_push <- function(
 #' Folder(s) containing files coming from Opal in user R environment.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: download all files from a project folder (""home/project/"") or a
 #' # user's folder (""home/administrator/"").
 #' opal_files_pull(
@@ -358,7 +358,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' respective data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # use case 1: download a table and its data dictionary associated
 #' opal_tables_pull(opal = o,project = ""DEMO"", table = ""study_PARIS"")
 #' # use case 2: download all tables and their data dictionaries associated
@@ -481,7 +481,7 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -638,7 +638,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -735,7 +735,7 @@ opal_taxonomy_get <- function(opal){
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

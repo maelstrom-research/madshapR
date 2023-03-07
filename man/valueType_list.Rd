@@ -24,15 +24,22 @@ A data frame with 12 rows and 6 columns:
 valueType_list
 }
 \description{
-Built-in tibbles showing the list of authorized valueType values, as described
-in Opal, and their data type (R wise) correspondancy. This tibble is designed
-for programmatic use.
+Built-in tibbles showing the list of authorized valueType values, as
+described in Opal, and their data type (R wise) correspondancy. This tibble
+is designed for programmatic use.
 }
 \details{
 valueType is one of the property of a variable entity. It refers to
 the (Obiba internal) type of any variable. The valueType can be 'text',
 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 'point', 'linestring', 'polygon'.
+}
+\examples{
+\dontrun{
+
+valueType_list
+
+}
 }
 \seealso{
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}

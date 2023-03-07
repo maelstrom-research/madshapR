@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{as_mlstr_data_dict}
 \alias{as_mlstr_data_dict}
-\title{Validate and coerce any object as data dictionary in the Maelstrom Research format}
+\title{Validate and coerce any object as data dictionary in the Maelstrom format}
 \usage{
 as_mlstr_data_dict(object, as_data_dict = FALSE)
 }

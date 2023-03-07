@@ -19,10 +19,10 @@ A tibble identifying the dataset with the data dictionary applied to each
 variable as attributes.
 }
 \description{
-Applies a data dictionary to a data structure, creating a labelled dataset. All
-previous attributes will be preserved, in particular factors (and its associated
-attribute 'levels' which will be transform into attributes 'labels' and its
-values recasted into their proper datatype.
+Applies a data dictionary to a data structure, creating a labelled dataset.
+All previous attributes will be preserved, in particular factors (and its
+associated attribute 'levels' which will be transform into attributes
+'labels' and its values recasted into their proper datatype.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

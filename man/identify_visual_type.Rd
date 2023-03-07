@@ -19,9 +19,9 @@ Maelstrom Research format where a column 'viz_type' has been added to the
 data dictionary provided as an input.
 }
 \description{
-This helper function analyses the content of a dataset and its data dictionary
-to extract the type of visualization to generate in a report. This function can
-be used to manually personalize the report parameters.
+This helper function analyses the content of a dataset and its data
+dictionary to extract the type of visualization to generate in a report. This
+function can be used to manually personalize the report parameters.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

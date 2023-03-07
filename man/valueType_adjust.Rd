@@ -7,9 +7,11 @@
 valueType_adjust(from, to = NULL)
 }
 \arguments{
-\item{from}{R object to be adjusted. Can be either a dataset or a data dictionary}
+\item{from}{R object to be adjusted. Can be either a dataset or a data
+dictionary.}
 
-\item{to}{R object to be adjusted. Can be either a dataset or a data dictionary.
+\item{to}{R object to be adjusted. Can be either a dataset or a data
+dictionary.
 NULL by default, which is equivalent to valueType_self_adjust(... = from)}
 }
 \value{
@@ -17,11 +19,12 @@ Either a tibble, identifying the dataset, or a list of tibble(s)
 identifying a data dictionary, depending which is 'to'.
 }
 \description{
-Depending on the input provided (from and to can be either a dataset or a data
-dictionary, this function takes the valueType of the first input (from), and assignes
-column of a data dictionary of casted to a column in the dataset. If 'to' is not
-provided, the function calls the function \code{datashapR::valueType_self_adjust(from)}
-instead.
+Depending on the input provided (from and to can be either a dataset or a
+data dictionary, this function takes the valueType of the first input (from),
+and assignes it to the second attribute (to). The valueType replaced is
+eitheir in the 'valueType' column of a data dictionary of casted to a column
+in the dataset. If 'to' is not provided, the function calls the function
+\code{\link[=valueType_self_adjust]{valueType_self_adjust()}} instead.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

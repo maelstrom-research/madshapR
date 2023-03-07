@@ -22,8 +22,8 @@ opal_tables_pull(
 \item{content}{A vector of character string which indicates if the
 function returns a dataset, or data dictionary. Default is 'dataset'.}
 
-\item{keep_as_study}{whether to return a study or a dataset if there is only one
-table. TRUE by default, if FALSE returns dataset.}
+\item{keep_as_study}{whether to return a study or a dataset if there is only
+one table. TRUE by default, if FALSE returns dataset.}
 }
 \value{
 R objets (tibbles and list of tibbles) representing tables and their

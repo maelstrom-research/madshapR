@@ -2,7 +2,7 @@
 % Please edit documentation in R/08-data_visualize.R
 \name{dataset_visualize}
 \alias{dataset_visualize}
-\title{Generate a web application (bookdown) report of list of study-specific datasets}
+\title{Generate a web application (bookdown) report of list of a datasets}
 \usage{
 dataset_visualize(
   dataset = NULL,
@@ -27,25 +27,27 @@ by this column.}
 \item{to}{A character string identifying the folder path where the bookdown
 report will be saved.}
 
-\item{out}{parameter that specifies the graphical outputs expected in the report.
-can be 'ggplot2'.}
+\item{out}{parameter that specifies the graphical outputs expected in the
+report. Can be 'ggplot2'.}
 
 \item{.keep_files}{whether to keep the R-markdown files.
 FALSE by default.}
 }
 \value{
 A bookdown folder containing files in the specified output folder. To
-open the file in browser, open 'index.html'. Or use \code{\link[=open_visual_report]{open_visual_report()}}
+open the file in browser, open 'index.html'. Or use
+\code{\link[=open_visual_report]{open_visual_report()}}
 }
 \description{
 Generates a visual report for a study-specific dataset in an HTML
 bookdown document, showing descriptive statistics for each study-specific
-variable to facilitate the assessment of input data. Statistics and figures are
-generated according to their valueTypes.
+variable to facilitate the assessment of input data. Statistics and figures
+are generated according to their valueTypes.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy or standard evaluation. The summaries and figures associated provide
-dataset composition, with observation repartition and descriptive statistics.
+and taxonomy or standard evaluation. The summaries and figures associated
+provide dataset composition, with observation repartition and descriptive
+statistics.
 }
 \details{
 A study must be a named list containing at least one data frame or

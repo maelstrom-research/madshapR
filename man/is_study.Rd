@@ -14,8 +14,8 @@ A logical.
 }
 \description{
 Confirms whether the input object is a valid study.
-This function mainly helps validate input within other functions of the package
-but could be used to check if a study is valid.
+This function mainly helps validate input within other functions of the
+package but could be used to check if a study is valid.
 }
 \details{
 A study must be a named list containing at least one data frame or

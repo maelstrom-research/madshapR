@@ -3,27 +3,39 @@
 \docType{data}
 \name{DEMO_files}
 \alias{DEMO_files}
-\title{Built-in tibbles and lists allowing the user to test the package with demo material.}
+\title{Built-in material allowing the user to test the package with demo material}
 \format{
 \subsection{\code{list}}{
 
 A list with 22 elements used for testing purpose (data frames and lists):
 
 \describe{
-\item{DEMO_data_processing_elements - final}{Data processing element without error}
-\item{DEMO_data_processing_elements - with error}{Data processing element containing errors}
-\item{DEMO_data_processing_elements - work in progress}{Data processing element in construction}
-\item{DEMO_dataschema}{DataSchema used, combined with data processing elements and study specific material}
-\item{dd_MELBOURNE_1_format_maelstrom}{Data dictionary (1) of Melbourne dataset}
-\item{dd_MELBOURNE_2_format_maelstrom}{Data dictionary (2) of Melbourne dataset}
+\item{DEMO_data_processing_elements - final}{Data processing element
+without error}
+\item{DEMO_data_processing_elements - with error}{Data processing element
+containing errors}
+\item{DEMO_data_processing_elements - work in progress}{Data processing
+element in construction}
+\item{DEMO_dataschema}{DataSchema used, combined with data processing
+elements and study specific material}
+\item{dd_MELBOURNE_1_format_maelstrom}{Data dictionary (1) of Melbourne
+dataset}
+\item{dd_MELBOURNE_2_format_maelstrom}{Data dictionary (2) of Melbourne
+dataset}
 \item{dd_PARIS_format_maelstrom}{Data dictionary of Paris dataset}
-\item{dd_PARIS_format_preprocessed - ERROR}{Data dictionary of Paris dataset containing errors}
-\item{dd_PARIS_format_preprocessed}{Data dictionary of Paris in preprocessed format}
-\item{dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA}{Data dictionary of Tokyo dataset containing errors}
-\item{dd_TOKYO_format_maelstrom_tagged - ERROR}{Data dictionary of Tokyo dataset containing errors}
+\item{dd_PARIS_format_preprocessed - ERROR}{Data dictionary of Paris
+dataset containing errors}
+\item{dd_PARIS_format_preprocessed}{Data dictionary of Paris in
+preprocessed format}
+\item{dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA}{Data dictionary
+of Tokyo dataset containing errors}
+\item{dd_TOKYO_format_maelstrom_tagged - ERROR}{Data dictionary of Tokyo
+dataset containing errors}
 \item{dd_TOKYO_format_maelstrom_tagged}{Data dictionary of Tokyo dataset}
-\item{dd_TOKYO_format_opal_tagged - ERROR WITH TAXO}{Data dictionary of Tokyo dataset containing errors}
-\item{dd_TOKYO_format_opal_tagged}{Data dictionary of Tokyo dataset opal format}
+\item{dd_TOKYO_format_opal_tagged - ERROR WITH TAXO}{Data dictionary of
+Tokyo dataset containing errors}
+\item{dd_TOKYO_format_opal_tagged}{Data dictionary of Tokyo dataset opal
+format}
 \item{dataset_MELBOURNE_1}{Dataset of Melbourne (1)}
 \item{dataset_MELBOURNE_2}{Dataset of Melbourne (2)}
 \item{dataset_PARIS}{Dataset of Paris}
@@ -40,6 +52,14 @@ A list with 22 elements used for testing purpose (data frames and lists):
 DEMO_files
 }
 \description{
-Built-in tibbles and lists allowing the user to test the package with demo material.
+Built-in tibbles and lists allowing the user to test the package with demo
+material.
+}
+\examples{
+\dontrun{
+
+valueType_list
+
+}
 }
 \keyword{datasets}

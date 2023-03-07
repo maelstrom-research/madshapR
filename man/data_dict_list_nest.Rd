@@ -7,7 +7,8 @@
 data_dict_list_nest(data_dict_list, name_group = NULL)
 }
 \arguments{
-\item{data_dict_list}{A list of tibble(s) representing meta data to be transformed.}
+\item{data_dict_list}{A list of tibble(s) representing meta data to be
+transformed.}
 
 \item{name_group}{A character string of one column in the dataset that can be
 taken as a grouping column.}
@@ -17,7 +18,8 @@ A list of tibble(s) identifying a data dictionary - like structure.
 }
 \description{
 Regroups data dictionaries provided in a list, and binds them together.
-This function is a wrapper analoguous to \code{\link[dplyr:bind_rows]{dplyr::bind_rows()}} from the tidyverse.
+This function is a wrapper analoguous to \code{\link[dplyr:bind_rows]{dplyr::bind_rows()}} from the
+tidyverse.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

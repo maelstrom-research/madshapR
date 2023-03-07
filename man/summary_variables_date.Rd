@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{summary_variables_date}
 \alias{summary_variables_date}
-\title{Provide statistical description of 'date' variables present in a dataset}
+\title{Provide statistical description of 'date' variables of a dataset}
 \usage{
 summary_variables_date(data = NULL, data_dict = NULL, .resume_var = NULL)
 }
@@ -22,11 +22,11 @@ in a dataset.
 }
 \description{
 Generates a tibble that summarises all 'date' columns
-in a dataset with (if any) its data dictionary. The data dictionary (if present
-separates observations between open values, missing values, categorical values,
-and categorical missing values (which corresponds to the 'missing' column in the
-'Categories' sheet). Statistics are generated according to their valueTypes
-which can be 'date'.
+in a dataset with (if any) its data dictionary. The data dictionary (if
+present separates observations between open values, missing values,
+categorical values, and categorical missing values (which corresponds to the
+'missing' column in the Categories' sheet). Statistics are generated
+according to their valueTypes which can be 'date'.
 This summary can be used to assist the user in the assessment of the dataset
 composition, with observation repartition and descriptive statistics.
 }

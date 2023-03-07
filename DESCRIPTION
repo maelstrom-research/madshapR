@@ -39,6 +39,8 @@ Imports: dplyr,
     fabR
 Remotes: guifabre/fabR
 Suggests: 
+    rmarkdown,
+    spelling
 URL: https://github.com/maelstrom-research/datashapR/
     https://www.maelstrom-research.org
 BugReports: https://github.com/maelstrom-research/datashapR/issues
@@ -46,3 +48,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Encoding: UTF-8
+Language: en-US

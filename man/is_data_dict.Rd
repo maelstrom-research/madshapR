@@ -14,8 +14,8 @@ A logical.
 }
 \description{
 Confirms whether the input object is a valid data dictionary.
-This function mainly helps validate input within other functions of the package
-but could be used to check if a data dictionary is valid.
+This function mainly helps validate input within other functions of the
+package but could be used to check if a data dictionary is valid.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

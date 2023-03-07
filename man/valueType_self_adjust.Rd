@@ -15,9 +15,10 @@ identifying a data dictionary, depending which the input refers to.
 }
 \description{
 Using the function \code{\link[=valueType_guess]{valueType_guess()}}, this function provides the
-first possible valueType, by trying to assign the object to 'boolean', then 'integer',
-then 'decimal', then 'date'. (If all fails, 'text', by default), Then either replace
-the valueType column of a data dictionary of casts a column in the dataset. This
+first possible valueType, by trying to assign the object to 'boolean', then
+'integer', then 'decimal', then 'date'. (If all fails, 'text', by default),
+then either replace the valueType column of a data dictionary of casts a
+column in the dataset. This depending on the input provided.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

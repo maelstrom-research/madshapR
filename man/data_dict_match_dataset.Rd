@@ -31,8 +31,8 @@ identifying a data dictionary. Returns both in a list by defaut.
 \description{
 Proceeds an inner jointure between any dataset and its assocated
 data dictionary.
-It returns the user either the sub-dataset or the sub-data dictionary, or both
-in a list.
+It returns the user either the sub-dataset or the sub-data dictionary, or
+both in a list.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

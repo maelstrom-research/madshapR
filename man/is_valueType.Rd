@@ -15,9 +15,9 @@ A logical.
 \description{
 Uses a data dictionary in the Maelstrom Research formats (with 'Variables'
 and 'Categories' in separate tibbles and standard columns in each) to apply
-their valueType to a dataset in tibble format. If no data dictionary is provided,
-the function will automatically evaluate the most restrictive valueType for each
-variable in the dataset and apply it.
+their valueType to a dataset in tibble format. If no data dictionary is
+provided, the function will automatically evaluate the most restrictive
+valueType for each variable in the dataset and apply it.
 }
 \details{
 valueType is one of the property of a variable entity. It refers to
