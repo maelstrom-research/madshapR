@@ -943,7 +943,7 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
     warning("Unknown or uninitialised column: `valueType`")
     return(test)}
 
-  data <- data[sapply(data, FUN = function(x) !all(is.na(x)))]
+  data <- data[vapply(data, FUN = function(x) !all(is.na(x)))]
 
   data <-      data_dict_match_dataset(data, data_dict, output = "data")
   data_dict <- data_dict_match_dataset(data, data_dict, output = "data_dict")

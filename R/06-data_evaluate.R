@@ -320,7 +320,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
   message(crayon::bold(
     "- STUDY ASSESSMENT: -------------------------------------------------------------"))
 
-  for(i in 1:length(study)){
+  for(i in seq_len(length(study))){
     # stop()}
     report_list[[i]] <-
       dataset_evaluate(

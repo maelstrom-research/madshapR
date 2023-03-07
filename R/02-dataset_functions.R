@@ -81,7 +81,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
     pivot_wider(names_from = .data$`name`, values_from = .data$`name`) %>%
     slice(0)
 
-  for(i in 1:ncol(data)){
+  for(i in seq_len(ncol(data))){
     # stop()}
     data[i] <- as_valueType(x = data[i], valueType = data_dict_temp[["Variables"]]$`valueType`[i])
   }
@@ -137,7 +137,7 @@ dataset_zap_data_dict <- function(dataset){
 
   as_dataset(dataset %>% fabR::add_index(.force = TRUE))
 
-  for(i in 1:length(dataset)){
+  for(i in seq_len(length(dataset))){
   # stop()}
     if(is.Date(dataset[[i]])) dataset[[i]] <- as.character(dataset[[i]])
   }
@@ -314,7 +314,7 @@ a data frame. Please refer to documentation.")
 as_study <- function(object){
 
   # check if names in object exist
-  if(is.null(names(object)) | all(sapply(as.list(names(object)), FUN = function(x) nchar(x)) == 0 )){
+  if(is.null(names(object)) | all(vapply(as.list(names(object)), FUN = function(x) nchar(x)) == 0 )){
     stop("One or more datasets are not named. Please provide named list of datasets.")}
 
   # check if names in object are unique

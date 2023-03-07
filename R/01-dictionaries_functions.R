@@ -405,7 +405,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
   if(nrow(taxonomy_opal) > 0){
 
-    for(i in 1:nrow(taxonomy_opal)){
+    for(i in seq_len(nrow(taxonomy_opal))){
       # stop()}
 
       name_col   <- taxonomy_opal$`name_col`[i]
@@ -424,7 +424,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
           values_from = all_of(name_term),
           names_prefix = paste0("__temp__.",col_final,"::"))
 
-      data_dict_temp <- data_dict_temp[sapply(data_dict_temp,
+      data_dict_temp <- data_dict_temp[vapply(data_dict_temp,
                                               FUN = function(x) !all(is.na(x)))]
 
       col_temp  <- names(data_dict_temp)[-1]
@@ -432,7 +432,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
       if(length(col_temp)){
 
-        for(j in 1:length(col_temp)){
+        for(j in seq_len(length(col_temp))){
           # stop()}
 
           col_temp_j  <- col_temp[j]
@@ -701,10 +701,10 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
                      ~ paste0(.,collapse = "|")),
               .groups = "drop") %>%
             separate(col = i,
-                     into = arrange_taxonomy[1:length(arrange_taxonomy) %% 2 == 1],
+                     into = arrange_taxonomy[seq_len(length(arrange_taxonomy)) %% 2 == 1],
                      sep = "\\|") %>%
             separate(col = .data$`term`,
-                     into = arrange_taxonomy[1:length(arrange_taxonomy) %% 2 == 0],
+                     into = arrange_taxonomy[seq_len(length(arrange_taxonomy)) %% 2 == 0],
                      sep = "\\|") %>%
             ungroup() %>%
             select(everything(), -any_of(arrange_taxonomy), any_of(arrange_taxonomy))
@@ -774,7 +774,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
         mutate(`Mlstr_area::1.scale` = na_if(.data$`Mlstr_area::1.scale`,""))}
 
     arrange_taxonomy <-
-      paste0("Mlstr_area","::",rep(1:length(col_area),2) %>% sort(),c("",".term"))
+      paste0("Mlstr_area","::",rep(seq_len(length(col_area)),2) %>% sort(),c("",".term"))
 
     # re-arrange things (can do better)
     data_dict[['Variables']] <-
@@ -1048,7 +1048,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 
   data_dict <- list(Variables = tibble(), Categories = tibble())
 
-  for(i in 1:length(data_dict_list)){
+  for(i in seq_len(length(data_dict_list))){
     # stop()}
 
     data_dict[['Variables']] <-
@@ -1356,7 +1356,7 @@ crayon::bold("\n\nUseful tip:"),
 
 
     attrs_var <- data_dict[['Variables']][which(data_dict[['Variables']]$`name` == i),]
-    attrs_var <- attrs_var[sapply(attrs_var, FUN = function(x) !all(is.na(x)))]
+    attrs_var <- attrs_var[vapply(attrs_var, FUN = function(x) !all(is.na(x)))]
     attrs_var <- c(attrs_var) %>% unlist %>% as.list()
     attrs_var <- attrs_var[names(attrs_var) != 'name']
 
@@ -1366,7 +1366,7 @@ crayon::bold("\n\nUseful tip:"),
 
     if (!is.null(data_dict[['Categories']])) {
       cat_i <- data_dict[['Categories']][which(data_dict[['Categories']]$`variable` == i),]
-      cat_i <- cat_i[sapply(cat_i, FUN = function(x) !all(is.na(x)))]
+      cat_i <- cat_i[vapply(cat_i, FUN = function(x) !all(is.na(x)))]
 
       if(is.null(cat_i[['na_values']])) cat_i[['na_values']] <- NA
 
@@ -1387,7 +1387,7 @@ crayon::bold("\n\nUseful tip:"),
         cat_i$`na_values` <- NULL
 
         if(ncol(cat_i) > 0) {
-          for(j in 1:length(cat_i)){
+          for(j in seq_len(length(cat_i))){
             # stop()}
             vec_attr <- vec_data
             names(vec_attr) <-  cat_i[[j]]
@@ -1489,7 +1489,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
     if(length(attrs_i) > 0){
 
       # if(length(attrs_i) > 0){
-      for(j in 1:length(attrs_i)){
+      for(j in seq_len(length(attrs_i))){
         # stop()}
 
         attr_col_name     <- attrs_i[j] %>% names
@@ -1918,7 +1918,7 @@ crayon::bold("\n\nUseful tip:"),
   # reorder things
   # data shaping
   data_dict[['Variables']] <- data_dict[['Variables']] %>% select('name','typeof',everything())
-  data_dict[['Variables']] <- data_dict[['Variables']][sapply(data_dict[['Variables']], FUN = function(x) !all(is.na(x)))]
+  data_dict[['Variables']] <- data_dict[['Variables']][vapply(data_dict[['Variables']], FUN = function(x) !all(is.na(x)))]
 
   if(sum(nrow(data_dict[['Categories']])) > 0){
 
@@ -1928,7 +1928,7 @@ crayon::bold("\n\nUseful tip:"),
         by = "variable",multiple = "all") %>%
       select('variable','name','labels',matches("^na_values$"), everything())
 
-    data_dict[['Categories']] <- data_dict[['Categories']][sapply(data_dict[['Categories']], FUN = function(x) !all(is.na(x)))]
+    data_dict[['Categories']] <- data_dict[['Categories']][vapply(data_dict[['Categories']], FUN = function(x) !all(is.na(x)))]
 
   }
 
@@ -2203,7 +2203,7 @@ new name: ",new_name)
     select(.data$`name`,matches(c("^label$","^label:[[:alnum:]]")),
            matches('^valueType$'),everything())
   data_dict[['Variables']] <-
-    data_dict[['Variables']][sapply(data_dict[['Variables']], FUN = function(x) !all(is.na(x)))]
+    data_dict[['Variables']][vapply(data_dict[['Variables']], FUN = function(x) !all(is.na(x)))]
 
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict[['Categories']] <-
@@ -2211,7 +2211,7 @@ new name: ",new_name)
       select(.data$`variable`,.data$`name`,matches(c("^label$","^label:[[:alnum:]]")),everything())
 
     data_dict[['Categories']] <-
-      data_dict[['Categories']][sapply(data_dict[['Categories']], FUN = function(x) !all(is.na(x)))]
+      data_dict[['Categories']][vapply(data_dict[['Categories']], FUN = function(x) !all(is.na(x)))]
     }
 
   if(as_data_dict == TRUE) {attributes(data_dict)$`Mlstr::class` <- "data_dict"

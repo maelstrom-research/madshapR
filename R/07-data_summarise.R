@@ -437,7 +437,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
   message(crayon::bold(
     "- STUDY SUMMARY: -------------------------------------------------------"))
 
-  for(i in 1:length(study)){
+  for(i in seq_len(length(study))){
     # stop()}
     report_list[[i]] <-
       dataset_summarize(

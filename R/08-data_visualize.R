@@ -198,7 +198,7 @@ datatable(data_dict$Categories, options = list(scrollX = TRUE),rownames = FALSE)
 
   increment <-   paste0(rep(0,((nrow(data_dict$Variables)) %>% nchar)) %>% paste(collapse = ""))
 
-  for(i in 1:nrow(data_dict$Variables)){
+  for(i in seq_len(nrow(data_dict$Variables))){
 
     rmd_file_name <-
       paste0(to,"/temp_bookdown_report/file/bookdown-template-master/",
@@ -540,7 +540,7 @@ identify_plot_type <- function(dataset = NULL, data_dict, group_by = NULL, out =
         TRUE                      ~ NA_character_))
   # this_dd <<- data_dict
 
-  for (i in 1:length(data_dict$Variables$index)) {
+  for (i in seq_len(length(data_dict$Variables$index))) {
     data_dict$Variables$plot_1[i]    <- eval(parse(text = str_squish(data_dict$Variables$plot_1[i])))
     data_dict$Variables$plot_2[i]    <- eval(parse(text = str_squish(data_dict$Variables$plot_2[i])))
     data_dict$Variables$plot_3[i]    <- eval(parse(text = str_squish(data_dict$Variables$plot_3[i])))
