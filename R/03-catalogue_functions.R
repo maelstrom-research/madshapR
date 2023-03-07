@@ -27,7 +27,7 @@
 #' A character string which is the valueType of the given object.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -45,8 +45,8 @@ valueType_of <- function(x){
   if(is.list(x)) stop(call. = FALSE,
                       "'list' object cannot be coerced to valueType")
 
-  type  = x %>% typeof()
-  class = class(x)[[max(length(class(x)))]]
+  type  <- x %>% typeof()
+  class <- class(x)[[max(length(class(x)))]]
 
   vT_list <- datashapR::valueType_list
 
@@ -58,11 +58,11 @@ valueType_of <- function(x){
   suppressWarnings(suppressMessages(try({
     if(class == "factor"){
       lvls <- attributes(x)$`levels` %>% as.character()
-      valueType <- try({as_valueType(lvls,"integer")   ;valueType = "integer"},silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"decimal");valueType = "decimal"},silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"date")   ;valueType = "date"   },silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"boolean");valueType = "boolean"},silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({                             valueType = "text"   },silent = TRUE)
+      valueType <- try({as_valueType(lvls,"integer")   ;valueType <- "integer"},silent = TRUE)
+      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"decimal");valueType <- "decimal"},silent = TRUE)
+      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"date")   ;valueType <- "date"   },silent = TRUE)
+      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"boolean");valueType <- "boolean"},silent = TRUE)
+      if(class(valueType)[1] == "try-error") valueType <- try({                             valueType <- "text"   },silent = TRUE)
     }
   }, silent = TRUE)))
   if(length(valueType) == 0) valueType <- "text"
@@ -75,10 +75,10 @@ valueType_of <- function(x){
 #'
 #' @description
 #' Using the function [datashapR::valueType_guess()], this function provides the
-#' first possible valueType, by trying to assign the object to 'boolean', then 'integer',
-#' then 'decimal', then 'date'. (If all fails, 'text', by default), Then either replace
-#' the valueType column of a data dictionary of casts a column in the dataset. This
-# depending on the input provided.
+#' first possible valueType, by trying to assign the object to 'boolean', then
+#' 'integer', then 'decimal', then 'date'. (If all fails, 'text', by default),
+#' then either replace the valueType column of a data dictionary of casts a
+#' column in the dataset. This depending on the input provided.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -114,7 +114,7 @@ valueType_of <- function(x){
 #' identifying a data dictionary, depending which the input refers to.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -251,12 +251,12 @@ valueType will remain as it is.")
 #' Replace the valueType from (or to) any data dictionary to (or from) dataset
 #'
 #' @description
-#' Depending on the input provided (from and to can be either a dataset or a data
-#' dictionary, this function takes the valueType of the first input (from), and assignes
-#  it to the second attribute (to). The valueType replaced is eitheir in the 'valueType'
-#' column of a data dictionary of casted to a column in the dataset. If 'to' is not
-#' provided, the function calls the function `datashapR::valueType_self_adjust(from)`
-#' instead.
+#' Depending on the input provided (from and to can be either a dataset or a
+#' data dictionary, this function takes the valueType of the first input (from),
+#' and assignes it to the second attribute (to). The valueType replaced is
+#' eitheir in the 'valueType' column of a data dictionary of casted to a column
+#' in the dataset. If 'to' is not provided, the function calls the function
+#' [valueType_self_adjust()] instead.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -285,8 +285,10 @@ valueType will remain as it is.")
 #' @seealso
 #' [datashapR::valueType_self_adjust()]
 #'
-#' @param from R object to be adjusted. Can be either a dataset or a data dictionary
-#' @param to R object to be adjusted. Can be either a dataset or a data dictionary.
+#' @param from R object to be adjusted. Can be either a dataset or a data
+#' dictionary.
+#' @param to R object to be adjusted. Can be either a dataset or a data
+#' dictionary.
 #' NULL by default, which is equivalent to valueType_self_adjust(... = from)
 #'
 #' @return
@@ -294,7 +296,7 @@ valueType will remain as it is.")
 #' identifying a data dictionary, depending which is 'to'.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -331,23 +333,6 @@ valueType_adjust <- function(from, to = NULL){
       left_join(vT_list, by = "valueType") %>%
       select(.data$`name`, .data$`valueType`,.data$`typeof`)
 
-    # if(length(data_dict[['Variables']][['valueType']]) == 0 &
-    #    length(data_dict[['Variables']][['typeof']]) == 0 ){
-    #
-    #   data_dict[['Variables']]['typeof'] <-
-    #     data_dict[['Variables']]['name'] %>%
-    #     left_join(vT_tables %>% select(.data$`name`, .data$`typeof`), by = "name") %>%
-    #     select( .data$`typeof`)
-    #
-    #   data_dict[['Variables']]['valueType'] <-
-    #     data_dict[['Variables']]['name'] %>%
-    #     left_join(vT_tables %>% select(.data$`name`, .data$`valueType`), by = "name") %>%
-    #     select( .data$`valueType`)
-    #
-    #   return(data_dict)
-    # }else{
-    #
-    # if(length(data_dict[['Variables']][['typeof']]) > 0){
     data_dict[['Variables']]['typeof'] <-
       data_dict[['Variables']]['name'] %>%
       left_join(vT_tables %>% select(.data$`name`, .data$`typeof`), by = "name") %>%
@@ -439,7 +424,7 @@ valueType_adjust <- function(from, to = NULL){
 #' object.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: Apply valueType without specifying a data dictionary
 #' as_valueType(""1"") %>% typeof()
 #' tibble(iris %>% mutate(Species = as.character(Species))) %>%
@@ -525,7 +510,7 @@ valueType_guess <- function(x){
 #' The object coerced accordingly to the given valueType.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: Apply valueType without specifying a data dictionary
 #' as_valueType(""1"") %>% typeof()
 #' tibble(iris %>% mutate(Species = as.character(Species))) %>%
@@ -626,10 +611,10 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' Validate and coerce any object as taxonomy
 #'
 #' @description
-#' Confirms that the input object is a valid taxonomy, and return it as a taxonomy
-#' with the appropriate mlstr_class attribute. This function mainly helps validate
-#' input within other functions of the package but could be used to check if a
-#' taxonomy is valid.
+#' Confirms that the input object is a valid taxonomy, and return it as a
+#' taxonomy with the appropriate mlstr_class attribute. This function mainly
+#' helps validate input within other functions of the package but could be used
+#' to check if a taxonomy is valid.
 #'
 #' @details
 #' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
@@ -648,7 +633,7 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -667,8 +652,8 @@ It must be a dataframe containing at least 'taxonomy', 'vocabulary' and 'term'
 columns. Please refer to documentation.",
 
       crayon::bold("\n\nUseful tip:"),
-" Use opal_taxonomy_get(opal) or mlstr_taxonomy_get(opal) to get the taxonomy present
-in your Opal environment.")}
+" Use opal_taxonomy_get(opal) or mlstr_taxonomy_get(opal) to get the taxonomy
+present in your Opal environment.")}
 
   # check if names in taxonomy exist
   if(names(object) %in%
@@ -690,9 +675,9 @@ in your Opal environment.")}
 #' @description
 #' Uses a data dictionary in the Maelstrom Research formats (with 'Variables'
 #' and 'Categories' in separate tibbles and standard columns in each) to apply
-#' their valueType to a dataset in tibble format. If no data dictionary is provided,
-#' the function will automatically evaluate the most restrictive valueType for each
-#' variable in the dataset and apply it.
+#' their valueType to a dataset in tibble format. If no data dictionary is
+#' provided, the function will automatically evaluate the most restrictive
+#' valueType for each variable in the dataset and apply it.
 #'
 #' @details
 #' valueType is one of the property of a variable entity. It refers to
@@ -711,7 +696,7 @@ in your Opal environment.")}
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -737,8 +722,8 @@ is_valueType <- function(object){
 #'
 #' @description
 #' Confirms whether the input object is a valid taxonomy.
-#' This function mainly helps validate input within other functions of the package
-#' but could be used to check if a taxonomy is valid.
+#' This function mainly helps validate input within other functions of the
+#' package but could be used to check if a taxonomy is valid.
 #'
 #' @details
 #' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
@@ -757,7 +742,7 @@ is_valueType <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'

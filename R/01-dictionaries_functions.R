@@ -5,9 +5,10 @@
 #' Transforms any columns in a data dictionary component to a new component.
 #' If the component 'from' contains any column starting with 'prefix', (xx,yy),
 #' these columns will be added as 'xx' and 'yy' in the component identified by
-#' 'to'. This tibble will be created if necessary, and columns will be added, from
-#' left to right. (unique names will be generated if necessary).
-#' Separator of each element is the following structure : 'name = xx1 ; name = xx2'.
+#' 'to'. This tibble will be created if necessary, and columns will be added,
+#' from left to right. (unique names will be generated if necessary).
+#' Separator of each element is the following structure :
+#' 'name = xx1 ; name = xx2'.
 #' This function is the reversed operation of [datashapR::data_dict_flatten()]
 #'
 #' @details
@@ -28,8 +29,8 @@
 #' @seealso
 #' [datashapR::data_dict_flatten()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
-#' Automatically generated if not provided.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed. Automatically generated if not provided.
 #' @param from Symbol identifying the name of the component (tibble) to take
 #' column(s) from. Default is 'Variables'.
 #' @param to Symbol identifying the name of the component (tibble) to create
@@ -42,7 +43,7 @@
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -51,7 +52,11 @@
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_expand <- function(data_dict, from = 'Variables', name_prefix = 'Categories::', to = 'Categories'){
+data_dict_expand <- function(
+    data_dict,
+    from = 'Variables',
+    name_prefix = 'Categories::',
+    to = 'Categories'){
 
   # test
   as_data_dict_shape(data_dict)
@@ -75,7 +80,9 @@ data_dict_expand <- function(data_dict, from = 'Variables', name_prefix = 'Categ
     select(starts_with(name_prefix), - any_of(name_prefix)) %>% names
 
   if(length(names_col) == 0){
-    warning("Your data dictionary contains no column starting with '",name_prefix,"' in ",from)
+    warning(
+      "Your data dictionary contains no column starting with '",
+      name_prefix,"' in ",from)
     return(data_dict)}
 
   rename_col <- make.unique(str_remove(names_col,name_prefix))
@@ -94,13 +101,18 @@ data_dict_expand <- function(data_dict, from = 'Variables', name_prefix = 'Categ
         filter(!is.na(.data$`col_to`)) %>%
         mutate(
           col_to = ifelse(str_detect(.data$`col_to`, "_="),
-                          str_replace_all(.data$`col_to`, "_=", "__SEP_IN__"), .data$`col_to`),
+                          str_replace_all(.data$`col_to`, "_=", "__SEP_IN__"),
+                          .data$`col_to`),
           col_to = ifelse(str_detect(.data$`col_to`, "_;"),
-                          str_replace_all(.data$`col_to`, "_;", "__SEP_OUT__"),.data$`col_to`),
-          col_to = ifelse(str_detect(.data$`col_to`, "__SEP_IN__"),       .data$`col_to`,
+                          str_replace_all(.data$`col_to`, "_;", "__SEP_OUT__"),
+                          .data$`col_to`),
+          col_to = ifelse(str_detect(.data$`col_to`, "__SEP_IN__"),
+                          .data$`col_to`,
                           str_replace_all(.data$`col_to`, "=", "__SEP_IN__")),
-          col_to = ifelse(str_detect(.data$`col_to`, "__SEP_OUT__"),      .data$`col_to`,
-                          str_replace_all(.data$`col_to`, ";", "__SEP_OUT__"))) %>%
+          col_to = ifelse(str_detect(.data$`col_to`, "__SEP_OUT__"),
+                          .data$`col_to`,
+                          str_replace_all(.data$`col_to`, ";", "__SEP_OUT__"))
+          ) %>%
         separate_rows("col_to", sep="__SEP_OUT__") %>%
         separate(.data$`col_to`, into = c("name",i), sep = "__SEP_IN__") %>%
         mutate_all(~ str_squish(.)) %>%
@@ -119,16 +131,28 @@ data_dict_expand <- function(data_dict, from = 'Variables', name_prefix = 'Categ
               filter(!is.na(.data$`col_to`)) %>%
               mutate(
                 col_to = ifelse(str_detect(.data$`col_to`, "_="),
-                                str_replace_all(.data$`col_to`, "_=", "__SEP_IN__"), .data$`col_to`),
+                                str_replace_all(
+                                  .data$`col_to`, "_=", "__SEP_IN__"),
+                                .data$`col_to`),
                 col_to = ifelse(str_detect(.data$`col_to`, "_;"),
-                                str_replace_all(.data$`col_to`, "_;", "__SEP_OUT__"), .data$`col_to`),
-                col_to = ifelse(str_detect(.data$`col_to`, "__SEP_IN__"), .data$`col_to`,
-                                str_replace_all(.data$`col_to`, "=", "__SEP_IN__")),
-                col_to = ifelse(str_detect(.data$`col_to`, "__SEP_OUT__"), .data$`col_to`,
-                                str_replace_all(.data$`col_to`, ";", "__SEP_OUT__"))) %>%
+                                str_replace_all(
+                                  .data$`col_to`, "_;", "__SEP_OUT__"),
+                                .data$`col_to`),
+                col_to = ifelse(str_detect(.data$`col_to`, "__SEP_IN__"),
+                                .data$`col_to`,
+                                str_replace_all(
+                                  .data$`col_to`, "=", "__SEP_IN__")),
+                col_to = ifelse(str_detect(.data$`col_to`, "__SEP_OUT__"),
+                                .data$`col_to`,
+                                str_replace_all(
+                                  .data$`col_to`, ";", "__SEP_OUT__"))) %>%
               separate_rows("col_to", sep="__SEP_OUT__") %>%
-              separate(.data$`col_to`, into = c("name", i), sep = "__SEP_IN__") %>%
-              filter(is.na(!! i)) %>% pull(.data$`variable`) %>% toString)}, silent = TRUE)))
+              separate(.data$`col_to`,
+                       into = c("name", i),
+                       sep = "__SEP_IN__") %>%
+              filter(is.na(!! i)) %>% pull(.data$`variable`) %>% toString)
+
+            },silent = TRUE)))
 
         stop(call. = FALSE,
           "\n\nParsing elements failures in your data dictionnary.",
@@ -140,7 +164,7 @@ data_dict_expand <- function(data_dict, from = 'Variables', name_prefix = 'Categ
 its labels, replace the separators by '_;' and '_=' and reprocess.
 Example:
   > wrong: '0 = No alcohol  ; 1 = Alcohol(red ; white)'
-  > good : '0 = No alcohol ", crayon::bold("_;") ," 1 = Alcohol(red ; white)'\n")
+  > good : '0 = No alcohol ",crayon::bold("_;")," 1 = Alcohol(red ; white)'\n")
       })
 
   }
@@ -160,7 +184,8 @@ Example:
 #' columns will be added to the component 'from' under the names 'to:xx'
 #' and 'to:yy'. (unique names will be generated if necessary). Each element
 #' of these column will gather all information to process the reverse operation.
-#' Separator of each element is the following structure : 'name = xx1 ; name = xx2'.
+#' Separator of each element is the following structure :
+#' 'name = xx1 ; name = xx2'.
 #' This function is the reversed operation of [datashapR::data_dict_expand()]
 #'
 #' @details
@@ -181,8 +206,8 @@ Example:
 #' @seealso
 #' [datashapR::data_dict_expand()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
-#' Automatically generated if not provided.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed. Automatically generated if not provided.
 #' @param from Symbol identifying the name of the component (tibble) to take
 #' column(s) from. Default is 'Categories'.
 #' @param to Symbol identifying the name of the component (tibble) to create
@@ -195,7 +220,7 @@ Example:
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -204,7 +229,11 @@ Example:
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_flatten <- function(data_dict, from = 'Categories', to = 'Variables', name_prefix = 'Categories::'){
+data_dict_flatten <- function(
+    data_dict,
+    from = 'Categories',
+    to = 'Variables',
+    name_prefix = 'Categories::'){
 
   # test
   as_data_dict_shape(data_dict)
@@ -240,12 +269,15 @@ data_dict_flatten <- function(data_dict, from = 'Categories', to = 'Variables', 
         select("variable","name",!! i) %>%
         unite("from", .data$`name`, !! i, sep = " __SEP_IN__ ") %>%
         group_by(.data$`variable`) %>%
-        summarise(from = paste0(.data$`from`,collapse = " __SEP_OUT__ \n"), .groups = "drop") %>%
+        summarise(from = paste0(.data$`from`,collapse = " __SEP_OUT__ \n"),
+                  .groups = "drop") %>%
         mutate(
           from = ifelse(str_detect(.data$`from`, ";"),
-                        str_replace_all(.data$`from`, "__SEP_OUT__", "_;"),.data$`from`),
+                        str_replace_all(.data$`from`, "__SEP_OUT__", "_;"),
+                        .data$`from`),
           from = ifelse(str_detect(.data$`from`, "="),
-                        str_replace_all(.data$`from`, "__SEP_IN__", "_="), .data$`from`),
+                        str_replace_all(.data$`from`, "__SEP_IN__", "_="),
+                        .data$`from`),
           from =   str_replace_all(.data$`from`, "__SEP_OUT__", ";"),
           from =   str_replace_all(.data$`from`, "__SEP_IN__", "="))
 
@@ -268,17 +300,17 @@ data_dict_flatten <- function(data_dict, from = 'Categories', to = 'Variables', 
 }
 
 #' @title
-#' Transform column(s) in a data dictionary component into their wider equivalent
+#' Turn column(s) in a data dictionary component into their wider equivalent
 #'
 #' @description
-#' Transforms column(s) in a data dictionary component into their wider equivalent.
-#' If any Opal taxonomy is provided, the correspondant colunms in the data dictionary
-#' will be converted to a format compatible with Opal environment (with the taxonomy
-#' expanded).
-#' This operation is equivalent to perform a pivot_wider() to these columns following
-#' the taxonomy structure provided.
-#' The data dictionaries data dictionary provided must respect certain contrains
-#' such as name uniqueness across the variables names.
+#' Transforms column(s) in a data dictionary component into their wider
+#' equivalent. If any Opal taxonomy is provided, the correspondent columns in
+#' the data dictionary will be converted to a format compatible with Opal
+#' environment (with the taxonomy expanded).
+#' This operation is equivalent to perform a pivot_wider() to these columns
+#' following the taxonomy structure provided.
+#' The data dictionaries data dictionary provided must respect certain
+#' constrains such as name uniqueness across the variables names.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -308,7 +340,8 @@ data_dict_flatten <- function(data_dict, from = 'Categories', to = 'Variables', 
 #' @seealso
 #' [tidyr::pivot_wider()], [datashapR::as_data_dict()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed.
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #'
@@ -316,7 +349,7 @@ data_dict_flatten <- function(data_dict, from = 'Categories', to = 'Variables', 
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #'
 #'   data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
@@ -334,7 +367,8 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
   if(is.null(taxonomy)) return(data_dict)
 
   data_dict_init <- data_dict
-  data_dict_unique_name <- make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
+  data_dict_unique_name <-
+    make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
 
   data_dict[['Variables']]$`name` <- data_dict_unique_name
 
@@ -345,7 +379,12 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
   taxonomy <- as_taxonomy(taxonomy)
   taxonomy_opal <-
     taxonomy  %>%
-    unite(col = "taxonomy_opal", c("taxonomy", "vocabulary"), na.rm = TRUE, sep = "::", remove = FALSE) %>%
+    unite(
+      col = "taxonomy_opal",
+      c("taxonomy", "vocabulary"),
+      na.rm = TRUE,
+      sep = "::",
+      remove = FALSE) %>%
     arrange("index_taxonomy", "index_vocabulary", "index_term")
 
   taxonomy_opal <-
@@ -361,8 +400,8 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
   taxonomy_opal <- taxonomy_opal[,c('name_col','name_term','taxonomy')]
 
   taxonomy_opal <-
-    taxonomy_opal[taxonomy_opal$`name_col` %in% names(data_dict[["Variables"]]) &
-                    taxonomy_opal$`name_term` %in% names(data_dict[["Variables"]]),]
+    taxonomy_opal[taxonomy_opal$`name_col`%in% names(data_dict[["Variables"]]) &
+      taxonomy_opal$`name_term` %in% names(data_dict[["Variables"]]),]
 
   if(nrow(taxonomy_opal) > 0){
 
@@ -373,7 +412,10 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
       name_term  <- taxonomy_opal$`name_term`[i]
       col_final  <- taxonomy_opal$`taxonomy`[i]
 
-      data_dict_colnames <- intersect(names(data_dict[['Variables']]), c('name', name_col, name_term))
+      data_dict_colnames <-
+        intersect(
+          names(data_dict[['Variables']]),
+          c('name', name_col, name_term))
 
       data_dict_temp <-
         data_dict[['Variables']][,data_dict_colnames] %>%
@@ -382,7 +424,8 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
           values_from = all_of(name_term),
           names_prefix = paste0("__temp__.",col_final,"::"))
 
-      data_dict_temp <- data_dict_temp[sapply(data_dict_temp, FUN = function(x) !all(is.na(x)))]
+      data_dict_temp <- data_dict_temp[sapply(data_dict_temp,
+                                              FUN = function(x) !all(is.na(x)))]
 
       col_temp  <- names(data_dict_temp)[-1]
       col_final <- str_remove(col_temp,"^__temp__\\.")
@@ -405,7 +448,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
               data_dict_temp[,c('name',col_temp_j)] ,
               by = c("name"))
 
-          if((data_dict[['Variables']] %>% names) %in% col_final_j %>% sum == 1){
+          if(sum((data_dict[['Variables']] %>% names) %in% col_final_j) == 1){
 
             data_dict[['Variables']] <-
               data_dict[['Variables']] %>%
@@ -428,9 +471,12 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
     if(paste0(attributes(taxonomy)$`Mlstr::class`,"") == "mlstr_taxonomy"){
 
       keys <-
-        taxonomy[!is.na(taxonomy$`vocabulary_short`),c('vocabulary','vocabulary_short')] %>%
+        taxonomy[!is.na(taxonomy$`vocabulary_short`),
+                 c('vocabulary','vocabulary_short')] %>%
         distinct %>%
-        mutate(vocabulary_short = paste0("Mlstr_area::",.data$`vocabulary_short`)) %>%
+        mutate(
+          vocabulary_short =
+            paste0("Mlstr_area::",.data$`vocabulary_short`)) %>%
         mutate(vocabulary = paste0("Mlstr_area::",.data$`vocabulary`))
 
       col_area <-
@@ -450,7 +496,12 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
       taxo_scales <-
         taxonomy %>%
-        unite(col = "area_scale_opal", c("taxonomy_scale", "vocabulary_scale"), na.rm = TRUE, sep = "::", remove = FALSE)
+        unite(
+          col = "area_scale_opal",
+          c("taxonomy_scale", "vocabulary_scale"),
+          na.rm = TRUE,
+          sep = "::",
+          remove = FALSE)
 
       taxo_scales <-
         taxo_scales[
@@ -464,7 +515,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
         if(!is.null(data_dict[['Variables']][['___area_scale_opal___']])){
           stop(call. = FALSE,
-               "Column name '___area_scale_opal___' already exists in your data dictionary")}
+"Column name '___area_scale_opal___' already exists in your data dictionary")}
 
         suppressWarnings(suppressMessages(try({
           data_dict[['Variables']] <-
@@ -485,8 +536,9 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
         }, silent = TRUE)))
 
         if(!is.null(data_dict[['Variables']][['NA']])){
-          warning(toString(unique(data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
-                  " scale(s) not in your taxonomy but present in your data dictionary")}
+          warning(toString(unique(
+            data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
+" scale(s) not in your taxonomy but present in your data dictionary")}
       }
     }
   }
@@ -494,7 +546,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
   # verification of the taxonomy, terms and vocabularies
   new_names <- (data_dict[['Variables']] %>% names)[
-    !(data_dict_init[['Variables']] %>% names) %in% (data_dict[['Variables']] %>% names)]
+    !names(data_dict_init[['Variables']]) %in% names(data_dict[['Variables']])]
 
   authorized_names <-
     taxonomy  %>%
@@ -507,7 +559,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
   if(length(wrong_names) > 0){
     warning(wrong_names %>% toString,
-            " column name(s) not in your taxonomy but present in your data dictionary")}
+" column name(s) not in your taxonomy but present in your data dictionary")}
 
   data_dict[['Variables']]$`name` <- data_dict_init[['Variables']]$`name`
 
@@ -515,17 +567,16 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 }
 
 #' @title
-#' Transform column(s) in a data dictionary component into their longer equivalent
+#' Turn column(s) in a data dictionary component into their longer equivalent
 #'
 #' @description
-#' Transforms column(s) in a data dictionary component into their longer equivalent.
-#' If any Opal taxonomy is provided, the correspondant colunms in the data dictionary
-#' will be converted to a format that contains fewer columns than an Opal format
-#' to work with.
-#' This operation is equivalent to perform a pivot_longer() to these columns
-#' following the taxonomy structure provided.
-#' The data dictionaries data dictionary provided must respect certain contrains
-#' such as name uniqueness across the variables names.
+#' Transforms column(s) in a data dictionary component into their longer
+#' equivalent. If any Opal taxonomy is provided, the correspondant colunms in
+#' the data dictionary will be converted to a format that contains fewer columns
+#' than an Opal format to work with. This operation is equivalent to perform a
+#' [tidyr::pivot_longer()] to these columns following the taxonomy structure
+#' provided. The data dictionaries data dictionary provided must respect certain
+#' constrains such as name uniqueness across the variables names.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -555,7 +606,8 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' @seealso
 #' [tidyr::pivot_longer()], [datashapR::as_data_dict()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed.
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #'
@@ -563,7 +615,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -581,7 +633,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 
   # make unique names for names in data dict
   data_dict_init <- data_dict
-  data_dict[['Variables']]$`name` <- make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
+  data_dict[['Variables']]$`name` <-
+    make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
 
   taxonomy <- as_taxonomy(taxonomy)
 
@@ -720,7 +773,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
         unite("Mlstr_area::1.scale" , all_of(cols_scales),sep = " | ",na.rm = TRUE) %>%
         mutate(`Mlstr_area::1.scale` = na_if(.data$`Mlstr_area::1.scale`,""))}
 
-    arrange_taxonomy =
+    arrange_taxonomy <-
       paste0("Mlstr_area","::",rep(1:length(col_area),2) %>% sort(),c("",".term"))
 
     # re-arrange things (can do better)
@@ -753,8 +806,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #'
 #' @description
 #' Subsets either or both the 'Variables' and the 'Categories' tibbles of a data
-#' dictionary. Rows are conserved if the value of one column satisfy a condition.
-#' This function is a wrapper analoguous to [dplyr::filter()].
+#' dictionary. Rows are conserved if the value of one column satisfy a
+#' condition. This function is a wrapper analoguous to [dplyr::filter()].
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -774,11 +827,12 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' @seealso
 #' [dplyr::filter()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
-#' @param filter_var Expressions that is defined in the element 'Variables' in the
-#' data dictionary.
-#' @param filter_cat Expressions that is defined in the element 'Categories' in the
-#' data dictionary.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed.
+#' @param filter_var Expressions that is defined in the element 'Variables' in
+#' the data dictionary.
+#' @param filter_cat Expressions that is defined in the element 'Categories' in
+#' the data dictionary.
 #' @param filter_all Expressions that is defined both in the 'Categories' and
 #' 'Variables' in the data dictionary.
 #'
@@ -786,7 +840,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -829,11 +883,11 @@ data_dict_filter <- function(data_dict, filter_var = NULL, filter_cat = NULL, fi
 #' Split grouped data dictionaries into a named list
 #'
 #' @description
-#' Divides the data dictionary both in the 'Variables' and 'Categories' (assuming
-#' the group is defined in both elements) into the groups defined by the query.
-#' The list is created analogously the user would do with [dplyr::group_by()] and
-#' [dplyr::group_split()]. Each element is named using the group values.
-#' [datashapR::data_dict_list_nest()] reverses the effect of
+#' Divides the data dictionary both in the 'Variables' and 'Categories'
+#' (assuming the group is defined in both elements) into the groups defined by
+#' the query. The list is created analogously the user would do with
+#' [dplyr::group_by()] and [dplyr::group_split()]. Each element is named using
+#' the group values. [datashapR::data_dict_list_nest()] reverses the effect of
 #' [datashapR::data_dict_group_split()].
 #'
 #' @details
@@ -855,7 +909,8 @@ data_dict_filter <- function(data_dict, filter_var = NULL, filter_cat = NULL, fi
 #' [dplyr::group_by()], [dplyr::group_split()] ,
 #' [datashapR::data_dict_group_by()], [datashapR::data_dict_list_nest()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed.
 #' @param ... Column in the data dictionary to split it by. If not provided, the
 #' spliting will be done on the grouping element of a grouped data dictionary.
 #'
@@ -863,7 +918,7 @@ data_dict_filter <- function(data_dict, filter_var = NULL, filter_cat = NULL, fi
 #' A list of tibble(s) identifying a list of data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -888,7 +943,7 @@ data_dict_group_by(data_dict, col)")
   group_names_var <- pull(group_keys(data_dict[['Variables']]))
 
   if(sum(nrow(data_dict[['Categories']])) == 0){
-    data_dict[['Categories']] =
+    data_dict[['Categories']] <-
       tibble(col = as.character()) %>%
       rename_with(.cols = "col", ~ deparse(col)) %>%
       group_by(!! col)
@@ -946,7 +1001,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #'
 #' @description
 #' Regroups data dictionaries provided in a list, and binds them together.
-#' This function is a wrapper analoguous to [dplyr::bind_rows()] from the tidyverse.
+#' This function is a wrapper analoguous to [dplyr::bind_rows()] from the
+#' tidyverse.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -966,7 +1022,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @seealso
 #' [dplyr::bind_rows()]
 #'
-#' @param data_dict_list A list of tibble(s) representing meta data to be transformed.
+#' @param data_dict_list A list of tibble(s) representing meta data to be
+#' transformed.
 #' @param name_group A character string of one column in the dataset that can be
 #' taken as a grouping column.
 #'
@@ -974,7 +1031,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -989,7 +1046,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
   data_dict_list %>%
     lapply(as_data_dict_shape)
 
-  data_dict = list(Variables = tibble(), Categories = tibble())
+  data_dict <- list(Variables = tibble(), Categories = tibble())
 
   for(i in 1:length(data_dict_list)){
     # stop()}
@@ -1082,7 +1139,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1109,7 +1166,7 @@ data_dict_group_by <- function(data_dict, col){
   if(is.null(data_dict[['Categories']])) categories <- FALSE
 
   if(sum(nrow(data_dict[['Categories']])) == 0){
-    data_dict[['Categories']] =
+    data_dict[['Categories']] <-
       tibble(col = as.character()) %>%
       rename_with(.cols = "col", ~ deparse(col))}
 
@@ -1132,7 +1189,7 @@ cannot be found accross the variables declared in 'Variables'.")
     arrange(!! col) %>%
     group_by(!! col)
 
-  if(categories == FALSE) data_dict[['Categories']] = NULL
+  if(categories == FALSE) data_dict[['Categories']] <- NULL
 
   return(data_dict)
 }
@@ -1169,7 +1226,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1199,10 +1256,10 @@ data_dict_ungroup <- function(data_dict){
 #' Apply a data dictionary to any dataset
 #'
 #' @description
-#' Applies a data dictionary to a data structure, creating a labelled dataset. All
-#' previous attributes will be preserved, in particular factors (and its associated
-#' attribute 'levels' which will be transform into attributes 'labels' and its
-#' values recasted into their proper datatype.
+#' Applies a data dictionary to a data structure, creating a labelled dataset.
+#' All previous attributes will be preserved, in particular factors (and its
+#' associated attribute 'levels' which will be transform into attributes
+#' 'labels' and its values recasted into their proper datatype.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1242,7 +1299,7 @@ data_dict_ungroup <- function(data_dict){
 #' variable as attributes.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1366,12 +1423,12 @@ crayon::bold("\n\nUseful tip:"),
 #' Create a data dictionary in the Maelstrom Research format from a dataset
 #'
 #' @description
-#' Creates a data dictionary in the Maelstrom Research formats (with 'Variables' and
-#' 'Categories' in separate tibbles and standard columns in each) from any dataset in
-#' tibble format. If the input dataset has no associated metadata, a data dictionary
-#' with a minimal of information is created from the column (variable) names to
-#' create the data dictionary structure required for datashapR (all columns except
-#' variable names will be blank).
+#' Creates a data dictionary in the Maelstrom Research formats (with 'Variables'
+#' and Categories' in separate tibbles and standard columns in each) from any
+#' dataset in tibble format. If the input dataset has no associated metadata, a
+#' data dictionary with a minimal of information is created from the column
+#' (variable) names to create the data dictionary structure required for
+#' datashapR (all columns except variable names will be blank).
 #'
 #' @details
 #' A dataset must be a data frame or data frame extension (e.g. a tibble) and
@@ -1394,7 +1451,7 @@ crayon::bold("\n\nUseful tip:"),
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: create a data dictionary from any dataset
 #' data_dict_extract(iris)
 #' # use case 2: create a data dictionary with project and categorical variables
@@ -1470,8 +1527,8 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' @description
 #' Proceeds an inner jointure between any dataset and its assocated
 #' data dictionary.
-#' It returns the user either the sub-dataset or the sub-data dictionary, or both
-#' in a list.
+#' It returns the user either the sub-dataset or the sub-data dictionary, or
+#' both in a list.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1511,7 +1568,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' identifying a data dictionary. Returns both in a list by defaut.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1549,9 +1606,9 @@ data_dict_match_dataset <- function(data, data_dict, data_dict_apply = FALSE, ou
 #'
 #' @description
 #' Confirms that the input object is a valid data dictionary, and return it as a
-#' data dictionary with the appropriate mlstr_class attribute. This function mainly
-#' helps validate input within other functions of the package but could be used to
-#' check if a data dictionary is valid.
+#' data dictionary with the appropriate mlstr_class attribute. This function
+#' mainly helps validate input within other functions of the package but could
+#' be used to check if a data dictionary is valid.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1577,7 +1634,7 @@ data_dict_match_dataset <- function(data, data_dict, data_dict_apply = FALSE, ou
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -1594,7 +1651,7 @@ as_data_dict_shape <- function(object){
     # name column must exist
     if(is.null(object[['Variables']][['name']])){
       stop(call. = FALSE,
-           "Column 'name' in 'Variables' is missing in your data dictionary.")}
+"Column 'name' in 'Variables' is missing in your data dictionary.")}
 
     # if Categories exists
     if(!is.null(object[['Categories']])){
@@ -1602,12 +1659,12 @@ as_data_dict_shape <- function(object){
       #, variable column must exist
       if(is.null(object[['Categories']][['variable']])){
         stop(call. = FALSE,
-             "Column 'variable' in 'Categories' is missing in your data dictionary.")}
+"Column 'variable' in 'Categories' is missing in your data dictionary.")}
 
       #, name column must exist
       if(is.null(object[['Categories']][['name']])){
         stop(call. = FALSE,
-             "Column 'name' in 'Categories' is missing in your data dictionary.")}
+"Column 'name' in 'Categories' is missing in your data dictionary.")}
     }
 
     # if all test pass:
@@ -1628,9 +1685,9 @@ Please refer to documentation.")
 #'
 #' @description
 #' Confirms that the input object is a valid data dictionary, and return it as a
-#' data dictionary with the appropriate mlstr_class attribute. This function mainly
-#' helps validate input within other functions of the package but could be used to
-#' check if a data dictionary is valid.
+#' data dictionary with the appropriate mlstr_class attribute. This function
+#' mainly helps validate input within other functions of the package but could
+#' be used to check if a data dictionary is valid.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1881,7 +1938,7 @@ crayon::bold("\n\nUseful tip:"),
 }
 
 #' @title
-#' Validate and coerce any object as data dictionary in the Maelstrom Research format
+#' Validate and coerce any object as data dictionary in the Maelstrom format
 #'
 #' @description
 #' Confirms that the input object is a valid data dictionary compliant with
@@ -1917,7 +1974,7 @@ crayon::bold("\n\nUseful tip:"),
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1975,9 +2032,10 @@ crayon::bold("\n\nUseful tip:"),
   # si pas bon de base, mettre un message et garder tO
   if(!all(!is.na(test_vT))){
     warning(
-      "The column 'typeof' in your data dictionary contains values that were impossible
-to coerce in valueType. This column can be kept for further investigations.",
-      "\n\nVariable(s) name : ",
+"The column 'typeof' in your data dictionary contains values that were
+impossible to coerce in valueType. This column can be kept for further
+investigations.",
+"\n\nVariable(s) name : ",
       toString(pull(test_vT[which(is.na(test_vT[['valueType']])),'name'])))
   }else{data_dict[['Variables']][['typeof']] <- NULL}
 
@@ -2167,9 +2225,9 @@ new name: ",new_name)
 #'
 #' @description
 #' Confirms whether the input object is a valid enough or not to work with some
-#' functions involving data dictionary shaping. This function mainly helps validate
-#' input within other functions of the package but could be used to check if a
-#' data dictionary minimal stricture is valid.
+#' functions involving data dictionary shaping. This function mainly helps
+#' validate input within other functions of the package but could be used to
+#' check if a data dictionary minimal stricture is valid.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -2195,7 +2253,7 @@ new name: ",new_name)
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -2218,8 +2276,8 @@ is_data_dict_shape <- function(object){
 #'
 #' @description
 #' Confirms whether the input object is a valid data dictionary.
-#' This function mainly helps validate input within other functions of the package
-#' but could be used to check if a data dictionary is valid.
+#' This function mainly helps validate input within other functions of the
+#' package but could be used to check if a data dictionary is valid.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -2245,7 +2303,7 @@ is_data_dict_shape <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -2269,7 +2327,8 @@ is_data_dict <- function(object){
 #' @description
 #' Confirms whether the input object is a valid data dictionary compliant with
 #' Maelstrom Research format. This function mainly helps validate input within
-#' other functions of the package but could be used to check if a taxonomy is valid.
+#' other functions of the package but could be used to check if a taxonomy is
+#' valid.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -2289,13 +2348,14 @@ is_data_dict <- function(object){
 #' @seealso
 #' For a better assessment, please use [datashapR::data_dict_evaluate()].
 #'
-#' @param object A potential Maelstrom formatted data dictionary to be evaluated.
+#' @param object A potential Maelstrom formatted data dictionary to be
+#' evaluated.
 #'
 #' @return
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -2308,7 +2368,9 @@ is_mlstr_data_dict <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  if(class(suppressWarnings(suppressMessages(try({as_mlstr_data_dict(object)},silent = TRUE))))[1] == 'try-error') return(FALSE)
-  return(TRUE)
+  if(class(fabR::silently_run(
+    try(as_mlstr_data_dict(object),silent = TRUE)))[1] == 'try-error')
+    return(FALSE)
 
+  return(TRUE)
 }

@@ -29,7 +29,7 @@
 #' A tibble providing non unique variables across a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -78,14 +78,14 @@ check_data_dict_variables <- function(data_dict){
 
 
 #' @title
-#' Return categorical variables which declaration has issues within a data dictionary
+#' Return categorical variables which has issues in a data dictionary
 #'
 #' @description
 #' Generates a tibble that reports any categorical variable which
 #' name is in the 'Categories' but not present in the main list of variable
-#' names in 'Variables' component. It also reports any categorical variable which
-#' possible observation (the combination of 'variable' and 'name' in 'Categories')
-#' is not unique.
+#' names in 'Variables' component. It also reports any categorical variable
+#' which possible observation (the combination of 'variable' and 'name' in
+#' 'Categories') is not unique.
 #' This tibble can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy or standard evaluation.
@@ -112,7 +112,7 @@ check_data_dict_variables <- function(data_dict){
 #' data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -194,11 +194,10 @@ check_data_dict_categories <- function(data_dict){
 #'
 #' @description
 #' Generates a tibble that reports any categorical variable where
-#' 'missing' column is not a boolean (or compatible value that can be coerced into
-#' a boolean).
-#' This tibble can be used to assist the user in the assessment of the data
-#' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy or standard evaluation.
+#' 'missing' column is not a boolean (or compatible value that can be coerced
+#' into a boolean). This tibble can be used to assist the user in the assessment
+#' of the data structure, fields investigation (mandatory or not), coherence
+#' across elements and taxonomy or standard evaluation.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -222,7 +221,7 @@ check_data_dict_categories <- function(data_dict){
 #' not a boolean.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -273,8 +272,9 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @description
 #' Generates a tibble that reports any variable whose taxonomy is
 #' not present in the list of authorized taxonomy list. This tibble can be used
-#' to assist the user in the assessment of the data structure, fields investigation
-#' (mandatory or not), coherence across elements and taxonomy or standard evaluation.
+#' to assist the user in the assessment of the data structure, fields
+#' investigation (mandatory or not), coherence across elements and taxonomy or
+#' standard evaluation.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -310,7 +310,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' A tibble providing non-standard taxonomy declared in a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #'
 #' data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
@@ -517,8 +517,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #'
 #' @description
 #' Generates a tibble that reports any variable whose valueType is
-#' not present in the list of authorized valueType list. Additionally, it evaluates
-#' if the valueType is compatible with categorical values declared.
+#' not present in the list of authorized valueType list. Additionally, it
+#' evaluates if the valueType is compatible with categorical values declared.
 #' This tibble can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy or standard evaluation.
@@ -544,7 +544,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' A tibble providing non-standard valueType declared in a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -672,7 +672,7 @@ check_data_dict_valueType <- function(data_dict){
 #' A tibble providing undeclared variables across a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -722,8 +722,8 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' Generates a tibble that reports any categorical variable which
 #' categorical possible observation (the combination of 'variable' and 'name' in
 #' 'Categories' sheet) is actually observed in the data observations. Likewise,
-#' the actual observations are evaluated to report any categorical variable which
-#' occurrence is not in the data dictionary categorical variables.
+#' the actual observations are evaluated to report any categorical variable
+#' which occurrence is not in the data dictionary categorical variables.
 #' This tibble can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy or standard evaluation.
@@ -760,7 +760,7 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' their data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -863,7 +863,7 @@ check_dataset_categories <- function(data, data_dict = NULL){
       mutate(condition = "[INFO] - More unique values in the dataset than categories declared in the data dictionary")
   }
 
-  test =
+  test <-
     bind_rows(test, test_cat_in_data_dict_only, test_cat_in_dataset_only,
               test_values_in_data_dict_only, test_values_in_dataset_only) %>%
     filter(!is.na(.data$`name_var`)) %>%
@@ -916,7 +916,7 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' their data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1006,11 +1006,11 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
 #'
 #' @details
 #' The user must provide element which respect a certain structure to work with
-#' the functions of the package or its environment (Maelstrom and/or Obiba suite).
-#' In addition, any element may follow Maelstrom research stardards, and its
-#' content can be evaluated accordingly, such as naming convention restriction,
-#' columns like 'valueType', , and 'label(:xx)', and/or any taxonomy
-#' provided.
+#' the functions of the package or its environment (Maelstrom and/or
+#' Obiba suite). In addition, any element may follow Maelstrom research
+#' stardards, and its content can be evaluated accordingly, such as naming
+#' convention restriction, columns like 'valueType', , and 'label(:xx)',
+#' and/or any taxonomy provided.
 #'
 #' @param var_names A character vector of names.
 #'
@@ -1018,7 +1018,7 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
 #' A tibble providing non-standard names across a vector.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

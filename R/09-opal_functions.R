@@ -27,7 +27,7 @@
 #' environment.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: create a project in Opal
 #' opal_project_create(project = ""DEMO"" ,tag = ""DEMO"")
 #' }
@@ -71,15 +71,17 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' information.
 #'
 #' @param opal Opal login attributes.
-#' @param from A character string of a path where the files will be taken from in R.
-#' @param to A character string of a path where the files will be placed to in Opal.
+#' @param from A character string of a path where the files will be taken from
+#' in R.
+#' @param to A character string of a path where the files will be placed to in
+#' Opal.
 #'
 #' @return
 #' Folder(s) containing files coming from the user R environment in Opal.
 #' The path to Opal needs to be pasted with Opal absolute path.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: place all files in a project (""home/project/"") or a user (""home/administrator/"")
 #' opal_files_push(
 #' opal = o,
@@ -124,18 +126,18 @@ opal_files_push <- function(opal, from, to){
 #' associated dataset. Automatically generated if not provided.
 #' @param project_name A character string specifying the Opal project name.
 #' @param table_name A character string specifying an Opal table name.
-#' @param .force If the destination already exists, stop with an informative message
-#' if this flag is FALSE (default).
-#' @param .overwrite If the destination table already exists, it will be replaced
-#' (deleted, re-created with associated permissions reinstated and then imported).
-#' Otherwise the table will be updated (data dictionaries merge may conflict).
-#' Default is FALSE.
+#' @param .force If the destination already exists, stop with an informative
+#' message if this flag is FALSE (default).
+#' @param .overwrite If the destination table already exists, it will be
+#' replaced (deleted, re-created with associated permissions reinstated and then
+#' imported). Otherwise the table will be updated (data dictionaries merge may
+#' conflict). Default is FALSE.
 #'
 #' @return
 #' A table in Opal.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case: send to Opal tables with the data dictionary (not mandatory)
 #' opal_tables_push(
 #' opal = o,
@@ -265,14 +267,16 @@ opal_tables_push <- function(
 #' information.
 #'
 #' @param opal Opal login attributes.
-#' @param from A character string of a path where the files will be taken from in R.
-#' @param to A character string of a path where the files will be placed to in Opal.
+#' @param from A character string of a path where the files will be taken from
+#' in R.
+#' @param to A character string of a path where the files will be placed to in
+#' Opal.
 #'
 #' @return
 #' Folder(s) containing files coming from Opal in user R environment.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: download all files from a project folder (""home/project/"") or a
 #' # user's folder (""home/administrator/"").
 #' opal_files_pull(
@@ -346,15 +350,15 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' @param table_list A vector character string specifying Opal tables name.
 #' @param content A vector of character string which indicates if the
 #' function returns a dataset, or data dictionary. Default is 'dataset'.
-#' @param keep_as_study whether to return a study or a dataset if there is only one
-#' table. TRUE by default, if FALSE returns dataset.
+#' @param keep_as_study whether to return a study or a dataset if there is only
+#' one table. TRUE by default, if FALSE returns dataset.
 #'
 #' @return
 #' R objets (tibbles and list of tibbles) representing tables and their
 #' respective data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # use case 1: download a table and its data dictionary associated
 #' opal_tables_pull(opal = o,project = ""DEMO"", table = ""study_PARIS"")
 #' # use case 2: download all tables and their data dictionaries associated
@@ -457,9 +461,9 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
 #' Get the taxonomy as used by Maelstrom Research
 #'
 #' @description
-#' Downloads all taxonomies from an Opal server in a tibble format. This taxonomy
-#' is specifically the Maelstrom taxonomy used for any purpose of data transformation,
-#' cleaning or assessement, following Maelstrom standards.
+#' Downloads all taxonomies from an Opal server in a tibble format. This
+#' taxonomy is specifically the Maelstrom taxonomy used for any purpose of data
+#' transformation, cleaning or assessement, following Maelstrom standards.
 #'
 #' @details
 #' The user must be allowed to interact with their Opal. The errors
@@ -477,7 +481,7 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -598,7 +602,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
     mutate(across('index_term_scale',as.integer)) %>%
     mutate(across(c('taxonomy_scale', 'vocabulary_scale', 'term_scale'), as.character))
 
-  .add_qual_check = FALSE
+  .add_qual_check <- FALSE
   if(.add_qual_check == FALSE) {
     taxonomy <-
       taxonomy %>%
@@ -634,7 +638,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -686,7 +690,7 @@ opal_taxonomy_get <- function(opal){
     ungroup %>%
     select(.data$`index_taxonomy`, .data$`index_vocabulary`, .data$`index_term`, everything())
 
-  .add_qual_check = FALSE
+  .add_qual_check <- FALSE
   if(.add_qual_check == FALSE) taxonomy <- taxonomy %>% filter(.data$`index_term` != 0)
 
   taxonomy <- as_taxonomy(taxonomy)
@@ -724,14 +728,14 @@ opal_taxonomy_get <- function(opal){
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
 #' information.
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
-#' Automatically generated if not provided.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed. Automatically generated if not provided.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

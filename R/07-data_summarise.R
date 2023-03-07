@@ -52,7 +52,7 @@
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -409,7 +409,7 @@ dataset_summarize <- function(dataset, data_dict = NULL, taxonomy = NULL, .datas
 #' A list of tibbles of report for each study-specific dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -435,7 +435,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
   names(report_list) <- names(study)
 
   message(crayon::bold(
-    "- STUDY SUMMARY: -------------------------------------------------------------"))
+    "- STUDY SUMMARY: -------------------------------------------------------"))
 
   for(i in 1:length(study)){
     # stop()}
@@ -452,14 +452,14 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 
 
 #' @title
-#' Generate a tibble resuming all variables in a dataset including its data dictionary
+#' Generate a tibble resuming all variables present in a dataset
 #'
 #' @description
 #' Generates a tibble that aggregates all columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if present
-#' separates observations between open values, missing values, categorical values ,
-#' and categorical missing values (which corresponds to the 'missing' column in the
-#' 'Categories' sheet).
+#' in a dataset with (if any) its data dictionary. The data dictionary (if
+#' present separates observations between open values, missing values,
+#' categorical values , and categorical missing values (which corresponds to the
+#' 'missing' column in the 'Categories' sheet).
 #' This internal function is used inside summary functions.
 #'
 #' @details
@@ -495,11 +495,11 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' associated dataset. Automatically generated if not provided.
 #'
 #' @return
-#' A tibble providing summary elements of a dataset, including its values and data
-#' dictionary elements.
+#' A tibble providing summary elements of a dataset, including its values and
+#' data dictionary elements.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -678,7 +678,7 @@ resume_variables <- function(data, data_dict = NULL){
 #' a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -765,17 +765,18 @@ summary_variables <- function(data = NULL, data_dict = NULL, .resume_var = NULL)
 }
 
 #' @title
-#' Provide statistical description of 'text' variables present in a dataset
+#' Provide statistical description of 'text' variables of a dataset
 #'
 #' @description
 #' Generates a tibble that summarises all 'text' columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if present
-#' separates observations between open values, missing values, categorical values,
-#' and categorical missing values (which corresponds to the 'missing' column in the
-#' 'Categories' sheet). Statistics are generated according to their valueTypes
-#' which can be 'text', 'datetime', linestring', 'point', 'locale', or 'polygon'.
-#' This summary can be used to assist the user in the assessment of the dataset
-#' composition, with observation repartition and descriptive statistics.
+#' in a dataset with (if any) its data dictionary. The data dictionary (if
+#' present separates observations between open values, missing values,
+#' categorical values, and categorical missing values (which corresponds to the
+#' 'missing' column in the Categories' sheet). Statistics are generated
+#' according to their valueTypes which can be 'text', 'datetime', linestring',
+#' 'point', 'locale', or 'polygon'. This summary can be used to assist the user
+#' in the assessment of the dataset composition, with observation repartition
+#' and descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -813,7 +814,7 @@ summary_variables <- function(data = NULL, data_dict = NULL, .resume_var = NULL)
 #' in a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -877,15 +878,15 @@ summary_variables_text <- function(data = NULL, data_dict = NULL, .resume_var = 
 }
 
 #' @title
-#' Provide statistical description of 'date' variables present in a dataset
+#' Provide statistical description of 'date' variables of a dataset
 #'
 #' @description
 #' Generates a tibble that summarises all 'date' columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if present
-#' separates observations between open values, missing values, categorical values,
-#' and categorical missing values (which corresponds to the 'missing' column in the
-#' 'Categories' sheet). Statistics are generated according to their valueTypes
-#' which can be 'date'.
+#' in a dataset with (if any) its data dictionary. The data dictionary (if
+#' present separates observations between open values, missing values,
+#' categorical values, and categorical missing values (which corresponds to the
+#' 'missing' column in the Categories' sheet). Statistics are generated
+#' according to their valueTypes which can be 'date'.
 #' This summary can be used to assist the user in the assessment of the dataset
 #' composition, with observation repartition and descriptive statistics.
 #'
@@ -925,7 +926,7 @@ summary_variables_text <- function(data = NULL, data_dict = NULL, .resume_var = 
 #' in a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -998,17 +999,18 @@ summary_variables_date <- function(data = NULL, data_dict = NULL, .resume_var = 
 }
 
 #' @title
-#' Provide statistical description of 'numerical' variables present in a dataset
+#' Provide statistical description of 'numerical' variables of a dataset
 #'
 #' @description
 #' Generates a tibble that summarises all 'numerical' columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if present
-#' separates observations between open values, missing values, categorical values,
-#' and categorical missing values (which corresponds to the 'missing' column in the
-#' 'Categories' sheet). Statistics are generated according to their valueTypes.
-#' which can be 'integer', 'decimal', 'boolean' or 'binary'.
-#' This summary can be used to assist the user in the assessment of the dataset
-#' composition, with observation repartition and descriptive statistics.
+#' in a dataset with (if any) its data dictionary. The data dictionary (if
+#' present separates observations between open values, missing values,
+#' categorical values, and categorical missing values (which corresponds to the
+#' 'missing' column in the Categories' sheet). Statistics are generated
+#' according to their valueTypes which can be 'integer', 'decimal', 'boolean' or
+#' 'binary'. This summary can be used to assist the user in the assessment of
+#' the dataset composition, with observation repartition and descriptive
+#' statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1045,7 +1047,7 @@ summary_variables_date <- function(data = NULL, data_dict = NULL, .resume_var = 
 #' present in a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -1104,16 +1106,17 @@ summary_variables_numerical <- function(data = NULL, data_dict = NULL, .resume_v
 }
 
 #' @title
-#' Provide statistical description of 'categorical' variables present in a dataset
+#' Provide statistical description of 'categorical' variables of a dataset
 #'
 #' @description
 #' Generates a tibble that summarises all categorical columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if present
-#' separates observations between open values, missing values, categorical values,
-#' and categorical missing values (which corresponds to the 'missing' column in the
-#' 'Categories' sheet). Statistics are generated according to their valueTypes.
-#' This summary can be used to assist the user in the assessment of the dataset
-#' composition, with observation repartition and descriptive statistics.
+#' in a dataset with (if any) its data dictionary. The data dictionary (if
+#' present separates observations between open values, missing values,
+#' categorical values, and categorical missing values (which corresponds to the
+#' 'missing' column in the Categories' sheet). Statistics are generated
+#' according to their valueTypes. This summary can be used to assist the user in
+#' the assessment of the dataset composition, with observation repartition and
+#' descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1151,7 +1154,7 @@ summary_variables_numerical <- function(data = NULL, data_dict = NULL, .resume_v
 #' present in a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

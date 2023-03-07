@@ -1,16 +1,17 @@
 
 #' @title
-#' Generate a web application (bookdown) report of list of study-specific datasets
+#' Generate a web application (bookdown) report of list of a datasets
 #'
 #' @description
 #' Generates a visual report for a study-specific dataset in an HTML
 #' bookdown document, showing descriptive statistics for each study-specific
-#' variable to facilitate the assessment of input data. Statistics and figures are
-#' generated according to their valueTypes.
+#' variable to facilitate the assessment of input data. Statistics and figures
+#' are generated according to their valueTypes.
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy or standard evaluation. The summaries and figures associated provide
-#' dataset composition, with observation repartition and descriptive statistics.
+#' and taxonomy or standard evaluation. The summaries and figures associated
+#' provide dataset composition, with observation repartition and descriptive
+#' statistics.
 #'
 #' @details
 #' A study must be a named list containing at least one data frame or
@@ -51,17 +52,18 @@
 #' by this column.
 #' @param to A character string identifying the folder path where the bookdown
 #' report will be saved.
-#' @param out parameter that specifies the graphical outputs expected in the report.
-#' can be 'ggplot2'.
+#' @param out parameter that specifies the graphical outputs expected in the
+#' report. Can be 'ggplot2'.
 #' @param .keep_files whether to keep the R-markdown files.
 #' FALSE by default.
 #'
 #' @return
 #' A bookdown folder containing files in the specified output folder. To
-#' open the file in browser, open 'index.html'. Or use [datashapR::open_visual_report()]
+#' open the file in browser, open 'index.html'. Or use
+#' [datashapR::open_visual_report()]
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Create index of files in one folder and read the files
 #' index_DEMO <- file_index_create(folder = ""DEMO"")
 #' file_index_read(index = index_DEMO, file_name = ""study_TOKYO"")
@@ -114,8 +116,8 @@ dataset_visualize <- function(
 #   if(nrow(data_dict$Variables) == 0){
 #
 #     return(message(
-# "[Error]: the name of your dataset has not been found in your data dictionary. Please verify
-# the name of your dataset in your datadictionary (column 'name' in 'Variables' sheet)
+# "[Error]: the name of your dataset has not been found in your data dictionary.
+#  Please verify the name of your dataset in your datadictionary (column 'name' in 'Variables' sheet)
 # and reprocess."))
 #   }
 
@@ -283,9 +285,9 @@ datatable(data_dict$Categories, options = list(scrollX = TRUE),rownames = FALSE)
 #' Identify visual type of a variable based on valueType
 #'
 #' @description
-#' This helper function analyses the content of a dataset and its data dictionary
-#' to extract the type of visualization to generate in a report. This function can
-#' be used to manually personalize the report parameters.
+#' This helper function analyses the content of a dataset and its data
+#' dictionary to extract the type of visualization to generate in a report. This
+#' function can be used to manually personalize the report parameters.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -322,7 +324,7 @@ datatable(data_dict$Categories, options = list(scrollX = TRUE),rownames = FALSE)
 #' data dictionary provided as an input.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: viz type of iris dataset
 #' library(tidyverse)
 #' identify_visual_type(dataset = iris) %>% .$Variables %>% select(name,viz_type)
@@ -438,8 +440,8 @@ identify_visual_type <- function(dataset, data_dict){
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
-#' @param out parameter that specifies the graphical outputs expected in the report:
-#' can be either 'ggplot2' or 'ggplot2-code'.
+#' @param out parameter that specifies the graphical outputs expected in the
+#' report: can be either 'ggplot2' or 'ggplot2-code'.
 #'
 #' @return
 #' A list of two tibbles which makes up the data dictionary in
@@ -447,7 +449,7 @@ identify_visual_type <- function(dataset, data_dict){
 #' the data dictionary provided as an input.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: plot R stripts for iris variables.
 #' data_dict_extract(iris, categories = ""Species"") %>%
 #' identify_visual_type(data_dict = ., dataset = iris) %>%
@@ -554,8 +556,8 @@ identify_plot_type <- function(dataset = NULL, data_dict, group_by = NULL, out =
 #' Open a visual report in a browser
 #'
 #' @description
-#' The visual report previously generated in an HTML bookdown document can be opened
-#' using this short-cut function.
+#' The visual report previously generated in an HTML bookdown document can be
+#' opened using this short-cut function.
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy or standard evaluation. The summaries and figures associated
@@ -565,11 +567,11 @@ identify_plot_type <- function(dataset = NULL, data_dict, group_by = NULL, out =
 #' @seealso
 #' [datashapR::dataset_visualize()]
 #'
-#' @param report_name A character string specifying the name of the report (a folder
-#' in users environment) to be opened.
+#' @param report_name A character string specifying the name of the report (a
+#' folder in users environment) to be opened.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'

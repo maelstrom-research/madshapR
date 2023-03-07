@@ -2,10 +2,10 @@
 #' Create an empty dataset from a data dictionary
 #'
 #' @description
-#' Creates an empty dataset using information contained in a data dictionary. The
-#' columns name are the 'name' provided in the 'Variables' tibble of the data
-#' dictionary. If a 'valueType' or alternatively 'typeof' column is provided,
-#' the class of each column is set accordingly (default is text).
+#' Creates an empty dataset using information contained in a data dictionary.
+#' The columns name are the 'name' provided in the 'Variables' tibble of the
+#' data dictionary. If a 'valueType' or alternatively 'typeof' column is
+#' provided, the class of each column is set accordingly (default is text).
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -33,7 +33,7 @@
 #' 'Variables' component of the data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -50,14 +50,16 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
       data_dict <- as_data_dict(data_dict)}
 
   if(nrow(data_dict[['Variables']]) == 0){
-    data = tibble(.rows = 0)
+    data <- tibble(.rows = 0)
     return(data)}
 
-  if(!is.logical(data_dict_apply)) stop(call. = FALSE,
-                                        '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
+  if(!is.logical(data_dict_apply))
+    stop(call. = FALSE,
+'`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
 
 
-  # valueType/typeof() is needed to generate dataset, which will be all text if not present
+  # valueType/typeof() is needed to generate dataset, which will be all text if
+  # not present
   vT_list <- datashapR::valueType_list
 
   data_dict_temp <- data_dict
@@ -94,11 +96,12 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 }
 
 #' @title
-#' Remove value labels of a data frame, leaving its unlabelled columns.
+#' Remove value labels of a data frame, leaving its unlabelled columns
 #'
 #' @description
-#' Removes any attributes attached to a tibble. Any value in columns will be preserved.
-# Any 'Date' (typeof) column will be recasted as character to preserve information.
+#' Removes any attributes attached to a tibble. Any value in columns will be
+#' preserved. Any 'Date' (typeof) column will be recasted as character to
+#' preserve information.
 #'
 #' @details
 #' A dataset must be a data frame or data frame extension (e.g. a tibble) and
@@ -120,7 +123,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' A tibble identifying a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -161,7 +164,8 @@ dataset_zap_data_dict <- function(dataset){
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param dataset_list A list of tibble(s), identifying the input data observations.
+#' @param dataset_list A list of tibble(s), identifying the input data
+#' observations.
 #' @param data_dict_apply whether to apply the data dictionary to its dataset.
 #' The resulting tibble will have for each column its associated meta data as
 #' attributes. The factors will be preserved. FALSE by default.
@@ -170,7 +174,7 @@ dataset_zap_data_dict <- function(dataset){
 #' A list of tibble(s), each of them identifying datasets in a study.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
@@ -183,10 +187,13 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 
   # tests input
   if(is.data.frame(dataset_list)) dataset_list <- list(dataset_list)
-  if(!is.logical(data_dict_apply)) stop(call. = FALSE,'`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
+  if(!is.logical(data_dict_apply))
+    stop(call. = FALSE,
+         '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
 
   study <- dataset_list %>% lapply(FUN = function(x) {
-    if(data_dict_apply == TRUE){ x = tibble(data_dict_apply(x)) ; return(x)}else{return(x)}
+    if(data_dict_apply == TRUE){
+      x <- tibble(data_dict_apply(x)) ; return(x)}else{return(x)}
   })
 
   fargs <- as.list(match.call(expand.dots = TRUE))
@@ -203,9 +210,9 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #'
 #' @description
 #' Confirms that the input object is a valid dataset, and return it as a dataset
-#' with the appropriate mlstr_class attribute. This function mainly helps validate
-#' input within other functions of the package but could be used to check if a
-#' dataset is valid.
+#' with the appropriate mlstr_class attribute. This function mainly helps
+#' validate input within other functions of the package but could be used to
+#' check if a dataset is valid.
 #'
 #' @details
 #' A dataset must be a data frame or data frame extension (e.g. a tibble) and
@@ -218,15 +225,15 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #' full completeness is mandatory.
 #'
 #' @param object A potential dataset to be coerced.
-#' @param col_id A character string specifying the name(s) of the column(s) which refer
-#' to key identificator of the dataset. The column(s) must be named of indicated
-#' by position.
+#' @param col_id A character string specifying the name(s) of the column(s)
+#' which refer to key identificator of the dataset. The column(s) must be named
+#' of indicated by position.
 #'
 #' @return
 #' A tibble identifying a dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -266,7 +273,8 @@ as_dataset <- function(object, col_id = NULL){
 
   # else
   stop(
-    "\n\nThis object is not a dataset as defined by Maelstrom standards which must be
+"\n\n
+This object is not a dataset as defined by Maelstrom standards which must be
 a data frame. Please refer to documentation.")
 
 }
@@ -275,10 +283,10 @@ a data frame. Please refer to documentation.")
 #' Validate and coerce any object as study
 #'
 #' @description
-#' Confirms that the input object is a valid study, and return it as a study with
-#' the appropriate mlstr_class attribute. This function mainly helps validate input
-#' within other functions of the package but could be used to check if a study is
-#' valid.
+#' Confirms that the input object is a valid study, and return it as a study
+#' with the appropriate mlstr_class attribute. This function mainly helps
+#' validate input within other functions of the package but could be used to
+#' check if a study is valid.
 #'
 #' @details
 #' A study must be a named list containing at least one data frame or
@@ -294,7 +302,7 @@ a data frame. Please refer to documentation.")
 #' A list of tibble(s), each of them identifying datasets in a study.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -331,8 +339,8 @@ Please refer to documentation."))
 #'
 #' @description
 #' Confirms whether the input object is a valid dataset.
-#' This function mainly helps validate input within other functions of the package
-#' but could be used to check if a dataset is valid.
+#' This function mainly helps validate input within other functions of the
+#' package but could be used to check if a dataset is valid.
 #'
 #' @details
 #' A dataset must be a data frame or data frame extension (e.g. a tibble) and
@@ -353,7 +361,7 @@ Please refer to documentation."))
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'
@@ -376,8 +384,8 @@ is_dataset <- function(object){
 #'
 #' @description
 #' Confirms whether the input object is a valid study.
-#' This function mainly helps validate input within other functions of the package
-#' but could be used to check if a study is valid.
+#' This function mainly helps validate input within other functions of the
+#' package but could be used to check if a study is valid.
 #'
 #' @details
 #' A study must be a named list containing at least one data frame or
@@ -390,7 +398,7 @@ is_dataset <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # example
 #'}
 #'

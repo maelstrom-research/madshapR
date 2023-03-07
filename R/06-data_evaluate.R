@@ -54,7 +54,7 @@
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -244,9 +244,9 @@ dataset_evaluate <- function(dataset, data_dict = NULL, taxonomy = NULL, .datase
 #'
 #' @description
 #' Generates an Excel spreadsheet report for a study-specific dataset
-#' list (or study) showing descriptive statistics for each variable to facilitate
-#' the assessment of input data. Statistics are generated according to their
-#' valueTypes.
+#' list (or study) showing descriptive statistics for each variable to
+#' facilitate the assessment of input data. Statistics are generated according
+#' to their valueTypes.
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides
@@ -292,7 +292,7 @@ dataset_evaluate <- function(dataset, data_dict = NULL, taxonomy = NULL, .datase
 #' A list of tibbles of report for each study-specific dataset.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -339,9 +339,9 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' @description
 #' Generates an Excel spreadsheet report for a data dictionary
 #' for each variable to facilitate the assessment of input data.
-#' This report can be used to assist the user in the assessment of the data structure,
-#' fields investigation (mandatory or not), coherence across elements and
-#' taxonomy, or standard evaluation. The summary associated provides data
+#' This report can be used to assist the user in the assessment of the data
+#' structure, fields investigation (mandatory or not), coherence across elements
+#' and taxonomy, or standard evaluation. The summary associated provides data
 #' dictionary composition, and evaluates coherence between elements.
 #'
 #' @details
@@ -381,7 +381,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Example 1: yyy yyy yyy.
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
@@ -636,7 +636,7 @@ data_dict_evaluate <- function(data_dict, taxonomy = NULL, as_mlstr_data_dict = 
   message("    Generate report")
   message(bold(
     "
-  - WARNING MESSAGES (if any): ---------------------------------------------------\n"))
+  - WARNING MESSAGES (if any): --------------------------------------------\n"))
 
   return(report)
 }
