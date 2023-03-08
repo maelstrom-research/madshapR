@@ -1930,7 +1930,7 @@ data dictionary")}}
           bind_rows() %>%
           select('variable','valueType') %>% distinct %>%
           left_join(datashapR::valueType_list, by = "valueType") %>%
-          select('variable','typeof')
+          select(name = 'variable','typeof')
 
         data_dict[['Variables']] <-
           left_join(data_dict[['Variables']],category_outcomes,by = "name") %>%
