@@ -61,7 +61,8 @@ full completeness is mandatory.
 \examples{
 \dontrun{
 # Example 1: yyy yyy yyy.
-dataset <- study_TOKYO \%>\% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
+dataset <- study_TOKYO \%>\% mutate(dob = fabR::as_any_date(
+dob, format = ""mdy""))
 data_dict <- dd_TOKYO_format_maelstrom_tagged
 study_assessement_report(dataset, data_dict)
 }

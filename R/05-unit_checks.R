@@ -127,7 +127,11 @@ check_data_dict_categories <- function(data_dict){
   as_data_dict_shape(data_dict)
 
   test <- test_cat_presence <- test_cat_unique <-
-    tibble(name_var = as.character(), value = as.character(), condition = as.character())
+    tibble(
+      name_var = as.character(),
+      value = as.character(),
+      condition = as.character())
+
   if(sum(nrow(data_dict[['Categories']])) == 0){
     warning("You data dictionary contains no categorical variables")
     return(test)}
@@ -150,7 +154,8 @@ check_data_dict_categories <- function(data_dict){
 
   test_cat_presence <-
     anti_join(cat_names,var_names, by = "name_var") %>%
-    bind_rows(tibble(value = NA_character_,name_var = NA_character_,index = NA_character_)) %>%
+    bind_rows(tibble(
+      value = NA_character_,name_var = NA_character_,index = NA_character_)) %>%
     rowwise() %>%
     mutate(
       condition = ifelse(is.na(.data$`name_var`),
@@ -178,7 +183,7 @@ check_data_dict_categories <- function(data_dict){
   test_cat_unique <-
     cat_names_count %>%
     mutate(
-      condition = "[ERR] - Category names not unique in the data dictionary") %>%
+      condition = "[ERR] - Category names not unique in the data dictionary")%>%
     select(.data$`name_var`, value = .data$`name`, .data$`condition`) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
@@ -238,7 +243,8 @@ check_data_dict_missing_categories <- function(data_dict){
   test <- tibble(name_var = as.character(), value = as.character())
 
   if(is.null(data_dict[['Categories']][['missing']])){
-    warning("You data dictionary contains no missing column in you categorical variables")
+    warning(
+"You data dictionary contains no missing column in you categorical variables")
     return(test)}
 
   missing_val <-
@@ -251,7 +257,8 @@ check_data_dict_missing_categories <- function(data_dict){
     distinct() %>%
     rowwise() %>%
     mutate(
-      value = class( suppressWarnings(suppressMessages(try({fabR::as_any_boolean(.data$`missing`)}, silent = TRUE))))[1]) %>%
+      value =
+        class(fabR::silently_run(fabR::as_any_boolean(.data$`missing`)))[1]) %>%
     filter(.data$`value` == "try-error") %>%
     inner_join(missing_val,by = "missing")
 
@@ -259,7 +266,8 @@ check_data_dict_missing_categories <- function(data_dict){
     missing_val_test %>%
     select(.data$`name_var`,value = .data$`missing`) %>%
     mutate(
-      condition = "[ERR] - incompatible missing value in the missing columns with Maelstrom standards") %>%
+      condition =
+"[ERR] - incompatible value in the missing columns with Maelstrom standards")%>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
 
@@ -322,6 +330,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @importFrom rlang .data
 #'
 #' @export
+#'
 check_data_dict_taxonomy <- function(data_dict, taxonomy){
 
   # check_taxo_one_col function(col, taxonomy, na_allowed = TRUE){
@@ -336,7 +345,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #     reframe(name_var = paste0(.data$`name_var`,collapse = " ; "))
   #
   #   taxo <-
-  #     taxonomy %>% mutate(taxonomy = paste0(.data$`taxonomy`,"::",.data$`vocabulary`)) %>%
+  #     taxonomy %>% mutate(taxonomy = paste0(.data$`taxonomy`,"::",
+  # .data$`vocabulary`)) %>%
   #     filter(.data$`taxonomy` == !! value) %>%
   #     select(value = .data$`term`)
   #
@@ -357,23 +367,29 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   as_taxonomy(taxonomy)
 
   test <-
-    tibble(name_var = as.character(), value = as.character(), condition = as.character())
+    tibble(
+      name_var = as.character(),
+      value = as.character(),
+      condition = as.character())
 
   # data_dict_elem <-
   #   data_dict[['Variables']] %>%
   #   select(.data$`name`,starts_with(unique(taxonomy$taxonomy))) %>%
   #   full_join(tibble(
-  #     `Mlstr_additional::Source` = as.character(),`Mlstr_additional::Target` = as.character(),
-  #     `Mlstr_area::1` = as.character(),`Mlstr_area::1.term` = as.character(),`Mlstr_area::1.scale` = as.character(),
-  #     `Mlstr_area::2` = as.character(),`Mlstr_area::2.term` = as.character(),
-  #     `Mlstr_area::3` = as.character(),`Mlstr_area::3.term` = as.character()),
+  #    `Mlstr_additional::Source` = as.character(),
+  #    `Mlstr_additional::Target` = as.character(),
+  #    `Mlstr_area::1` = as.character(),`Mlstr_area::1.term` = as.character(),
+  #    `Mlstr_area::1.scale` = as.character(),
+  #    `Mlstr_area::2` = as.character(),`Mlstr_area::2.term` = as.character(),
+  #    `Mlstr_area::3` = as.character(),`Mlstr_area::3.term` = as.character()),
   #             by = join_by(
   #               'Mlstr_additional::Source','Mlstr_additional::Target',
   #               'Mlstr_area::1', 'Mlstr_area::1.term','Mlstr_area::1.scale',
   #               'Mlstr_area::2', 'Mlstr_area::2.term',
   #               'Mlstr_area::3', 'Mlstr_area::3.term')) %>%
   #   fabR::add_index(.force = TRUE) %>%
-  #   mutate(name = ifelse(is.na(.data$`name`),paste0("line:",.data$`index`),.data$`name`)) %>%
+  #   mutate(name = ifelse(is.na(.data$`name`),paste0("line:",.data$`index`),
+  #   .data$`name`)) %>%
   #   select(-.data$`index`) %>%
   #   mutate(across(everything(), as.character))
   #
@@ -387,7 +403,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   for(i in 2:ncol(data_dict_elem)){
   #     # stop()}
   #     test <-
-  #       bind_rows(test, check_taxo_one_col(col = data_dict_elem[c(1,i)],taxonomy, na_allowed = FALSE))
+  #       bind_rows(test, check_taxo_one_col(col = data_dict_elem[c(1,i)],
+  #       taxonomy, na_allowed = FALSE))
   #
   #   }
   #
@@ -417,7 +434,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #
   #
   #   # if area::2 then area::2.term and !area::1
-  #   if(!is.null(data_dict_elem[['Mlstr_area::1']]) & !is.null(data_dict_elem[['Mlstr_area::1.term']])){
+  #   if(!is.null(data_dict_elem[['Mlstr_area::1']]) &
+  #   !is.null(data_dict_elem[['Mlstr_area::1.term']])){
   #     test <- test %>% add_row(
   #       name_var = 'Mlstr_area::1.term',
   #       condition = "[ERR] - 'Mlstr_area::1.term' column is missing")}
@@ -452,7 +470,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
   #   select(name_var = .data$`name`,value = .data$`valueType`) %>%
   #   mutate(
-  #     condition = "[ERR] - Incompatible valueType names with Opal standards") %>%
+  # condition = "[ERR] - Incompatible valueType names with Opal standards") %>%
   #   mutate(across(everything(), ~as.character(.))) %>%
   #   distinct()
   #
@@ -478,7 +496,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #     distinct() %>%
   #     rowwise() %>%
   #     mutate(
-  #       test = class(try((as_valueType(.data$`name`,.data$`valueType`))))[1]) %>%
+  #       test =
+  #       class(try((as_valueType(.data$`name`,.data$`valueType`))))[1]) %>%
   #     filter(.data$`test` == "try-error") %>%
   #     inner_join(vT_names,by = c("name", "valueType")) %>%
   #     select(.data$`name_var`, .data$`valueType`) %>%
@@ -492,7 +511,9 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #         valueType_self_adjust(
   #           data_dict_filter(
   #             data_dict,
-  #             paste0("name %in% c('",paste0(unique(test_valueType_cat$name_var),collapse = "','"),"')")
+  #             paste0("name %in% c('",
+  #             paste0(unique(
+  #             test_valueType_cat$name_var),collapse = "','"),"')")
   #           ))[['Variables']]) %>%
   #         select(name_var = .data$`name`, suggestion = .data$`valueType`),
   #       by = "name_var")
@@ -501,7 +522,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #     test_valueType_cat %>%
   #     mutate(
   #       condition = "[ERR] - valueType conflict in 'Categories'") %>%
-  #     select(.data$`name_var`, value = .data$`valueType`, .data$`condition`, .data$`suggestion`) %>%
+  #     select(.data$`name_var`, value = .data$`valueType`, .data$`condition`,
+  #     .data$`suggestion`) %>%
   #     mutate(across(everything(), ~as.character(.))) %>%
   #     distinct
   # }
@@ -559,7 +581,10 @@ check_data_dict_valueType <- function(data_dict){
   as_data_dict_shape(data_dict)
 
   test <- test_valueType_names <- test_valueType_cat <-
-    tibble(name_var = as.character(), value = as.character(), condition = as.character())
+    tibble(
+      name_var = as.character(),
+      value = as.character(),
+      condition = as.character())
 
   if(is.null(data_dict[['Variables']][['valueType']])){
     warning("Your data dictionary contains no valueType column")
@@ -571,7 +596,7 @@ check_data_dict_valueType <- function(data_dict){
     filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
     select(name_var = .data$`name`,value = .data$`valueType`) %>%
     mutate(
-      condition = "[ERR] - Incompatible valueType names with Opal standards") %>%
+      condition = "[ERR] - Incompatible valueType names with Opal standards")%>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
 
@@ -597,7 +622,9 @@ check_data_dict_valueType <- function(data_dict){
       distinct() %>%
       rowwise() %>%
       mutate(
-        test = class(suppressWarnings(suppressMessages(try({as_valueType(.data$`name`,.data$`valueType`)}, silent = TRUE))))[1]) %>%
+        test = class(
+          fabR::silently_run(as_valueType(.data$`name`,.data$`valueType`)))[1]
+        ) %>%
       filter(.data$`test` == "try-error") %>%
       inner_join(vT_names,by = c("name", "valueType")) %>%
       select(.data$`name_var`, .data$`valueType`) %>%
@@ -607,25 +634,25 @@ check_data_dict_valueType <- function(data_dict){
     test_valueType_cat <-
       test_valueType_cat %>%
       full_join(
-        suppressWarnings(suppressMessages(try({
-        valueType_self_adjust(
-          data_dict_filter(
-            data_dict,
-            paste0("name %in% c('",paste0(unique(test_valueType_cat$name_var),collapse = "','"),"')")
-            ))[['Variables']]}, silent = TRUE))) %>%
+        fabR::silently_run(
+        valueType_self_adjust(data_dict_filter(
+            data_dict,paste0("name %in% c('",
+                           paste0(unique(test_valueType_cat$name_var),
+                                  collapse = "','"),"')")))[['Variables']]) %>%
           select(name_var = .data$`name`, suggestion = .data$`valueType`),
         by = "name_var")
-  #
-  #   test_valueType_cat <-
-  #     test_valueType_cat %>%
-  #     mutate(
-  #       condition = "[ERR] - valueType conflict in 'Categories'") %>%
-  #     select(.data$`name_var`, value = .data$`valueType`, .data$`condition`, .data$`suggestion`) %>%
-  #     mutate(across(everything(), ~as.character(.))) %>%
-  #     distinct
+
+    test_valueType_cat <-
+      test_valueType_cat %>%
+      mutate(
+        condition = "[ERR] - valueType conflict in 'Categories'") %>%
+      select(.data$`name_var`, value = .data$`valueType`, .data$`condition`,
+             .data$`suggestion`) %>%
+      mutate(across(everything(), ~as.character(.))) %>%
+      distinct
   }
-  #
-  # test <- bind_rows(test_valueType_names, test_valueType_cat)
+
+  test <- bind_rows(test_valueType_names, test_valueType_cat)
 
   return(test)
 }
@@ -781,7 +808,10 @@ check_dataset_categories <- function(data, data_dict = NULL){
   test <-
     test_cat_in_data_dict_only    <- test_cat_in_dataset_only <-
     test_values_in_data_dict_only <- test_values_in_dataset_only <-
-    tibble(name_var = as.character(),value = as.character(), condition = as.character())
+    tibble(
+      name_var = as.character(),
+      value = as.character(),
+      condition = as.character())
 
   # if(sum(nrow(data_dict[['Categories']])) == 0){
   #   warning("You data dictionary contains no categorical variables")
@@ -789,7 +819,9 @@ check_dataset_categories <- function(data, data_dict = NULL){
 
   # rajouter possible_dataset_category <-
   #   dataset %>%
-  #   summarise(across(everything(), ~{ class(.)[1] %in% c('factor','haven_labelled')})) %>%
+  #   summarise(across(everything(),
+  #              ~{ class(.)[1] %in% c('factor','haven_labelled')})
+  #   ) %>%
   #   pivot_longer(everything()) %>%
   #   mutate(value = ifelse(.data$`value`,"yes","no")) %>%
   #   select(.data$`name`, `Categorical in dataset` = .data$`value`)
@@ -804,23 +836,26 @@ check_dataset_categories <- function(data, data_dict = NULL){
   data_dict_cat_from_data_dict <- data_dict
   data_dict_cat_from_data_dict[['Variables']] <-
     data_dict_cat_from_data_dict[['Variables']] %>%
-    filter(.data$`name` %in% data_dict_cat_from_data_dict[['Categories']]$`variable`)
+    filter(
+      .data$`name` %in% data_dict_cat_from_data_dict[['Categories']]$`variable`)
 
   # categorical variable in the data_dict, but not in the dataset
   test_cat_in_data_dict_only <-
     data_dict_cat_from_data_dict[['Variables']]['name'] %>%
-    anti_join(data_dict_cat_from_data[['Variables']]['name'], by = "name") %>%
+    anti_join(
+      data_dict_cat_from_data[['Variables']]['name'], by = "name") %>%
     rename(name_var = .data$`name`) %>%
     mutate(condition =
-             "[INFO] - Variable declared as categorical in the data dictionary but not in the dataset")
+"[INFO] - Categorical variable in the data dictionary but not in the dataset")
 
   # categorical variable in the dataset, but not in the data_dict
   test_cat_in_dataset_only <-
     data_dict_cat_from_data[['Variables']]['name'] %>%
-    anti_join(data_dict_cat_from_data_dict[['Variables']]['name'], by = "name") %>%
+    anti_join(
+      data_dict_cat_from_data_dict[['Variables']]['name'], by = "name") %>%
     rename(name_var = .data$`name`) %>%
     mutate(condition =
-             "[INFO] - Variable declared as categorical in the dataset but not in the data dictionary")
+"[INFO] - Categorical variable in the dataset but not in the data dictionary")
 
   # remove already assessed
   data_dict_cat_from_data_dict[['Variables']] <-
@@ -845,22 +880,28 @@ check_dataset_categories <- function(data, data_dict = NULL){
     # categorical values in the data_dict, but not in the dataset
     test_values_in_data_dict_only <-
       anti_join(
-        data_dict_cat_from_data_dict[['Categories']] %>% select(.data$`variable`, .data$`name`),
-        data_dict_cat_from_data[['Categories']] %>% select(.data$`variable`, .data$`name`),
+        data_dict_cat_from_data_dict[['Categories']] %>%
+          select(.data$`variable`, .data$`name`),
+        data_dict_cat_from_data[['Categories']] %>%
+          select(.data$`variable`, .data$`name`),
         by = c("variable", "name")) %>%
       rename(name_var = .data$`variable`) %>%
       rename(value = .data$`name`) %>%
-      mutate(condition = "[INFO] - More categories declared in the data dictionary than unique values in the dataset")
+      mutate(condition =
+"[INFO] - More categories declared in the data dictionary than unique values in the dataset")
 
     # categorical values in the dataset, but not in the data_dict
     test_values_in_dataset_only      <-
       anti_join(
-        data_dict_cat_from_data[['Categories']] %>% select(.data$`variable`, .data$`name`),
-        data_dict_cat_from_data_dict[['Categories']] %>% select(.data$`variable`, .data$`name`),
+        data_dict_cat_from_data[['Categories']] %>%
+          select(.data$`variable`, .data$`name`),
+        data_dict_cat_from_data_dict[['Categories']] %>%
+          select(.data$`variable`, .data$`name`),
         by = c("variable", "name")) %>%
       rename(name_var = .data$`variable`) %>%
       rename(value = .data$`name`) %>%
-      mutate(condition = "[INFO] - More unique values in the dataset than categories declared in the data dictionary")
+      mutate(condition =
+"[INFO] - More unique values in the dataset than categories declared in the data dictionary")
   }
 
   test <-
@@ -925,25 +966,36 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' @importFrom rlang .data
 #'
 #' @export
-check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FALSE){
+check_dataset_valueType <- function(
+    data, data_dict = NULL,
+    valueType_guess = FALSE){
 
-  if(is.null(data_dict)) data_dict <- data_dict_extract(data,as_mlstr_data_dict = TRUE)
+  if(is.null(data_dict)) data_dict <-
+      data_dict_extract(data,as_mlstr_data_dict = TRUE)
 
   # test if enough data_dict or data
   as_dataset(data)
   as_data_dict_shape(data_dict)
 
-  if(!is.logical(valueType_guess)) stop('`valueType_guess` must be TRUE of FALSE (FALSE by default)')
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,
+         '`valueType_guess` must be TRUE of FALSE (FALSE by default)')
 
-  test <- test_vT_dataset <- test_vT_compatible <-
-    tibble(name_var = as.character(), value = as.character(),condition = as.character())
+  test <- test_vT_dataset <-
+    # test_vT_compatible <-
+    tibble(
+      name_var = as.character(),
+      value = as.character(),
+      condition = as.character())
 
   # check if `valueType` column exists
   if(is.null(data_dict[['Variables']][['valueType']])){
     warning("Unknown or uninitialised column: `valueType`")
     return(test)}
 
-  data <- data[vapply(data, FUN = function(x) !all(is.na(x)))]
+  data <-
+    data[vapply(
+      X = data, FUN = function(x) !all(is.na(x)), FUN.VALUE = logical(1))]
 
   data <-      data_dict_match_dataset(data, data_dict, output = "data")
   data_dict <- data_dict_match_dataset(data, data_dict, output = "data_dict")
@@ -952,21 +1004,24 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
     # stop()}
 
     data_dict_vT <-
-      data_dict[['Variables']][which(data_dict[['Variables']]$`name` == i),]$`valueType`
+      data_dict[['Variables']][
+        which(data_dict[['Variables']]$`name` == i),]$`valueType`
 
     # test valueType
-    test_vT   <- class(suppressWarnings(suppressMessages(try({ as_valueType(data[[i]],data_dict_vT)}, silent = TRUE))))[1]
-    condition <- class(suppressWarnings(suppressMessages(try({ as_valueType(data[[i]],data_dict_vT)}, silent = TRUE))))[1]
+    # test_vT   <-
+    #   class(fabR::silently_run(as_valueType(data[[i]],data_dict_vT)))[1]
+    condition <-
+      class(fabR::silently_run(as_valueType(data[[i]],data_dict_vT)))[1]
     guess   <- valueType_guess(data[[i]])
     actual  <- valueType_of(data[[i]])
 
-    test_vT_compatible <-
-      tibble(
-        name_var     = i,
-        data_dict_vT = data_dict_vT,
-        test_vT      = test_vT,
-        guess        = actual
-      )
+    # test_vT_compatible <-
+    #   tibble(
+    #     name_var     = i,
+    #     data_dict_vT = data_dict_vT,
+    #     test_vT      = condition,
+    #     guess        = actual
+    #   )
 
     test_vT_dataset <-
       rbind(
@@ -974,15 +1029,19 @@ check_dataset_valueType <- function(data, data_dict = NULL, valueType_guess = FA
         tibble(
           name_var  = i,
           value     = data_dict_vT,
-          condition = ifelse(condition == 'try-error',"[ERR] - valueType conflict in dataset",NA_character_),
+          condition = ifelse(
+            condition == 'try-error',
+            "[ERR] - valueType conflict in dataset",NA_character_),
           suggestion = guess))
   }
 
   test <-
     bind_rows(test, test_vT_dataset) %>%
     mutate(
-      condition = ifelse(is.na(.data$`condition`) & .data$`value` %in% c("text","decimal", "integer"),
-                         "[INFO] - refined valueType proposed",.data$`condition`)) %>%
+      condition = ifelse(
+        is.na(.data$`condition`) &
+          .data$`value` %in% c("text","decimal", "integer"),
+        "[INFO] - refined valueType proposed",.data$`condition`)) %>%
     filter(.data$`value` != .data$`suggestion`) %>%
     filter(!is.na(.data$`condition`)) %>%
     distinct()
@@ -1033,10 +1092,12 @@ check_name_standards <- function(var_names){
     paste0("X",var_names) %>% str_replace_all("-","_"))
 
   test <-
-    var_names[paste0("X",var_names)%>% str_replace_all("-","_") != var_names_valid] %>%
+    var_names[paste0("X",var_names)%>%
+                str_replace_all("-","_") != var_names_valid] %>%
     as_tibble() %>% rename(name_var = .data$`value`) %>%
     mutate(
-      condition = "[INFO] - Incompatible variable names with usual standards, including Maelstrom.") %>%
+      condition =
+"[INFO] - Incompatible variable names with usual standards, including Maelstrom.") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
 

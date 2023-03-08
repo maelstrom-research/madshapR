@@ -34,7 +34,8 @@ to interact with their Opal environment.
 }
 \examples{
 \dontrun{
-# use case 1: download all files from a project folder (""home/project/"") or a
+# use case 1: download all files from a project folder (""home/project/"")
+# or a
 # user's folder (""home/administrator/"").
 opal_files_pull(
 opal = o,

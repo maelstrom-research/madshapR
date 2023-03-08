@@ -7,7 +7,8 @@
 data_dict_group_by(data_dict, col)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed.}
 
 \item{col}{variable to group by.}
 }

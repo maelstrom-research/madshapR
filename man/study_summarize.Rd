@@ -20,9 +20,9 @@ A list of tibbles of report for each study-specific dataset.
 }
 \description{
 Generates an Excel spreadsheet report for a study-specific dataset
-list (or study) showing descriptive statistics for each variable to facilitate
-the assessment of input data. Statistics are generated according to their
-valueTypes.
+list (or study) showing descriptive statistics for each variable to
+facilitate the assessment of input data. Statistics are generated according
+to their valueTypes.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy, or standard evaluation. The summary associated provides
@@ -59,7 +59,8 @@ full completeness is mandatory.
 \examples{
 \dontrun{
 # Example 1: yyy yyy yyy.
-dataset <- study_TOKYO \%>\% mutate(dob = fabR::as_any_date(dob, format = ""mdy""))
+dataset <- study_TOKYO \%>\% mutate(
+           dob = fabR::as_any_date(dob, format = ""mdy""))
 data_dict <- dd_TOKYO_format_maelstrom_tagged
 study_assessement_report(dataset, data_dict)
 }

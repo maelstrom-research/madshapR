@@ -7,7 +7,8 @@
 data_dict_ungroup(data_dict)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be transformed.}
+\item{data_dict}{A list of tibble(s) representing meta data to be
+transformed.}
 }
 \value{
 A list of tibble(s) identifying a data dictionary - like structure.
@@ -15,7 +16,8 @@ A list of tibble(s) identifying a data dictionary - like structure.
 \description{
 Ungroup data dictionaries, both in the 'Variables' and 'Categories' (assuming
 the group is defined in both elements). The user would groupe their
-data dictionary analogously they would do to a tibble with \code{\link[dplyr:group_by]{dplyr::ungroup()}}.
+data dictionary analogously they would do to a tibble with
+\code{\link[dplyr:group_by]{dplyr::ungroup()}}.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

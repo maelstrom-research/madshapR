@@ -31,7 +31,8 @@ to interact with their Opal environment.
 }
 \examples{
 \dontrun{
-# use case 1: place all files in a project (""home/project/"") or a user (""home/administrator/"")
+# use case 1: place all files in a project (""home/project/"") or a user
+(""home/administrator/"")
 opal_files_push(
 opal = o,
 from = ""DEMO"",

@@ -39,11 +39,12 @@
 valueType_of <- function(x){
 
   # check if the col is empty
-  if(is.list(x) & nrow(x) %>% sum <= 1){ return(as_valueType(x = x[[1]], valueType)) }
+  if(is.list(x) & nrow(x) %>% sum <= 1)
+    return(as_valueType(x = x[[1]], valueType))
 
   # check if the col is a vector
-  if(is.list(x)) stop(call. = FALSE,
-                      "'list' object cannot be coerced to valueType")
+  if(is.list(x))
+    stop(call. = FALSE, "'list' object cannot be coerced to valueType")
 
   type  <- x %>% typeof()
   class <- class(x)[[max(length(class(x)))]]
@@ -51,18 +52,29 @@ valueType_of <- function(x){
   vT_list <- datashapR::valueType_list
 
   valueType <-
-    unique(vT_list[which(vT_list[['typeof']] == type & vT_list[['class']] == class),]$`toValueType`)
+    unique(vT_list[
+      which(vT_list[['typeof']] == type &
+            vT_list[['class']]  == class),]$`toValueType`)
 
   if(type == "double" & class == "Date") valueType <- "date"
 
   suppressWarnings(suppressMessages(try({
     if(class == "factor"){
       lvls <- attributes(x)$`levels` %>% as.character()
-      valueType <- try({as_valueType(lvls,"integer")   ;valueType <- "integer"},silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"decimal");valueType <- "decimal"},silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"date")   ;valueType <- "date"   },silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({as_valueType(lvls,"boolean");valueType <- "boolean"},silent = TRUE)
-      if(class(valueType)[1] == "try-error") valueType <- try({                             valueType <- "text"   },silent = TRUE)
+      valueType <-
+        try({as_valueType(lvls,"integer");valueType <- "integer"},silent = TRUE)
+
+      if(class(valueType)[1] == "try-error") valueType <-
+        try({as_valueType(lvls,"decimal");valueType <- "decimal"},silent = TRUE)
+
+      if(class(valueType)[1] == "try-error") valueType <-
+        try({as_valueType(lvls,"date")   ;valueType <- "date"   },silent = TRUE)
+
+      if(class(valueType)[1] == "try-error") valueType <-
+        try({as_valueType(lvls,"boolean");valueType <- "boolean"},silent = TRUE)
+
+      if(class(valueType)[1] == "try-error") valueType <-
+        try({                             valueType <- "text"   },silent = TRUE)
     }
   }, silent = TRUE)))
   if(length(valueType) == 0) valueType <- "text"
@@ -143,7 +155,8 @@ valueType_self_adjust <- function(...){
         data_dict[['Categories']])
 
     for(i in names(data)) {
-      data[[i]] <- as_valueType(x = data[[i]], valueType = valueType_guess(x = data[[i]]))
+      data[[i]] <-
+        as_valueType(x = data[[i]], valueType = valueType_guess(x = data[[i]]))
       }
 
     data_dict_final <- data_dict_extract(data)
@@ -193,12 +206,16 @@ valueType will remain as it is.")
         group_by(.data$`variable`) %>% group_split() %>%
         lapply(function(x){
           test_vT <- str_detect(x$valueType[1], "\\|")
-          if(test_vT) x <- x %>% mutate(valueType = valueType_guess(unique(x$name)))
+          if(test_vT) x <-
+              x %>% mutate(valueType = valueType_guess(unique(x$name)))
           return(x)
         }) %>%
         bind_rows() %>%
         left_join(datashapR::valueType_list, by = "valueType") %>%
-        select(name = .data$`variable`,proposed_tO = .data$`typeof`,proposed_vT = .data$`valueType`) %>%
+        select(
+          name = .data$`variable`,
+          proposed_tO = .data$`typeof`,
+          proposed_vT = .data$`valueType`) %>%
         distinct
 
       if(length(data_dict[['Variables']][['typeof']]) > 0){
@@ -207,9 +224,12 @@ valueType will remain as it is.")
           data_dict[['Variables']] %>% select(.data$`name`,.data$`typeof`) %>%
           left_join(category_outcomes, by = "name") %>%
           mutate(
-            proposed_tO = ifelse(
-              is.na(.data$`proposed_tO`),.data$`typeof`,.data$`proposed_tO`)) %>%
-          mutate(`proposed_tO` = replace_na(.data$`proposed_tO`,'character')) %>%
+            proposed_tO =
+              ifelse(is.na(.data$`proposed_tO`),
+                     .data$`typeof`,.data$`proposed_tO`)) %>%
+          mutate(
+            `proposed_tO` =
+              replace_na(.data$`proposed_tO`,'character')) %>%
           select(typeof = .data$`proposed_tO`)
 
         data_dict[['Variables']]['typeof'] <- data_dict_tO
@@ -219,11 +239,13 @@ valueType will remain as it is.")
       if(length(data_dict[['Variables']][['valueType']]) > 0){
 
         data_dict_vT <-
-          data_dict[['Variables']] %>% select(.data$`name`,.data$`valueType`) %>%
+          data_dict[['Variables']] %>%
+          select(.data$`name`,.data$`valueType`) %>%
           left_join(category_outcomes, by = "name") %>%
           mutate(
-            proposed_vT = ifelse(
-              is.na(.data$`proposed_vT`),.data$`valueType`,.data$`proposed_vT`)) %>%
+            proposed_vT =
+              ifelse(is.na(.data$`proposed_vT`),
+                     .data$`valueType`,.data$`proposed_vT`)) %>%
           mutate(`proposed_vT` = replace_na(.data$`proposed_vT`,'text')) %>%
           select(valueType = .data$`proposed_vT`)
 
@@ -244,7 +266,7 @@ valueType will remain as it is.")
     return(data_dict)
   }
 
-  stop("The argument is neither a dataset or a data dictionary.")
+  stop(call. = FALSE, "The argument is neither a dataset or a data dictionary.")
 }
 
 #' @title
@@ -320,8 +342,9 @@ valueType_adjust <- function(from, to = NULL){
 
     # data must match
     if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
-      stop("Names across your data dictionary differ from names across the dataset.",
-           crayon::bold("\n\nUseful tip:"),
+      stop(call. = FALSE,
+"Names across your data dictionary differ from names across the dataset.",
+crayon::bold("\n\nUseful tip:"),
 " Use dataset_evaluate(data_dict) to get a full assessment of your dataset")}
 
     vT_list<- datashapR::valueType_list
@@ -335,14 +358,16 @@ valueType_adjust <- function(from, to = NULL){
 
     data_dict[['Variables']]['typeof'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_tables %>% select(.data$`name`, .data$`typeof`), by = "name") %>%
+      left_join(vT_tables %>%
+                  select(.data$`name`, .data$`typeof`), by = "name") %>%
       select( .data$`typeof`)
     # }
 
     # if(length(data_dict[['Variables']][['valueType']]) > 0){
     data_dict[['Variables']]['valueType'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_tables %>% select(.data$`name`, .data$`valueType`), by = "name") %>%
+      left_join(vT_tables %>%
+                  select(.data$`name`, .data$`valueType`), by = "name") %>%
       select( .data$`valueType`)
     # }
 
@@ -353,15 +378,19 @@ valueType_adjust <- function(from, to = NULL){
   if(is_data_dict(from) & is_dataset(to)){
 
     # test data dict
-    tryCatch({data_dict <- as_mlstr_data_dict(from)},warning = function(cond){stop(cond)})
+    tryCatch({data_dict <-
+      as_mlstr_data_dict(from)},
+      warning = function(cond){
+        stop(call. = FALSE,cond)})
 
     # test dataset
     data <- as_dataset(to)
 
     # data must match
     if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
-      stop("Names across your data dictionary differ from names across the dataset.",
-           crayon::bold("\n\nUseful tip:"),
+      stop(call. = FALSE,
+"Names across your data dictionary differ from names across the dataset.",
+crayon::bold("\n\nUseful tip:"),
 " Use dataset_evaluate(data_dict) to get a full assessment of your dataset")}
 
     data_dict_data <-
@@ -395,7 +424,8 @@ valueType_adjust <- function(from, to = NULL){
     return(data)
   }
 
-  stop("The arguments are neither or (both) a dataset or a data dictionary.")
+  stop(call. = FALSE,
+       "The arguments are neither or (both) a dataset or a data dictionary.")
 }
 
 #' @title
@@ -442,18 +472,20 @@ valueType_guess <- function(x){
   x <- unique(x)
 
   # check if the col is empty
-  if(is.list(x) & nrow(x) %>% sum <= 1){ return(as_valueType(x = x[[1]])) }
+  if(is.list(x) & nrow(x) %>% sum <= 1)
+    return(as_valueType(x = x[[1]]))
 
   # check if the col is a vector
-  if(is.list(x)) stop("'list' object cannot be coerced to valueType")
+  if(is.list(x))
+    stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
   vT_list <- datashapR::valueType_list
 
-  test_vT_boolean <- suppressWarnings(try({as_valueType(as.character(x), "boolean")}, silent = TRUE))
-  test_vT_integer <- suppressWarnings(try({as_valueType(as.character(x), "integer")}, silent = TRUE))
-  test_vT_decimal <- suppressWarnings(try({as_valueType(as.character(x), "decimal")}, silent = TRUE))
-  test_vT_date    <- suppressWarnings(try({as_valueType(x, "date"   )}, silent = TRUE))
-  test_vT_text    <-                       as_valueType(x, "text"   )
+  test_vT_boolean <- fabR::silently_run(as_valueType(as.character(x),"boolean"))
+  test_vT_integer <- fabR::silently_run(as_valueType(as.character(x),"integer"))
+  test_vT_decimal <- fabR::silently_run(as_valueType(as.character(x),"decimal"))
+  test_vT_date    <- fabR::silently_run(as_valueType(             x ,"date"   ))
+  test_vT_text    <-                    as_valueType(x, "text"   )
 
   test_vT <-
     tribble(
@@ -525,10 +557,11 @@ valueType_guess <- function(x){
 as_valueType <- function(x, valueType = 'text'){
 
   # check if the col is empty
-  if(is.list(x) & sum(nrow(x)) <= 1){ return(as_valueType(x = x[[1]], valueType)) }
+  if(is.list(x) & sum(nrow(x)) <= 1) return(as_valueType(x = x[[1]], valueType))
 
   # check if the col is a vector
-  if(is.list(x)) stop("'list' object cannot be coerced to valueType")
+  if(is.list(x))
+    stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
   # if x is already the output format, no need to go further
   if(class(x)[1] == "Date"    & valueType == "date")    return(x)
@@ -540,10 +573,11 @@ as_valueType <- function(x, valueType = 'text'){
   vT_list <- datashapR::valueType_list
   # check if valueType exists
   if(!valueType %in% vT_list$`valueType`) {
-    stop(
-      "\nThe valueType provided does not exists. Please refer to documentation.",
-      crayon::bold("\n\nUseful tip:"),
-" Use data_dict_evaluate(data_dict) to get a full assessment of your data dictionary")}
+    stop(call. = FALSE,
+"\nThe valueType provided does not exists. Please refer to documentation.",
+crayon::bold("\n\nUseful tip:"),
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
+data dictionary")}
 
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
@@ -552,7 +586,10 @@ as_valueType <- function(x, valueType = 'text'){
   if( class(x)[1] == "factor")      x <- as.character(x)
 
   if(dataType     == "fabR::as_any_date"){
-    date_format <- fabR::guess_date_format(tibble(sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20))))
+    date_format <-
+      fabR::guess_date_format(
+        tibble(sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20))))
+
     if(date_format$`% values formated` == 100){
       x_temp <- fabR::as_any_date(x, date_format$`Date format`)
       }else{x_temp <- NA}
@@ -573,7 +610,8 @@ as_valueType <- function(x, valueType = 'text'){
     test_condition <- FALSE
   }else{
 
-    test_condition <- condition[which(!is.na(condition['original'])),] %>% distinct()
+    test_condition <-
+      distinct(condition[which(!is.na(condition['original'])),])
 
     if(valueType %in% c("integer","decimal")){
       test_condition <- test_condition %>%
@@ -589,17 +627,20 @@ as_valueType <- function(x, valueType = 'text'){
 
     if(valueType %in% c("date","datetime")){
       test_condition <- test_condition %>%
-        mutate(across(everything(), ~ suppressWarnings(suppressMessages(try({fabR::as_any_date(.)}, silent = TRUE))))) %>%
-        mutate(test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
+        mutate(across(everything(), ~ silently_run(fabR::as_any_date(.)))) %>%
+        mutate(
+          test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
         pull(.data$`test`) %>% all}
   }
 
   # test if data and data_dict content match
 
   if(test_condition == FALSE){
-    stop(
-      "\n\nThe valueType conflicts with the data type. Object cannot be coerced to valueType",
-      crayon::bold("\n\nUseful tip:"),
+    stop(call. = FALSE,
+"\n
+The valueType conflicts with the data type. Object cannot be coerced to
+valueType",
+crayon::bold("\n\nUseful tip:"),
 " Use valueType_guess(x) to evaluate the first potential valueType.
 For further investigation, you can use dataset_evaluate(data, data_dict).")
   }
@@ -646,7 +687,7 @@ as_taxonomy <- function(object){
 
   # check if names in object exist
   if(names(object) %in% c("taxonomy","vocabulary" ,"term") %>% sum != 3){
-    stop(
+    stop(call. = FALSE,
       "\n\nThis object is not a taxonomy as defined by Maelstrom standards.
 It must be a dataframe containing at least 'taxonomy', 'vocabulary' and 'term'
 columns. Please refer to documentation.",
@@ -755,7 +796,8 @@ is_taxonomy <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  if(class(suppressWarnings(suppressMessages(try({as_taxonomy(object)},silent = TRUE))))[1] == 'try-error') return(FALSE)
+  test <- fabR::silently_run(try(as_taxonomy(object),silent = TRUE))
+  if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
 }

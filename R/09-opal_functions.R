@@ -43,11 +43,16 @@ opal_project_create <- function(opal, project, tag = NULL,...){
   for(i in project){
 
     if(opal.project_exists(opal = opal, project = basename(i))){
-      message("The project ",i," already exists in Opal and will not be created here.")
+      message(
+"The project ",i," already exists in Opal and will not be created here.")
 
     }else{
 
-      opal.project_create(opal = opal, project = basename(i), database = TRUE, tags = tag,...)
+      opal.project_create(
+        opal = opal,
+        project = basename(i),
+        database = TRUE,
+        tags = tag,...)
       message("The project ",i," has been created in Opal")
     }
   }
@@ -82,7 +87,8 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #'
 #' @examples
 #' \dontrun{
-#' # use case 1: place all files in a project (""home/project/"") or a user (""home/administrator/"")
+#' # use case 1: place all files in a project (""home/project/"") or a user
+#' (""home/administrator/"")
 #' opal_files_push(
 #' opal = o,
 #' from = ""DEMO"",
@@ -157,14 +163,20 @@ opal_tables_push <- function(
     .force = FALSE,.overwrite = FALSE){
 
   # check on arguments
-  if(!is.null(dataset)        & !is.null(study)) stop("Too many argments entered")
-  if(!is.null(data_dict)      & !is.null(study)) stop("Too many argments entered")
-  if(!is.null(table_name)     & !is.null(study)) stop("Too many argments entered")
+  if(!is.null(dataset)        & !is.null(study))
+    stop(call. = FALSE,"Too many argments entered")
+  if(!is.null(data_dict)      & !is.null(study))
+    stop(call. = FALSE,"Too many argments entered")
+  if(!is.null(table_name)     & !is.null(study))
+    stop(call. = FALSE,"Too many argments entered")
 
-  if(is.null(dataset) & is.null(data_dict)) stop("At least one argument is missing")
+  if(is.null(dataset) & is.null(data_dict))
+    stop(call. = FALSE,"At least one argument is missing")
 
-  if((!is.null(dataset) | !is.null(data_dict)) & is.null(table_name))      stop("Table name is missing")
-  if(length(table_name) > 1)                                               stop("table name must be unique")
+  if((!is.null(dataset) | !is.null(data_dict)) & is.null(table_name))
+    stop(call. = FALSE,"Table name is missing")
+  if(length(table_name) > 1)
+    stop(call. = FALSE,"table name must be unique")
 
   message("Verification of input format.")
   # tests
@@ -277,7 +289,8 @@ opal_tables_push <- function(
 #'
 #' @examples
 #' \dontrun{
-#' # use case 1: download all files from a project folder (""home/project/"") or a
+#' # use case 1: download all files from a project folder (""home/project/"")
+#' # or a
 #' # user's folder (""home/administrator/"").
 #' opal_files_pull(
 #' opal = o,
@@ -296,11 +309,14 @@ opal_tables_push <- function(
 #' @export
 opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 
-  # if from = ".../.../foo"     and to = ".../.../fuu"      <- zip the folder, dl and unzip
-  # if from = ".../.../foo.ext" and to = ".../.../fuu"      <- to <- to + "/" + basename(from), dl
-  # if from = ".../.../foo.ext" and to = ".../.../fuu.ext"  <- dl
+  # if from = ".../.../foo"     and to = ".../.../fuu"
+  #    then > zip the folder, dl and unzip
+  # if from = ".../.../foo.ext" and to = ".../.../fuu"
+  #    then > to <- to + "/" + basename(from), dl
+  # if from = ".../.../foo.ext" and to = ".../.../fuu.ext"
+  #    then >dl
 
-  to <- ifelse(file_ext(from) == file_ext(to), to, paste0(to,"/",basename(from)))
+  to <- ifelse(file_ext(from) == file_ext(to),to, paste0(to,"/",basename(from)))
   to <- ifelse(file_ext(to) == "",paste0(to,".zip"),to)
   to <- str_replace(to,"/.zip",".zip")
 
@@ -314,15 +330,22 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
           destination = to)},
         error = function(cond){
           file.remove(paste0(to))
-          stop(cond)})
+          stop(call. = FALSE,cond)})
 
       if(file_ext(to) == "zip"){
-        unzip(zipfile = to, exdir = file_path_sans_ext(to), overwrite = TRUE,junkpaths = FALSE)
+        unzip(zipfile = to,
+              exdir = file_path_sans_ext(to),
+              overwrite = TRUE,
+              junkpaths = FALSE)
         file.remove(paste0(to))
         message(
-          "The files have been added to your environment in the folder ",file_path_sans_ext(to),".\n")
+          "The files have been added to your environment in the folder ",
+          file_path_sans_ext(to),".\n")
       }else{
-        message("The file ",basename(to)," have been added to your environment in the folder ",dirname(to),".\n")
+        message(
+"The file ",
+  basename(to)," have been added to your environment in the folder ",
+   dirname(to),".\n")
       }
     }
 }
@@ -370,13 +393,20 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' @importFrom rlang .data
 #'
 #' @export
-opal_tables_pull <- function(opal,project, table_list = NULL, content = c("dataset","data_dict"),keep_as_study = TRUE){
+opal_tables_pull <- function(
+    opal,project,
+    table_list = NULL,
+    content = c("dataset","data_dict"),
+    keep_as_study = TRUE){
 
-  if(length(project) > 1 & !is.null(table_list)) stop("Too many argments entered")
-  if(length(project) == 1 & project[1] == "") stop("\nYou must provide an Opal project\n")
+  if(length(project) > 1 & !is.null(table_list))
+    stop(call. = FALSE,"Too many argments entered")
+  if(length(project) == 1 & project[1] == "")
+    stop(call. = FALSE,"\nYou must provide an Opal project\n")
 
-  if(!is.logical(keep_as_study)) stop(call. = FALSE,
-                                      '`keep_as_study` must be TRUE of FALSE (TRUE by default)')
+  if(!is.logical(keep_as_study))
+    stop(call. = FALSE,
+         '`keep_as_study` must be TRUE of FALSE (TRUE by default)')
 
 
   study <- list()
@@ -388,7 +418,9 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
 
   for(i in table_list){
 
-    message("Download of: ", project ," / ", i, " (",which(table_list == i),"/",length(table_list), ")")
+    message(
+"Download of: ", project ," / ", i,
+" (",which(table_list == i),"/",length(table_list), ")")
 
     # creation of dataset
     if(content %in% "dataset" %>% sum > 0){
@@ -396,8 +428,8 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
     }else{table_i <- tibble()}
 
     # creation of data_dict
-    data_dict_i <- suppressWarnings(suppressMessages(try({
-      opal.table_dictionary_get(opal = opal, project = project, table = i)}, silent = TRUE)))
+    data_dict_i <- fabR::silently_run(
+      opal.table_dictionary_get(opal = opal, project = project, table = i))
 
     if(length(data_dict_i) == 0){
       data_dict_i <-
@@ -405,7 +437,8 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
           project = project,
           table = i,
           variables = tibble(name = as.character()),
-          categories = tibble(variable = as.character(), name = as.character()))}
+          categories =
+            tibble(variable = as.character(), name = as.character()))}
 
     data_dict_i <- data_dict_i %>% data_dict_opalr_fix()
 
@@ -415,16 +448,18 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
     }else{
 
       if(length(table_i) == 0){
-        study_table_i <- suppressWarnings(suppressMessages(try({data_extract(data_dict = data_dict_i)}, silent = TRUE)))
+        study_table_i <-
+          fabR::silently_run(data_extract(data_dict = data_dict_i))
       }else{
         study_table_i <- study_create(dataset_list = list(table_i))
         names(study_table_i) <- i
-
       }
     }
 
-    if(content %in% "data_dict" %>% sum == 0) study_table_i[['data_dict']] <- NULL
-    if(content %in% "dataset"   %>% sum == 0) study_table_i[['dataset']]   <- NULL
+    if(content %in% "data_dict" %>% sum == 0)
+      study_table_i[['data_dict']] <- NULL
+    if(content %in% "dataset"   %>% sum == 0)
+      study_table_i[['dataset']]   <- NULL
 
     study_table_i <- list(study_table_i)
     names(study_table_i) <- i
@@ -437,7 +472,8 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
 
     dataset_list <- study
 
-    if(length(dataset_list) == 1 & keep_as_study == FALSE) dataset_list <- dataset_list[[1]]
+    if(length(dataset_list) == 1 & keep_as_study == FALSE)
+      dataset_list <- dataset_list[[1]]
     return(dataset_list)}
 
   # only data_dict:
@@ -445,7 +481,8 @@ opal_tables_pull <- function(opal,project, table_list = NULL, content = c("datas
 
     data_dict_list <- study
 
-    if(length(data_dict_list) == 1 & keep_as_study == FALSE) data_dict_list <- data_dict_list[[1]]
+    if(length(data_dict_list) == 1 & keep_as_study == FALSE)
+      data_dict_list <- data_dict_list[[1]]
 
     return(data_dict_list)}
 
@@ -511,31 +548,37 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
     filter(.data$`taxonomy` == "Mlstr_area") %>%
     mutate(
       vocabulary_short = case_when(
-        .data$`vocabulary` == "Sociodemographic_economic_characteristics" ~ "SDC",
-        .data$`vocabulary` == "Lifestyle_behaviours"                      ~ "LSB",
-        .data$`vocabulary` == "Reproduction"                              ~ "REP",
-        .data$`vocabulary` == "Health_status_functional_limitations"      ~ "HST",
-        .data$`vocabulary` == "Diseases"                                  ~ "DIS",
-        .data$`vocabulary` == "Symptoms_signs"                            ~ "SYM",
-        .data$`vocabulary` == "Medication_supplements"                    ~ "MED",
-        .data$`vocabulary` == "Non_pharmacological_interventions"         ~ "NPH",
-        .data$`vocabulary` == "Health_community_care_utilization"         ~ "CAR",
-        .data$`vocabulary` == "End_of_life"                               ~ "EOL",
-        .data$`vocabulary` == "Physical_measures"                         ~ "PME",
-        .data$`vocabulary` == "Laboratory_measures"                       ~ "LAB",
-        .data$`vocabulary` == "Cognitive_psychological_measures"          ~ "COG",
-        .data$`vocabulary` == "Life_events_plans_beliefs"                 ~ "LIF",
-        .data$`vocabulary` == "Preschool_school_work"                     ~ "SCH",
-        .data$`vocabulary` == "Social_environment"                        ~ "SOC",
-        .data$`vocabulary` == "Physical_environment"                      ~ "PHY",
-        .data$`vocabulary` == "Administrative_information"                ~ "ADM",
-        .data$`vocabulary` == "Mlstr_area_Unknown_vocabulary"             ~ "ERR",
+        .data$`vocabulary` == "Sociodemographic_economic_characteristics"~"SDC",
+        .data$`vocabulary` == "Lifestyle_behaviours"                     ~"LSB",
+        .data$`vocabulary` == "Reproduction"                             ~"REP",
+        .data$`vocabulary` == "Health_status_functional_limitations"     ~"HST",
+        .data$`vocabulary` == "Diseases"                                 ~"DIS",
+        .data$`vocabulary` == "Symptoms_signs"                           ~"SYM",
+        .data$`vocabulary` == "Medication_supplements"                   ~"MED",
+        .data$`vocabulary` == "Non_pharmacological_interventions"        ~"NPH",
+        .data$`vocabulary` == "Health_community_care_utilization"        ~"CAR",
+        .data$`vocabulary` == "End_of_life"                              ~"EOL",
+        .data$`vocabulary` == "Physical_measures"                        ~"PME",
+        .data$`vocabulary` == "Laboratory_measures"                      ~"LAB",
+        .data$`vocabulary` == "Cognitive_psychological_measures"         ~"COG",
+        .data$`vocabulary` == "Life_events_plans_beliefs"                ~"LIF",
+        .data$`vocabulary` == "Preschool_school_work"                    ~"SCH",
+        .data$`vocabulary` == "Social_environment"                       ~"SOC",
+        .data$`vocabulary` == "Physical_environment"                     ~"PHY",
+        .data$`vocabulary` == "Administrative_information"               ~"ADM",
+        .data$`vocabulary` == "Mlstr_area_Unknown_vocabulary"            ~"ERR",
         TRUE                                                ~ NA_character_
       )) %>%
-    select(everything(),-.data$`vocabulary`,-.data$`vocabulary_short`,-.data$`term`,
-           .data$`vocabulary`, .data$`vocabulary_short`, .data$`term`)
+    select(
+      everything(),-.data$`vocabulary`,-.data$`vocabulary_short`,-.data$`term`,
+      .data$`vocabulary`, .data$`vocabulary_short`, .data$`term`)
 
-  list_of_scales <- c("Mlstr_habits","Mlstr_genhealth","Mlstr_cogscale","Mlstr_events","Mlstr_social")
+  list_of_scales <-
+    c("Mlstr_habits",
+      "Mlstr_genhealth",
+      "Mlstr_cogscale",
+      "Mlstr_events",
+      "Mlstr_social")
 
   taxonomy_scales <-
     taxonomy %>%
@@ -547,42 +590,112 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
       term_scale             = .data$`term`) %>%
     mutate(
       term = case_when(
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Tobacco"             ~ "Tobacco",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Alcohol"             ~ "Alcohol",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Drugs"               ~ "Drugs",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Nutrition"           ~ "Nutrition",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Breastfeeding"       ~ "Breastfeeding",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Physical_activity"   ~ "Phys_act",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Sleep"               ~ "Sleep",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Sexual_behaviours"   ~ "Sex_behav",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Tech_devices"        ~ "Tech_devices",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Misbehaviour"        ~ "Misbehav_crim",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Other"               ~ "Other_lifestyle",
-        .data$`taxonomy_scale` == "Mlstr_genhealth" & .data$`vocabulary_scale` == "Perception"          ~ "Perc_health",
-        .data$`taxonomy_scale` == "Mlstr_genhealth" & .data$`vocabulary_scale` == "Quality"             ~ "Qual_life",
-        .data$`taxonomy_scale` == "Mlstr_genhealth" & .data$`vocabulary_scale` == "Development"         ~ "Life_dev",
-        .data$`taxonomy_scale` == "Mlstr_genhealth" & .data$`vocabulary_scale` == "Functional"          ~ "Act_daily_living",
-        .data$`taxonomy_scale` == "Mlstr_genhealth" & .data$`vocabulary_scale` == "Other"               ~ "Other",
-        .data$`taxonomy_scale` == "Mlstr_cogscale"  & .data$`vocabulary_scale` == "Cog_scale"           ~ "Cognitive_functioning",
-        .data$`taxonomy_scale` == "Mlstr_cogscale"  & .data$`vocabulary_scale` == "Personality"         ~ "Personality",
-        .data$`taxonomy_scale` == "Mlstr_cogscale"  & .data$`vocabulary_scale` == "Emotional"           ~ "Psychological_emotional_distress",
-        .data$`taxonomy_scale` == "Mlstr_cogscale"  & .data$`vocabulary_scale` == "Other_psycho"        ~ "Other_psycholog_measures",
-        .data$`taxonomy_scale` == "Mlstr_events"    & .data$`vocabulary_scale` == "Life_events"         ~ "Life_events",
-        .data$`taxonomy_scale` == "Mlstr_events"    & .data$`vocabulary_scale` == "Beliefs_values"      ~ "Beliefs_values",
-        .data$`taxonomy_scale` == "Mlstr_social"    & .data$`vocabulary_scale` == "Social_network"      ~ "Soc_network",
-        .data$`taxonomy_scale` == "Mlstr_social"    & .data$`vocabulary_scale` == "Social_participation"~ "Soc_participation",
-        .data$`taxonomy_scale` == "Mlstr_social"    & .data$`vocabulary_scale` == "Social_support"      ~ "Soc_support",
-        .data$`taxonomy_scale` == "Mlstr_social"    & .data$`vocabulary_scale` == "Parenting"           ~ "Parenting",
-        .data$`taxonomy_scale` == "Mlstr_social"    & .data$`vocabulary_scale` == "Other"               ~ "Other_soc_characteristics",
-        .data$`taxonomy_scale` == "Mlstr_habits"    & .data$`vocabulary_scale` == "Mlstr_habits_Unknown_vocabulary"      ~ "Lifestyle_behaviours_Unknown_term",
-        .data$`taxonomy_scale` == "Mlstr_genhealth" & .data$`vocabulary_scale` == "Mlstr_genhealth_Unknown_vocabulary"   ~ "Health_status_functional_limitations_Unknown_term",
-        .data$`taxonomy_scale` == "Mlstr_cogscale"  & .data$`vocabulary_scale` == "Mlstr_cogscale_Unknown_vocabulary"    ~ "Cognitive_psychological_measures_Unknown_term",
-        .data$`taxonomy_scale` == "Mlstr_events"    & .data$`vocabulary_scale` == "Mlstr_events_Unknown_vocabulary"      ~ "Life_events_plans_beliefs_Unknown_term",
-        .data$`taxonomy_scale` == "Mlstr_social"    & .data$`vocabulary_scale` == "Mlstr_social_Unknown_vocabulary"      ~ "Social_environment_Unknown_term",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Tobacco"
+        ~ "Tobacco",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Alcohol"
+        ~ "Alcohol",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Drugs"
+        ~ "Drugs",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Nutrition"
+        ~ "Nutrition",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Breastfeeding"
+        ~ "Breastfeeding",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Physical_activity"
+        ~ "Phys_act",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Sleep"
+        ~ "Sleep",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Sexual_behaviours"
+        ~ "Sex_behav",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Tech_devices"
+        ~ "Tech_devices",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Misbehaviour"
+        ~ "Misbehav_crim",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Other"
+        ~ "Other_lifestyle",
+        .data$`taxonomy_scale` == "Mlstr_genhealth" &
+          .data$`vocabulary_scale` == "Perception"
+        ~ "Perc_health",
+        .data$`taxonomy_scale` == "Mlstr_genhealth" &
+          .data$`vocabulary_scale` == "Quality"
+        ~ "Qual_life",
+        .data$`taxonomy_scale` == "Mlstr_genhealth" &
+          .data$`vocabulary_scale` == "Development"
+        ~ "Life_dev",
+        .data$`taxonomy_scale` == "Mlstr_genhealth" &
+          .data$`vocabulary_scale` == "Functional"
+        ~ "Act_daily_living",
+        .data$`taxonomy_scale` == "Mlstr_genhealth" &
+          .data$`vocabulary_scale` == "Other"
+        ~ "Other",
+        .data$`taxonomy_scale` == "Mlstr_cogscale"  &
+          .data$`vocabulary_scale` == "Cog_scale"
+        ~ "Cognitive_functioning",
+        .data$`taxonomy_scale` == "Mlstr_cogscale"  &
+          .data$`vocabulary_scale` == "Personality"
+        ~ "Personality",
+        .data$`taxonomy_scale` == "Mlstr_cogscale"  &
+          .data$`vocabulary_scale` == "Emotional"
+        ~ "Psychological_emotional_distress",
+        .data$`taxonomy_scale` == "Mlstr_cogscale"  &
+          .data$`vocabulary_scale` == "Other_psycho"
+        ~ "Other_psycholog_measures",
+        .data$`taxonomy_scale` == "Mlstr_events"    &
+          .data$`vocabulary_scale` == "Life_events"
+        ~ "Life_events",
+        .data$`taxonomy_scale` == "Mlstr_events"    &
+          .data$`vocabulary_scale` == "Beliefs_values"
+        ~ "Beliefs_values",
+        .data$`taxonomy_scale` == "Mlstr_social"    &
+          .data$`vocabulary_scale` == "Social_network"
+        ~ "Soc_network",
+        .data$`taxonomy_scale` == "Mlstr_social"    &
+          .data$`vocabulary_scale` == "Social_participation"
+        ~ "Soc_participation",
+        .data$`taxonomy_scale` == "Mlstr_social"    &
+          .data$`vocabulary_scale` == "Social_support"
+        ~ "Soc_support",
+        .data$`taxonomy_scale` == "Mlstr_social"    &
+          .data$`vocabulary_scale` == "Parenting"
+        ~ "Parenting",
+        .data$`taxonomy_scale` == "Mlstr_social"    &
+          .data$`vocabulary_scale` == "Other"
+        ~ "Other_soc_characteristics",
+        .data$`taxonomy_scale` == "Mlstr_habits"    &
+          .data$`vocabulary_scale` == "Mlstr_habits_Unknown_vocabulary"
 
-        TRUE                                                ~ NA_character_))
+         ~ "Lifestyle_behaviours_Unknown_term",
+        .data$`taxonomy_scale` == "Mlstr_genhealth" &
+          .data$`vocabulary_scale` == "Mlstr_genhealth_Unknown_vocabulary"
 
-  taxonomy_scales <- full_join(taxonomy_area, taxonomy_scales, by = "term",multiple = "all")
+         ~ "Health_status_functional_limitations_Unknown_term",
+        .data$`taxonomy_scale` == "Mlstr_cogscale"  &
+          .data$`vocabulary_scale` == "Mlstr_cogscale_Unknown_vocabulary"
+
+         ~ "Cognitive_psychological_measures_Unknown_term",
+        .data$`taxonomy_scale` == "Mlstr_events"    &
+          .data$`vocabulary_scale` == "Mlstr_events_Unknown_vocabulary"
+
+         ~ "Life_events_plans_beliefs_Unknown_term",
+        .data$`taxonomy_scale` == "Mlstr_social"    &
+          .data$`vocabulary_scale` == "Mlstr_social_Unknown_vocabulary"
+
+         ~ "Social_environment_Unknown_term",
+        TRUE
+        ~ NA_character_))
+
+  taxonomy_scales <-
+    full_join(taxonomy_area, taxonomy_scales, by = "term",multiple = "all")
 
   taxonomy <-
     taxonomy_unknown %>%
@@ -591,16 +704,28 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
     bind_rows(taxonomy_scales) %>%
     bind_rows(taxonomy_harmo) %>%
     distinct %>%
-    mutate(term_scale = ifelse(.data$`index_term_scale` == 0, paste0("[NO_SCALE], ",.data$`term_scale`),.data$`term_scale`)) %>%
+    mutate(term_scale =
+             ifelse(
+               .data$`index_term_scale` == 0,
+               paste0("[NO_SCALE], ",.data$`term_scale`),
+               .data$`term_scale`)) %>%
     separate_rows(.data$`term_scale` ,sep = ", ") %>%
-    mutate(across(all_of(c("index_term_scale","taxonomy_scale","vocabulary_scale","term_scale")),
-                  ~ ifelse(.data$`term_scale` == "[NO_SCALE]", NA,.))) %>%
+    mutate(across(all_of(
+      c("index_term_scale","taxonomy_scale","vocabulary_scale","term_scale")),
+      ~ ifelse(.data$`term_scale` == "[NO_SCALE]", NA,.))) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     mutate(across(everything(), ~ na_if(.,""))) %>%
-    mutate(across(any_of(c('index_taxonomy','index_vocabulary','index_term')), ~ as.integer(.))) %>%
-    arrange(.data$`index_taxonomy`,.data$`index_vocabulary`, .data$`index_term`) %>%
+    mutate(across(any_of(
+      c('index_taxonomy','index_vocabulary','index_term')),
+      ~ as.integer(.))) %>%
+    arrange(
+      .data$`index_taxonomy`,
+      .data$`index_vocabulary`,
+      .data$`index_term`) %>%
     mutate(across('index_term_scale',as.integer)) %>%
-    mutate(across(c('taxonomy_scale', 'vocabulary_scale', 'term_scale'), as.character))
+    mutate(across(
+      c('taxonomy_scale', 'vocabulary_scale', 'term_scale'),
+      as.character))
 
   .add_qual_check <- FALSE
   if(.add_qual_check == FALSE) {
@@ -671,7 +796,13 @@ opal_taxonomy_get <- function(opal){
     fabR::add_index("index_taxonomy", start = 0) %>%
     rowwise() %>%
     mutate(
-      vocabulary = paste(paste0(.data$`taxonomy`, "_Unknown_vocabulary"),.data$`vocabulary`,sep = "|"),
+      vocabulary =
+        paste(
+          paste0(
+            .data$`taxonomy`,
+            "_Unknown_vocabulary"),
+          .data$`vocabulary`,
+          sep = "|"),
       vocabulary = str_remove(.data$`vocabulary`,"\\|$")) %>%
     separate_rows(.data$`vocabulary`,sep = "\\|") %>%
     group_by(.data$`taxonomy`) %>%
@@ -679,19 +810,31 @@ opal_taxonomy_get <- function(opal){
     ungroup() %>%
     rowwise() %>%
     mutate(
-      term = ifelse(str_detect(.data$`vocabulary`,"Unknown_vocabulary"),"",
-                    opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)$`name` %>% toString())) %>%
+      term = ifelse(
+        str_detect(
+          .data$`vocabulary`,"Unknown_vocabulary"),"",
+        toString(opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)))) %>%
     mutate(
-      term = paste(paste0(.data$`vocabulary`, "_Unknown_term"),.data$`term`,sep = ", "),
+      term =
+        paste(
+          paste0(
+            .data$`vocabulary`,
+            "_Unknown_term"),
+          .data$`term`,sep = ", "),
       term = str_remove(.data$`term`,", $")) %>%
     separate_rows(.data$`term`,sep = ", ") %>%
     group_by(.data$`index_vocabulary`, .data$`index_taxonomy`) %>%
     fabR::add_index("index_term",start = 0) %>%
     ungroup %>%
-    select(.data$`index_taxonomy`, .data$`index_vocabulary`, .data$`index_term`, everything())
+    select(
+      .data$`index_taxonomy`,
+      .data$`index_vocabulary`,
+      .data$`index_term`,
+      everything())
 
   .add_qual_check <- FALSE
-  if(.add_qual_check == FALSE) taxonomy <- taxonomy %>% filter(.data$`index_term` != 0)
+  if(.add_qual_check == FALSE)
+    taxonomy <- taxonomy %>% filter(.data$`index_term` != 0)
 
   taxonomy <- as_taxonomy(taxonomy)
 

@@ -388,7 +388,8 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
     arrange("index_taxonomy", "index_vocabulary", "index_term")
 
   taxonomy_opal <-
-    taxonomy_opal[,c('index_vocabulary','taxonomy_opal','taxonomy','vocabulary')] %>%
+    taxonomy_opal[,
+            c('index_vocabulary','taxonomy_opal','taxonomy','vocabulary')] %>%
     distinct() %>%
     mutate(
       name_col = str_replace(
@@ -424,8 +425,10 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
           values_from = all_of(name_term),
           names_prefix = paste0("__temp__.",col_final,"::"))
 
-      data_dict_temp <- data_dict_temp[vapply(data_dict_temp,
-                                              FUN = function(x) !all(is.na(x)))]
+      data_dict_temp <-
+        data_dict_temp[vapply(X = data_dict_temp,
+                              FUN = function(x) !all(is.na(x)),
+                              FUN.VALUE = logical(1))]
 
       col_temp  <- names(data_dict_temp)[-1]
       col_final <- str_remove(col_temp,"^__temp__\\.")
@@ -537,7 +540,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
         if(!is.null(data_dict[['Variables']][['NA']])){
           warning(toString(unique(
-            data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
+data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 " scale(s) not in your taxonomy but present in your data dictionary")}
       }
     }
@@ -645,9 +648,15 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 
   taxonomy_opal <-
     taxonomy  %>%
-    unite(col = "taxonomy_opal", c('taxonomy', 'vocabulary'), na.rm = TRUE, sep = "::", remove = FALSE) %>%
-    unite(col = "voc_term", c('vocabulary', 'term'), na.rm = TRUE, sep = "::", remove = FALSE) %>%
-    arrange(.data$`index_taxonomy`, .data$`index_vocabulary`, .data$`index_term`) %>%
+    unite(
+      col = "taxonomy_opal", c('taxonomy', 'vocabulary'),
+      na.rm = TRUE, sep = "::", remove = FALSE) %>%
+    unite(
+      col = "voc_term", c('vocabulary', 'term'),
+      na.rm = TRUE, sep = "::", remove = FALSE) %>%
+    arrange(.data$`index_taxonomy`,
+            .data$`index_vocabulary`,
+            .data$`index_term`) %>%
     group_by(.data$`taxonomy`) %>%
     group_split()
 
@@ -668,7 +677,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
       try({
         data_dict_temp <-
           data_dict[['Variables']] %>%
-          select('name', matches(paste0('^',taxonomy_i$`taxonomy_opal`,'$'))) %>%
+          select('name',matches(paste0('^',taxonomy_i$`taxonomy_opal`,'$'))) %>%
           # pivoting area of information
           pivot_longer(
             cols = starts_with(i),
@@ -676,12 +685,16 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
             names_prefix = paste0(i,"::"),
             values_to = "term",
             values_drop_na = TRUE) %>%
-          unite(col = "voc_term", c(!! i, 'term'), na.rm = TRUE, sep = "::", remove = FALSE) %>%
+          unite(
+            col = "voc_term", c(!! i, 'term'),
+            na.rm = TRUE, sep = "::", remove = FALSE) %>%
           left_join(taxonomy_i
                     ,by = 'voc_term') %>%
           arrange(!! i, .data$`index_vocabulary`, .data$`index_term`) %>%
           select(-c('index_vocabulary','index_term','vocabulary')) %>%
-          mutate(across(!! i, ~ ifelse(is.na(.data$`taxonomy_opal`),NA_character_,.))) %>%
+          mutate(
+            across(!! i,
+                   ~ ifelse(is.na(.data$`taxonomy_opal`),NA_character_,.))) %>%
           mutate()
           group_by(.data$`name`) %>%
           distinct()
@@ -700,14 +713,19 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
               across(c(any_of(i), .data$`term`),
                      ~ paste0(.,collapse = "|")),
               .groups = "drop") %>%
-            separate(col = i,
-                     into = arrange_taxonomy[seq_len(length(arrange_taxonomy)) %% 2 == 1],
-                     sep = "\\|") %>%
-            separate(col = .data$`term`,
-                     into = arrange_taxonomy[seq_len(length(arrange_taxonomy)) %% 2 == 0],
-                     sep = "\\|") %>%
+            separate(
+              col = i,
+              into = arrange_taxonomy[seq_len(length(arrange_taxonomy))%% 2==1],
+              sep = "\\|") %>%
+            separate(
+              col = .data$`term`,
+              into = arrange_taxonomy[seq_len(length(arrange_taxonomy))%% 2==0],
+              sep = "\\|") %>%
             ungroup() %>%
-            select(everything(), -any_of(arrange_taxonomy), any_of(arrange_taxonomy))
+            select(
+              everything(),
+              -any_of(arrange_taxonomy),
+              any_of(arrange_taxonomy))
         }, silent = TRUE)))
 
         suppressWarnings(suppressMessages(try({
@@ -736,8 +754,12 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 
       key <-
         keys %>%
-        rename_with(.cols = .data$`vocabulary`,       .fn =  ~ paste0(i)) %>%
-        rename_with(.cols = .data$`vocabulary_short`, .fn =  ~ paste0(i,".vocabulary_short"))
+        rename_with(
+          .cols = .data$`vocabulary`,
+          .fn =  ~ paste0(i)) %>%
+        rename_with(
+          .cols = .data$`vocabulary_short`,
+          .fn =  ~ paste0(i,".vocabulary_short"))
 
       # re-arrange things (can do better)
       if(is.null(data_dict[['Variables']][['___Mlstr_temp___']]) |
@@ -746,8 +768,12 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
         suppressWarnings(suppressMessages(try({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>% left_join(key) %>%
-            rename_with(.cols = all_of(i),       .fn =  ~ "___Mlstr_temp___") %>%
-            rename_with(.cols = paste0(i,".vocabulary_short"),       .fn =  ~ "___Mlstr_temp___vocabulary") %>%
+            rename_with(
+              .cols = all_of(i),
+              .fn =  ~ "___Mlstr_temp___") %>%
+            rename_with(
+              .cols = paste0(i,".vocabulary_short"),
+              .fn =  ~ "___Mlstr_temp___vocabulary") %>%
             mutate(`___Mlstr_temp___` = .data$`___Mlstr_temp___vocabulary`) %>%
             rename_with(.cols = .data$`___Mlstr_temp___`, .fn =  ~ i) %>%
             select(-.data$`___Mlstr_temp___vocabulary`)
@@ -755,13 +781,16 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 
       }else{
         stop(call. = FALSE,
-"Your data dictionary cannot be processed into Maelstrom format (presence of `___Mlstr_temp___` column")
+"Your data dictionary cannot be processed into Maelstrom format.
+(presence of `___Mlstr_temp___` column")
       }
     }
 
     cols_scales <-
       taxonomy %>%
-      unite("area_scale_opal", .data$`taxonomy_scale`, .data$`vocabulary_scale`, na.rm = TRUE, sep = "::", remove = FALSE) %>%      select(.data$`area_scale_opal`,.data$`term_scale`) %>%
+      unite("area_scale_opal", .data$`taxonomy_scale`, .data$`vocabulary_scale`,
+            na.rm = TRUE, sep = "::", remove = FALSE) %>%
+      select(.data$`area_scale_opal`,.data$`term_scale`) %>%
       select(.data$`area_scale_opal`) %>%
       filter(!is.na(.data$`area_scale_opal`)) %>% distinct %>%
       pull(.data$`area_scale_opal`) %>%
@@ -770,11 +799,14 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
     if(length(cols_scales) > 0){
       data_dict[['Variables']] <-
         data_dict[['Variables']] %>%
-        unite("Mlstr_area::1.scale" , all_of(cols_scales),sep = " | ",na.rm = TRUE) %>%
+        unite(
+          "Mlstr_area::1.scale",all_of(cols_scales),sep=" | ",na.rm = TRUE) %>%
         mutate(`Mlstr_area::1.scale` = na_if(.data$`Mlstr_area::1.scale`,""))}
 
     arrange_taxonomy <-
-      paste0("Mlstr_area","::",rep(seq_len(length(col_area)),2) %>% sort(),c("",".term"))
+      paste0("Mlstr_area","::",
+             rep(seq_len(length(col_area)),2) %>% sort(),
+             c("",".term"))
 
     # re-arrange things (can do better)
     data_dict[['Variables']] <-
@@ -792,9 +824,14 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
         matches("^Mlstr_area::3$"),
         matches("^Mlstr_area::3.term$"),
         everything()) %>%
-      rename_with(.cols = any_of("Mlstr_additional::1.term"), .fn = ~ "Mlstr_additional::Source") %>%
-      rename_with(.cols = any_of("Mlstr_additional::2.term"), .fn = ~ "Mlstr_additional::Target") %>%
-      select(-matches("^Mlstr_additional::1$"),-matches("^Mlstr_additional::2$"))
+      rename_with(
+        .cols = any_of("Mlstr_additional::1.term"),
+        .fn = ~ "Mlstr_additional::Source") %>%
+      rename_with(
+        .cols = any_of("Mlstr_additional::2.term"),
+        .fn = ~ "Mlstr_additional::Target") %>%
+      select(
+        -matches("^Mlstr_additional::1$"),-matches("^Mlstr_additional::2$"))
 
   }
 
@@ -849,19 +886,27 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_filter <- function(data_dict, filter_var = NULL, filter_cat = NULL, filter_all = NULL){
+data_dict_filter <- function(
+    data_dict,
+    filter_var = NULL,
+    filter_cat = NULL,
+    filter_all = NULL){
 
   # test if enough data_dict
   as_data_dict_shape(data_dict)
 
-  if(!is.null(filter_all) & (!is.null(filter_var) | !is.null(filter_cat))) stop(call. = FALSE,
-                                                                                "Too many argments entered")
-  if( is.null(filter_all) &   is.null(filter_var) &  is.null(filter_cat))  return(data_dict)
+  if(!is.null(filter_all) & (!is.null(filter_var) | !is.null(filter_cat)))
+    stop(call. = FALSE,"Too many argments entered")
 
-  if(!is.null(filter_all)) filter_var <- filter_cat <- filter_all
+  if( is.null(filter_all) &   is.null(filter_var) &  is.null(filter_cat))
+    return(data_dict)
+
+  if(!is.null(filter_all))
+    filter_var <- filter_cat <- filter_all
 
   data_dict[['Variables']] <-
-    eval(parse(text = paste("data_dict[['Variables']] %>% filter(",filter_var,")")))
+    eval(parse(
+      text = paste("data_dict[['Variables']] %>% filter(",filter_var,")")))
 
   if(!is.null(data_dict[['Categories']])){
     data_dict[['Categories']] <-
@@ -870,10 +915,12 @@ data_dict_filter <- function(data_dict, filter_var = NULL, filter_cat = NULL, fi
 
     if(!is.null(filter_cat)){
       data_dict[['Categories']] <-
-        eval(parse(text = paste("data_dict[['Categories']] %>% filter(",filter_cat,")")))}
+        eval(parse(
+          text=paste("data_dict[['Categories']] %>% filter(",filter_cat,")")))}
   }
 
-  if(sum(nrow(data_dict[['Categories']])) == 0) data_dict[['Categories']] <- NULL
+  if(sum(nrow(data_dict[['Categories']])) == 0)
+    data_dict[['Categories']] <- NULL
 
   return(data_dict)
 
@@ -932,11 +979,13 @@ data_dict_group_split <- function(data_dict, ...){
   # test if enough data_dict
   as_data_dict_shape(data_dict)
 
-  if(!is_grouped_df(data_dict[['Variables']])) data_dict <- data_dict_group_by(data_dict, ...)
+  if(!is_grouped_df(data_dict[['Variables']]))
+    data_dict <- data_dict_group_by(data_dict, ...)
 
-  if(!is_grouped_df(data_dict[['Variables']])) stop(call. = FALSE,
-"\n\nThe data dictionary list must be grouped to be splited. Please group them using
-data_dict_group_by(data_dict, col)")
+  if(!is_grouped_df(data_dict[['Variables']]))
+    stop(call. = FALSE,
+"\n\nThe data dictionary list must be grouped to be splited. Please group them
+using data_dict_group_by(data_dict, col)")
 
   col <- as.symbol(names(group_keys(data_dict[['Variables']])))
 
@@ -949,7 +998,10 @@ data_dict_group_by(data_dict, col)")
       group_by(!! col)
   }
 
-  if(names(group_keys(data_dict[['Variables']]))[1] != names(group_keys(data_dict[['Categories']]))[1]){
+  names_var <- names(group_keys(data_dict[['Variables']]))[1]
+  names_cat <- names(group_keys(data_dict[['Categories']]))[1]
+
+  if(names_var != names_cat){
     stop(call. = FALSE,
 "Grouping column must be the same in 'Variables' and 'Categories'.")}
 
@@ -1054,19 +1106,24 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
     data_dict[['Variables']] <-
       bind_rows(
         data_dict[['Variables']],
-        data_dict_list[[i]][['Variables']] %>% mutate(across(everything(), as.character)))
+        data_dict_list[[i]][['Variables']] %>%
+          mutate(across(everything(), as.character)))
 
     if(sum(nrow(data_dict_list[[i]][['Categories']])) > 0){
       data_dict[['Categories']] <-
         bind_rows(
           data_dict[['Categories']],
-          data_dict_list[[i]][['Categories']] %>% mutate(across(everything(), as.character)))
+          data_dict_list[[i]][['Categories']] %>%
+            mutate(across(everything(), as.character)))
     }
   }
 
   if(!is.null(name_group)){
-    if(name_group %in% c(names(data_dict[['Variables']]),names(data_dict[['Categories']]))){
-      warning("The column '",name_group,"' already exists in data dictionary and will not be added.")
+    if(name_group %in%
+       c(names(data_dict[['Variables']]),names(data_dict[['Categories']]))){
+      warning(
+"The column '",name_group,
+"' already exists in data dictionary and will not be added.")
     }else{
 
       name_group_col_var <- tibble()
@@ -1095,8 +1152,10 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 
       }
 
-      data_dict[['Variables']]  <- name_group_col_var %>% bind_cols(data_dict[['Variables']])
-      data_dict[['Categories']] <- name_group_col_cat %>% bind_cols(data_dict[['Categories']])
+      data_dict[['Variables']]  <-
+        name_group_col_var %>% bind_cols(data_dict[['Variables']])
+      data_dict[['Categories']] <-
+        name_group_col_cat %>% bind_cols(data_dict[['Categories']])
     }
   }
 
@@ -1132,7 +1191,8 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @seealso
 #' [dplyr::group_by()], [datashapR::data_dict_ungroup()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed.
 #' @param col variable to group by.
 #'
 #' @return
@@ -1160,7 +1220,8 @@ data_dict_group_by <- function(data_dict, col){
 
   if(is.null(col)) return(data_dict)
 
-  group_names_var <- c(sort(unique(data_dict[['Variables']][[col]]),na.last = TRUE))
+  group_names_var <-
+    c(sort(unique(data_dict[['Variables']][[col]]),na.last = TRUE))
 
   categories <- TRUE
   if(is.null(data_dict[['Categories']])) categories <- FALSE
@@ -1170,7 +1231,8 @@ data_dict_group_by <- function(data_dict, col){
       tibble(col = as.character()) %>%
       rename_with(.cols = "col", ~ deparse(col))}
 
-  group_names_cat <- c(sort(unique(data_dict[['Categories']][[col]]),na.last = TRUE))
+  group_names_cat <-
+    c(sort(unique(data_dict[['Categories']][[col]]),na.last = TRUE))
 
   if(is.null(group_names_cat)) stop(call. = FALSE,
 paste0("Column '",col,"' not found in Categories."))
@@ -1200,7 +1262,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @description
 #' Ungroup data dictionaries, both in the 'Variables' and 'Categories' (assuming
 #' the group is defined in both elements). The user would groupe their
-#' data dictionary analogously they would do to a tibble with [dplyr::ungroup()].
+#' data dictionary analogously they would do to a tibble with
+#' [dplyr::ungroup()].
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1220,7 +1283,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @seealso
 #' [dplyr::ungroup()]
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be transformed.
+#' @param data_dict A list of tibble(s) representing meta data to be
+#' transformed.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary - like structure.
@@ -1326,20 +1390,32 @@ data_dict_apply <- function(data, data_dict = NULL){
     stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
-" Use dataset_evaluate(dataset, data_dict) to get a full assessment of your dataset")}
+" Use dataset_evaluate(dataset, data_dict) to get a full assessment of
+your dataset")}
 
-  # set cleaning prefix of Variables component (addition of Variables:: before all variables except name)
-  names(data_dict[['Variables']])  <- make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
-  names(data_dict[['Variables']])[-which(names(data_dict[['Variables']])=='name')] <-
+  # set cleaning prefix of Variables component
+  # (addition of Variables:: before all variables except name)
+  names(data_dict[['Variables']])  <-
+    make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
+  names(data_dict[['Variables']])[-
+        which(names(data_dict[['Variables']])=='name')] <-
     paste0("Variables::",
-           names(data_dict[['Variables']]))[-which(names(data_dict[['Variables']])=='name')]
+           names(data_dict[['Variables']]))[-
+                 which(names(data_dict[['Variables']])=='name')]
 
-  # set cleaning prefix of Categories component (addition of Categories:: before all variables except variable, name, labels and na_values)
+  # set cleaning prefix of Categories component
+  # (addition of Categories:: before all variables
+  # except variable, name, labels and na_values)
   if(!is.null(data_dict[['Categories']])){
-    names(data_dict[['Categories']]) <- make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
-    names(data_dict[['Categories']])[-which(names(data_dict[['Categories']]) %in% c('variable','name','labels', 'na_values'))] <-
+    names(data_dict[['Categories']]) <-
+      make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
+    names(data_dict[['Categories']])[-
+          which(names(data_dict[['Categories']]) %in%
+                  c('variable','name','labels', 'na_values'))] <-
       paste0("Categories::",
-             names(data_dict[['Categories']])[-which(names(data_dict[['Categories']]) %in% c('variable','name','labels','na_values'))])}
+             names(data_dict[['Categories']])[-
+                  which(names(data_dict[['Categories']]) %in%
+                          c('variable','name','labels','na_values'))])}
 
   names_data <- names(data)
   names_data_dict <- data_dict[['Variables']]$`name`
@@ -1353,10 +1429,11 @@ crayon::bold("\n\nUseful tip:"),
 
     attrs_init <- attributes(data[[i]])
 
-
-
-    attrs_var <- data_dict[['Variables']][which(data_dict[['Variables']]$`name` == i),]
-    attrs_var <- attrs_var[vapply(attrs_var, FUN = function(x) !all(is.na(x)))]
+    attrs_var <-
+      data_dict[['Variables']][which(data_dict[['Variables']]$`name` == i),]
+    attrs_var <- attrs_var[vapply(X = attrs_var,
+                                  FUN = function(x) !all(is.na(x)),
+                                  FUN.VALUE = logical(1))]
     attrs_var <- c(attrs_var) %>% unlist %>% as.list()
     attrs_var <- attrs_var[names(attrs_var) != 'name']
 
@@ -1365,8 +1442,12 @@ crayon::bold("\n\nUseful tip:"),
     attrs_na <- list(na_values = c())
 
     if (!is.null(data_dict[['Categories']])) {
-      cat_i <- data_dict[['Categories']][which(data_dict[['Categories']]$`variable` == i),]
-      cat_i <- cat_i[vapply(cat_i, FUN = function(x) !all(is.na(x)))]
+      cat_i <-
+        data_dict[['Categories']][
+          which(data_dict[['Categories']]$`variable` == i),]
+      cat_i <- cat_i[vapply(X = cat_i,
+                            FUN = function(x) !all(is.na(x)),
+                            FUN.VALUE = logical(1))]
 
       if(is.null(cat_i[['na_values']])) cat_i[['na_values']] <- NA
 
@@ -1374,7 +1455,8 @@ crayon::bold("\n\nUseful tip:"),
         # create vector of data
         attributes(data[[i]])$`class` <- NULL
 
-        vec_data <- try({as_valueType(x = cat_i$`name`, valueType = vT)},silent = TRUE)
+        vec_data <-
+          try({as_valueType(x = cat_i$`name`, valueType = vT)},silent = TRUE)
         if(class(vec_data)[1] == 'try-error') {
           vT_cat <- valueType_guess(x = cat_i$`name`)
           vec_data <- as_valueType(x = cat_i$`name`, valueType = vT_cat)}
@@ -1398,7 +1480,8 @@ crayon::bold("\n\nUseful tip:"),
         # labelled::val_labels(data[[i]]) <- vec_data
         attributes(data[[i]])$`labels` <- vec_data
         attributes(data[[i]])$`class` <-
-          c("haven_labelled","vctrs_vctr", vT_list[[which(vT_list$`valueType` == vT),"class"]])
+          c("haven_labelled","vctrs_vctr",
+            vT_list[[which(vT_list$`valueType` == vT),"class"]])
         attrs_fct <- attributes(data[[i]])
 
       }}
@@ -1466,8 +1549,9 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 
   # test
   as_dataset(data)
-  if(!is.logical(as_mlstr_data_dict)) stop(
-    call. = FALSE,'`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
+  if(!is.logical(as_mlstr_data_dict))
+    stop(call. = FALSE,
+         '`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
 
   data_dict <-
     list(
@@ -1497,20 +1581,27 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
         attr_name_cat     <- attrs_i[[j]] %>% as.character()
 
         if(is.null(attr_content_col)) {
-          data_dict_var[attr_col_name] <- paste0(attr_name_cat,collapse = " _; ")
+          data_dict_var[attr_col_name] <-
+            paste0(attr_name_cat,collapse = " _; ")
         }else{
           cat_attr <- tibble(variable = i, name = attr_name_cat)
           cat_attr[[attr_col_name]] <- attr_content_col
-          data_dict_cat <- data_dict_cat %>% full_join(cat_attr, by = intersect(names(data_dict_cat),names(cat_attr)))
+          data_dict_cat <- data_dict_cat %>%
+            full_join(cat_attr,
+                      by = intersect(names(data_dict_cat),names(cat_attr)))
         }
       }
     }
-    data_dict[['Variables']]  <- data_dict[['Variables']]  %>% bind_rows(data_dict_var)
-    data_dict[['Categories']] <- data_dict[['Categories']] %>% bind_rows(data_dict_cat)
+    data_dict[['Variables']]  <-
+      data_dict[['Variables']]  %>% bind_rows(data_dict_var)
+    data_dict[['Categories']] <-
+      data_dict[['Categories']] %>% bind_rows(data_dict_cat)
   }
 
-  names(data_dict[['Variables']])  <- make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
-  names(data_dict[['Categories']]) <- make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
+  names(data_dict[['Variables']])  <-
+    make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
+  names(data_dict[['Categories']]) <-
+    make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
 
   if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
 
@@ -1577,28 +1668,44 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_match_dataset <- function(data, data_dict, data_dict_apply = FALSE, output = c("data","data_dict")){
+data_dict_match_dataset <- function(
+    data,
+    data_dict,
+    data_dict_apply = FALSE,
+    output = c("data","data_dict")){
 
   # test
   as_data_dict_shape(data_dict)
   as_dataset(data)
-  if(!is.logical(data_dict_apply)) stop(call. = FALSE,
-                                        '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
+  if(!is.logical(data_dict_apply))
+    stop(call. = FALSE,
+         '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
 
-  names_data <-  paste0("name %in% c('",paste0(names(data),collapse = "','"),"')")
+  names_data <-
+    paste0("name %in% c('",paste0(names(data),collapse = "','"),"')")
   data_dict <- data_dict_filter(data_dict, filter_var = names_data)
 
   data <- data %>% select(data_dict[['Variables']]$`name`)
 
-  if(length(data) == 0)                           warning("No match found between data and data dictionary")
-  if(data_dict_apply == TRUE)                     return(data_dict_apply(data, data_dict))
-  if(all(output[2:1] %in% c("data","data_dict"))) return(list(data = data, data_dict = data_dict))
-  if(output[1] == c("data"))                      return(data)
-  if(output[1] == c("data_dict"))                 return(data_dict)
+  if(length(data) == 0)
+    warning("No match found between data and data dictionary")
+
+  if(data_dict_apply == TRUE)
+    return(data_dict_apply(data, data_dict))
+
+  if(all(output[2:1] %in% c("data","data_dict")))
+    return(list(data = data, data_dict = data_dict))
+
+  if(output[1] == c("data"))
+    return(data)
+
+  if(output[1] == c("data_dict"))
+    return(data_dict)
 
   # else
   stop(call. = FALSE,
-       "output parameter must be either 'data' or 'data_dict'. Leave blank to get both.")
+"output parameter must be either 'data' or 'data_dict'.
+Leave blank to get both.")
 }
 
 #' @title
@@ -1646,7 +1753,7 @@ data_dict_match_dataset <- function(data, data_dict, data_dict_apply = FALSE, ou
 as_data_dict_shape <- function(object){
 
   # if the Variables sheet is given in parameter
-  if(object %>% names %in% c('Variables') %>% sum == 1 & !is.data.frame(object)){
+  if(sum(names(object) %in% c('Variables')) == 1 & !is.data.frame(object)){
 
     # name column must exist
     if(is.null(object[['Variables']][['name']])){
@@ -1674,7 +1781,7 @@ as_data_dict_shape <- function(object){
   }
 
   # else
-  stop(
+  stop(call. = FALSE,
     "\n\nThis object is not a in a standard data dictionary format. It
 must be a list containing at least 'Variables' list of elements.
 Please refer to documentation.")
@@ -1730,18 +1837,20 @@ as_data_dict <- function(object){
 
   # variable names must be unique and non-null
   if(check_data_dict_variables(data_dict) %>% nrow > 0){
-    stop(
+    stop(call. = FALSE,
 "Variable names must exist and be unique in your data dictionary.",
 crayon::bold("\n\nUseful tip:"),
-" Use data_dict_evaluate(data_dict) to get a full assessment of your data dictionary")}
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
+data dictionary")}
 
   # variable names must be unique and non-null
   if(sum(nrow(data_dict[['Categories']])) > 0){
     if(check_data_dict_categories(data_dict) %>% nrow > 0){
-      stop(
+      stop(call. = FALSE,
 "Variable names in categories must exist and be unique in your data dictionary.",
 crayon::bold("\n\nUseful tip:"),
-" Use data_dict_evaluate(data_dict) to get a full assessment of your data dictionary")}}
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
+data dictionary")}}
 
   if(nrow(data_dict[['Variables']]) == 0){
     data_dict <-
@@ -1814,7 +1923,8 @@ crayon::bold("\n\nUseful tip:"),
           group_by(.data$`variable`) %>% group_split() %>% as.list() %>%
           lapply(function(x){
             test_vT <- str_detect(x$valueType[1], "\\|")
-            if(test_vT) x <- x %>% mutate(valueType = valueType_guess(unique(x$name)))
+            if(test_vT) x <- x %>% mutate(
+              valueType = valueType_guess(unique(x$name)))
             return(x)
           }) %>%
           bind_rows() %>%
@@ -1823,7 +1933,7 @@ crayon::bold("\n\nUseful tip:"),
           select('variable','typeof')
 
         data_dict[['Variables']] <-
-          left_join(data_dict[['Variables']], category_outcomes, by = "name") %>%
+          left_join(data_dict[['Variables']],category_outcomes,by = "name") %>%
           mutate(`typeof` = replace_na(.data$`typeof`,'character'))
 
       }else{data_dict[['Variables']][['typeof']] <- 'character'}
@@ -1840,7 +1950,8 @@ crayon::bold("\n\nUseful tip:"),
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       select('variable','name') %>% fabR::add_index() %>%
-      left_join(data_dict[['Variables']] %>% select(variable = 'name', 'typeof'), by = "variable") %>%
+      left_join(data_dict[['Variables']] %>%
+                  select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
       lapply(function(x) {
         x$name <- as_valueType(x$`name`, valueType_guess(unique(x$`name`)))
@@ -1849,7 +1960,9 @@ crayon::bold("\n\nUseful tip:"),
         return(x)
       }) %>% bind_rows() %>%
       select(-'typeof') %>%
-      left_join(data_dict[['Categories']] %>% fabR::add_index() %>% select(-'name'),by = c("index", "variable"))
+      left_join(
+        data_dict[['Categories']] %>% fabR::add_index() %>%
+          select(-'name'),by = c("index", "variable"))
 
     data_dict[['Categories']][['index']] <- index
 
@@ -1858,7 +1971,8 @@ crayon::bold("\n\nUseful tip:"),
       if(length(data_dict[['Categories']][['levels']]) > 0){
 
         # check if levels equals name (that means the levels are factors)
-        if(all(data_dict[['Categories']][['levels']] == data_dict[['Categories']][['name']],na.rm = TRUE)){
+        if(all(data_dict[['Categories']][['levels']] ==
+               data_dict[['Categories']][['name']],na.rm = TRUE)){
           data_dict[['Categories']]['levels'] <- NULL}}
 
       # name label as names
@@ -1876,14 +1990,22 @@ crayon::bold("\n\nUseful tip:"),
     if(length(data_dict[['Categories']][['levels']]) > 0){
 
       # check if levels isnt NA when labels is (recip.) and
-      # check if na_values is NA when levels is (recip.) (that means labels and levels are factors)
+      # check if na_values is NA when levels is (recip.)
+      # (that means labels and levels are factors)
 
-      if(all(!is.na(data_dict[['Categories']][['levels']]) == is.na(data_dict[['Categories']][['labels']]))){
+      if(all(!is.na(data_dict[['Categories']][['levels']]) ==
+             is.na(data_dict[['Categories']][['labels']]))){
         data_dict[['Categories']] <-
           data_dict[['Categories']] %>%
           mutate(
-            labels = ifelse(!is.na(.data$`levels`) & is.na(.data$`na_values`),.data$`levels`,.data$`labels`),
-            levels = ifelse(!is.na(.data$`levels`) & (.data$`levels` == .data$`labels`),NA_character_ ,.data$`levels`))}
+            labels =
+              ifelse(
+                !is.na(.data$`levels`) & is.na(.data$`na_values`),
+                .data$`levels`, .data$`labels`),
+            levels =
+              ifelse(
+                !is.na(.data$`levels`) & (.data$`levels` == .data$`labels`),
+                NA_character_ , .data$`levels`))}
     }
 
     # rearrange elements by missingness, then name, then variable
@@ -1900,7 +2022,11 @@ crayon::bold("\n\nUseful tip:"),
       mutate(
         missing = !is.na(.data$`na_values`),
         missing = ifelse(is.na(.data$`missing`),FALSE,.data$`missing`)) %>%
-      mutate(missing = ifelse((.data$`name` < 0 & .data$`missing` == TRUE), 2, .data$`missing`)) %>%
+      mutate(
+        missing =
+          ifelse(
+            (.data$`name` < 0 & .data$`missing` == TRUE),
+            2, .data$`missing`)) %>%
       group_by(.data$`variable`) %>%
       arrange(.data$`variable`,.data$`missing`) %>%
       ungroup() %>%
@@ -1917,18 +2043,28 @@ crayon::bold("\n\nUseful tip:"),
 
   # reorder things
   # data shaping
-  data_dict[['Variables']] <- data_dict[['Variables']] %>% select('name','typeof',everything())
-  data_dict[['Variables']] <- data_dict[['Variables']][vapply(data_dict[['Variables']], FUN = function(x) !all(is.na(x)))]
+  data_dict[['Variables']] <-
+    data_dict[['Variables']] %>% select('name','typeof',everything())
+  data_dict[['Variables']] <-
+    data_dict[['Variables']][
+      vapply(X = data_dict[['Variables']],
+             FUN = function(x) !all(is.na(x)),
+             FUN.VALUE = logical(1))]
 
   if(sum(nrow(data_dict[['Categories']])) > 0){
 
     data_dict[['Categories']] <-
       inner_join(
-        data_dict[['Variables']] %>% select(variable = 'name'), data_dict[['Categories']],
+        data_dict[['Variables']] %>%
+          select(variable = 'name'), data_dict[['Categories']],
         by = "variable",multiple = "all") %>%
       select('variable','name','labels',matches("^na_values$"), everything())
 
-    data_dict[['Categories']] <- data_dict[['Categories']][vapply(data_dict[['Categories']], FUN = function(x) !all(is.na(x)))]
+    data_dict[['Categories']] <-
+      data_dict[['Categories']][vapply(
+        X = data_dict[['Categories']],
+        FUN = function(x) !all(is.na(x)),
+        FUN.VALUE = logical(1))]
 
   }
 
@@ -1988,32 +2124,38 @@ as_mlstr_data_dict <- function(object, as_data_dict = FALSE){
   # test if data_dict is already data dictionary
   data_dict <- as_data_dict(object)
 
-  if(!is.logical(as_data_dict)) stop(call. = FALSE,
-                                     '`as_data_dict` must be TRUE of FALSE (FALSE by default)')
+  if(!is.logical(as_data_dict))
+    stop(call. = FALSE,
+         '`as_data_dict` must be TRUE of FALSE (FALSE by default)')
 
   # if valueType exists, vT must be valid
   if(suppressWarnings(check_data_dict_valueType(data_dict)) %>% nrow > 0){
     stop(call. = FALSE,
 "valueType are incompatible with Maelstrom standards.",
 crayon::bold("\n\nUseful tip:"),
-" Use data_dict_evaluate(data_dict) to get a full assessment of your data dictionary")}
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
+data dictionary")}
 
 
   # check missing validity
-  if(suppressWarnings(check_data_dict_missing_categories(data_dict)) %>% nrow() != 0){
+  miss_val <- suppressWarnings(check_data_dict_missing_categories(data_dict))
+  if(nrow(miss_val) != 0){
     stop(call. = FALSE,
-"\n\nIncompatible missing value in the missing columns with Maelstrom standards",
+"\n
+Incompatible missing value in the missing columns with Maelstrom standards",
 crayon::bold(
 "\n\nUseful tip:"),
-" Use data_dict_evaluate(data_dict) to get a full assessment of your data dictionary")}
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
+data dictionary")}
 
   # Check standard for names
   if(as_data_dict == FALSE){
-    if(check_name_standards(var_names = data_dict[['Variables']][['name']]) %>% nrow > 0){
+    if(nrow(check_name_standards(data_dict[['Variables']][['name']])) > 0){
       stop(call. = FALSE,
 "names are incompatible with Maelstrom standards.",
 crayon::bold("\n\nUseful tip:"),
-" Use data_dict_evaluate(data_dict) to get a full assessment of your data dictionary")}
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
+data dictionary")}
   }
 
   # assess if tO is good
@@ -2051,7 +2193,8 @@ investigations.",
 
   # add label(:xx) if not present
   lab_name_var <-
-    names(data_dict[['Variables']] %>% select(matches(c("^label$","^label:[[:alnum:]]"))))
+    names(data_dict[['Variables']] %>%
+            select(matches(c("^label$","^label:[[:alnum:]]"))))
 
   # add label if does not exists
   if(length(lab_name_var) == 0){
@@ -2063,7 +2206,8 @@ investigations.",
 
     # addition of label(:xx) if not present
     lab_name <-
-      names(data_dict[['Categories']] %>% select(matches(c("^label$","^label:[[:alnum:]]"))))
+      names(data_dict[['Categories']] %>%
+              select(matches(c("^label$","^label:[[:alnum:]]"))))
 
     if(length(lab_name) == 0){
 
@@ -2093,7 +2237,8 @@ investigations.",
 
       }else if(all(data_dict[['Categories']][['na_values']] ==
                    data_dict[['Categories']][['label']],na.rm = TRUE)){
-        data_dict[['Categories']]$`missing`  <- !is.na(data_dict[['Categories']]$`na_values`)
+        data_dict[['Categories']]$`missing` <-
+          !is.na(data_dict[['Categories']]$`na_values`)
         data_dict[['Categories']]$`na_values` <- NULL
       }else{data_dict[['Categories']]$`missing` <- FALSE}
 
@@ -2108,7 +2253,11 @@ investigations.",
       mutate(
         missing = fabR::as_any_boolean(.data$`missing`),
         missing = ifelse(is.na(.data$`missing`),FALSE,.data$`missing`)) %>%
-      mutate(missing = ifelse((.data$`name` < 0 & .data$`missing` == TRUE), 2, .data$`missing`)) %>%
+      mutate(
+        missing =
+          ifelse((
+            .data$`name` < 0 & .data$`missing` == TRUE),
+            2, .data$`missing`)) %>%
       group_by(.data$`variable`) %>%
       arrange(.data$`variable`,.data$`missing`) %>%
       ungroup() %>%
@@ -2123,14 +2272,16 @@ investigations.",
         everything())
   }
 
-  if(sum(nrow(data_dict[['Categories']])) == 0) data_dict[['Categories']] <- NULL
+  if(sum(nrow(data_dict[['Categories']])) == 0)
+    data_dict[['Categories']] <- NULL
 
   if(as_data_dict == TRUE){
 
-    # # check if label and name are duplicated
-    # if(length(data_dict[['Variables']][['label']]) > 0){
-    #   if(all(data_dict[['Variables']][['name']] == data_dict[['Variables']][['label']])){
-    #     data_dict[['Variables']]$`label` <- NULL}}
+# # check if label and name are duplicated
+# if(length(data_dict[['Variables']][['label']]) > 0){
+#   if(all(data_dict[['Variables']][['name']] ==
+#          data_dict[['Variables']][['label']])){
+#     data_dict[['Variables']]$`label` <- NULL}}
 
     # valueType as typeof
     if(length(data_dict[['Variables']][['typeof']]) == 0){
@@ -2157,10 +2308,11 @@ investigations.",
             names(data_dict[['Categories']]))
 
         warning(
-          "Your data dictionary contains 'labels' column, which usage is protected in R.
+"Your data dictionary contains 'labels' column, which usage is protected in R.
 new name: ",new_name)
 
-        names(data_dict[['Categories']]) <- make.unique(c('labels',names(data_dict[['Categories']])))[-1]
+        names(data_dict[['Categories']]) <-
+          make.unique(c('labels',names(data_dict[['Categories']])))[-1]
       }
 
       data_dict[['Categories']] <-
@@ -2175,20 +2327,27 @@ new name: ",new_name)
             names(data_dict[['Categories']]))
 
         warning(
-          "Your data dictionary contains 'na_values' column, which usage is protected in R.
+"Your data dictionary contains 'na_values' column, which usage is protected in R.
 new name: ",new_name)
 
-        names(data_dict[['Categories']]) <- make.unique(c('na_values',names(data_dict[['Categories']])))[-1]
+        names(data_dict[['Categories']]) <-
+          make.unique(c('na_values',names(data_dict[['Categories']])))[-1]
       }
 
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
         rename_with(.cols = "missing", ~ 'na_values') %>%
         mutate(
-          na_values = ifelse(.data$`na_values` == TRUE,.data$`labels`, NA_character_))
+          na_values =
+            ifelse(.data$`na_values` == TRUE,.data$`labels`, NA_character_))
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
-        select(.data$`variable`,.data$`name`,.data$`labels`,.data$`na_values`,everything())
+        select(
+          .data$`variable`,
+          .data$`name`,
+          .data$`labels`,
+          .data$`na_values`,
+          everything())
     }
 
     data_dict[['Variables']] <-
@@ -2203,19 +2362,28 @@ new name: ",new_name)
     select(.data$`name`,matches(c("^label$","^label:[[:alnum:]]")),
            matches('^valueType$'),everything())
   data_dict[['Variables']] <-
-    data_dict[['Variables']][vapply(data_dict[['Variables']], FUN = function(x) !all(is.na(x)))]
+    data_dict[['Variables']][vapply(
+      X = data_dict[['Variables']],
+      FUN = function(x) !all(is.na(x)),
+      FUN.VALUE = logical(1))]
 
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      select(.data$`variable`,.data$`name`,matches(c("^label$","^label:[[:alnum:]]")),everything())
+      select(.data$`variable`,.data$`name`,
+             matches(c("^label$","^label:[[:alnum:]]")),everything())
 
     data_dict[['Categories']] <-
-      data_dict[['Categories']][vapply(data_dict[['Categories']], FUN = function(x) !all(is.na(x)))]
+      data_dict[['Categories']][vapply(
+        X = data_dict[['Categories']],
+        FUN = function(x) !all(is.na(x)),
+        FUN.VALUE = logical(1))]
     }
 
-  if(as_data_dict == TRUE) {attributes(data_dict)$`Mlstr::class` <- "data_dict"
-  }else{                    attributes(data_dict)$`Mlstr::class` <- "Mlstr_data_dict"}
+  if(as_data_dict == TRUE) {
+    attributes(data_dict)$`Mlstr::class` <- "data_dict"
+  }else{
+    attributes(data_dict)$`Mlstr::class` <- "Mlstr_data_dict"}
 
   return(data_dict)
 }
@@ -2264,11 +2432,10 @@ new name: ",new_name)
 #' @export
 is_data_dict_shape <- function(object){
 
-  object <- object
   # if only the data dictionary shape is given in parameter
-  if(class(suppressWarnings(suppressMessages(try({as_data_dict_shape(object)},silent = TRUE))))[1] == 'try-error') return(FALSE)
+  test <- fabR::silently_run(try(as_data_dict_shape(object),silent = TRUE))
+  if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
-
 }
 
 #' @title
@@ -2316,7 +2483,8 @@ is_data_dict <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  if(class(suppressWarnings(suppressMessages(try({as_data_dict(object)},silent = TRUE))))[1] == 'try-error') return(FALSE)
+  test <- fabR::silently_run(try(as_data_dict(object),silent = TRUE))
+  if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
 }
@@ -2368,9 +2536,7 @@ is_mlstr_data_dict <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  if(class(fabR::silently_run(
-    try(as_mlstr_data_dict(object),silent = TRUE)))[1] == 'try-error')
-    return(FALSE)
-
+  test <- fabR::silently_run(try(as_mlstr_data_dict(object),silent = TRUE))
+  if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 }

@@ -83,7 +83,8 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 
   for(i in seq_len(ncol(data))){
     # stop()}
-    data[i] <- as_valueType(x = data[i], valueType = data_dict_temp[["Variables"]]$`valueType`[i])
+    data[i] <-
+      as_valueType(data[i], data_dict_temp[["Variables"]]$`valueType`[i])
   }
 
   if(data_dict_apply == TRUE){
@@ -198,7 +199,8 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 
   fargs <- as.list(match.call(expand.dots = TRUE))
   if(is.null(names(dataset_list))){
-    names(study) <- fabR::make_name_list(as.character(fargs['dataset_list']), study)}
+    names(study) <-
+      fabR::make_name_list(as.character(fargs['dataset_list']), study)}
 
   study <- as_study(study)
 
@@ -272,7 +274,7 @@ as_dataset <- function(object, col_id = NULL){
   }
 
   # else
-  stop(
+  stop(call. = FALSE,
 "\n\n
 This object is not a dataset as defined by Maelstrom standards which must be
 a data frame. Please refer to documentation.")
@@ -314,12 +316,19 @@ a data frame. Please refer to documentation.")
 as_study <- function(object){
 
   # check if names in object exist
-  if(is.null(names(object)) | all(vapply(as.list(names(object)), FUN = function(x) nchar(x)) == 0 )){
-    stop("One or more datasets are not named. Please provide named list of datasets.")}
+  name_objs <-
+    vapply(X = as.list(names(object)),
+           FUN = function(x) nchar(x),
+           FUN.VALUE = integer(1))
+
+  if(is.null(names(object)) | all(name_objs) == FALSE){
+    stop(call. = FALSE,
+"One or more datasets are not named. Please provide named list of datasets.")}
 
   # check if names in object are unique
   if(!setequal(length(names(object)),length(unique(names(object))))){
-    stop("The name of your datasets are not unique. Please provide different names.")}
+    stop(call. = FALSE,
+"The name of your datasets are not unique. Please provide different names.")}
 
   # check if listed datasets
   tryCatch(
@@ -374,7 +383,8 @@ is_dataset <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  if(class(suppressWarnings(suppressMessages(try({as_dataset(object)},silent = TRUE))))[1] == 'try-error') return(FALSE)
+  test <- fabR::silently_run(try(as_dataset(object),silent = TRUE))
+  if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
 }
@@ -411,7 +421,8 @@ is_study <- function(object){
 
   object <- object
   # if only the study is given in parameter
-  if(class(suppressWarnings(suppressMessages(try({as_study(object)},silent = TRUE))))[1] == 'try-error') return(FALSE)
+  test <- fabR::silently_run(try(as_study(object),silent = TRUE))
+  if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
 }

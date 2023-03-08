@@ -95,7 +95,8 @@ to = ""DEMO/reports/TOKYO_gndr"",group_by = ""gndr"",out = ""ggplot2"")
 # re-index files to include new files created
 index_DEMO <- file_index_create(folder = ""DEMO"")
 # read the book down
-file_index_read(index_DEMO,file_path = ""DEMO/reports/TOKYO_gndr/docs/index.html"")
+file_index_read(
+ index_DEMO,file_path = ""DEMO/reports/TOKYO_gndr/docs/index.html"")
 }
 
 }

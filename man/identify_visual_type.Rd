@@ -7,8 +7,8 @@
 identify_visual_type(dataset, data_dict)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input data observations associated
+to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
@@ -20,8 +20,8 @@ data dictionary provided as an input.
 }
 \description{
 This helper function analyses the content of a dataset and its data
-dictionary to extract the type of visualization to generate in a report. This
-function can be used to manually personalize the report parameters.
+dictionary to extract the type of visualization to generate in a report.
+This function can be used to manually personalize the report parameters.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
@@ -51,7 +51,8 @@ full completeness is mandatory.
 \dontrun{
 # Example 1: viz type of iris dataset
 library(tidyverse)
-identify_visual_type(dataset = iris) \%>\% .$Variables \%>\% select(name,viz_type)
+identify_visual_type(dataset = iris) \%>\% .$Variables \%>\%
+ select(name,viz_type)
 }
 
 }
