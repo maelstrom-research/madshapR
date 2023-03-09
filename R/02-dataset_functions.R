@@ -92,7 +92,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
     return(data)
   }
 
-  data <- as_dataset(data)
+  dataset <- as_dataset(data,attributes(data)$`Mlstr::col_id`)
   return(data)
 }
 
@@ -255,7 +255,7 @@ as_dataset <- function(object, col_id = NULL){
       attributes(object)$`Mlstr::col_id` <- NULL
       return(object)}
 
-    if(is.null(col_id)) col_id <- names(object)[[1]]
+    # if(is.null(col_id)) col_id <- names(object)[[1]]
     # if !is.null(col_id) column must be present and completely filled
     if(length(intersect(names(object), col_id)) != length(unique(col_id)))
       stop(call. = FALSE,
@@ -268,7 +268,8 @@ as_dataset <- function(object, col_id = NULL){
     attributes(object)$`Mlstr::class` <- "dataset"
     attributes(object)$`Mlstr::col_id` <- col_id
 
-    object <- object %>% select(all_of(col_id), everything())
+    object <-
+      object %>% select(all_of(col_id), everything())
 
     return(object)
   }

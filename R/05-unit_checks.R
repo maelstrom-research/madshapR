@@ -160,7 +160,8 @@ check_data_dict_categories <- function(data_dict){
     mutate(
       condition = ifelse(is.na(.data$`name_var`),
         "[ERR] - In 'variable', the value cannot be NA",
-        "[ERR] - Categories not present in the variable names (in 'Variables')"),
+        "[ERR] - Categories not present in the variable names (in 'Variables')"
+        ),
       condition = ifelse(is.na(.data$`value`),
         "[ERR] - In 'name', the value cannot be NA", .data$`condition`),
       value = ifelse(!is.na(.data$`value`),"value",.data$`value`),

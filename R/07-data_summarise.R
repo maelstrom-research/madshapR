@@ -638,7 +638,7 @@ resume_variables <- function(data, data_dict = NULL){
       ungroup() %>%
       mutate(
         valid_class =
-          .ifelse(
+          ifelse(
             .data$`valid_class` == TRUE,
             "2_Missing values", "1_Valid values")) %>%
       mutate(value_var = as.character(.data$`value_var`))

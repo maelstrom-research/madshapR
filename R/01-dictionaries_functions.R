@@ -2328,7 +2328,7 @@ new name: ",new_name)
 
         warning(
 "Your data dictionary contains 'na_values' column, which usage is protected in R.
-new name: ",new_name)
+New name: ",new_name)
 
         names(data_dict[['Categories']]) <-
           make.unique(c('na_values',names(data_dict[['Categories']])))[-1]

@@ -100,41 +100,33 @@ dataset_visualize <- function(
   .keep_files = TRUE){
 
   # check input
-  if(!is.null(dataset)) as_dataset(dataset)
-  if(!is.null(data_dict)) as_data_dict(data_dict)
+  if(!is.null(dataset))
+    dataset <- as_dataset(dataset,col_id = attributes(dataset)$`Mlstr::col_id`)
+
+  if(!is.null(data_dict))
+    data_dict <- as_mlstr_data_dict(data_dict)
+
   if(!is.logical(.keep_files))
     stop(call. = FALSE,'`.keep_files` must be TRUE of FALSE (TRUE by default)')
 
-  if(is.null(data_dict)){data_dict <- data_dict_extract(dataset)}
+  if(is.null(data_dict))
+    data_dict <- data_dict_extract(dataset,as_mlstr_data_dict = TRUE)
 
   if(!"summary_1" %in% (data_dict$Variables %>% names)){
 
-    data_dict$Variables <- fabR::add_index(data_dict$Variables, .force = TRUE)
+    data_dict$Variables <-
+      fabR::add_index(data_dict$Variables, .force = TRUE)
     data_dict <-
       data_dict %>%
       identify_visual_type(dataset = dataset) %>%
       identify_plot_type(dataset = dataset, group_by = group_by, out = out)
+
   }
 
-#   if(nrow(data_dict$Variables) == 0){
-#
-#     return(message(
-# "[Error]: the name of your dataset has not been found in your data dictionary.
-#  Please verify the name of your dataset in your datadictionary (column 'name'
-#  in 'Variables' sheet)
-# and reprocess."))
-#   }
-
-  # global data
-  ## dataset must have ID in first column
-
-  # count_tag <- count_tag(data_dict)
-  # all_na_column <- fabR::get_all_na_cols(dataset)
-  # nb_unique_participants <- dataset %>% select(1) %>% unique %>% nrow()
-
-  fabR::template_visual_report(to)
-  save(to,data_dict,group_by,
-       file = paste0(to,"/temp_bookdown_report/bookdown_report.RData"))
+  path_to <- fs::path_abs(to)
+  fabR::template_visual_report(path_to)
+  save(path_to,data_dict,group_by,
+       file = paste0(path_to,"/temp_bookdown_report/bookdown_report.RData"))
 
   ## markdown writing elements
 
@@ -146,8 +138,10 @@ dataset_visualize <- function(
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
 library(datashapR)
+library(DT)
+library(tidyverse)
 load(file = paste0(file = paste0("',
-getwd(),"/",to,'/temp_bookdown_report/bookdown_report.RData")))
+    path_to,'/temp_bookdown_report/bookdown_report.RData")))
 
 ```
 --------------------------------------------------------------------------------
@@ -200,7 +194,8 @@ if(sum(nrow(data_dict$Categorie)) > 0){
 
 ') %>% write_lines(
   file =
-    paste0(to,"/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
+    paste0(path_to,
+           "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
   append = TRUE)
 
 
@@ -222,7 +217,7 @@ if(sum(nrow(data_dict$Categorie)) > 0){
   for(i in seq_len(nrow(data_dict$Variables))){
 
     rmd_file_name <-
-      paste0(to,"/temp_bookdown_report/file/bookdown-template-master/",
+      paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
              data_dict$Variables$name[i],".Rmd")
     file.create(rmd_file_name)
@@ -248,7 +243,7 @@ knitr.figure = TRUE}"),"\n",
      mutate(key = paste0('<b>' , key, '</b>')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = TRUE),
    rownames = FALSE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
-        "\n```\n") %>% cat
+        "\n```\n") %>%
 
       paste0("\n</div>\n\n") %>%
       paste0(
@@ -299,28 +294,32 @@ str_squish(", fig.show='hold',
       write_lines(file = rmd_file_name, append = FALSE)
   }
 
-  wd <- getwd()
   graphics.off()
 
-  setwd(
-    paste0(wd,"/",to,"/temp_bookdown_report/file/bookdown-template-master/"))
-  fabR::silently_run(file.remove(list.files()%>%str_subset(names(dataset[1]))))
+  fabR::silently_run(
+    file.remove(
+      list.files(
+        paste0(
+          path_to,"/temp_bookdown_report/file/bookdown-template-master/")) %>%
+        str_subset(paste0(
+          "^[[:digit:]]+-",
+          toString(as.character(attributes(dataset)$`Mlstr::col_id`)),
+          ".Rmd$"))))
 
-  try({
-    render_book(paste0(
-      wd,"/",to,
-      "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"))},
-    silent = FALSE)
-  setwd(wd)
+  xfun::in_dir(
+    dir = paste0(
+      path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
+    expr = render_book(
+      input = paste0(
+        path_to,
+        "/temp_bookdown_report/file/bookdown-template-master/index.Rmd")))
 
-  if(dir.exists(paste0(to,"/docs"))) dir_delete(paste0(to,"/docs"))
-  dir_copy(
-    paste0(to,"/temp_bookdown_report/file/bookdown-template-master/docs"),
-    paste0(to,"/docs"))
+  fs::dir_copy(
+    paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/docs"),
+    paste0(path_to,"/docs"),
+    overwrite = TRUE)
 
-  if(.keep_files == FALSE){dir_delete(paste0(to,"/temp_bookdown_report/"))}
-
-  # browseURL(paste0(to,"/docs/index.html"))
+  if(.keep_files == FALSE){dir_delete(paste0(path_to,"/temp_bookdown_report/"))}
 
   return(message(
 "\n\nTo edit your file, You can use the function `open_visual_report('",to,"')`
@@ -536,7 +535,7 @@ identify_plot_type <- function(
       data_dict$Variables %>% mutate(viz_type = .data$`valueType`)
   }
 
-  if(sum(nrow(data_dict[['Categories']])) == 0 ){
+  if(sum(nrow(data_dict[['Categories']])) == 0){
     data_dict[['Categories']] <-
       tibble(
         variable = as.character(),
@@ -671,7 +670,7 @@ identify_plot_type <- function(
     data_dict$Variables %>%
     mutate(plot_4 =
              paste0(
-               'fabR::fabR::plot_pie_valid_value(   tbl = dataset,col = "',
+               'fabR::plot_pie_valid_value(   tbl = dataset,col = "',
                .data$`name`,'" , missing_values = "',
                .data$`code_dd`,'", out = "',
                out,'-code", group_by = ',group_by,')'))
@@ -728,7 +727,6 @@ identify_plot_type <- function(
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         TRUE                                                                   ~
           NA_character_))
-  # this_dd <<- data_dict
 
   for (i in seq_len(length(data_dict$Variables$index))) {
     data_dict$Variables$plot_1[i]    <-
