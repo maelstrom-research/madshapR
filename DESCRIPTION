@@ -1,7 +1,7 @@
 Package: datashapR
 Type: Package
 Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.1.0.1001
+Version: 1.1.0.1002
 Author: Guillaume Fabre
 Authors@R: 
     c(person(given = "Guillaume",

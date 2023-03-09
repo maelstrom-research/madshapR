@@ -297,7 +297,11 @@ str_squish(", fig.show='hold',
   graphics.off()
 
   fabR::silently_run(
-    file.remove(
+
+    xfun::in_dir(
+      dir = paste0(
+        path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
+      exp = file.remove(
       list.files(
         paste0(
           path_to,"/temp_bookdown_report/file/bookdown-template-master/")) %>%
@@ -305,6 +309,7 @@ str_squish(", fig.show='hold',
           "^[[:digit:]]+-",
           toString(as.character(attributes(dataset)$`Mlstr::col_id`)),
           ".Rmd$"))))
+  )
 
   xfun::in_dir(
     dir = paste0(
