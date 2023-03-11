@@ -1540,7 +1540,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
   as_dataset(data)
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
+         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
 
   data_dict <-
     list(

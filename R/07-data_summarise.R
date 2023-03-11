@@ -109,11 +109,11 @@ dataset_summarize <- function(
   dataset_report <-
     dataset_evaluate(dataset,data_dict,as_mlstr_data_dict = TRUE)
   report$`Data dictionary summary`     <-
-    dataset_report$`Data dictionary summary`
+    tibble(dataset_report$`Data dictionary summary`)
   report$`Data dictionary assessment` <-
-    dataset_report$`Data dictionary assessment`
+    tibble(dataset_report$`Data dictionary assessment`)
   report$`Dataset assessment`         <-
-    dataset_report$`Dataset assessment`
+    tibble(dataset_report$`Dataset assessment`)
 
   message(
     "- DATASET SUMMARIZE: ",
@@ -514,7 +514,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
+         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
 
   report_list <-
     vector(mode = "list", length = length(names(study)))

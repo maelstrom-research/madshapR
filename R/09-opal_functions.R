@@ -401,7 +401,7 @@ opal_tables_pull <- function(
 
   if(!is.logical(keep_as_study))
     stop(call. = FALSE,
-         '`keep_as_study` must be TRUE of FALSE (TRUE by default)')
+         '`keep_as_study` must be TRUE or FALSE (TRUE by default)')
 
 
   study <- list()

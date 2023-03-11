@@ -88,13 +88,13 @@ dataset_evaluate <- function(
 
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
+         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
 
   as_data_dict_shape(data_dict)
 
   data_dict[['Variables']] <-
-    data_dict[['Variables']] %>% fabR::add_index(.force = TRUE) %>%
-    mutate(across(everything(),as.character))
+    data_dict[['Variables']] %>%
+    fabR::add_index(.force = TRUE)
 
   data_dict <- data_dict[c('Variables','Categories')]
   data_dict <-
@@ -135,9 +135,9 @@ dataset_evaluate <- function(
   dictionary_report <-
     data_dict_evaluate(data_dict, as_mlstr_data_dict = as_mlstr_data_dict)
   report$`Data dictionary summary` <-
-    dictionary_report$`Data dictionary summary`
+    tibble(dictionary_report$`Data dictionary summary`)
   report$`Data dictionary assessment` <-
-    dictionary_report$`Data dictionary assessment`
+    tibble(dictionary_report$`Data dictionary assessment`)
 
   message(
     "- DATASET ASSESSMENT: ",
@@ -261,7 +261,7 @@ dataset_evaluate <- function(
            `Quality assessment comment` = .data$`condition`, everything()) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     arrange(.data$`name_var`) %>%
-    distinct()
+    distinct() %>% tibble
 
   message("    Generate report")
   message(bold(
@@ -347,7 +347,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
+         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
 
   report_list <-
     vector(mode = "list", length = length(names(study)))
@@ -445,13 +445,13 @@ data_dict_evaluate <- function(
   # check args
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE of FALSE (TRUE by default)')
+         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
 
   # check on arguments : data dict
   as_data_dict_shape(data_dict)
   data_dict[['Variables']] <-
-    data_dict[['Variables']] %>% fabR::add_index(.force = TRUE) %>%
-    mutate(across(everything(),as.character))
+    data_dict[['Variables']] %>%
+    fabR::add_index(.force = TRUE)
 
   data_dict <- data_dict[c('Variables','Categories')]
   data_dict <-
@@ -496,8 +496,7 @@ data_dict_evaluate <- function(
 
 
   message(
-"- DATA DICTIONARY ASSESSMENT: ",crayon::bold(data_dict_name),
-                                                  " --------------------------")
+"- DATA DICTIONARY ASSESSMENT: ",crayon::bold(data_dict_name)," --------------")
 
   # creation of the structure of the report
   report <- list(
@@ -507,10 +506,11 @@ data_dict_evaluate <- function(
   report$`Data dictionary summary` <-
     suppressWarnings(data_dict_flatten(data_dict))
   report$`Data dictionary summary` <-
-    report$`Data dictionary summary`[['Variables']] %>%
+    tibble(report$`Data dictionary summary`[['Variables']] %>%
     select(
       .data$`index`,.data$`name`,matches(c("^label$","^label:[[:alnum:]]"))[1],
-      matches('^valueType$'),starts_with("Categories::"),everything())
+      matches('^valueType$'),starts_with("Categories::"),everything()))
+
 
   test_name_standards <-
     test_unique_variable <-
@@ -705,7 +705,7 @@ data_dict_evaluate <- function(
            `Quality assessment comment` = .data$`condition`) %>%
     arrange(desc(.data$`sheet`),.data$`name_col`,.data$`name_var`) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
-    distinct()
+    distinct() %>% tibble
 
   message("    Generate report")
   message(bold(

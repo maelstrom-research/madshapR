@@ -106,7 +106,7 @@ dataset_visualize <- function(
     data_dict <- as_mlstr_data_dict(data_dict)
 
   if(!is.logical(.keep_files))
-    stop(call. = FALSE,'`.keep_files` must be TRUE of FALSE (TRUE by default)')
+    stop(call. = FALSE,'`.keep_files` must be TRUE or FALSE (TRUE by default)')
 
   if(is.null(data_dict))
     data_dict <- data_dict_extract(dataset,as_mlstr_data_dict = TRUE)
