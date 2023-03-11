@@ -22,8 +22,7 @@ Description: The goal of this package is to help the user through the processes
 License: GPL-3
 LazyData: true
 Depends: R (>= 3.5.0)
-Imports: dplyr, 
-    magrittr,
+Imports: dplyr,
     rlang,
     stringr,
     crayon,
@@ -39,8 +38,7 @@ Imports: dplyr,
     utils,
     fabR
 Suggests: 
-    rmarkdown,
-    spelling
+    rmarkdown
 URL: https://github.com/maelstrom-research/datashapR/
     https://www.maelstrom-research.org
 BugReports: https://github.com/maelstrom-research/datashapR/issues
