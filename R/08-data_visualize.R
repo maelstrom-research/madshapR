@@ -119,8 +119,18 @@ dataset_visualize <- function(
       data_dict %>%
       identify_visual_type(dataset = dataset) %>%
       identify_plot_type(dataset = dataset, group_by = group_by, out = out)
-
   }
+
+  dataset <-
+    dataset[vapply(
+      X = dataset,
+      FUN = function(x) !all(is.na(x)),
+      FUN.VALUE = logical(1))]
+
+  data_dict <-
+    datashapR::data_dict_match_dataset(
+      dataset,data_dict,
+      output = 'data_dict')
 
   path_to <- fs::path_abs(to)
   fabR::template_visual_report(path_to)
