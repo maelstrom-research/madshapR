@@ -124,7 +124,8 @@ dataset_summarize <- function(
     dataset %>%
     summarise(across(
       everything(),
-      ~ valueType_of(.))) %>% pivot_longer(cols = everything()) %>%
+      ~ valueType_of(.))) %>%
+    pivot_longer(cols = everything()) %>%
     rename(
       name_var = .data$`name`,
       `Actual dataset valueType` = .data$`value`)
@@ -134,7 +135,8 @@ dataset_summarize <- function(
       dataset %>%
       summarise(across(
         everything(),
-        ~ valueType_guess(.))) %>% pivot_longer(cols = everything()) %>%
+        ~ valueType_guess(.))) %>%
+      pivot_longer(cols = everything()) %>%
       rename(
         name_var = .data$`name`,
         `Estimated dataset valueType` = .data$`value`)
@@ -204,7 +206,9 @@ dataset_summarize <- function(
         `Categories in data dictionary` = as.character())}
 
   report$`Variables summary (all)` <-
-    data_dict_var %>% left_join(data_dict_cat, by = "name_var")
+    data_dict_var %>%
+    left_join(data_dict_cat, by = "name_var") %>%
+    tibble
 
   message("    Summarize the data type of each variable across the dataset")
 
@@ -623,7 +627,7 @@ resume_variables <- function(data, data_dict = NULL){
 
   data_dict_var  <-
     data_dict[['Variables']] %>%
-    select(.data$`name`) %>%
+    select('name') %>%
     mutate(categorical = NA_character_) %>%
     fabR::add_index()
 
@@ -644,7 +648,7 @@ resume_variables <- function(data, data_dict = NULL){
 
   }else{
     data_dict_cat <-
-      tibble(cat_index = as.character(),name = as.character(),
+      tibble(cat_index = as.integer(),name = as.character(),
              value_var = as.character(),valid_class = as.character())}
 
   data_dict_var  <-
