@@ -23,7 +23,7 @@ A taxonomy must be a data frame or data frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy
-may follow Maelstrom research stardards, and its content can be evaluated
+may follow Maelstrom research standards, and its content can be evaluated
 accordingly, such as naming convention restriction, tagging elements,
 or scales, which are specific to Maelstrom Research. In this particular
 case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',

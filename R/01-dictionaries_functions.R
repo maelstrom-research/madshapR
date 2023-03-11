@@ -1,5 +1,5 @@
 #' @title
-#' Transform any columns in a data dictionary component to a new component
+#' Transform a columns in a data dictionary component to a new component
 #'
 #' @description
 #' Transforms any columns in a data dictionary component to a new component.
@@ -21,7 +21,7 @@
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -48,7 +48,6 @@
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -177,7 +176,7 @@ Example:
 }
 
 #' @title
-#' Transform any component in a data dictionary in colum(s) in another component
+#' Transform a component in a data dictionary in column(s) in another component
 #'
 #' @description
 #' If the component 'to' exists, and contains any column 'xx' or 'yy', these
@@ -198,7 +197,7 @@ Example:
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -225,7 +224,6 @@ Example:
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -322,7 +320,7 @@ data_dict_flatten <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -331,7 +329,7 @@ data_dict_flatten <- function(
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -356,7 +354,6 @@ data_dict_flatten <- function(
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -574,7 +571,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #'
 #' @description
 #' Transforms column(s) in a data dictionary component into their longer
-#' equivalent. If any Opal taxonomy is provided, the correspondant colunms in
+#' equivalent. If any Opal taxonomy is provided, the correspondent columns in
 #' the data dictionary will be converted to a format that contains fewer columns
 #' than an Opal format to work with. This operation is equivalent to perform a
 #' [tidyr::pivot_longer()] to these columns following the taxonomy structure
@@ -591,7 +588,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -600,7 +597,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -623,7 +620,6 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -844,7 +840,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' @description
 #' Subsets either or both the 'Variables' and the 'Categories' tibbles of a data
 #' dictionary. Rows are conserved if the value of one column satisfy a
-#' condition. This function is a wrapper analoguous to [dplyr::filter()].
+#' condition. This function is a wrapper analogous to [dplyr::filter()].
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -856,7 +852,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -882,7 +878,6 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -947,7 +942,7 @@ data_dict_filter <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -959,7 +954,7 @@ data_dict_filter <- function(
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
 #' @param ... Column in the data dictionary to split it by. If not provided, the
-#' spliting will be done on the grouping element of a grouped data dictionary.
+#' splitting will be done on the grouping element of a grouped data dictionary.
 #'
 #' @return
 #' A list of tibble(s) identifying a list of data dictionary - like structure.
@@ -970,7 +965,6 @@ data_dict_filter <- function(
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -984,7 +978,7 @@ data_dict_group_split <- function(data_dict, ...){
 
   if(!is_grouped_df(data_dict[['Variables']]))
     stop(call. = FALSE,
-"\n\nThe data dictionary list must be grouped to be splited. Please group them
+"\n\nThe data dictionary list must be grouped to be split. Please group them
 using data_dict_group_by(data_dict, col)")
 
   col <- as.symbol(names(group_keys(data_dict[['Variables']])))
@@ -1049,11 +1043,11 @@ cannot be found accross the variables declared in 'Variables'.")
 }
 
 #' @title
-#' Regroup splited listed data dictionaries
+#' Regroup listed split data dictionaries
 #'
 #' @description
 #' Regroups data dictionaries provided in a list, and binds them together.
-#' This function is a wrapper analoguous to [dplyr::bind_rows()] from the
+#' This function is a wrapper analogous to [dplyr::bind_rows()] from the
 #' tidyverse.
 #'
 #' @details
@@ -1066,7 +1060,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1088,7 +1082,6 @@ cannot be found accross the variables declared in 'Variables'.")
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1169,7 +1162,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @description
 #' Groups the data dictionary both in the 'Variables' and 'Categories' (assuming
 #' the group is defined in both elements) defined by the query. The user would
-#' groupe their data dictionary analogously they would do to a tibble with
+#' group their data dictionary analogously they would do to a tibble with
 #' [dplyr::group_by()]. [datashapR::data_dict_ungroup()] reverses the effect of
 #' [datashapR::data_dict_group_by].
 #'
@@ -1183,7 +1176,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1204,7 +1197,6 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1261,7 +1253,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #'
 #' @description
 #' Ungroup data dictionaries, both in the 'Variables' and 'Categories' (assuming
-#' the group is defined in both elements). The user would groupe their
+#' the group is defined in both elements). The user would group their
 #' data dictionary analogously they would do to a tibble with
 #' [dplyr::ungroup()].
 #'
@@ -1275,7 +1267,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1295,7 +1287,6 @@ cannot be found accross the variables declared in 'Variables'.")
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1335,7 +1326,7 @@ data_dict_ungroup <- function(data_dict){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1345,7 +1336,7 @@ data_dict_ungroup <- function(data_dict){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -1368,7 +1359,6 @@ data_dict_ungroup <- function(data_dict){
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1519,7 +1509,7 @@ your dataset")}
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -1541,7 +1531,6 @@ your dataset")}
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1616,7 +1605,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' Inner join between any data and data dict variables
 #'
 #' @description
-#' Proceeds an inner jointure between any dataset and its assocated
+#' Proceeds an inner jointure between any dataset and its associated
 #' data dictionary.
 #' It returns the user either the sub-dataset or the sub-data dictionary, or
 #' both in a list.
@@ -1631,7 +1620,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1641,7 +1630,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -1656,7 +1645,7 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #'
 #' @return
 #' Either a tibble, identifying the dataset, or a list of tibble(s)
-#' identifying a data dictionary. Returns both in a list by defaut.
+#' identifying a data dictionary. Returns both in a list by default.
 #'
 #' @examples
 #' \dontrun{
@@ -1664,7 +1653,6 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1727,7 +1715,7 @@ Leave blank to get both.")
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1746,7 +1734,6 @@ Leave blank to get both.")
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1806,7 +1793,7 @@ Please refer to documentation.")
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1828,7 +1815,6 @@ Please refer to documentation.")
 #'}
 #'
 #' @import dplyr tidyr stringr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @export
 as_data_dict <- function(object){
@@ -2092,7 +2078,7 @@ data dictionary")}}
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -2115,7 +2101,6 @@ data dictionary")}}
 #' }
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -2407,7 +2392,7 @@ New name: ",new_name)
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -2426,7 +2411,6 @@ New name: ",new_name)
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -2456,7 +2440,7 @@ is_data_dict_shape <- function(object){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -2475,7 +2459,6 @@ is_data_dict_shape <- function(object){
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -2508,7 +2491,7 @@ is_data_dict <- function(object){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -2528,7 +2511,6 @@ is_data_dict <- function(object){
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export

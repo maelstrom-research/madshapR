@@ -12,8 +12,8 @@ study_summarize(study, taxonomy = NULL, valueType_guess = TRUE)
 \item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
 
-\item{valueType_guess}{Whether the output should include refind valueType
-that can be applied to the dataset. TRUE by default.}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
 A list of tibbles of report for each study-specific dataset.
@@ -22,11 +22,11 @@ A list of tibbles of report for each study-specific dataset.
 Generates an Excel spreadsheet report for a study-specific dataset
 list (or study) showing descriptive statistics for each variable to
 facilitate the assessment of input data. Statistics are generated according
-to their valueTypes.
+to their valueType.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy, or standard evaluation. The summary associated provides
-dataset composition, with observation repartition and descriptive statistics.
+dataset composition, with observation distribution and descriptive statistics.
 }
 \details{
 A study must be a named list containing at least one data frame or
@@ -42,7 +42,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -52,7 +52,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
@@ -62,7 +62,7 @@ full completeness is mandatory.
 dataset <- study_TOKYO \%>\% mutate(
            dob = fabR::as_any_date(dob, format = ""mdy""))
 data_dict <- dd_TOKYO_format_maelstrom_tagged
-study_assessement_report(dataset, data_dict)
+study_assessment_report(dataset, data_dict)
 }
 
 }

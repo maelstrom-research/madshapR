@@ -28,7 +28,7 @@ datashapR_help <- function(){
 #'
 #' @description
 #' Built-in tibbles showing the list of authorized valueType values, as
-#' described in Opal, and their data type (R wise) correspondancy. This tibble
+#' described in Opal, and their data type (R wise) corresponding. This tibble
 #' is designed for programmatic use.
 #'
 #' @details

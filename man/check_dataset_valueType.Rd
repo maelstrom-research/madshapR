@@ -11,8 +11,8 @@ check_dataset_valueType(data, data_dict = NULL, valueType_guess = FALSE)
 
 \item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
 
-\item{valueType_guess}{Whether the output should include refind valueType
-that can be applied to the dataset. FALSE by default.}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
 A tibble providing values which valueType differs between data and
@@ -35,7 +35,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -45,7 +45,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }

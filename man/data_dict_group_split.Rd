@@ -11,7 +11,7 @@ data_dict_group_split(data_dict, ...)
 transformed.}
 
 \item{...}{Column in the data dictionary to split it by. If not provided, the
-spliting will be done on the grouping element of a grouped data dictionary.}
+splitting will be done on the grouping element of a grouped data dictionary.}
 }
 \value{
 A list of tibble(s) identifying a list of data dictionary - like structure.
@@ -34,7 +34,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.

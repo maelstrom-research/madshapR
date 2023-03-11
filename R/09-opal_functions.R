@@ -33,7 +33,6 @@
 #' }
 #'
 #' @import dplyr opalr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -96,7 +95,6 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' }
 #'
 #' @import dplyr opalr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -153,7 +151,6 @@ opal_files_push <- function(opal, from, to){
 #' }
 #'
 #' @import dplyr opalr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -261,7 +258,7 @@ opal_tables_push <- function(
 #' Download files from an Opal environment
 #'
 #' @description
-#' Uownloads files from Opal environment to local. It is a wrapper of
+#' Downloads files from Opal environment to local. It is a wrapper of
 #' [opalr::opal.file_download()].
 #' The user must be allowed to interact with their Opal. The errors
 #' provided may be associated to the handler or the read/write
@@ -302,7 +299,6 @@ opal_tables_push <- function(
 #' }
 #'
 #' @import dplyr stringr opalr tools
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @importFrom utils unzip
 #'
@@ -377,7 +373,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' one table. TRUE by default, if FALSE returns dataset.
 #'
 #' @return
-#' R objets (tibbles and list of tibbles) representing tables and their
+#' R objects (tibbles and list of tibbles) representing tables and their
 #' respective data dictionary.
 #'
 #' @examples
@@ -389,7 +385,6 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' }
 #'
 #' @import dplyr opalr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -500,7 +495,7 @@ opal_tables_pull <- function(
 #' @description
 #' Downloads all taxonomies from an Opal server in a tibble format. This
 #' taxonomy is specifically the Maelstrom taxonomy used for any purpose of data
-#' transformation, cleaning or assessement, following Maelstrom standards.
+#' transformation, cleaning or assessment, following Maelstrom standards.
 #'
 #' @details
 #' The user must be allowed to interact with their Opal. The errors
@@ -523,7 +518,6 @@ opal_tables_pull <- function(
 #' }
 #'
 #' @import dplyr tidyr opalr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -745,7 +739,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' @description
 #' Downloads all taxonomies from an Opal server in the format used by Opal.
 #' This taxonomy is used for any purpose of data transformation, cleaning
-#' or assessement.
+#' or assessment.
 #'
 #' @details
 #' The user must be allowed to interact with their Opal. The errors
@@ -768,7 +762,6 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' }
 #'
 #' @import dplyr tidyr stringr opalr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -843,13 +836,13 @@ opal_taxonomy_get <- function(opal){
 }
 
 #' @title
-#' Transform any data dictionary object from opalr to Opal format
+#' Transform a data dictionary object from opalr to Opal format
 #'
 #' @description
 #' Transforms a data dictionary from Opalr format to Opal format.
 #' A data dictionary imported using opalr package has a different structure
 #' from the rest of the package functions. This structure will be transformed
-#' to match with the rest of the package environnement.
+#' to match with the rest of the package environment.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -861,7 +854,7 @@ opal_taxonomy_get <- function(opal){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -883,7 +876,6 @@ opal_taxonomy_get <- function(opal){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export

@@ -23,8 +23,8 @@ valueType is one of the property of a variable entity. It refers to
 the (Obiba internal) type of any variable. The valueType can be 'text',
 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 'point', 'linestring', 'polygon'
-The valueType list is avalable using \link{valueType_list}, and their
-correspondancy with typeof which is the (R internal) type of any object.
+The valueType list is available using \link{valueType_list}, and their
+corresponding with typeof which is the (R internal) type of any object.
 }
 \examples{
 \dontrun{

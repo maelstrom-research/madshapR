@@ -42,11 +42,11 @@ open the file in browser, open 'index.html'. Or use
 Generates a visual report for a study-specific dataset in an HTML
 bookdown document, showing descriptive statistics for each study-specific
 variable to facilitate the assessment of input data. Statistics and figures
-are generated according to their valueTypes.
+are generated according to their valueType.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation. The summaries and figures associated
-provide dataset composition, with observation repartition and descriptive
+provide dataset composition, with observation distribution and descriptive
 statistics.
 }
 \details{
@@ -62,7 +62,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -72,7 +72,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }

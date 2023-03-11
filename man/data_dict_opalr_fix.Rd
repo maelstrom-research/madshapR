@@ -2,7 +2,7 @@
 % Please edit documentation in R/09-opal_functions.R
 \name{data_dict_opalr_fix}
 \alias{data_dict_opalr_fix}
-\title{Transform any data dictionary object from opalr to Opal format}
+\title{Transform a data dictionary object from opalr to Opal format}
 \usage{
 data_dict_opalr_fix(data_dict)
 }
@@ -17,7 +17,7 @@ A list of tibble(s) identifying a data dictionary.
 Transforms a data dictionary from Opalr format to Opal format.
 A data dictionary imported using opalr package has a different structure
 from the rest of the package functions. This structure will be transformed
-to match with the rest of the package environnement.
+to match with the rest of the package environment.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
@@ -29,7 +29,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.

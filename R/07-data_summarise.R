@@ -7,7 +7,7 @@
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides dataset
-#' composition, with observation repartition and descriptive statistics.
+#' composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -19,7 +19,7 @@
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -28,7 +28,7 @@
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -42,8 +42,8 @@
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .dataset_name A character string specifying the name of the dataset
 #' (internally used in the function `datashapR::study_evaluate()`).
-#' @param valueType_guess Whether the output should include refind valueType
-#' that can be applied to the dataset. FALSE by default.
+#' @param valueType_guess Whether the output should include a more accurate
+#' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @seealso
 #' [datashapR::study_evaluate()]
@@ -57,11 +57,10 @@
 #' dataset <- study_TOKYO %>% mutate(
 #'    dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessement_report(dataset, data_dict)
+#' study_assessment_report(dataset, data_dict)
 #' }
 #'
 #' @import dplyr stringr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -99,8 +98,8 @@ dataset_summarize <- function(
   report <- list(
     `Overview` = c(),
     `Data dictionary summary` = tibble(),
-    `Data dictionary assessement` = tibble(),
-    `Dataset assessement` = tibble(),
+    `Data dictionary assessment` = tibble(),
+    `Dataset assessment` = tibble(),
     `Variables summary (all)` = tibble(),
     `Text variable summary` = tibble(),
     `Date variable summary` = tibble(),
@@ -111,10 +110,10 @@ dataset_summarize <- function(
     dataset_evaluate(dataset,data_dict,as_mlstr_data_dict = TRUE)
   report$`Data dictionary summary`     <-
     dataset_report$`Data dictionary summary`
-  report$`Data dictionary assessement` <-
-    dataset_report$`Data dictionary assessement`
-  report$`Dataset assessement`         <-
-    dataset_report$`Dataset assessement`
+  report$`Data dictionary assessment` <-
+    dataset_report$`Data dictionary assessment`
+  report$`Dataset assessment`         <-
+    dataset_report$`Dataset assessment`
 
   message(
     "- DATASET SUMMARIZE: ",
@@ -449,11 +448,11 @@ dataset_summarize <- function(
 #' Generates an Excel spreadsheet report for a study-specific dataset
 #' list (or study) showing descriptive statistics for each variable to
 #' facilitate the assessment of input data. Statistics are generated according
-#' to their valueTypes.
+#' to their valueType.
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides
-#' dataset composition, with observation repartition and descriptive statistics.
+#' dataset composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A study must be a named list containing at least one data frame or
@@ -469,7 +468,7 @@ dataset_summarize <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -479,15 +478,15 @@ dataset_summarize <- function(
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
 #' @param study List of tibble, each of them being study specific datasets.
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
-#' @param valueType_guess Whether the output should include refind valueType
-#' that can be applied to the dataset. TRUE by default.
+#' @param valueType_guess Whether the output should include a more accurate
+#' valueType that could be applied to the dataset. TRUE by default.
 #'
 #' @return
 #' A list of tibbles of report for each study-specific dataset.
@@ -498,13 +497,13 @@ dataset_summarize <- function(
 #' dataset <- study_TOKYO %>% mutate(
 #'            dob = fabR::as_any_date(dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessement_report(dataset, data_dict)
+#' study_assessment_report(dataset, data_dict)
 #' }
 #'
 #' @import dplyr stringr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom crayon bold
 #' @importFrom rlang .data
+#'
 #' @export
 study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 
@@ -559,7 +558,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -569,7 +568,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -590,9 +589,9 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' # Example 1: yyy yyy yyy.
 #' }
 #'
-#' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
+#' @import dplyr tidyr
 #' @importFrom rlang .data
+#'
 #' @export
 resume_variables <- function(data, data_dict = NULL){
 
@@ -743,8 +742,8 @@ resume_variables <- function(data, data_dict = NULL){
 #' present separates observations between open values, missing values,
 #' categorical values, and categorical missing values (which corresponds to the
 #' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueTypes. This summary can be used to assist the user in
-#' the assessment of the dataset composition, with observation repartition and
+#' according to their valueType. This summary can be used to assist the user in
+#' the assessment of the dataset composition, with observation distribution and
 #' descriptive statistics.
 #'
 #' @details
@@ -757,7 +756,7 @@ resume_variables <- function(data, data_dict = NULL){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -767,7 +766,7 @@ resume_variables <- function(data, data_dict = NULL){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -788,8 +787,8 @@ resume_variables <- function(data, data_dict = NULL){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
 #' @export
 summary_variables <- function(
     data = NULL,
@@ -894,9 +893,9 @@ summary_variables <- function(
 #' present separates observations between open values, missing values,
 #' categorical values, and categorical missing values (which corresponds to the
 #' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueTypes which can be 'text', 'datetime', linestring',
+#' according to their valueType which can be 'text', 'datetime', linestring',
 #' 'point', 'locale', or 'polygon'. This summary can be used to assist the user
-#' in the assessment of the dataset composition, with observation repartition
+#' in the assessment of the dataset composition, with observation distribution
 #' and descriptive statistics.
 #'
 #' @details
@@ -909,7 +908,7 @@ summary_variables <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -919,7 +918,7 @@ summary_variables <- function(
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -940,8 +939,8 @@ summary_variables <- function(
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
 #' @export
 summary_variables_text <- function(
     data = NULL,
@@ -1010,9 +1009,9 @@ summary_variables_text <- function(
 #' present separates observations between open values, missing values,
 #' categorical values, and categorical missing values (which corresponds to the
 #' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueTypes which can be 'date'.
+#' according to their valueType which can be 'date'.
 #' This summary can be used to assist the user in the assessment of the dataset
-#' composition, with observation repartition and descriptive statistics.
+#' composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1024,7 +1023,7 @@ summary_variables_text <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1034,7 +1033,7 @@ summary_variables_text <- function(
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -1055,8 +1054,8 @@ summary_variables_text <- function(
 #' }
 #'
 #' @import dplyr tidyr lubridate fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
 #' @export
 summary_variables_date <- function(
     data = NULL,
@@ -1147,9 +1146,9 @@ crayon::bold("Useful tip:"),
 #' present separates observations between open values, missing values,
 #' categorical values, and categorical missing values (which corresponds to the
 #' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueTypes which can be 'integer', 'decimal', 'boolean' or
+#' according to their valueType which can be 'integer', 'decimal', 'boolean' or
 #' 'binary'. This summary can be used to assist the user in the assessment of
-#' the dataset composition, with observation repartition and descriptive
+#' the dataset composition, with observation distribution and descriptive
 #' statistics.
 #'
 #' @details
@@ -1162,7 +1161,7 @@ crayon::bold("Useful tip:"),
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1172,7 +1171,7 @@ crayon::bold("Useful tip:"),
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -1192,8 +1191,8 @@ crayon::bold("Useful tip:"),
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
 #' @export
 summary_variables_numerical <- function(
     data = NULL,
@@ -1257,8 +1256,8 @@ summary_variables_numerical <- function(
 #' present separates observations between open values, missing values,
 #' categorical values, and categorical missing values (which corresponds to the
 #' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueTypes. This summary can be used to assist the user in
-#' the assessment of the dataset composition, with observation repartition and
+#' according to their valueType. This summary can be used to assist the user in
+#' the assessment of the dataset composition, with observation distribution and
 #' descriptive statistics.
 #'
 #' @details
@@ -1271,7 +1270,7 @@ summary_variables_numerical <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -1281,7 +1280,7 @@ summary_variables_numerical <- function(
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -1302,8 +1301,8 @@ summary_variables_numerical <- function(
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
 #' @export
 summary_variables_categorical <- function(
     data = NULL,

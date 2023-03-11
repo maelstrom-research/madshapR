@@ -19,7 +19,7 @@ Opal.}
 Folder(s) containing files coming from Opal in user R environment.
 }
 \description{
-Uownloads files from Opal environment to local. It is a wrapper of
+Downloads files from Opal environment to local. It is a wrapper of
 \code{\link[opalr:opal.file_download]{opalr::opal.file_download()}}.
 The user must be allowed to interact with their Opal. The errors
 provided may be associated to the handler or the read/write

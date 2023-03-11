@@ -25,8 +25,8 @@ identifying the scheme used for variables classification as a tibble.}
 \item{.dataset_name}{A character string specifying the name of the dataset
 (internally used in the function \code{datashapR::study_evaluate()}).}
 
-\item{valueType_guess}{Whether the output should include refind valueType
-that can be applied to the dataset. FALSE by default.}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 }
 \value{
 A list of tibbles of report for one study-specific data dictionary.
@@ -37,7 +37,7 @@ for each variable to facilitate the assessment of input data.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy, or standard evaluation. The summary associated provides dataset
-composition, with observation repartition and descriptive statistics.
+composition, with observation distribution and descriptive statistics.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
@@ -49,7 +49,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -58,7 +58,7 @@ A taxonomy must be a data frame or data frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy
-may follow Maelstrom research stardards, and its content can be evaluated
+may follow Maelstrom research standards, and its content can be evaluated
 accordingly, such as naming convention restriction, tagging elements,
 or scales, which are specific to Maelstrom Research. In this particular
 case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -70,7 +70,7 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 dataset <- study_TOKYO \%>\% mutate(
    dob = fabR::as_any_date(dob, format = ""mdy""))
 data_dict <- dd_TOKYO_format_maelstrom_tagged
-study_assessement_report(dataset, data_dict)
+study_assessment_report(dataset, data_dict)
 }
 
 }

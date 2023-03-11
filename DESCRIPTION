@@ -38,7 +38,6 @@ Imports: dplyr,
     fs,
     utils,
     fabR
-Remotes: guifabre/fabR
 Suggests: 
     rmarkdown,
     spelling

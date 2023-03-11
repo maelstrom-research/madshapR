@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_flatten}
 \alias{data_dict_flatten}
-\title{Transform any component in a data dictionary in colum(s) in another component}
+\title{Transform a component in a data dictionary in column(s) in another component}
 \usage{
 data_dict_flatten(
   data_dict,
@@ -47,7 +47,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.

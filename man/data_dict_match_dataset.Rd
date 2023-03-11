@@ -26,10 +26,10 @@ Default is c('dataset','data_dict').}
 }
 \value{
 Either a tibble, identifying the dataset, or a list of tibble(s)
-identifying a data dictionary. Returns both in a list by defaut.
+identifying a data dictionary. Returns both in a list by default.
 }
 \description{
-Proceeds an inner jointure between any dataset and its assocated
+Proceeds an inner jointure between any dataset and its associated
 data dictionary.
 It returns the user either the sub-dataset or the sub-data dictionary, or
 both in a list.
@@ -44,7 +44,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -54,7 +54,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }

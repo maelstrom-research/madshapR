@@ -12,8 +12,8 @@
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'.
-#' The valueType list is avalable using [datashapR::valueType_list], and their
-#' correspondancy with typeof which is the (R internal) type of any object.
+#' The valueType list is available using [datashapR::valueType_list], and their
+#' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
 #' [base::typeof()], [base::class()]
@@ -32,7 +32,6 @@
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -102,7 +101,7 @@ valueType_of <- function(x){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -112,7 +111,7 @@ valueType_of <- function(x){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -131,7 +130,6 @@ valueType_of <- function(x){
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -275,8 +273,8 @@ valueType will remain as it is.")
 #' @description
 #' Depending on the input provided (from and to can be either a dataset or a
 #' data dictionary, this function takes the valueType of the first input (from),
-#' and assignes it to the second attribute (to). The valueType replaced is
-#' eitheir in the 'valueType' column of a data dictionary of casted to a column
+#' and assigns it to the second attribute (to). The valueType replaced is
+#' either in the 'valueType' column of a data dictionary or cast to a column
 #' in the dataset. If 'to' is not provided, the function calls the function
 #' [valueType_self_adjust()] instead.
 #'
@@ -290,7 +288,7 @@ valueType will remain as it is.")
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -300,7 +298,7 @@ valueType will remain as it is.")
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -323,7 +321,6 @@ valueType will remain as it is.")
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -441,8 +438,8 @@ crayon::bold("\n\nUseful tip:"),
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'
-#' The valueType list is avalable using [datashapR::valueType_list], and their
-#' correspondancy with typeof which is the (R internal) type of any object.
+#' The valueType list is available using [datashapR::valueType_list], and their
+#' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -462,7 +459,6 @@ crayon::bold("\n\nUseful tip:"),
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -529,8 +525,8 @@ valueType_guess <- function(x){
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'
-#' The valueType list is avalable using [datashapR::valueType_list], and their
-#' correspondancy with typeof which is the (R internal) type of any object.
+#' The valueType list is available using [datashapR::valueType_list], and their
+#' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -550,7 +546,6 @@ valueType_guess <- function(x){
 #'}
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -662,7 +657,7 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -679,7 +674,6 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -725,8 +719,8 @@ present in your Opal environment.")}
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'.
-#' The valueType list is avalable using [datashapR::valueType_list], and their
-#' correspondancy with typeof which is the (R internal) type of any object.
+#' The valueType list is available using [datashapR::valueType_list], and their
+#' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -742,7 +736,6 @@ present in your Opal environment.")}
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -771,7 +764,7 @@ is_valueType <- function(object){
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -788,7 +781,6 @@ is_valueType <- function(object){
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export

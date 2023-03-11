@@ -17,7 +17,7 @@
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -38,7 +38,6 @@
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -110,7 +109,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -129,7 +128,6 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' }
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @importFrom lubridate is.Date
 #'
@@ -161,7 +159,7 @@ dataset_zap_data_dict <- function(dataset){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -180,7 +178,6 @@ dataset_zap_data_dict <- function(dataset){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -222,13 +219,13 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
 #' @param object A potential dataset to be coerced.
 #' @param col_id A character string specifying the name(s) of the column(s)
-#' which refer to key identificator of the dataset. The column(s) must be named
+#' which refer to key identifier of the dataset. The column(s) must be named
 #' of indicated by position.
 #'
 #' @return
@@ -240,7 +237,6 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -310,7 +306,6 @@ a data frame. Please refer to documentation.")
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -358,7 +353,7 @@ Please refer to documentation."))
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -376,7 +371,6 @@ Please refer to documentation."))
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -414,7 +408,6 @@ is_dataset <- function(object){
 #'}
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export

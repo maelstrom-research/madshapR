@@ -26,9 +26,9 @@ in a dataset with (if any) its data dictionary. The data dictionary (if
 present separates observations between open values, missing values,
 categorical values, and categorical missing values (which corresponds to the
 'missing' column in the Categories' sheet). Statistics are generated
-according to their valueTypes which can be 'integer', 'decimal', 'boolean' or
+according to their valueType which can be 'integer', 'decimal', 'boolean' or
 'binary'. This summary can be used to assist the user in the assessment of
-the dataset composition, with observation repartition and descriptive
+the dataset composition, with observation distribution and descriptive
 statistics.
 }
 \details{
@@ -41,7 +41,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -51,7 +51,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }

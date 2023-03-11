@@ -15,7 +15,7 @@ A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 \description{
 Downloads all taxonomies from an Opal server in the format used by Opal.
 This taxonomy is used for any purpose of data transformation, cleaning
-or assessement.
+or assessment.
 }
 \details{
 The user must be allowed to interact with their Opal. The errors

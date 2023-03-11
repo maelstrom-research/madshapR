@@ -21,8 +21,8 @@ identifying a data dictionary, depending which is 'to'.
 \description{
 Depending on the input provided (from and to can be either a dataset or a
 data dictionary, this function takes the valueType of the first input (from),
-and assignes it to the second attribute (to). The valueType replaced is
-eitheir in the 'valueType' column of a data dictionary of casted to a column
+and assigns it to the second attribute (to). The valueType replaced is
+either in the 'valueType' column of a data dictionary or cast to a column
 in the dataset. If 'to' is not provided, the function calls the function
 \code{\link[=valueType_self_adjust]{valueType_self_adjust()}} instead.
 }
@@ -36,7 +36,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
@@ -46,7 +46,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }

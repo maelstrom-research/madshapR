@@ -26,7 +26,7 @@ function returns a dataset, or data dictionary. Default is 'dataset'.}
 one table. TRUE by default, if FALSE returns dataset.}
 }
 \value{
-R objets (tibbles and list of tibbles) representing tables and their
+R objects (tibbles and list of tibbles) representing tables and their
 respective data dictionary.
 }
 \description{

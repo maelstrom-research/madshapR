@@ -18,7 +18,7 @@
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -34,7 +34,6 @@
 #' }
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -100,7 +99,7 @@ check_data_dict_variables <- function(data_dict){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -117,7 +116,6 @@ check_data_dict_variables <- function(data_dict){
 #' }
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -215,7 +213,7 @@ check_data_dict_categories <- function(data_dict){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -232,7 +230,6 @@ check_data_dict_categories <- function(data_dict){
 #' }
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -295,7 +292,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -305,7 +302,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -327,11 +324,9 @@ check_data_dict_missing_categories <- function(data_dict){
 #' }
 #'
 #' @import dplyr tidyr fabR
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
-#'
 check_data_dict_taxonomy <- function(data_dict, taxonomy){
 
   # check_taxo_one_col function(col, taxonomy, na_allowed = TRUE){
@@ -556,7 +551,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -572,7 +567,6 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -679,7 +673,7 @@ check_data_dict_valueType <- function(data_dict){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -689,7 +683,7 @@ check_data_dict_valueType <- function(data_dict){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -705,7 +699,6 @@ check_data_dict_valueType <- function(data_dict){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -766,7 +759,7 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -776,7 +769,7 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -793,7 +786,6 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -934,7 +926,7 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -944,14 +936,14 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
 #' @param data A tibble identifying the input data observations.
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
-#' @param valueType_guess Whether the output should include refind valueType
-#' that can be applied to the dataset. FALSE by default.
+#' @param valueType_guess Whether the output should include a more accurate
+#' valueType that could be applied to the dataset. TRUE by default.
 #'
 #' @return
 #' A tibble providing values which valueType differs between data and
@@ -963,7 +955,6 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' }
 #'
 #' @import dplyr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1068,7 +1059,7 @@ check_dataset_valueType <- function(
 #' The user must provide element which respect a certain structure to work with
 #' the functions of the package or its environment (Maelstrom and/or
 #' Obiba suite). In addition, any element may follow Maelstrom research
-#' stardards, and its content can be evaluated accordingly, such as naming
+#' standards, and its content can be evaluated accordingly, such as naming
 #' convention restriction, columns like 'valueType', , and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
@@ -1083,7 +1074,6 @@ check_dataset_valueType <- function(
 #' }
 #'
 #' @import dplyr tidyr stringr
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @export

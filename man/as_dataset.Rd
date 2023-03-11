@@ -10,7 +10,7 @@ as_dataset(object, col_id = NULL)
 \item{object}{A potential dataset to be coerced.}
 
 \item{col_id}{A character string specifying the name(s) of the column(s)
-which refer to key identificator of the dataset. The column(s) must be named
+which refer to key identifier of the dataset. The column(s) must be named
 of indicated by position.}
 }
 \value{
@@ -28,7 +28,7 @@ can be associated to a data dictionary. If not, a minimum workable data
 dictionary can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research stardards, and its content can be evaluated accordingly,
+Maelstrom research standards, and its content can be evaluated accordingly,
 such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }

@@ -7,7 +7,7 @@
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides dataset
-#' composition, with observation repartition and descriptive statistics.
+#' composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -19,7 +19,7 @@
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -28,7 +28,7 @@
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -59,11 +59,10 @@
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(
 #' dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessement_report(dataset, data_dict)
+#' study_assessment_report(dataset, data_dict)
 #' }
 #'
 #' @import dplyr tidyr stringr fabR
-#' @importFrom magrittr %>%
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -130,15 +129,15 @@ dataset_evaluate <- function(
   # creation of the structure of the report
   report <- list(
     `Data dictionary summary` = tibble(),
-    `Data dictionary assessement` = tibble(),
-    `Dataset assessement` = tibble())
+    `Data dictionary assessment` = tibble(),
+    `Dataset assessment` = tibble())
 
   dictionary_report <-
     data_dict_evaluate(data_dict, as_mlstr_data_dict = as_mlstr_data_dict)
   report$`Data dictionary summary` <-
     dictionary_report$`Data dictionary summary`
-  report$`Data dictionary assessement` <-
-    dictionary_report$`Data dictionary assessement`
+  report$`Data dictionary assessment` <-
+    dictionary_report$`Data dictionary assessment`
 
   message(
     "- DATASET ASSESSMENT: ",
@@ -247,7 +246,7 @@ dataset_evaluate <- function(
   # test_existing_variable_category
   # test_valueType
 
-  report$`Dataset assessement` <-
+  report$`Dataset assessment` <-
     test_name_standards %>%
     bind_rows(test_matching_variable) %>%
     bind_rows(test_duplicated_columns) %>%
@@ -281,11 +280,11 @@ dataset_evaluate <- function(
 #' Generates an Excel spreadsheet report for a study-specific dataset
 #' list (or study) showing descriptive statistics for each variable to
 #' facilitate the assessment of input data. Statistics are generated according
-#' to their valueTypes.
+#' to their valueType.
 #' This report can be used to assist the user in the assessment of the data
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides
-#' dataset composition, with observation repartition and descriptive statistics.
+#' dataset composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A study must be a named list containing at least one data frame or
@@ -301,7 +300,7 @@ dataset_evaluate <- function(
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -311,7 +310,7 @@ dataset_evaluate <- function(
 #' dictionary can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research stardards, and its content can be evaluated accordingly,
+#' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
@@ -332,11 +331,10 @@ dataset_evaluate <- function(
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(
 #' dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessement_report(dataset, data_dict)
+#' study_assessment_report(dataset, data_dict)
 #' }
 #'
 #' @import dplyr stringr tidyr
-#' @importFrom magrittr %>%
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #' @export
@@ -393,7 +391,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' To be considered as a minimum (workable) data dictionary, it must also
 #' have unique and non-null entries in 'name' column and the combination
 #' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research stardards,
+#' In addition, the data dictionary may follow Maelstrom research standards,
 #' and its content can be evaluated accordingly, such as naming convention
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
@@ -402,7 +400,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research stardards, and its content can be evaluated
+#' may follow Maelstrom research standards, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -425,11 +423,10 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(
 #' dob, format = ""mdy""))
 #' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessement_report(dataset, data_dict)
+#' study_assessment_report(dataset, data_dict)
 #' }
 #'
 #' @import dplyr tidyr stringr fabR
-#' @importFrom magrittr %>%
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -505,7 +502,7 @@ data_dict_evaluate <- function(
   # creation of the structure of the report
   report <- list(
     `Data dictionary summary` = tibble(),
-    `Data dictionary assessement` = tibble())
+    `Data dictionary assessment` = tibble())
 
   report$`Data dictionary summary` <-
     suppressWarnings(data_dict_flatten(data_dict))
@@ -691,7 +688,7 @@ data_dict_evaluate <- function(
   # test_empty_row
   # test_empty_col
 
-  report$`Data dictionary assessement` <-
+  report$`Data dictionary assessment` <-
     test_name_standards %>%
     bind_rows(test_unique_variable) %>%
     bind_rows(test_duplicated_columns) %>%

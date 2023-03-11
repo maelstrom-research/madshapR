@@ -16,7 +16,7 @@ opened using this short-cut function.
 This report can be used to assist the user in the assessment of the data
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation. The summaries and figures associated
-provide dataset composition, with observation repartition and descriptive
+provide dataset composition, with observation distribution and descriptive
 statistics.
 }
 \examples{

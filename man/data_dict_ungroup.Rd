@@ -15,7 +15,7 @@ A list of tibble(s) identifying a data dictionary - like structure.
 }
 \description{
 Ungroup data dictionaries, both in the 'Variables' and 'Categories' (assuming
-the group is defined in both elements). The user would groupe their
+the group is defined in both elements). The user would group their
 data dictionary analogously they would do to a tibble with
 \code{\link[dplyr:group_by]{dplyr::ungroup()}}.
 }
@@ -29,7 +29,7 @@ columns to be usable in any function of the package.
 To be considered as a minimum (workable) data dictionary, it must also
 have unique and non-null entries in 'name' column and the combination
 'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research stardards,
+In addition, the data dictionary may follow Maelstrom research standards,
 and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.

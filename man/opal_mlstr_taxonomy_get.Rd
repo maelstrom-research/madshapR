@@ -15,7 +15,7 @@ A tibble identifying a taxonomy (generally generated from Opal taxonomy.
 \description{
 Downloads all taxonomies from an Opal server in a tibble format. This
 taxonomy is specifically the Maelstrom taxonomy used for any purpose of data
-transformation, cleaning or assessement, following Maelstrom standards.
+transformation, cleaning or assessment, following Maelstrom standards.
 }
 \details{
 The user must be allowed to interact with their Opal. The errors
