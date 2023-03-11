@@ -128,9 +128,15 @@ dataset_visualize <- function(
       FUN.VALUE = logical(1))]
 
   data_dict <-
-    datashapR::data_dict_match_dataset(
+    data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict')
+  if(sum(nrow(data_dict[['Categories']])) == 0){
+    data_dict[['Categories']] <-
+      tibble(
+        variable = as.character(),
+        name = as.character())
+  }
 
   path_to <- fs::path_abs(to)
   fabR::template_visual_report(path_to)
@@ -224,6 +230,7 @@ if(sum(nrow(data_dict$Categorie)) > 0){
     paste0(rep(0,nchar(nrow(data_dict$Variables))) %>% paste(collapse = ""))
 
   for(i in seq_len(nrow(data_dict$Variables))){
+    # stop()}
 
     rmd_file_name <-
       paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/",
@@ -256,7 +263,7 @@ knitr.figure = TRUE}"),"\n",
 
       paste0("\n</div>\n\n") %>%
       paste0(
-        ifelse(nrow(data_dict$Categories %>%
+        ifelse(nrow(data_dict[['Categories']] %>%
                  filter(.data$`variable` == data_dict$Variables$name[i])) > 0,
                paste0("\n* **Categories**: ","\n\n") %>%
                  paste0("\n<div style= \"display:flex; margin:auto\" > \n\n")%>%
