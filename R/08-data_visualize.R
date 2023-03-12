@@ -310,7 +310,7 @@ str_squish(", fig.show='hold',
       write_lines(file = rmd_file_name, append = FALSE)
   }
 
-  graphics.off()
+  while (!is.null(dev.list()))  dev.off()
 
   fabR::silently_run(
 
