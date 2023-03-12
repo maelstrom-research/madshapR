@@ -310,8 +310,6 @@ str_squish(", fig.show='hold',
       write_lines(file = rmd_file_name, append = FALSE)
   }
 
-  while (!is.null(dev.list()))  dev.off()
-
   fabR::silently_run(
 
     xfun::in_dir(
