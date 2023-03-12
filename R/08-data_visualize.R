@@ -154,7 +154,10 @@ dataset_visualize <- function(
 
 library(datashapR)
 library(DT)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+# library(plotly)
 load(file = paste0(file = paste0("',
     path_to,'/temp_bookdown_report/bookdown_report.RData")))
 
