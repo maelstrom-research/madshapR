@@ -448,7 +448,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
               data_dict_temp[,c('name',col_temp_j)] ,
               by = c("name"))
 
-          if(sum((data_dict[['Variables']] %>% names) %in% col_final_j) == 1){
+          if(sum(names(data_dict[['Variables']]) %in% col_final_j) == 1){
 
             data_dict[['Variables']] <-
               data_dict[['Variables']] %>%

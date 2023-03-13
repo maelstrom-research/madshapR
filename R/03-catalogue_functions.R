@@ -38,7 +38,7 @@
 valueType_of <- function(x){
 
   # check if the col is empty
-  if(is.list(x) & nrow(x) %>% sum <= 1)
+  if(is.list(x) & sum(nrow(x)) <= 1)
     return(as_valueType(x = x[[1]], valueType))
 
   # check if the col is a vector
@@ -468,7 +468,7 @@ valueType_guess <- function(x){
   x <- unique(x)
 
   # check if the col is empty
-  if(is.list(x) & nrow(x) %>% sum <= 1)
+  if(is.list(x) & sum(nrow(x)) <= 1)
     return(as_valueType(x = x[[1]]))
 
   # check if the col is a vector
@@ -680,7 +680,7 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 as_taxonomy <- function(object){
 
   # check if names in object exist
-  if(names(object) %in% c("taxonomy","vocabulary" ,"term") %>% sum != 3){
+  if(sum(names(object) %in% c("taxonomy","vocabulary" ,"term")) != 3){
     stop(call. = FALSE,
       "\n\nThis object is not a taxonomy as defined by Maelstrom standards.
 It must be a dataframe containing at least 'taxonomy', 'vocabulary' and 'term'
@@ -691,9 +691,9 @@ columns. Please refer to documentation.",
 present in your Opal environment.")}
 
   # check if names in taxonomy exist
-  if(names(object) %in%
+  if(sum(names(object) %in%
      c("vocabulary_short","taxonomy_scale",
-       "vocabulary_scale","term_scale") %>% sum == 4){
+       "vocabulary_scale","term_scale")) == 4){
 
     attributes(object)$`Mlstr::class` <- "mlstr_taxonomy"
   }else{

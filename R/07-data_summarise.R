@@ -829,20 +829,20 @@ summary_variables <- function(
         `% total Valid values` =
           sum(summary_i[
             summary_i$`valid_class` %in%
-              c("1_Valid values","3_Valid other values"),c('value_var_occur')])/
+              c("1_Valid values","3_Valid other values"),]$value_var_occur)/
           sum(summary_i$`value_var_occur`),
 
         `% NA` =
           sum(summary_i[
             summary_i$`valid_class` %in%
-              c("4_NA values"),c('value_var_occur')])/
+              c("4_NA values"),]$value_var_occur)/
           sum(summary_i$`value_var_occur`),
 
         `% Valid categorical values (if applicable)` =
           ifelse(all(summary_i$`categorical` != 'no'),
                  sum(summary_i[
                    summary_i$`valid_class` %in%
-                     c("1_Valid values"),c('value_var_occur')])/
+                     c("1_Valid values"),]$value_var_occur)/
                  sum(summary_i$`value_var_occur`),
                  NA_real_),
 
@@ -850,7 +850,7 @@ summary_variables <- function(
           ifelse(all(summary_i$`categorical` != 'no'),
                  sum(summary_i[
                    summary_i$`valid_class` %in%
-                     c("2_Missing values"),c('value_var_occur')])/
+                     c("2_Missing values"),]$value_var_occur)/
                    sum(summary_i$`value_var_occur`),
                  NA_real_)
       )

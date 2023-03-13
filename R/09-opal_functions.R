@@ -418,7 +418,7 @@ opal_tables_pull <- function(
 " (",which(table_list == i),"/",length(table_list), ")")
 
     # creation of dataset
-    if(content %in% "dataset" %>% sum > 0){
+    if(sum(content %in% "dataset") > 0){
       table_i <- opal.table_get(opal = opal, project = project, table = i)
     }else{table_i <- tibble()}
 
@@ -438,7 +438,7 @@ opal_tables_pull <- function(
     data_dict_i <- data_dict_i %>% data_dict_opalr_fix()
 
     # if no dataset - only data_dict
-    if(content %in% "dataset" %>% sum == 0){
+    if(sum(content %in% "dataset") == 0){
       study_table_i <- data_dict_i
     }else{
 
@@ -451,9 +451,9 @@ opal_tables_pull <- function(
       }
     }
 
-    if(content %in% "data_dict" %>% sum == 0)
+    if(sum(content %in% "data_dict") == 0)
       study_table_i[['data_dict']] <- NULL
-    if(content %in% "dataset"   %>% sum == 0)
+    if(sum(content %in% "dataset") == 0)
       study_table_i[['dataset']]   <- NULL
 
     study_table_i <- list(study_table_i)
@@ -463,7 +463,7 @@ opal_tables_pull <- function(
   }
 
   # only dataset:
-  if(content %in% "data_dict" %>% sum == 0){
+  if(sum(content %in% "data_dict") == 0){
 
     dataset_list <- study
 
@@ -472,7 +472,7 @@ opal_tables_pull <- function(
     return(dataset_list)}
 
   # only data_dict:
-  if(content %in% "dataset" %>% sum == 0){
+  if(sum(content %in% "dataset") == 0){
 
     data_dict_list <- study
 
@@ -882,7 +882,7 @@ opal_taxonomy_get <- function(opal){
 data_dict_opalr_fix <- function(data_dict){
 
   # test if actually an opalr data dictionary
-  if(data_dict %>% names %in% c("variables", "table", "project") %>% sum != 3){
+  if(sum(names(data_dict %in% c("variables", "table", "project"))) != 3){
     stop(call. = FALSE,
 "Your file is not in the opalr format. Please provide another file")}
 
