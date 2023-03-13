@@ -57,7 +57,7 @@ valueType_of <- function(x){
 
   if(type == "double" & class == "Date") valueType <- "date"
 
-  suppressWarnings(suppressMessages(try({
+  fabR::silently_run({
     if(class == "factor"){
       lvls <- attributes(x)$`levels` %>% as.character()
       valueType <-
@@ -75,7 +75,7 @@ valueType_of <- function(x){
       if(class(valueType)[1] == "try-error") valueType <-
         try({                             valueType <- "text"   },silent = TRUE)
     }
-  }, silent = TRUE)))
+  })
   if(length(valueType) == 0) valueType <- "text"
 
   return(valueType)

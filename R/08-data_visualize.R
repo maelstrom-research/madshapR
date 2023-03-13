@@ -117,8 +117,8 @@ dataset_visualize <- function(
       fabR::add_index(data_dict$Variables, .force = TRUE)
     data_dict <-
       data_dict %>%
-      identify_visual_type(dataset = dataset) %>%
-      identify_plot_type(dataset = dataset, group_by = group_by, out = out)
+      identify_visual_type(data = dataset) %>%
+      identify_plot_type(data = dataset, group_by = group_by, out = out)
   }
 
   dataset <-
@@ -445,7 +445,7 @@ identify_visual_type <- function(data, data_dict){
           add_row(
             var_name_cat_dataset,
             paste0("c('",
-                   pull(unique(dataset[i])) %>%
+                   pull(unique(data[i])) %>%
                      toString %>%
                      str_replace_all(", ","','"),"')") %>%
               as_tibble() %>% mutate(variable = i) %>%

@@ -124,7 +124,7 @@ data_dict_expand <- function(
       warning=function(w) {
         # Choose a return value in case of warning
         error_vars <-
-          suppressWarnings(suppressMessages(try({(
+          fabR::silently_run({(
             data_dict[[from]] %>%
               select(variable = "name", col_to = !! i ) %>%
               filter(!is.na(.data$`col_to`)) %>%
@@ -151,7 +151,7 @@ data_dict_expand <- function(
                        sep = "__SEP_IN__") %>%
               filter(is.na(!! i)) %>% pull(.data$`variable`) %>% toString)
 
-            },silent = TRUE)))
+            })
 
         stop(call. = FALSE,
           "\n\nParsing elements failures in your data dictionnary.",
@@ -517,7 +517,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
           stop(call. = FALSE,
 "Column name '___area_scale_opal___' already exists in your data dictionary")}
 
-        suppressWarnings(suppressMessages(try({
+        fabR::silently_run({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>%
             left_join(
@@ -533,7 +533,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
               by = c("name") )
 
           data_dict[['Variables']]['Mlstr_area::1.scale'] <- NULL
-        }, silent = TRUE)))
+        })
 
         if(!is.null(data_dict[['Variables']][['NA']])){
           warning(toString(unique(
@@ -702,7 +702,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 
       try({
 
-        suppressWarnings(suppressMessages(try({
+        fabR::silently_run({
           data_dict_temp <-
             data_dict_temp %>%
             summarise(
@@ -722,14 +722,14 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
               everything(),
               -any_of(arrange_taxonomy),
               any_of(arrange_taxonomy))
-        }, silent = TRUE)))
+        })
 
-        suppressWarnings(suppressMessages(try({
+        fabR::silently_run({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>%
             select(-matches(paste0("^",i,"::",taxonomy_i$`vocabulary`,"$"))) %>%
             full_join(data_dict_temp, by = c("name"))
-        }, silent = TRUE)))
+        })
 
       }, silent = TRUE)}
   }
@@ -761,7 +761,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
       if(is.null(data_dict[['Variables']][['___Mlstr_temp___']]) |
          is.null(data_dict[['Variables']][['___Mlstr_temp___vocabulary']])){
 
-        suppressWarnings(suppressMessages(try({
+        fabR::silently_run({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>% left_join(key) %>%
             rename_with(
@@ -773,7 +773,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
             mutate(`___Mlstr_temp___` = .data$`___Mlstr_temp___vocabulary`) %>%
             rename_with(.cols = .data$`___Mlstr_temp___`, .fn =  ~ i) %>%
             select(-.data$`___Mlstr_temp___vocabulary`)
-        }, silent = TRUE)))
+        })
 
       }else{
         stop(call. = FALSE,
