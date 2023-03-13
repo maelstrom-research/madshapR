@@ -221,10 +221,11 @@ dataset_evaluate <- function(
 "    Assess the presence of categories not in the data dictionary")
 
   test_existing_variable_category <-
-    check_dataset_categories(dataset,data_dict) %>%
-    distinct() %>% group_by(.data$`condition`,.data$`name_var`) %>%
-    suppressMessages(
-      summarise(`value` = paste0(.data$`value`, collapse = " ; "))) %>%
+    suppressMessages({
+      check_dataset_categories(dataset,data_dict) %>%
+        distinct() %>% group_by(.data$`condition`,.data$`name_var`) %>%
+        summarise(`value` = paste0(.data$`value`, collapse = " ; "))
+      }) %>%
     filter(!is.na(.data$`name_var`)) %>%
     ungroup()
 
