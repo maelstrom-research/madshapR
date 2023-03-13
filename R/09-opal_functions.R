@@ -860,7 +860,7 @@ opal_taxonomy_get <- function(opal){
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' [datashapR::as_data_dict()]
+#' [madshapR::as_data_dict()]
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
 #' information.
 #'

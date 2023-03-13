@@ -1,8 +1,8 @@
 ---
-title: "fabR-vignette"
+title: "madshapR-vignette"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{fabR-vignette}
+  %\VignetteIndexEntry{madshapR-vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,5 +15,5 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(datashapR)
+library(madshapR)
 ```

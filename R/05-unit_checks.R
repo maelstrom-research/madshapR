@@ -460,7 +460,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   warning("Your data dictionary contains no valueType column")
   #   return(test)}
   #
-  # vT_list <- datashapR::valueType_list
+  # vT_list <- madshapR::valueType_list
   # test_valueType_names <-
   #   data_dict[['Variables']] %>%
   #   filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
@@ -585,7 +585,7 @@ check_data_dict_valueType <- function(data_dict){
     warning("Your data dictionary contains no valueType column")
     return(test)}
 
-  vT_list <- datashapR::valueType_list
+  vT_list <- madshapR::valueType_list
   test_valueType_names <-
     data_dict[['Variables']] %>%
     filter(! .data$`valueType` %in% vT_list$`valueType`) %>%

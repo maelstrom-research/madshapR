@@ -9,7 +9,7 @@
 #' from left to right. (unique names will be generated if necessary).
 #' Separator of each element is the following structure :
 #' 'name = xx1 ; name = xx2'.
-#' This function is the reversed operation of [datashapR::data_dict_flatten()]
+#' This function is the reversed operation of [madshapR::data_dict_flatten()]
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -27,7 +27,7 @@
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' [datashapR::data_dict_flatten()]
+#' [madshapR::data_dict_flatten()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed. Automatically generated if not provided.
@@ -185,7 +185,7 @@ Example:
 #' of these column will gather all information to process the reverse operation.
 #' Separator of each element is the following structure :
 #' 'name = xx1 ; name = xx2'.
-#' This function is the reversed operation of [datashapR::data_dict_expand()]
+#' This function is the reversed operation of [madshapR::data_dict_expand()]
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -203,7 +203,7 @@ Example:
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' [datashapR::data_dict_expand()]
+#' [madshapR::data_dict_expand()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed. Automatically generated if not provided.
@@ -336,7 +336,7 @@ data_dict_flatten <- function(
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [tidyr::pivot_wider()], [datashapR::as_data_dict()]
+#' [tidyr::pivot_wider()], [madshapR::as_data_dict()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
@@ -604,7 +604,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [tidyr::pivot_longer()], [datashapR::as_data_dict()]
+#' [tidyr::pivot_longer()], [madshapR::as_data_dict()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
@@ -929,8 +929,8 @@ data_dict_filter <- function(
 #' (assuming the group is defined in both elements) into the groups defined by
 #' the query. The list is created analogously the user would do with
 #' [dplyr::group_by()] and [dplyr::group_split()]. Each element is named using
-#' the group values. [datashapR::data_dict_list_nest()] reverses the effect of
-#' [datashapR::data_dict_group_split()].
+#' the group values. [madshapR::data_dict_list_nest()] reverses the effect of
+#' [madshapR::data_dict_group_split()].
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -949,7 +949,7 @@ data_dict_filter <- function(
 #'
 #' @seealso
 #' [dplyr::group_by()], [dplyr::group_split()] ,
-#' [datashapR::data_dict_group_by()], [datashapR::data_dict_list_nest()]
+#' [madshapR::data_dict_group_by()], [madshapR::data_dict_list_nest()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
@@ -1163,8 +1163,8 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' Groups the data dictionary both in the 'Variables' and 'Categories' (assuming
 #' the group is defined in both elements) defined by the query. The user would
 #' group their data dictionary analogously they would do to a tibble with
-#' [dplyr::group_by()]. [datashapR::data_dict_ungroup()] reverses the effect of
-#' [datashapR::data_dict_group_by].
+#' [dplyr::group_by()]. [madshapR::data_dict_ungroup()] reverses the effect of
+#' [madshapR::data_dict_group_by].
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
@@ -1182,7 +1182,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' [dplyr::group_by()], [datashapR::data_dict_ungroup()]
+#' [dplyr::group_by()], [madshapR::data_dict_ungroup()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
@@ -1413,7 +1413,7 @@ your dataset")}
   for (i in names_data) {
     # stop()}
 
-    vT_list <- datashapR::valueType_list
+    vT_list <- madshapR::valueType_list
     vT <- valueType_of(x = data[[i]])
     data[[i]] <- as_valueType(x = as.character(data[[i]]),valueType = vT)
 
@@ -1501,7 +1501,7 @@ your dataset")}
 #' dataset in tibble format. If the input dataset has no associated metadata, a
 #' data dictionary with a minimal of information is created from the column
 #' (variable) names to create the data dictionary structure required for
-#' datashapR (all columns except variable names will be blank).
+#' madshapR (all columns except variable names will be blank).
 #'
 #' @details
 #' A dataset must be a data frame or data frame extension (e.g. a tibble) and
@@ -1721,7 +1721,7 @@ Leave blank to get both.")
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::data_dict_evaluate()].
+#' For a better assessment, please use [madshapR::data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #'
@@ -1799,7 +1799,7 @@ Please refer to documentation.")
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::data_dict_evaluate()].
+#' For a better assessment, please use [madshapR::data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #'
@@ -1872,7 +1872,7 @@ data dictionary")}}
         select('name', 'valueType') %>%
         mutate(`valueType` = replace_na(.data$`valueType`,"character")) %>%
         left_join(
-          datashapR::valueType_list %>%
+          madshapR::valueType_list %>%
             select(
               valueType = 'valueType',
               typeof = 'typeof') %>%
@@ -1915,7 +1915,7 @@ data dictionary")}}
           }) %>%
           bind_rows() %>%
           select('variable','valueType') %>% distinct %>%
-          left_join(datashapR::valueType_list, by = "valueType") %>%
+          left_join(madshapR::valueType_list, by = "valueType") %>%
           select(name = 'variable','typeof')
 
         data_dict[['Variables']] <-
@@ -2084,7 +2084,7 @@ data dictionary")}}
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::data_dict_evaluate()].
+#' For a better assessment, please use [madshapR::data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #' @param as_data_dict Whether the output data dictionary has a simple
@@ -2149,7 +2149,7 @@ data dictionary")}
     select(.data$`name`, .data$`typeof`) %>%
     mutate(`typeof` = replace_na(.data$`typeof`,"character")) %>%
     left_join(
-      datashapR::valueType_list %>%
+      madshapR::valueType_list %>%
         select(
           valueType = .data$`toValueType`,
           typeof = .data$`toTypeof`) %>%
@@ -2274,7 +2274,7 @@ investigations.",
       data_dict[['Variables']] <-
         data_dict[['Variables']] %>%
         left_join(
-          datashapR::valueType_list %>%
+          madshapR::valueType_list %>%
             select(
               valueType = .data$`valueType`,
               typeof = .data$`toTypeof`) %>%
@@ -2398,7 +2398,7 @@ New name: ",new_name)
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::data_dict_evaluate()].
+#' For a better assessment, please use [madshapR::data_dict_evaluate()].
 #'
 #' @param object A potential data dictionary structure to be evaluated.
 #'
@@ -2446,7 +2446,7 @@ is_data_dict_shape <- function(object){
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::data_dict_evaluate()].
+#' For a better assessment, please use [madshapR::data_dict_evaluate()].
 #'
 #' @param object A potential data dictionary to be coerced.
 #'
@@ -2497,7 +2497,7 @@ is_data_dict <- function(object){
 #' and/or any taxonomy provided.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::data_dict_evaluate()].
+#' For a better assessment, please use [madshapR::data_dict_evaluate()].
 #'
 #' @param object A potential Maelstrom formatted data dictionary to be
 #' evaluated.

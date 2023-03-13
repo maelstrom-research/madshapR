@@ -41,12 +41,12 @@
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .dataset_name A character string specifying the name of the dataset
-#' (internally used in the function `datashapR::study_evaluate()`).
+#' (internally used in the function `madshapR::study_evaluate()`).
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @seealso
-#' [datashapR::study_evaluate()]
+#' [madshapR::study_evaluate()]
 #'
 #' @return
 #' A list of tibbles of report for one study-specific data dictionary.
@@ -214,7 +214,7 @@ dataset_summarize <- function(
 
   ### SUMMARIZE VARIABLES VALUES ###
 
-  vT <- datashapR::valueType_list
+  vT <- madshapR::valueType_list
   vT_text <- vT[vT$`genericType` == 'character',][['valueType']]
   report$`Text variable summary` <-
     report$`Variables summary (all)`[
@@ -577,7 +577,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' full completeness is mandatory.
 #'
 #' @seealso
-#' [datashapR::summary_variables()]
+#' [madshapR::summary_variables()]
 #'
 #' @param data A tibble identifying the input data observations associated to
 #' its data dictionary.

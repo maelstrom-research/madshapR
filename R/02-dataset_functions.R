@@ -59,7 +59,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 
   # valueType/typeof() is needed to generate dataset, which will be all text if
   # not present
-  vT_list <- datashapR::valueType_list
+  vT_list <- madshapR::valueType_list
 
   data_dict_temp <- data_dict
 
@@ -293,7 +293,7 @@ a data frame. Please refer to documentation.")
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::dataset_evaluate()].
+#' For a better assessment, please use [madshapR::dataset_evaluate()].
 #'
 #' @param object A potential study to be coerced.
 #'
@@ -358,7 +358,7 @@ Please refer to documentation."))
 #' full completeness is mandatory.
 #'
 #' @seealso
-#' For a better assessment, please use [datashapR::dataset_evaluate()].
+#' For a better assessment, please use [madshapR::dataset_evaluate()].
 #'
 #' @param object A potential dataset to be evaluated.
 #'

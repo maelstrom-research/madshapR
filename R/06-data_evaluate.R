@@ -41,14 +41,14 @@
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .dataset_name A character string specifying the name of the dataset
-#' (internally used in the function `datashapR::study_evaluate()`).
+#' (internally used in the function `madshapR::study_evaluate()`).
 #' @param as_mlstr_data_dict Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
 #' structure, compatible with Maelstrom ecosystem such as Opal environment).
 #' FALSE by default.
 #'
 #' @seealso
-#' [datashapR::study_evaluate()]
+#' [madshapR::study_evaluate()]
 #'
 #' @return
 #' A list of tibbles of report for one study-specific data dictionary.

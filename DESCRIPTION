@@ -1,7 +1,7 @@
-Package: datashapR
+Package: madshapR
 Type: Package
 Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.1.0.1003
+Version: 1.0.0.1000
 Author: Guillaume Fabre
 Authors@R: 
     c(person(given = "Guillaume",
@@ -30,7 +30,6 @@ Imports: dplyr,
     knitr,
     opalr,
     bookdown,
-    grDevices,
     DT,
     xfun,
     readr,
@@ -40,9 +39,9 @@ Imports: dplyr,
     fabR
 Suggests: 
     rmarkdown
-URL: https://github.com/maelstrom-research/datashapR/
+URL: https://github.com/maelstrom-research/madshapR/
     https://www.maelstrom-research.org
-BugReports: https://github.com/maelstrom-research/datashapR/issues
+BugReports: https://github.com/maelstrom-research/madshapR/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

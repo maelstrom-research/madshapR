@@ -9,16 +9,16 @@
 #' @examples
 #' \dontrun{
 #'
-#' datashapR_help()
+#' madshapR_help()
 #'
 #' }
 #'
 #' @importFrom utils browseURL
 #'
 #' @export
-datashapR_help <- function(){
+madshapR_help <- function(){
 
-  browseURL("https://maelstrom-research.github.io/datashapR-documentation/")
+  browseURL("https://maelstrom-research.github.io/madshapR-documentation/")
 
 }
 

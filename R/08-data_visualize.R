@@ -41,7 +41,7 @@
 #' full completeness is mandatory.
 #'
 #' @seealso
-#' [datashapR::open_visual_report()]
+#' [madshapR::open_visual_report()]
 #'
 #' @param dataset A tibble identifying the input data observations associated to
 #' its data dictionary.
@@ -60,7 +60,7 @@
 #' @return
 #' A bookdown folder containing files in the specified output folder. To
 #' open the file in browser, open 'index.html'. Or use
-#' [datashapR::open_visual_report()]
+#' [madshapR::open_visual_report()]
 #'
 #' @examples
 #' \dontrun{
@@ -152,7 +152,7 @@ dataset_visualize <- function(
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
-library(datashapR)
+library(madshapR)
 library(DT)
 library(dplyr)
 library(tidyr)
@@ -329,7 +329,7 @@ str_squish(", fig.show='hold',
   )
 
   # invisible(dev.set(dev.next()))
-  invisible(grDevices::graphics.off())
+  # invisible(grDevices::graphics.off())
 
   xfun::in_dir(
     dir = paste0(
@@ -781,7 +781,7 @@ identify_plot_type <- function(
 #' statistics.
 #'
 #' @seealso
-#' [datashapR::dataset_visualize()]
+#' [madshapR::dataset_visualize()]
 #'
 #' @param report_name A character string specifying the name of the report (a
 #' folder in users environment) to be opened.

@@ -12,12 +12,12 @@
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'.
-#' The valueType list is available using [datashapR::valueType_list], and their
+#' The valueType list is available using [madshapR::valueType_list], and their
 #' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
 #' [base::typeof()], [base::class()]
-#' [datashapR::valueType_list] for insights about possible valueType and
+#' [madshapR::valueType_list] for insights about possible valueType and
 #' translation into type and class in R.
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
@@ -48,7 +48,7 @@ valueType_of <- function(x){
   type  <- x %>% typeof()
   class <- class(x)[[max(length(class(x)))]]
 
-  vT_list <- datashapR::valueType_list
+  vT_list <- madshapR::valueType_list
 
   valueType <-
     unique(vT_list[
@@ -85,7 +85,7 @@ valueType_of <- function(x){
 #' Search and replace the valueType of any data dictionary or dataset
 #'
 #' @description
-#' Using the function [datashapR::valueType_guess()], this function provides the
+#' Using the function [madshapR::valueType_guess()], this function provides the
 #' first possible valueType, by trying to assign the object to 'boolean', then
 #' 'integer', then 'decimal', then 'date'. (If all fails, 'text', by default),
 #' then either replace the valueType column of a data dictionary of casts a
@@ -116,7 +116,7 @@ valueType_of <- function(x){
 #' full completeness is mandatory.
 #'
 #' @seealso
-#' [datashapR::valueType_adjust()]
+#' [madshapR::valueType_adjust()]
 #'
 #' @param ... R object that can be either a dataset or a data dictionary.
 #'
@@ -209,7 +209,7 @@ valueType will remain as it is.")
           return(x)
         }) %>%
         bind_rows() %>%
-        left_join(datashapR::valueType_list, by = "valueType") %>%
+        left_join(madshapR::valueType_list, by = "valueType") %>%
         select(
           name = .data$`variable`,
           proposed_tO = .data$`typeof`,
@@ -303,7 +303,7 @@ valueType will remain as it is.")
 #' full completeness is mandatory.
 #'
 #' @seealso
-#' [datashapR::valueType_self_adjust()]
+#' [madshapR::valueType_self_adjust()]
 #'
 #' @param from R object to be adjusted. Can be either a dataset or a data
 #' dictionary.
@@ -344,7 +344,7 @@ valueType_adjust <- function(from, to = NULL){
 crayon::bold("\n\nUseful tip:"),
 " Use dataset_evaluate(data_dict) to get a full assessment of your dataset")}
 
-    vT_list<- datashapR::valueType_list
+    vT_list<- madshapR::valueType_list
     vT_tables <-
       data %>%
       summarise(across(everything(), valueType_of)) %>%
@@ -438,7 +438,7 @@ crayon::bold("\n\nUseful tip:"),
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'
-#' The valueType list is available using [datashapR::valueType_list], and their
+#' The valueType list is available using [madshapR::valueType_list], and their
 #' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
@@ -475,7 +475,7 @@ valueType_guess <- function(x){
   if(is.list(x))
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
-  vT_list <- datashapR::valueType_list
+  vT_list <- madshapR::valueType_list
 
   test_vT_boolean <- fabR::silently_run(as_valueType(as.character(x),"boolean"))
   test_vT_integer <- fabR::silently_run(as_valueType(as.character(x),"integer"))
@@ -525,7 +525,7 @@ valueType_guess <- function(x){
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'
-#' The valueType list is available using [datashapR::valueType_list], and their
+#' The valueType list is available using [madshapR::valueType_list], and their
 #' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
@@ -565,7 +565,7 @@ as_valueType <- function(x, valueType = 'text'){
   if(is.logical(x)            & valueType == "boolean") return(x)
   if(is.na(valueType)         | valueType == "text")    return(as.character(x))
 
-  vT_list <- datashapR::valueType_list
+  vT_list <- madshapR::valueType_list
   # check if valueType exists
   if(!valueType %in% vT_list$`valueType`) {
     stop(call. = FALSE,
@@ -719,7 +719,7 @@ present in your Opal environment.")}
 #' the (Obiba internal) type of any variable. The valueType can be 'text',
 #' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
 #' 'point', 'linestring', 'polygon'.
-#' The valueType list is available using [datashapR::valueType_list], and their
+#' The valueType list is available using [madshapR::valueType_list], and their
 #' corresponding with typeof which is the (R internal) type of any object.
 #'
 #' @seealso
@@ -742,7 +742,7 @@ present in your Opal environment.")}
 is_valueType <- function(object){
 
   object <- object
-  vT_list <- datashapR::valueType_list
+  vT_list <- madshapR::valueType_list
   # check if valueType exists
   if(!all(object %in% vT_list$`valueType`)) return(FALSE)
 

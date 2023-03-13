@@ -23,7 +23,7 @@ associated dataset. Automatically generated if not provided.}
 identifying the scheme used for variables classification as a tibble.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{datashapR::study_evaluate()}).}
+(internally used in the function \code{madshapR::study_evaluate()}).}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}

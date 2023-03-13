@@ -24,7 +24,7 @@ and Categories' in separate tibbles and standard columns in each) from any
 dataset in tibble format. If the input dataset has no associated metadata, a
 data dictionary with a minimal of information is created from the column
 (variable) names to create the data dictionary structure required for
-datashapR (all columns except variable names will be blank).
+madshapR (all columns except variable names will be blank).
 }
 \details{
 A dataset must be a data frame or data frame extension (e.g. a tibble) and
