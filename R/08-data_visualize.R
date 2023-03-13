@@ -117,8 +117,8 @@ dataset_visualize <- function(
       fabR::add_index(data_dict$Variables, .force = TRUE)
     data_dict <-
       data_dict %>%
-      identify_visual_type(data = dataset) %>%
-      identify_plot_type(data = dataset, group_by = group_by, out = out)
+      identify_visual_type(dataset = dataset) %>%
+      identify_plot_type(dataset = dataset, group_by = group_by, out = out)
   }
 
   dataset <-
@@ -385,7 +385,7 @@ str_squish(", fig.show='hold',
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated
+#' @param dataset A tibble identifying the input data observations associated
 #' to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -407,7 +407,7 @@ str_squish(", fig.show='hold',
 #' @importFrom rlang .data
 #'
 #' @noRd
-identify_visual_type <- function(data, data_dict){
+identify_visual_type <- function(dataset, data_dict){
 
   try({
 
@@ -431,13 +431,13 @@ identify_visual_type <- function(data, data_dict){
       data_dict$Variables <-
         data_dict$Variables %>%
         rename(variable = .data$`name`) %>%
-        filter(.data$`variable` %in% names(data)) %>%
+        filter(.data$`variable` %in% names(dataset)) %>%
         mutate(viz_type = .data$`valueType`) %>%
         rename(name = .data$`variable`)
     }else{
 
       name_var <-
-        names(data[names(data) %in% (var_names_cat_dd$variable)])
+        names(dataset[names(dataset) %in% (var_names_cat_dd$variable)])
       var_name_cat_dataset <-
         tibble(variable = as.character(),code_dataset = as.character())
       for(i in name_var){
@@ -445,7 +445,7 @@ identify_visual_type <- function(data, data_dict){
           add_row(
             var_name_cat_dataset,
             paste0("c('",
-                   pull(unique(data[i])) %>%
+                   pull(unique(dataset[i])) %>%
                      toString %>%
                      str_replace_all(", ","','"),"')") %>%
               as_tibble() %>% mutate(variable = i) %>%
@@ -471,7 +471,7 @@ identify_visual_type <- function(data, data_dict){
       data_dict$Variables <-
         data_dict$Variables %>% rename(variable = .data$`name`) %>%
         left_join(to_eval, by = "variable") %>%
-        filter(.data$`variable` %in% names(data)) %>%
+        filter(.data$`variable` %in% names(dataset)) %>%
         mutate(
           viz_type =
             ifelse(is.na(.data$`viz_type`),.data$`valueType`,.data$`viz_type`)
@@ -519,7 +519,7 @@ identify_visual_type <- function(data, data_dict){
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input data observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -548,7 +548,7 @@ identify_visual_type <- function(data, data_dict){
 #'
 #' @noRd
 identify_plot_type <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict,
     group_by = NULL,
     out = "ggplot2"){
@@ -589,50 +589,50 @@ identify_plot_type <- function(
       plot_1 = case_when(
         .data$`viz_type` == "text"                                             ~
           paste0(
-            'fabR::plot_main_word(tbl = data,col = "',
+            'fabR::plot_main_word(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "decimal"                                          ~
           paste0(
-            'fabR::plot_box(tbl = data,col = "',
+            'fabR::plot_box(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "integer"                                          ~
           paste0(
-            'fabR::plot_box(tbl = data,col = "',
+            'fabR::plot_box(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "date"                                             ~
           paste0(
-            'fabR::plot_date(tbl = data,col = "',
+            'fabR::plot_date(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,' , time = "year")'),
 
         .data$`viz_type` == "dual"  & .data$`valueType` == "text"              ~
           paste0(
-            'fabR::plot_main_word(tbl = data,col = "',
+            'fabR::plot_main_word(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "dual"  & .data$`valueType` == "decimal"           ~
           paste0(
-            'fabR::plot_density(tbl = data,col = "',
+            'fabR::plot_density(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "dual"  & .data$`valueType` == "integer"           ~
           paste0(
-            'fabR::plot_box(tbl = data,col = "',
+            'fabR::plot_box(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "dual"  & .data$`valueType` == "date"              ~
           paste0(
-            'fabR::plot_date(tbl = data,col = "',
+            'fabR::plot_date(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,' , time = "year")') ,
@@ -646,31 +646,31 @@ identify_plot_type <- function(
       plot_2 = case_when(
         .data$`viz_type` == "decimal"                                          ~
           paste0(
-            'fabR::plot_density(  tbl = data,col = "',
+            'fabR::plot_density(  tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "integer"                                          ~
           paste0(
-            'fabR::plot_histogram(tbl = data,col = "',
+            'fabR::plot_histogram(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "categorical"                                      ~
           paste0(
-            'fabR::plot_bar(      tbl = data,col = "',
+            'fabR::plot_bar(      tbl = dataset,col = "',
             .data$`name`,
             '"               , out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "dual"  & .data$`valueType` == "decimal"           ~
           paste0(
-            'fabR::plot_box(      tbl = data,col = "',
+            'fabR::plot_box(      tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
         .data$`viz_type` == "dual"  & .data$`valueType` == "integer"           ~
           paste0(
-            'fabR::plot_histogram(tbl = data,col = "',
+            'fabR::plot_histogram(tbl = dataset,col = "',
             .data$`name`,'" , missing_values = "',
             .data$`code_dd`,'", out = "',
             out,'-code", group_by = ',group_by,')') ,
@@ -683,7 +683,7 @@ identify_plot_type <- function(
       plot_3 = case_when(
         .data$`viz_type` == "categorical"                                      ~
           paste0(
-            'fabR::plot_pie(      tbl = data,col = "',
+            'fabR::plot_pie(      tbl = dataset,col = "',
             .data$`name`,'" ,         out = "',
             out,'-code", group_by = ',group_by,')'),
         TRUE                                                                   ~
@@ -693,7 +693,7 @@ identify_plot_type <- function(
     data_dict$Variables %>%
     mutate(plot_4 =
              paste0(
-               'fabR::plot_pie_valid_value(   tbl = data,col = "',
+               'fabR::plot_pie_valid_value(   tbl = dataset,col = "',
                .data$`name`,'" , missing_values = "',
                .data$`code_dd`,'", out = "',
                out,'-code", group_by = ',group_by,')'))
@@ -704,48 +704,48 @@ identify_plot_type <- function(
       summary_1 = case_when(
         .data$`viz_type` == "text"                                             ~
           paste0(
-            'fabR::summary_text(     tbl = data,col = "',
+            'fabR::summary_text(     tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "decimal"                                          ~
           paste0(
-            'fabR::summary_numerical(tbl = data,col = "',
+            'fabR::summary_numerical(tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "integer"                                          ~
           paste0(
-            'fabR::summary_numerical(tbl = data,col = "',
+            'fabR::summary_numerical(tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "date"                                             ~
           paste0(
-            'fabR::summary_text(     tbl = data,col = "',
+            'fabR::summary_text(     tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "categorical"                                      ~
           paste0(
-            'fabR::summary_category( tbl = data,col = "',
+            'fabR::summary_category( tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
 
         .data$`viz_type` == "dual"  & .data$`valueType` == "text"              ~
           paste0(
-            'fabR::summary_text(     tbl = data,col = "',
+            'fabR::summary_text(     tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "dual"  & .data$`valueType` == "decimal"           ~
           paste0(
-            'fabR::summary_numerical(tbl = data,col = "',
+            'fabR::summary_numerical(tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "dual"  & .data$`valueType` == "integer"           ~
           paste0(
-            'fabR::summary_numerical(tbl = data,col = "',
+            'fabR::summary_numerical(tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         .data$`viz_type` == "dual"  & .data$`valueType` == "date"              ~
           paste0(
-            'fabR::summary_text(     tbl = data,col = "',
+            'fabR::summary_text(     tbl = dataset,col = "',
             .data$`name`,'", missing_values = "',
             .data$`code_dd`,'", out = "DT-code", group_by = ',group_by,')'),
         TRUE                                                                   ~
