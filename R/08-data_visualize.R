@@ -86,7 +86,7 @@
 #' }
 #'
 #' @import dplyr knitr fabR
-#' @import bookdown utils readr stringr grDevices fs DT
+#' @import bookdown utils readr stringr fs DT
 #' @importFrom rlang .data
 #'
 #' @export
@@ -327,6 +327,9 @@ str_squish(", fig.show='hold',
           toString(as.character(attributes(dataset)$`Mlstr::col_id`)),
           ".Rmd$"))))
   )
+
+  # invisible(dev.set(dev.next()))
+  invisible(grDevices::graphics.off())
 
   xfun::in_dir(
     dir = paste0(
