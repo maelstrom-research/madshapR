@@ -385,7 +385,7 @@ str_squish(", fig.show='hold',
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param dataset A tibble identifying the input data observations associated
+#' @param data A tibble identifying the input data observations associated
 #' to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -407,7 +407,7 @@ str_squish(", fig.show='hold',
 #' @importFrom rlang .data
 #'
 #' @noRd
-identify_visual_type <- function(dataset, data_dict){
+identify_visual_type <- function(data, data_dict){
 
   try({
 
@@ -431,13 +431,13 @@ identify_visual_type <- function(dataset, data_dict){
       data_dict$Variables <-
         data_dict$Variables %>%
         rename(variable = .data$`name`) %>%
-        filter(.data$`variable` %in% (dataset %>% names)) %>%
+        filter(.data$`variable` %in% names(data)) %>%
         mutate(viz_type = .data$`valueType`) %>%
         rename(name = .data$`variable`)
     }else{
 
       name_var <-
-        names(dataset[names(dataset) %in% (var_names_cat_dd$variable)])
+        names(data[names(data) %in% (var_names_cat_dd$variable)])
       var_name_cat_dataset <-
         tibble(variable = as.character(),code_dataset = as.character())
       for(i in name_var){
@@ -471,7 +471,7 @@ identify_visual_type <- function(dataset, data_dict){
       data_dict$Variables <-
         data_dict$Variables %>% rename(variable = .data$`name`) %>%
         left_join(to_eval, by = "variable") %>%
-        filter(.data$`variable` %in% (dataset %>% names)) %>%
+        filter(.data$`variable` %in% names(data)) %>%
         mutate(
           viz_type =
             ifelse(is.na(.data$`viz_type`),.data$`valueType`,.data$`viz_type`)
@@ -519,7 +519,7 @@ identify_visual_type <- function(dataset, data_dict){
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param data A tibble identifying the input data observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -548,10 +548,10 @@ identify_visual_type <- function(dataset, data_dict){
 #'
 #' @noRd
 identify_plot_type <- function(
-    dataset = NULL,
+    data = NULL,
     data_dict,
     group_by = NULL,
-    out = "plotly"){
+    out = "ggplot2"){
 
   if(! "viz_type" %in% colnames(data_dict$Variables)){
     data_dict$Variables <-
