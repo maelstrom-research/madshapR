@@ -155,9 +155,14 @@ opal_files_push <- function(opal, from, to){
 #'
 #' @export
 opal_tables_push <- function(
-    opal,study = NULL,data_dict = NULL,
-    dataset = NULL,table_name = NULL,project_name,
-    .force = FALSE,.overwrite = FALSE){
+    opal,
+    study = NULL,
+    data_dict = NULL,
+    dataset = NULL,
+    table_name = NULL,
+    project_name,
+    .force = FALSE,
+    .overwrite = FALSE){
 
   # check on arguments
   if(!is.null(dataset)        & !is.null(study))
@@ -167,7 +172,7 @@ opal_tables_push <- function(
   if(!is.null(table_name)     & !is.null(study))
     stop(call. = FALSE,"Too many argments entered")
 
-  if(is.null(dataset) & is.null(data_dict))
+  if(is.null(dataset) & is.null(data_dict) & is.null(study))
     stop(call. = FALSE,"At least one argument is missing")
 
   if((!is.null(dataset) | !is.null(data_dict)) & is.null(table_name))
@@ -177,9 +182,9 @@ opal_tables_push <- function(
 
   message("Verification of input format.")
   # tests
-  if(!is.null(dataset))        dataset        <- as_dataset(dataset)
-  if(!is.null(data_dict))      data_dict      <- as_mlstr_data_dict(data_dict)
-  if(!is.null(study))          study          <- as_study(study)
+  if(!is.null(dataset))        as_dataset(dataset)
+  if(!is.null(study))          as_study(study)
+  if(!is.null(data_dict))      data_dict <- as_mlstr_data_dict(data_dict)
 
   project <- list()
   if(!is.null(study)) {
@@ -191,7 +196,6 @@ opal_tables_push <- function(
 
   if(!is.null(dataset) & !is.null(data_dict)){
     # stop()}
-    # test
     data_dict_apply(dataset, data_dict)
     project[[table_name]]$`dataset`   <- dataset
     project[[table_name]]$`data_dict` <- data_dict
@@ -201,21 +205,30 @@ opal_tables_push <- function(
     project[[table_name]]$`dataset`   <- dataset
     project[[table_name]]$`data_dict` <- dataset %>% data_dict_extract()
   }
-
-  # for(i in names(study)){
   if(!is.null(data_dict) & is.null(dataset)){
-
     # stop()}
-    # project[[i]]$`dataset`   <- study[[i]]
-    # project[[i]]$`data_dict` <- study[[i]] %>% data_dict_extract()
     project[[table_name]]$`dataset`   <- data_dict %>% data_extract()
     project[[table_name]]$`data_dict` <- data_dict
   }
+  
+  table_names <- names(project)
+  # check if id
+  for(i in table_names){
+    # stop()}
 
-  # table_names   <- names(study)
+    # col_id <- attributes(project[[i]][['dataset']])$`Mlstr::col_i`
+    # if(is.null(col_id))
+    #   attributes(project[[i]][['dataset']])$`Mlstr::col_i` <-
+    #     names(project[[i]][['dataset']][1])
+    
+    project[[i]][['dataset']] <-
+      project[[i]][['dataset']] %>% 
+      fabR::add_index(name_index = basename(tempfile())) %>% 
+      as_tibble()
+  }
+
   message("Verification of input format done.")
-  table_names   <- names(project)
-
+  
   # si le project n'existe pas  et que force = TRUE
   if(.force == TRUE){
   if(!opal.project_exists(opal, project_name)){
@@ -239,9 +252,9 @@ opal_tables_push <- function(
       tibble     = project[[i]][['dataset']],
       project    = project_name,
       table      = i,
-      overwrite = .overwrite,
-      force = .force,
-      id.name = names(project[[i]][['dataset']][1]))
+      overwrite  = .overwrite,
+      force      = .force,
+      id.name    = names(project[[i]][['dataset']])[1])
 
     opal.table_dictionary_update(
       opal       = opal,
@@ -250,7 +263,9 @@ opal_tables_push <- function(
       variables  = project[[i]][['data_dict']][['Variables']],
       categories = project[[i]][['data_dict']][['Categories']])
 
-    message("\nThe table: ",i, " has been successfuly uploaded to Opal")
+    message(
+      "\nThe table: ",i, 
+      " has been successfuly uploaded to Opal in ",project_name)
   }
 }
 
@@ -389,20 +404,21 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #'
 #' @export
 opal_tables_pull <- function(
-    opal,project,
+    opal,
+    project,
     table_list = NULL,
     content = c("dataset","data_dict"),
     keep_as_study = TRUE){
 
+  invisible(opal.execute(opal,"invisible(NULL)"))
+  
   if(length(project) > 1 & !is.null(table_list))
     stop(call. = FALSE,"Too many argments entered")
   if(length(project) == 1 & project[1] == "")
     stop(call. = FALSE,"\nYou must provide an Opal project\n")
-
   if(!is.logical(keep_as_study))
     stop(call. = FALSE,
          '`keep_as_study` must be TRUE or FALSE (TRUE by default)')
-
 
   study <- list()
 
@@ -412,18 +428,15 @@ opal_tables_pull <- function(
   }
 
   for(i in table_list){
+    # stop()}
 
     message(
 "Download of: ", project ," / ", i,
 " (",which(table_list == i),"/",length(table_list), ")")
 
-    # creation of dataset
-    if(sum(content %in% "dataset") > 0){
-      table_i <- opal.table_get(opal = opal, project = project, table = i)
-    }else{table_i <- tibble()}
-
     # creation of data_dict
-    data_dict_i <- fabR::silently_run(
+    data_dict_i <- 
+      fabR::silently_run(
       opal.table_dictionary_get(opal = opal, project = project, table = i))
 
     if(length(data_dict_i) == 0){
@@ -433,60 +446,74 @@ opal_tables_pull <- function(
           table = i,
           variables = tibble(name = as.character()),
           categories =
-            tibble(variable = as.character(), name = as.character()))}
+            tibble(variable = as.character(), name = as.character())) %>% data_dict_opalr_fix}
 
-    data_dict_i <- data_dict_i %>% data_dict_opalr_fix()
+    data_dict_i <- data_dict_opalr_fix(data_dict_i)
 
-    # if no dataset - only data_dict
-    if(sum(content %in% "dataset") == 0){
-      study_table_i <- data_dict_i
-    }else{
+    # creation of dataset
+    if(sum(content %in% "dataset") > 0){
+      table_i <- 
+        opal.table_get(opal = opal, project = project, table = i) %>%
+        select(- 1)
+    }else{table_i <- fabR::silently_run(data_extract(data_dict = data_dict_i))}
+    
+    # # # if no dataset - only data_dict
+    # if(sum(content %in% "dataset") == 0){
+    #   study_table_i <- data_dict_i
+    # }else{
+    # 
+    #   if(length(table_i) == 0){
+    #     study_table_i <-
+    #       fabR::silently_run(data_extract(data_dict = data_dict_i))
+    #   }
+      # else{
+      #   study_table_i <- study_create(dataset_list = list(table_i))
+      #   names(study_table_i) <- i
+      # }
+    # }
 
-      if(length(table_i) == 0){
-        study_table_i <-
-          fabR::silently_run(data_extract(data_dict = data_dict_i))
-      }else{
-        study_table_i <- study_create(dataset_list = list(table_i))
-        names(study_table_i) <- i
-      }
-    }
+    # if(sum(content %in% "data_dict") == 0)
+    #   study_table_i[['data_dict']] <- NULL
+    # if(sum(content %in% "dataset") == 0)
+    #   study_table_i[['dataset']]   <- NULL
 
-    if(sum(content %in% "data_dict") == 0)
-      study_table_i[['data_dict']] <- NULL
-    if(sum(content %in% "dataset") == 0)
-      study_table_i[['dataset']]   <- NULL
-
+    study_table_i <- list(dataset = table_i, data_dict = data_dict_i)
     study_table_i <- list(study_table_i)
     names(study_table_i) <- i
 
     study <- append(study, study_table_i)
   }
 
-  # only dataset:
-  if(sum(content %in% "data_dict") == 0){
-
-    dataset_list <- study
-
-    if(length(dataset_list) == 1 & keep_as_study == FALSE)
-      dataset_list <- dataset_list[[1]]
-    return(dataset_list)}
-
   # only data_dict:
   if(sum(content %in% "dataset") == 0){
 
-    data_dict_list <- study
+    data_dict_list <- 
+      study %>% lapply(function(x){
+        x <- as_mlstr_data_dict(x[['data_dict']]) 
+        return(x)}) 
 
     if(length(data_dict_list) == 1 & keep_as_study == FALSE)
       data_dict_list <- data_dict_list[[1]]
 
     return(data_dict_list)}
 
-  # # if only one study.table
-  # if(length(study) == 1) study <- study[[1]]
-  study <- as_study(study)
-  if(keep_as_study == FALSE) study <- study[[1]]
-
-  return(study)
+  # if datasets:
+  dataset_list <- 
+    study %>% lapply(function(x){
+      x <- as_dataset(x[['dataset']]) 
+      return(x)}) %>%
+    as_study()
+  
+  if(length(dataset_list) == 1 & keep_as_study == FALSE)
+    dataset_list <- dataset_list[[1]]
+  return(dataset_list)
+  
+  # # # if only one study.table
+  # # if(length(study) == 1) study <- study[[1]]
+  # study <- as_study(study)
+  # if(keep_as_study == FALSE) study <- study[[1]]
+  # 
+  # return(study)
 }
 
 #' @title
@@ -768,7 +795,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 opal_taxonomy_get <- function(opal){
 
   # get taxons
-  taxonomy <- opal.taxonomies(opal) %>% as_tibble()
+  taxonomy <- opal.taxonomies(opal) 
 
   if(nrow(taxonomy) == 0){
     taxonomy <- tibble(
@@ -784,7 +811,7 @@ opal_taxonomy_get <- function(opal){
 
   taxonomy <-
     taxonomy %>%
-    select(taxonomy = .data$`name`,vocabulary = .data$`vocabularies`) %>%
+    select(taxonomy = 'name',  vocabulary = 'vocabularies') %>%
     add_row(taxonomy = "Unknown_taxonomy",vocabulary = "", .before = TRUE) %>%
     fabR::add_index("index_taxonomy", start = 0) %>%
     rowwise() %>%
@@ -797,16 +824,16 @@ opal_taxonomy_get <- function(opal){
           .data$`vocabulary`,
           sep = "|"),
       vocabulary = str_remove(.data$`vocabulary`,"\\|$")) %>%
-    separate_rows(.data$`vocabulary`,sep = "\\|") %>%
+    separate_rows('vocabulary',sep = "\\|") %>%
     group_by(.data$`taxonomy`) %>%
-    fabR::add_index("index_vocabulary",start = 0) %>%
+    fabR::add_index("index_vocabulary",start = 0) %>% 
     ungroup() %>%
     rowwise() %>%
     mutate(
       term = ifelse(
         str_detect(
           .data$`vocabulary`,"Unknown_vocabulary"),"",
-        toString(opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)))) %>%
+        toString(opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)$name))) %>%
     mutate(
       term =
         paste(
@@ -815,21 +842,23 @@ opal_taxonomy_get <- function(opal){
             "_Unknown_term"),
           .data$`term`,sep = ", "),
       term = str_remove(.data$`term`,", $")) %>%
-    separate_rows(.data$`term`,sep = ", ") %>%
+    separate_rows('term',sep = ", ") %>%
     group_by(.data$`index_vocabulary`, .data$`index_taxonomy`) %>%
     fabR::add_index("index_term",start = 0) %>%
     ungroup %>%
     select(
-      .data$`index_taxonomy`,
-      .data$`index_vocabulary`,
-      .data$`index_term`,
+      'index_taxonomy',
+      'index_vocabulary',
+      'index_term',
       everything())
 
   .add_qual_check <- FALSE
   if(.add_qual_check == FALSE)
     taxonomy <- taxonomy %>% filter(.data$`index_term` != 0)
 
-  taxonomy <- as_taxonomy(taxonomy)
+  taxonomy <- 
+    as_taxonomy(taxonomy) %>%
+    tibble
 
   return(taxonomy)
 
