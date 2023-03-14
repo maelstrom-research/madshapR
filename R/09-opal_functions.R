@@ -882,7 +882,7 @@ opal_taxonomy_get <- function(opal){
 data_dict_opalr_fix <- function(data_dict){
 
   # test if actually an opalr data dictionary
-  if(sum(names(data_dict %in% c("variables", "table", "project"))) != 3){
+  if(sum(names(data_dict) %in% c("variables", "table", "project")) != 3){
     stop(call. = FALSE,
 "Your file is not in the opalr format. Please provide another file")}
 

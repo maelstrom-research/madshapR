@@ -1,7 +1,7 @@
 Package: madshapR
 Type: Package
 Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.0.0.1000
+Version: 1.0.0.1001
 Author: Guillaume Fabre
 Authors@R: 
     c(person(given = "Guillaume",
