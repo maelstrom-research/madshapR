@@ -25,6 +25,9 @@ function returns a dataset, or data dictionary. Default is 'dataset'.}
 
 \item{keep_as_study}{whether to return a study or a dataset if there is only
 one table. TRUE by default, if FALSE returns dataset.}
+
+\item{.remove_id}{whether to return the id column created in Opal or not.
+TRUE by default.}
 }
 \value{
 R objects (tibbles and list of tibbles) representing tables and their
