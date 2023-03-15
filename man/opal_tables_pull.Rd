@@ -9,7 +9,8 @@ opal_tables_pull(
   project,
   table_list = NULL,
   content = c("dataset", "data_dict"),
-  keep_as_study = TRUE
+  keep_as_study = TRUE,
+  .remove_id = FALSE
 )
 }
 \arguments{

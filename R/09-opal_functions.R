@@ -408,7 +408,8 @@ opal_tables_pull <- function(
     project,
     table_list = NULL,
     content = c("dataset","data_dict"),
-    keep_as_study = TRUE){
+    keep_as_study = TRUE,
+    .remove_id = FALSE){
 
   invisible(opal.execute(opal,"invisible(NULL)"))
   
@@ -419,11 +420,14 @@ opal_tables_pull <- function(
   if(!is.logical(keep_as_study))
     stop(call. = FALSE,
          '`keep_as_study` must be TRUE or FALSE (TRUE by default)')
+  if(!is.logical(.keep_id))
+    stop(call. = .remove_id,
+         '`.keep_id` must be TRUE or FALSE (TRUE by default)')
 
   study <- list()
 
   if(is.null(table_list)){
-    table_list <-
+    table_list <- 
       opal.tables(opal = opal,datasource = project) %>% pull(.data$`name`)
   }
 
@@ -446,51 +450,60 @@ opal_tables_pull <- function(
           table = i,
           variables = tibble(name = as.character()),
           categories =
-            tibble(variable = as.character(), name = as.character())) %>% data_dict_opalr_fix}
+            tibble(variable = as.character(), name = as.character()))}
 
-    data_dict_i <- data_dict_opalr_fix(data_dict_i)
+    data_dict_i <- 
+      data_dict_opalr_fix(data_dict_i) %>%
+      as_mlstr_data_dict()
 
     # creation of dataset
-    if(sum(content %in% "dataset") > 0){
+    if("dataset" %in% content == TRUE){
       table_i <- 
-        opal.table_get(opal = opal, project = project, table = i) %>%
-        select(- 1)
+        opal.table_get(opal = opal, project = project, table = i)
     }else{table_i <- fabR::silently_run(data_extract(data_dict = data_dict_i))}
     
-    # # # if no dataset - only data_dict
-    # if(sum(content %in% "dataset") == 0){
-    #   study_table_i <- data_dict_i
-    # }else{
-    # 
-    #   if(length(table_i) == 0){
-    #     study_table_i <-
-    #       fabR::silently_run(data_extract(data_dict = data_dict_i))
-    #   }
-      # else{
-      #   study_table_i <- study_create(dataset_list = list(table_i))
-      #   names(study_table_i) <- i
-      # }
-    # }
+    
+    if(ncol(table_i) == 0) table_i <- data_extract(data_dict_i)
+    
+    # if id is to be removed
+    if(.remove_id == TRUE){
+      table_i <- select(table_i,-1)
+    }else{
+    
+        # take the Variable part of the dd created with the first column
+        data_dict_temp <- data_dict_extract(table_i[1])[[1]]
+        
+        data_dict_i[['Variables']] <-
+          full_join(data_dict_temp,
+          data_dict_i[['Variables']],
+          by = intersect(
+            names(data_dict_temp),names(data_dict_i[['Variables']])))
+    }
+    
+    if(ncol(table_i) == 0) table_i <- data_extract(data_dict_i)
 
-    # if(sum(content %in% "data_dict") == 0)
-    #   study_table_i[['data_dict']] <- NULL
-    # if(sum(content %in% "dataset") == 0)
-    #   study_table_i[['dataset']]   <- NULL
-
+    # only data_dict:
+    if("dataset" %in% content == TRUE){
+      table_i <- 
+        table_i %>%
+        dataset_zap_data_dict %>%
+        data_dict_apply(data_dict_i) %>% 
+        as_dataset(col_id = names(table_i)[1])
+    }
+    
     study_table_i <- list(dataset = table_i, data_dict = data_dict_i)
     study_table_i <- list(study_table_i)
     names(study_table_i) <- i
-
+    
     study <- append(study, study_table_i)
-  }
-
+}
   # only data_dict:
-  if(sum(content %in% "dataset") == 0){
+  if("dataset" %in% content == FALSE){
 
     data_dict_list <- 
       study %>% lapply(function(x){
-        x <- as_mlstr_data_dict(x[['data_dict']]) 
-        return(x)}) 
+        x <- x[['data_dict']]
+        return(x)})
 
     if(length(data_dict_list) == 1 & keep_as_study == FALSE)
       data_dict_list <- data_dict_list[[1]]
@@ -500,7 +513,7 @@ opal_tables_pull <- function(
   # if datasets:
   dataset_list <- 
     study %>% lapply(function(x){
-      x <- as_dataset(x[['dataset']]) 
+      x <- x[['dataset']]
       return(x)}) %>%
     as_study()
   
