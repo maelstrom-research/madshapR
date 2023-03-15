@@ -1369,6 +1369,7 @@ data_dict_apply <- function(data, data_dict = NULL){
 
   # test
   as_dataset(data)
+  preserve_attributes <- attributes(data)$`Mlstr::col_id`
   if(toString(attributes(data_dict)$`Mlstr::class`) == 'Mlstr_data_dict'){
     data_dict <- as_mlstr_data_dict(data_dict,as_data_dict = TRUE)
   }else{data_dict <- as_data_dict(data_dict)}
@@ -1487,7 +1488,7 @@ your dataset")}
   data <-
     data[names_data_dict] %>%
     as_tibble() %>%
-    as_dataset()
+    as_dataset(col_id = preserve_attributes)
 
   return(data)
 }
