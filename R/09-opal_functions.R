@@ -386,6 +386,8 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' function returns a dataset, or data dictionary. Default is 'dataset'.
 #' @param keep_as_study whether to return a study or a dataset if there is only
 #' one table. TRUE by default, if FALSE returns dataset.
+#' @param .remove_id whether to return the id column created in Opal or not. 
+#' TRUE by default.
 #'
 #' @return
 #' R objects (tibbles and list of tibbles) representing tables and their
@@ -420,8 +422,8 @@ opal_tables_pull <- function(
   if(!is.logical(keep_as_study))
     stop(call. = FALSE,
          '`keep_as_study` must be TRUE or FALSE (TRUE by default)')
-  if(!is.logical(.keep_id))
-    stop(call. = .remove_id,
+  if(!is.logical(.remove_id))
+    stop(call. = FALSE,
          '`.keep_id` must be TRUE or FALSE (TRUE by default)')
 
   study <- list()
