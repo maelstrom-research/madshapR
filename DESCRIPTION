@@ -38,6 +38,7 @@ Imports: dplyr,
     fs,
     utils,
     fabR
+Remotes: Guifabre/FabR
 Suggests: 
     rmarkdown
 URL: https://github.com/maelstrom-research/madshapR/
