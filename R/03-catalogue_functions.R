@@ -682,9 +682,10 @@ as_taxonomy <- function(object){
   # check if names in object exist
   if(sum(names(object) %in% c("taxonomy","vocabulary" ,"term")) != 3){
     stop(call. = FALSE,
-      "\n\nThis object is not a taxonomy as defined by Maelstrom standards.
-It must be a dataframe containing at least 'taxonomy', 'vocabulary' and 'term'
-columns. Please refer to documentation.",
+"\n\nThis object is not a taxonomy as defined by Maelstrom standards, which must 
+be a data-frame (or tibble) containing at least 'taxonomy', 'vocabulary' and 
+'term' columns. 
+Please refer to documentation.",
 
       crayon::bold("\n\nUseful tip:"),
 " Use opal_taxonomy_get(opal) or mlstr_taxonomy_get(opal) to get the taxonomy

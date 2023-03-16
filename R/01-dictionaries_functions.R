@@ -1791,9 +1791,10 @@ as_data_dict_shape <- function(object){
 
   # else
   stop(call. = FALSE,
-    "\n\nThis object is not a in a standard data dictionary format. It
-must be a list containing at least 'Variables' list of elements.
+"\n\nThis object is not a data dictionary as defined by Maelstrom standards, 
+which must be a list containing at least 'Variables' list of elements.
 Please refer to documentation.")
+  
 }
 
 #' @title

@@ -272,9 +272,9 @@ as_dataset <- function(object, col_id = NULL){
 
   # else
   stop(call. = FALSE,
-"\n\n
-This object is not a dataset as defined by Maelstrom standards which must be
-a data frame. Please refer to documentation.")
+"\n\nThis object is not a dataset as defined by Maelstrom standards, which must 
+be a data-frame (or tibble). 
+Please refer to documentation.")
 
 }
 
@@ -330,8 +330,8 @@ as_study <- function(object){
   tryCatch(
     object <- object %>% lapply(FUN = function(x) as_dataset(x)),
     error = function(x) stop(call. = FALSE,
-      "\n\nThis object is not a study as defined by Maelstrom standards.
-It must be exclusively a list of (at least one) dataset(s).
+"\n\nThis object is not a study as defined by Maelstrom standards, which must be 
+exclusively a list of (at least one) dataset(s).
 Please refer to documentation."))
 
   attributes(object)$`Mlstr::class` <- "study"
