@@ -514,8 +514,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 
       if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']]) &
         all(is.na(data_dict[['Variables']][['Mlstr_area::1.scale']]))){
-        data_dict[['Variables']][['Mlstr_area::1.scale']] <- NULL
-        }
+        data_dict[['Variables']][['Mlstr_area::1.scale']] <- NULL}
       
       if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']]) &
          !all(is.na(data_dict[['Variables']][['Mlstr_area::1.scale']]))){
@@ -552,8 +551,10 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 
 
   # verification of the taxonomy, terms and vocabularies
-  new_names <- names(data_dict[['Variables']])[
-    !names(data_dict[['Variables']]) %in% names(data_dict_init[['Variables']])]
+  new_names <- 
+    names(data_dict[['Variables']])[
+    !names(data_dict[['Variables']]) %in% 
+      names(data_dict_init[['Variables']])]
 
   authorized_names <-
     taxonomy  %>%
@@ -561,7 +562,20 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
     unite(col = "taxonomy_opal", c("taxonomy", "vocabulary"),
           na.rm = TRUE, sep = "::", remove = FALSE) %>%
     pull(.data$`taxonomy_opal`)
-
+  
+  if(paste0(attributes(taxonomy)$`Mlstr::class`,"") == "mlstr_taxonomy"){
+    
+    authorized_names <- 
+      c(authorized_names ,
+        taxonomy  %>%
+          select("taxonomy_scale", "vocabulary_scale") %>% distinct %>%
+          unite(col = "area_scale_opal", 
+                c("taxonomy_scale", "vocabulary_scale"),
+                na.rm = TRUE, sep = "::", remove = FALSE) %>%
+          filter(.data$`area_scale_opal` != "") %>%
+          pull(.data$`area_scale_opal`))
+  }
+  
   wrong_names <- new_names[! new_names %in% authorized_names]
 
   if(length(wrong_names) > 0){
