@@ -501,7 +501,8 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
           c("taxonomy_scale", "vocabulary_scale"),
           na.rm = TRUE,
           sep = "::",
-          remove = FALSE)
+          remove = FALSE) %>%
+        mutate(area_scale_opal = na_if(.data$`area_scale_opal`, ""))
 
       taxo_scales <-
         taxo_scales[
@@ -511,7 +512,13 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
         rename("___area_scale_opal___" = "area_scale_opal") %>%
         rename("Mlstr_area::1.scale" = "term_scale")
 
-      if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']])){
+      if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']]) &
+        all(is.na(data_dict[['Variables']][['Mlstr_area::1.scale']]))){
+        data_dict[['Variables']][['Mlstr_area::1.scale']] <- NULL
+        }
+      
+      if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']]) &
+         !all(is.na(data_dict[['Variables']][['Mlstr_area::1.scale']]))){
 
         if(!is.null(data_dict[['Variables']][['___area_scale_opal___']])){
           stop(call. = FALSE,
@@ -545,8 +552,8 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 
 
   # verification of the taxonomy, terms and vocabularies
-  new_names <- (data_dict[['Variables']] %>% names)[
-    !names(data_dict_init[['Variables']]) %in% names(data_dict[['Variables']])]
+  new_names <- names(data_dict[['Variables']])[
+    !names(data_dict[['Variables']]) %in% names(data_dict_init[['Variables']])]
 
   authorized_names <-
     taxonomy  %>%

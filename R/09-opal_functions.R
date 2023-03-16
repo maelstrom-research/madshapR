@@ -810,7 +810,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 opal_taxonomy_get <- function(opal){
 
   # get taxons
-  taxonomy <- opal.taxonomies(opal) 
+  taxonomy <- tibble(opal.taxonomies(opal))
 
   if(nrow(taxonomy) == 0){
     taxonomy <- tibble(
@@ -840,7 +840,7 @@ opal_taxonomy_get <- function(opal){
           sep = "|"),
       vocabulary = str_remove(.data$`vocabulary`,"\\|$")) %>%
     separate_rows('vocabulary',sep = "\\|") %>%
-    group_by(.data$`taxonomy`) %>%
+    group_by(.data$`taxonomy`) %>% 
     fabR::add_index("index_vocabulary",start = 0) %>% 
     ungroup() %>%
     rowwise() %>%
@@ -849,6 +849,7 @@ opal_taxonomy_get <- function(opal){
         str_detect(
           .data$`vocabulary`,"Unknown_vocabulary"),"",
         toString(opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)$name))) %>%
+    tibble() %>%
     mutate(
       term =
         paste(
@@ -858,8 +859,8 @@ opal_taxonomy_get <- function(opal){
           .data$`term`,sep = ", "),
       term = str_remove(.data$`term`,", $")) %>%
     separate_rows('term',sep = ", ") %>%
-    group_by(.data$`index_vocabulary`, .data$`index_taxonomy`) %>%
-    fabR::add_index("index_term",start = 0) %>%
+    group_by(.data$`index_vocabulary`, .data$`index_taxonomy`) %>% 
+    fabR::add_index("index_term",start = 0) %>% 
     ungroup %>%
     select(
       'index_taxonomy',
@@ -873,7 +874,7 @@ opal_taxonomy_get <- function(opal){
 
   taxonomy <- 
     as_taxonomy(taxonomy) %>%
-    tibble
+    tibble 
 
   return(taxonomy)
 

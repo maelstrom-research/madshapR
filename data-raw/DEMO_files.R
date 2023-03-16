@@ -23,10 +23,12 @@
 #   list(dataProcessing =
 #          DEMO_files$`DEMO_data_processing_elements - work in progress`)
 #
-# o <-
-#   opal.login('gfabre','gfabre1234',url='https://opal.maelstrom-research.org/')
-# DEMO_files$Opal_taxonomy <-
-#   opal_taxonomy_get(o) %>% as_tibble() %>% as_taxonomy()
-# DEMO_files$Mlstr_taxonomy <-
-#   opal_taxonomy_get(o) %>% as_tibble() %>% as_taxonomy()
+# library(tidyverse)
+# library(opalr)
+# library(madshapR)
+# opal <- opal.login('gfabre','gfabre1234',url='https://opal.maelstrom-research.org/')
+# DEMO_files$taxonomy_opal <- opal_taxonomy_get(opal) 
+# DEMO_files$taxonomy_opal_mlstr <- opal_mlstr_taxonomy_get(opal)
 # usethis::use_data(DEMO_files, overwrite = TRUE)
+
+
