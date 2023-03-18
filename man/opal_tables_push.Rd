@@ -53,13 +53,34 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-\dontrun{
-# use case: send to Opal tables with the data dictionary (not mandatory)
-opal_tables_push(
-opal = o,
-project = ""DEMO"",
-table = study_PARIS,
-data_dict = dd_PARIS_format_maelstrom)
+{
+
+#' # use DEMO_files provided by the package
+library(opalr)
+library(stringr)
+
+study <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+
+opal <- 
+  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+tempdir <- basename(tempdir())
+try(opal_project_create(opal, tempdir))
+
+###### Example 1: push a table in a project.
+try( 
+  opal_tables_push(
+  opal,
+  dataset = study$dataset_MELBOURNE_1,
+  table_name = 'dataset_MELBOURNE_1',
+  project_name = tempdir,
+  .force = TRUE,
+  .overwrite = TRUE))
+  
+###### Example 2: push a study in a project.
+try(
+  opal_tables_push(
+  opal, study, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+
 }
 
 }

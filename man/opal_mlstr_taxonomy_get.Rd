@@ -24,8 +24,14 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+library(opalr)
+opal <- 
+  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  
+try(opal_mlstr_taxonomy_get(opal))
+  
 }
 
 }

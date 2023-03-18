@@ -30,8 +30,25 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 }
 \examples{
-\dontrun{
-# example
+{
+
+# use DEMO_files provided by the package
+
+###### Example 1: this function is compatible with opal_taxonomy_get()
+library(opalr)
+opal <- 
+  opal.login('administrator','password',url = 'https://opal-demo.obiba.org/')
+opal_taxo <- opal_mlstr_taxonomy_get(opal)
+as_taxonomy(opal_taxo)
+
+###### Example 2: you can create your own taxonomy
+print(DEMO_files$taxonomy_PARIS)
+as_taxonomy(DEMO_files$taxonomy_PARIS)
+
 }
 
+}
+\seealso{
+\href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
+\code{\link[=opal_taxonomy_get]{opal_taxonomy_get()}}
 }

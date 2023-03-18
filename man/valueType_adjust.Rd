@@ -51,8 +51,27 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+dataset <- DEMO_files$dataset_TOKYO
+
+###### Example 1: The valueType of a dataset can be adjusted using 
+# the valueType present in the data dictionary.
+valueType_adjust(from = data_dict,to = dataset)
+
+###### Example 2: The valueType of a dataset can be adjusted using 
+# the valueType present in the data dictionary. Here the valueType is 'text'
+data_dict[['Variables']]$valueType <- 'text'
+valueType_adjust(from = data_dict,to = dataset)
+
+###### Example 1: The valueType of a data dictionary can be adjusted using 
+# the valueType of each column of the dataset.
+data_dict[['Variables']]$valueType <- 'text'
+dataset <- valueType_self_adjust(dataset)
+valueType_adjust(from = dataset,to = data_dict)
 }
 
 }

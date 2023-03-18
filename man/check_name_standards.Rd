@@ -28,8 +28,14 @@ convention restriction, columns like 'valueType', , and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+check_name_standards(c("coucou", "cou cou", "$coucou",NA))
+check_name_standards(
+ DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`$Variables$name)
+
 }
 
 }

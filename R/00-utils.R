@@ -7,10 +7,11 @@
 #' package, the vignettes, and the list of functions.
 #'
 #' @examples
-#' \dontrun{
+#' {
 #'
+#' library(utils)
 #' madshapR_help()
-#'
+#' 
 #' }
 #'
 #' @importFrom utils browseURL
@@ -54,7 +55,7 @@ madshapR_help <- function(){
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' {
 #'
 #' valueType_list
 #'
@@ -111,9 +112,9 @@ madshapR_help <- function(){
 #'
 #'
 #' @examples
-#' \dontrun{
+#' {
 #'
-#' valueType_list
+#' DEMO_files
 #'
 #' }
 "DEMO_files"

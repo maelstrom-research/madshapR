@@ -59,8 +59,14 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+library(dplyr)
+data <- DEMO_files$dataset_MELBOURNE_1 \%>\% select(-1)
+data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+data_dict_match_dataset(data, data_dict)
+
 }
 
 }

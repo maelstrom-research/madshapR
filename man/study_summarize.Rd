@@ -57,12 +57,20 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
-dataset <- study_TOKYO \%>\% mutate(
-           dob = fabR::as_any_date(dob, format = ""mdy""))
-data_dict <- dd_TOKYO_format_maelstrom_tagged
-study_assessment_report(dataset, data_dict)
+{
+# use DEMO_files provided by the package
+library(stringr)
+library(dplyr)
+
+###### Example 1: Combine functions and summarise datasets.
+study <- 
+  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")] \%>\%
+  lapply(valueType_self_adjust)
+
+study_summarize(study)
+
+###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+study_summarize(list(iris = iris, mtcars = mtcars))
 }
 
 }

@@ -52,12 +52,24 @@
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
-#' dataset <- study_TOKYO %>% mutate(
-#'    dob = fabR::as_any_date(dob, format = ""mdy""))
-#' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessment_report(dataset, data_dict)
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict)
+#'   
+#' dataset_summarize(dataset,valueType_guess = TRUE)
+#' dataset_summarize(dataset,valueType_guess = FALSE)
+#'  
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' dataset_summarize(iris,valueType_guess = FALSE)
+#'
 #' }
 #'
 #' @import dplyr stringr tidyr fabR
@@ -260,7 +272,6 @@ dataset_summarize <- function(
     summary_date <- # only works for ymd format
       summary_variables_date(.resume_var = .resume_var_date) %>%
       rename(name_var = .data$`name`)
-      # yyy yyy yyy
 
     message("    Summarise information for numerical variables")
     .resume_var_num <-
@@ -496,12 +507,20 @@ dataset_summarize <- function(
 #' A list of tibbles of report for each study-specific dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
-#' dataset <- study_TOKYO %>% mutate(
-#'            dob = fabR::as_any_date(dob, format = ""mdy""))
-#' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessment_report(dataset, data_dict)
+#' {
+#' # use DEMO_files provided by the package
+#' library(stringr)
+#' library(dplyr)
+#' 
+#' ###### Example 1: Combine functions and summarise datasets.
+#' study <- 
+#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")] %>%
+#'   lapply(valueType_self_adjust)
+#' 
+#' study_summarize(study)
+#' 
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' study_summarize(list(iris = iris, mtcars = mtcars))
 #' }
 #'
 #' @import dplyr stringr tidyr
@@ -589,8 +608,23 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' data dictionary elements.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict)
+#'   
+#' resume_variables(dataset)
+#'  
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' resume_variables(iris)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -786,8 +820,25 @@ resume_variables <- function(data, data_dict = NULL){
 #' a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict)
+#'   
+#' .resume_var <- resume_variables(dataset)
+#' summary_variables(.resume_var = .resume_var)
+#'   
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' .resume_var <- resume_variables(iris)
+#' summary_variables(.resume_var = .resume_var)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -938,8 +989,28 @@ summary_variables <- function(
 #' in a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict) %>%
+#'   select(where(is.character))
+#'   
+#' .resume_var <- resume_variables(dataset)
+#' summary_variables_text(.resume_var = .resume_var)
+#'   
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' .resume_var <- 
+#'   resume_variables(
+#'     mutate(iris['Species'],Species = as.character(Species)))
+#' summary_variables_text(.resume_var = .resume_var)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -954,7 +1025,8 @@ summary_variables_text <- function(
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
-
+  if(!nrow(.resume_var)) return(summary_tbl)
+  
   summary <-
     .resume_var %>%
     filter(.data$`value_var_occur` == 1 ) %>%
@@ -1053,8 +1125,34 @@ summary_variables_text <- function(
 #' in a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#' library(fabR)
+#' library(lubridate)
+#'
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict) %>%
+#'   select(where(is.Date))
+#'   
+#' .resume_var <- resume_variables(dataset)
+#' summary_variables_date(.resume_var = .resume_var)
+#'   
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' .resume_var <- 
+#'   storms %>%
+#'     slice(1:500) %>%
+#'     mutate(date_storm = as_any_date(paste(year, month, day,"-"),"ymd")) %>%
+#'     select(date_storm) %>%
+#'     resume_variables
+#'
+#' summary_variables_date(.resume_var = .resume_var)
+#'
 #' }
 #'
 #' @import dplyr tidyr lubridate fabR
@@ -1069,6 +1167,7 @@ summary_variables_date <- function(
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
+  if(!nrow(.resume_var)) return(summary_tbl)
 
   date_format <-
     fabR::guess_date_format(distinct(.resume_var['value_var']))
@@ -1190,8 +1289,26 @@ crayon::bold("Useful tip:"),
 #' present in a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict) %>% 
+#'   select(where(is.numeric))
+#'   
+#' .resume_var <- resume_variables(dataset)
+#' summary_variables_numerical(.resume_var = .resume_var)
+#'   
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' .resume_var <- resume_variables(starwars %>% select(where(is.numeric)))
+#' summary_variables_numerical(.resume_var = .resume_var)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -1206,7 +1323,8 @@ summary_variables_numerical <- function(
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
-
+  if(!nrow(.resume_var)) return(summary_tbl)
+  
   summary <-
     .resume_var %>%
     filter(.data$`value_var_occur` == 1 ) %>%
@@ -1300,8 +1418,26 @@ summary_variables_numerical <- function(
 #' present in a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#' 
+#' ###### Example 1: Combine functions and summarise datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict) %>% 
+#'   select(gndr)
+#'   
+#' .resume_var <- resume_variables(dataset)
+#' summary_variables_categorical(.resume_var = .resume_var)
+#'   
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' .resume_var <- resume_variables(iris %>% select(Species))
+#' summary_variables_categorical(.resume_var = .resume_var)
+#' 
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -1316,7 +1452,8 @@ summary_variables_categorical <- function(
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
-
+  if(!nrow(.resume_var)) return(summary_tbl)
+  
   summary <-
     .resume_var %>%
     group_by(across(c(-.data$`value_var_occur`,-.data$`index_value`))) %>%

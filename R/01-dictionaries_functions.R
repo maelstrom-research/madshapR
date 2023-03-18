@@ -43,8 +43,13 @@
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' 
+#' data_dict <- DEMO_files$`dd_PARIS_format_flatten`
+#' data_dict_expand(data_dict)
+#' 
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -219,8 +224,13 @@ Example:
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict_flatten(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -347,10 +357,14 @@ data_dict_flatten <- function(
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
 #'
-#'   data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' taxonomy <- DEMO_files$taxonomy_opal_mlstr
+#' data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+#' data_dict_pivot_wider(data_dict, taxonomy)
+#'
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -374,41 +388,42 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
     mutate(across(everything(),as.character))
 
   taxonomy <- as_taxonomy(taxonomy)
-  taxonomy_opal <-
+  taxonomy_id <-
     taxonomy  %>%
     unite(
-      col = "taxonomy_opal",
+      col = "taxonomy_id",
       c("taxonomy", "vocabulary"),
       na.rm = TRUE,
       sep = "::",
       remove = FALSE) %>%
     arrange("index_taxonomy", "index_vocabulary", "index_term")
 
-  taxonomy_opal <-
-    taxonomy_opal[,
-            c('index_vocabulary','taxonomy_opal','taxonomy','vocabulary')] %>%
+  taxonomy_id <-
+    taxonomy_id[,
+            c('index_vocabulary','taxonomy_id','taxonomy','vocabulary')] %>%
     distinct() %>%
     mutate(
       name_col = str_replace(
-        .data$`taxonomy_opal`,
+        .data$`taxonomy_id`,
         .data$`vocabulary`,
         as.character(.data$`index_vocabulary`)),
       name_term = paste0(.data$`name_col`,".term"))
 
-  taxonomy_opal <- taxonomy_opal[,c('name_col','name_term','taxonomy')]
+  taxonomy_id <- taxonomy_id[,c('name_col','name_term','taxonomy')]
 
-  taxonomy_opal <-
-    taxonomy_opal[taxonomy_opal$`name_col`%in% names(data_dict[["Variables"]]) &
-      taxonomy_opal$`name_term` %in% names(data_dict[["Variables"]]),]
+  taxonomy_id <-
+    taxonomy_id[
+      taxonomy_id$`name_col`%in% names(data_dict[["Variables"]]) &
+      taxonomy_id$`name_term` %in% names(data_dict[["Variables"]]),]
 
-  if(nrow(taxonomy_opal) > 0){
+  if(nrow(taxonomy_id) > 0){
 
-    for(i in seq_len(nrow(taxonomy_opal))){
+    for(i in seq_len(nrow(taxonomy_id))){
       # stop()}
 
-      name_col   <- taxonomy_opal$`name_col`[i]
-      name_term  <- taxonomy_opal$`name_term`[i]
-      col_final  <- taxonomy_opal$`taxonomy`[i]
+      name_col   <- taxonomy_id$`name_col`[i]
+      name_term  <- taxonomy_id$`name_term`[i]
+      col_final  <- taxonomy_id$`taxonomy`[i]
 
       data_dict_colnames <-
         intersect(
@@ -497,19 +512,19 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
       taxo_scales <-
         taxonomy %>%
         unite(
-          col = "area_scale_opal",
+          col = "area_scale_id",
           c("taxonomy_scale", "vocabulary_scale"),
           na.rm = TRUE,
           sep = "::",
           remove = FALSE) %>%
-        mutate(area_scale_opal = na_if(.data$`area_scale_opal`, ""))
+        mutate(area_scale_id = na_if(.data$`area_scale_id`, ""))
 
       taxo_scales <-
         taxo_scales[
-          !is.na(taxo_scales$`area_scale_opal`),
-          c('area_scale_opal','term_scale')] %>%
+          !is.na(taxo_scales$`area_scale_id`),
+          c('area_scale_id','term_scale')] %>%
         distinct %>%
-        rename("___area_scale_opal___" = "area_scale_opal") %>%
+        rename("___area_scale_id___" = "area_scale_id") %>%
         rename("Mlstr_area::1.scale" = "term_scale")
 
       if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']]) &
@@ -519,9 +534,9 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
       if(!is.null(data_dict[['Variables']][['Mlstr_area::1.scale']]) &
          !all(is.na(data_dict[['Variables']][['Mlstr_area::1.scale']]))){
 
-        if(!is.null(data_dict[['Variables']][['___area_scale_opal___']])){
+        if(!is.null(data_dict[['Variables']][['___area_scale_id___']])){
           stop(call. = FALSE,
-"Column name '___area_scale_opal___' already exists in your data dictionary")}
+"Column name '___area_scale_id___' already exists in your data dictionary")}
 
         fabR::silently_run({
           data_dict[['Variables']] <-
@@ -533,7 +548,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
                 c('name','Mlstr_area::1.scale')] %>%
                 left_join(taxo_scales, by = "Mlstr_area::1.scale") %>%
                 pivot_wider(
-                  names_from = "___area_scale_opal___",
+                  names_from = "___area_scale_id___",
                   values_from = "Mlstr_area::1.scale") ,
 
               by = c("name") )
@@ -559,9 +574,9 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
   authorized_names <-
     taxonomy  %>%
     select("taxonomy", "vocabulary") %>% distinct %>%
-    unite(col = "taxonomy_opal", c("taxonomy", "vocabulary"),
+    unite(col = "taxonomy_id", c("taxonomy", "vocabulary"),
           na.rm = TRUE, sep = "::", remove = FALSE) %>%
-    pull(.data$`taxonomy_opal`)
+    pull(.data$`taxonomy_id`)
   
   if(paste0(attributes(taxonomy)$`Mlstr::class`,"") == "mlstr_taxonomy"){
     
@@ -569,11 +584,11 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
       c(authorized_names ,
         taxonomy  %>%
           select("taxonomy_scale", "vocabulary_scale") %>% distinct %>%
-          unite(col = "area_scale_opal", 
+          unite(col = "area_scale_id", 
                 c("taxonomy_scale", "vocabulary_scale"),
                 na.rm = TRUE, sep = "::", remove = FALSE) %>%
-          filter(.data$`area_scale_opal` != "") %>%
-          pull(.data$`area_scale_opal`))
+          filter(.data$`area_scale_id` != "") %>%
+          pull(.data$`area_scale_id`))
   }
   
   wrong_names <- new_names[! new_names %in% authorized_names]
@@ -636,37 +651,43 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' taxonomy <- DEMO_files$taxonomy_opal_mlstr
+#' data_dict <- DEMO_files$dd_TOKYO_format_opal_tagged
+#' data_dict_pivot_longer(data_dict,taxonomy)
+#'
 #' }
 #'
 #' @import dplyr tidyr
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_pivot_longer <- function(data_dict, taxonomy){
+data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 
   # test
   as_data_dict_shape(data_dict)
 
-  if(is.null(taxonomy)) { return(data_dict) }
+  if(is.null(taxonomy)) { return(data_dict) }else{
+    as_taxonomy(taxonomy) 
+  }
 
   # make unique names for names in data dict
   data_dict_init <- data_dict
   data_dict[['Variables']]$`name` <-
     make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
 
-  taxonomy <- as_taxonomy(taxonomy)
-
   order_taxonomy <-
     taxonomy %>%
     select('taxonomy') %>%
     distinct() %>% pull('taxonomy')
 
-  taxonomy_opal <-
+  taxonomy_id <-
     taxonomy  %>%
     unite(
-      col = "taxonomy_opal", c('taxonomy', 'vocabulary'),
+      col = "taxonomy_id", c('taxonomy', 'vocabulary'),
       na.rm = TRUE, sep = "::", remove = FALSE) %>%
     unite(
       col = "voc_term", c('vocabulary', 'term'),
@@ -677,16 +698,16 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
     group_by(.data$`taxonomy`) %>%
     group_split()
 
-  names(taxonomy_opal) <- sort(order_taxonomy)
-  taxonomy_opal <- taxonomy_opal[order_taxonomy]
+  names(taxonomy_id) <- sort(order_taxonomy)
+  taxonomy_id <- taxonomy_id[order_taxonomy]
 
-  for(i in names(taxonomy_opal)){
+  for(i in names(taxonomy_id)){
     # stop()}
 
     taxonomy_i <-
-      taxonomy_opal[[i]] %>%
-      filter(.data$`taxonomy_opal` %in% (names(data_dict[['Variables']]))) %>%
-      select('voc_term','taxonomy_opal','index_vocabulary', 'index_term') %>%
+      taxonomy_id[[i]] %>%
+      filter(.data$`taxonomy_id` %in% (names(data_dict[['Variables']]))) %>%
+      select('voc_term','taxonomy_id','index_vocabulary', 'index_term','vocabulary') %>%
       distinct
 
     if(taxonomy_i %>% nrow > 0){
@@ -694,7 +715,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
       try({
         data_dict_temp <-
           data_dict[['Variables']] %>%
-          select('name',matches(paste0('^',taxonomy_i$`taxonomy_opal`,'$'))) %>%
+          select('name',matches(paste0('^',taxonomy_i$`taxonomy_id`,'$'))) %>%
           # pivoting area of information
           pivot_longer(
             cols = starts_with(i),
@@ -707,12 +728,15 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
             na.rm = TRUE, sep = "::", remove = FALSE) %>%
           left_join(taxonomy_i
                     ,by = 'voc_term') %>%
-          arrange(!! i, .data$`index_vocabulary`, .data$`index_term`) %>%
-          select(-c('index_vocabulary','index_term','vocabulary')) %>%
+          arrange(!! i, .data$`index_vocabulary`, .data$`index_term`) %>% 
           mutate(
             across(!! i,
-                   ~ ifelse(is.na(.data$`taxonomy_opal`),NA_character_,.))) %>%
-          mutate()
+                   ~ ifelse(is.na(.data$`taxonomy_id`),NA_character_,.))) %>%
+          select(-matches('index_vocabulary'),
+                 -matches('index_term'),
+                 -matches('index_term'),
+                 -matches('voc_term'),
+                 -matches('taxonomy_id')) %>%
           group_by(.data$`name`) %>%
           distinct()
       }, silent = TRUE)
@@ -805,12 +829,12 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 
     cols_scales <-
       taxonomy %>%
-      unite("area_scale_opal", .data$`taxonomy_scale`, .data$`vocabulary_scale`,
+      unite("area_scale_id", .data$`taxonomy_scale`, .data$`vocabulary_scale`,
             na.rm = TRUE, sep = "::", remove = FALSE) %>%
-      select(.data$`area_scale_opal`,.data$`term_scale`) %>%
-      select(.data$`area_scale_opal`) %>%
-      filter(!is.na(.data$`area_scale_opal`)) %>% distinct %>%
-      pull(.data$`area_scale_opal`) %>%
+      select(.data$`area_scale_id`,.data$`term_scale`) %>%
+      select(.data$`area_scale_id`) %>%
+      filter(!is.na(.data$`area_scale_id`)) %>% distinct %>%
+      pull(.data$`area_scale_id`) %>%
       intersect(names(data_dict[['Variables']]))
 
     if(length(cols_scales) > 0){
@@ -894,8 +918,38 @@ data_dict_pivot_longer <- function(data_dict, taxonomy){
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' 
+#' # Create a list of data dictionaries where the column 'table' is added to 
+#' # refer to the associated dataset. The object created is not a data 
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data data dictionary.
+#' library(dplyr)
+#' 
+#' data_dict_list <- list()
+#' data_dict_1 <-
+#'   DEMO_files$dd_MELBOURNE_1_format_maelstrom %>%
+#'   lapply(function(x){x %>% mutate(table = "MELBOURNE_1")})
+#' data_dict_2 <- DEMO_files$dd_MELBOURNE_2_format_maelstrom %>%
+#'   lapply(function(x){x %>% mutate(table = "MELBOURNE_2")})
+#' 
+#' data_dict_list <-
+#'   list(Variables = bind_rows(data_dict_1$Variables,data_dict_2$Variables),
+#'        Categories = bind_rows(data_dict_1$Categories,data_dict_2$Categories))
+#' 
+#' ###### Example 1 search and filter through a column in 'Variables' component
+#' data_dict_filter(data_dict_list,filter_var = "valueType == 'integer'")
+#' 
+#' ###### Example 2 search and filter through a column in 'Categories' component
+#' data_dict_filter(data_dict_list,filter_cat = "missing == TRUE")
+#' 
+#' ###### Example 3 search and filter through a column in 'Variables' component.
+#' # The column must exist in both 'Variables' and 'Categories' and have the 
+#' # same meaning
+#' data_dict_filter(data_dict_list,filter_all = "table == 'MELBOURNE_1'")
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -981,8 +1035,23 @@ data_dict_filter <- function(
 #' A list of tibble(s) identifying a list of data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' # Create a list of data dictionaries where the column 'table' is added to 
+#' # refer to the associated dataset. The object created is not a data 
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data data dictionary.
+#' 
+#' data_dict_list <- DEMO_files[
+#'     c('dd_MELBOURNE_1_format_maelstrom',
+#'       'dd_MELBOURNE_2_format_maelstrom')] %>% 
+#'     data_dict_list_nest(name_group = 'table')
+#'  
+#'  data_dict_group_split(data_dict_list,col = "table")
+#'  
 #' }
 #'
 #' @import dplyr tidyr
@@ -1098,8 +1167,20 @@ cannot be found accross the variables declared in 'Variables'.")
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' # Create a list of data dictionaries where the column 'table' is added to 
+#' # refer to the associated dataset. The object created is not a data 
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data data dictionary.
+#' 
+#' data_dict_list <- DEMO_files[
+#'     c('dd_MELBOURNE_1_format_maelstrom',
+#'       'dd_MELBOURNE_2_format_maelstrom')]
+#'  
+#' data_dict_list_nest(data_dict_list,name_group = "table")
+#' 
 #' }
 #'
 #' @import dplyr tidyr
@@ -1213,8 +1294,21 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' # Create a list of data dictionaries where the column 'table' is added to 
+#' # refer to the associated dataset. The object created is not a data 
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data data dictionary.
+#' library(dplyr)
+#' 
+#' data_dict_list <- 
+#'   DEMO_files[c('dd_MELBOURNE_1_format_maelstrom',
+#'                'dd_MELBOURNE_2_format_maelstrom')] %>%
+#' data_dict_list_nest(name_group = 'table')
+#'  
+#' data_dict_group_by(data_dict_list,col = "table")
 #' }
 #'
 #' @import dplyr tidyr
@@ -1303,8 +1397,22 @@ cannot be found accross the variables declared in 'Variables'.")
 #' A list of tibble(s) identifying a data dictionary - like structure.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' # Create a list of data dictionaries where the column 'table' is added to 
+#' # refer to the associated dataset. The object created is not a data 
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data data dictionary.
+#' library(dplyr)
+#' 
+#' data_dict_list <- DEMO_files[
+#'     c('dd_MELBOURNE_1_format_maelstrom',
+#'       'dd_MELBOURNE_2_format_maelstrom')] %>%
+#'   data_dict_list_nest(name_group = 'table') %>%
+#'   data_dict_group_by(col = "table")
+#'     
+#'  data_dict_ungroup(data_dict_list)
 #' }
 #'
 #' @import dplyr tidyr
@@ -1375,8 +1483,14 @@ data_dict_ungroup <- function(data_dict){
 #' variable as attributes.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' dataset <- DEMO_files$dataset_MELBOURNE_1
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' data_dict_apply(dataset, data_dict)
+#' 
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -1546,10 +1660,21 @@ your dataset")}
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # use case 1: create a data dictionary from any dataset
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' ###### Example 2: extract data dictionary from a labelled dataset.
+#' data <- DEMO_files$dataset_MELBOURNE_1
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' dataset <- data_dict_apply(data,data_dict)
+#' data_dict_extract(dataset)
+#' 
+#' ###### Example 2: extract data dictionary from any dataset (the 
+#' # data dictionary will be created upon attributes of the dataset. Factors 
+#' # will be considered as categorical variables)
 #' data_dict_extract(iris)
-#' # use case 2: create a data dictionary with project and categorical variables
+#' 
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -1670,8 +1795,14 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' identifying a data dictionary. Returns both in a list by default.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#' data <- DEMO_files$dataset_MELBOURNE_1 %>% select(-1)
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict_match_dataset(data, data_dict)
+#' 
 #' }
 #'
 #' @import dplyr tidyr
@@ -1751,8 +1882,13 @@ Leave blank to get both.")
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_PARIS_format_maelstrom
+#' as_data_dict_shape(data_dict)
+#'
 #'}
 #'
 #' @import dplyr tidyr
@@ -1831,9 +1967,11 @@ Please refer to documentation.")
 #'
 #' @examples
 #' {
+#' 
 #' # use DEMO_files provided by the package
+#'
 #' data_dict <- DEMO_files$dd_PARIS_format_maelstrom
-#' as_data_dict_shape(DEMO_files$dd_PARIS_format_maelstrom)
+#' as_data_dict(data_dict)
 #'
 #'}
 #'
@@ -2119,8 +2257,13 @@ data dictionary")}}
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#'
 #' }
 #'
 #' @import dplyr tidyr fabR
@@ -2429,8 +2572,14 @@ New name: ",new_name)
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' is_data_dict_shape(data_dict)
+#' is_data_dict_shape(iris)
+#'
 #'}
 #'
 #' @import dplyr tidyr
@@ -2477,8 +2626,14 @@ is_data_dict_shape <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' is_data_dict(data_dict)
+#' is_data_dict(iris)
+#'
 #'}
 #'
 #' @import dplyr tidyr
@@ -2529,8 +2684,14 @@ is_data_dict <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' is_mlstr_data_dict(data_dict)
+#' is_mlstr_data_dict(iris)
+#'
 #'}
 #'
 #' @import dplyr tidyr

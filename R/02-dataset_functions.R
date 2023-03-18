@@ -33,8 +33,13 @@
 #' 'Variables' component of the data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_extract(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -123,8 +128,15 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' A tibble identifying a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data <- DEMO_files$dataset_TOKYO
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <- data_dict_apply(data,data_dict)
+#' dataset_zap_data_dict(dataset)
+#'
 #' }
 #'
 #' @import dplyr tidyr fabR
@@ -173,8 +185,19 @@ dataset_zap_data_dict <- function(dataset){
 #' A list of tibble(s), each of them identifying datasets in a study.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' ###### Example 1: datasets can be gathered into a study which is a list.
+#' study <- study_create(
+#'  dataset_list = list(
+#'    dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
+#'    dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
+#'    
+#' ###### Example 2: any data-frame (or tibble) can be gathered into a study
+#' study_create(list(iris, mtcars))
+#'    
 #' }
 #'
 #' @import dplyr tidyr
@@ -232,8 +255,17 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #' A tibble identifying a dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' ###### Example 1: a dataset can have an id column(s) which is specified as
+#' # an attribute. 
+#' dataset <- DEMO_files$dataset_MELBOURNE_1
+#' as_dataset(dataset, col_id = "id")
+#' 
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' as_dataset(iris)
 #'}
 #'
 #' @import dplyr tidyr
@@ -301,8 +333,18 @@ Please refer to documentation.")
 #' A list of tibble(s), each of them identifying datasets in a study.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(stringr)
+#'
+#' ###### Example 1: a dataset list is a study by definition.
+#' as_study(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+#'    
+#' ###### Example 2: any list of data-frame (or tibble) can be a study by 
+#' # definition.
+#' as_study(list(dataset_1 = iris, dataset_2 = mtcars))
+#' 
 #'}
 #'
 #' @import dplyr tidyr
@@ -366,8 +408,15 @@ Please refer to documentation."))
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' # any data-frame (or tibble) can be a dataset by definition.
+#' 
+#' is_dataset(DEMO_files$dataset_MELBOURNE_1)
+#' is_dataset(iris)
+#' is_dataset(AirPassengers)
+#' 
 #'}
 #'
 #' @import dplyr tidyr
@@ -403,8 +452,16 @@ is_dataset <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' # Any list of data-frame (or tibble) can be a study by definition.
+#' library(stringr)
+#' 
+#' is_study(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+#' is_study(list(dataset_1 = iris, dataset_2 = mtcars))
+#' is_study(iris)
+#' 
 #'}
 #'
 #' @import dplyr tidyr

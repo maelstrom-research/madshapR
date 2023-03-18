@@ -27,11 +27,17 @@ The valueType list is available using \link{valueType_list}, and their
 corresponding with typeof which is the (R internal) type of any object.
 }
 \examples{
-\dontrun{
-# use case 1: Apply valueType without specifying a data dictionary
-as_valueType(""1"") \%>\% typeof()
-tibble(iris \%>\% mutate(Species = as.character(Species))) \%>\%
-mutate(across(c(starts_with(""Sepal"")), ~ as_valueType(.,""integer"")))
+{
+
+# use DEMO_files provided by the package
+
+dataset <- DEMO_files$dataset_TOKYO
+valueType_of(dataset$dob)
+valueType_guess(dataset$dob)
+
+valueType_of(mtcars$cyl)
+valueType_guess(mtcars$cyl)
+
 }
 
 }

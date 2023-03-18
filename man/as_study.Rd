@@ -24,8 +24,18 @@ data frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
 }
 \examples{
-\dontrun{
-# example
+{
+
+# use DEMO_files provided by the package
+library(stringr)
+
+###### Example 1: a dataset list is a study by definition.
+as_study(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+   
+###### Example 2: any list of data-frame (or tibble) can be a study by 
+# definition.
+as_study(list(dataset_1 = iris, dataset_2 = mtcars))
+
 }
 
 }

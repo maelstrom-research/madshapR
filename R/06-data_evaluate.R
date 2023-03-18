@@ -54,12 +54,24 @@
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
-#' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(
-#' dob, format = ""mdy""))
-#' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessment_report(dataset, data_dict)
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' 
+#' ###### Example 1: a dataset associated to its data dictionary. These can be
+#' # assessed combined
+#' data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
+#' dataset <- data_dict_apply(data, data_dict)
+#' dataset_evaluate(dataset)
+#' 
+#' ###### Example 2: a dataset not associated to a data dictionary. These can be
+#' # assessed separated
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' dataset_evaluate(dataset, data_dict)
+#' 
+#' ###### Example 2: any data-frame (or tibble) can be assessed
+#' dataset_evaluate(iris)
 #' }
 #'
 #' @import dplyr tidyr stringr fabR
@@ -327,12 +339,19 @@ dataset_evaluate <- function(
 #' A list of tibbles of report for each study-specific dataset.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
-#' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(
-#' dob, format = ""mdy""))
-#' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessment_report(dataset, data_dict)
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#' library(stringr)
+#'
+#' ###### Example 1: a dataset list is a study by definition.
+#' study_evaluate(
+#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")])
+#'    
+#' ###### Example 2: any list of data-frame (or tibble) can be a study by 
+#' # definition.
+#' study_evaluate(list(dataset_1 = iris, dataset_2 = mtcars))
+#'
 #' }
 #'
 #' @import dplyr stringr tidyr
@@ -419,12 +438,14 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
 #' A list of tibbles of report for one study-specific data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
-#' dataset <- study_TOKYO %>% mutate(dob = fabR::as_any_date(
-#' dob, format = ""mdy""))
-#' data_dict <- dd_TOKYO_format_maelstrom_tagged
-#' study_assessment_report(dataset, data_dict)
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict_evaluate(data_dict,as_mlstr_data_dict = FALSE)
+#' data_dict_evaluate(data_dict,as_mlstr_data_dict = TRUE)
+#'
 #' }
 #'
 #' @import dplyr tidyr stringr fabR

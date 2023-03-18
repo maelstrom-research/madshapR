@@ -40,8 +40,13 @@ restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+data_extract(data_dict)
+
 }
 
 }

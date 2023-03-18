@@ -59,12 +59,19 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
-dataset <- study_TOKYO \%>\% mutate(dob = fabR::as_any_date(
-dob, format = ""mdy""))
-data_dict <- dd_TOKYO_format_maelstrom_tagged
-study_assessment_report(dataset, data_dict)
+{
+
+# use DEMO_files provided by the package
+library(stringr)
+
+###### Example 1: a dataset list is a study by definition.
+study_evaluate(
+  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")])
+   
+###### Example 2: any list of data-frame (or tibble) can be a study by 
+# definition.
+study_evaluate(list(dataset_1 = iris, dataset_2 = mtcars))
+
 }
 
 }

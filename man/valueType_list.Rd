@@ -35,7 +35,7 @@ the (Obiba internal) type of any variable. The valueType can be 'text',
 'point', 'linestring', 'polygon'.
 }
 \examples{
-\dontrun{
+{
 
 valueType_list
 

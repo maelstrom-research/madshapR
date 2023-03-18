@@ -55,8 +55,34 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+library(dplyr)
+library(fabR)
+library(lubridate)
+
+###### Example 1: Combine functions and summarise datasets.
+data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <-
+  DEMO_files$dataset_TOKYO \%>\%
+  valueType_adjust(from = data_dict) \%>\%
+  data_dict_apply(data_dict) \%>\%
+  select(where(is.Date))
+  
+.resume_var <- resume_variables(dataset)
+summary_variables_date(.resume_var = .resume_var)
+  
+###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+.resume_var <- 
+  storms \%>\%
+    slice(1:500) \%>\%
+    mutate(date_storm = as_any_date(paste(year, month, day,"-"),"ymd")) \%>\%
+    select(date_storm) \%>\%
+    resume_variables
+
+summary_variables_date(.resume_var = .resume_var)
+
 }
 
 }

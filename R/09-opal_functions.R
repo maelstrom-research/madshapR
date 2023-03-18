@@ -27,9 +27,15 @@
 #' environment.
 #'
 #' @examples
-#' \dontrun{
-#' # use case 1: create a project in Opal
-#' opal_project_create(project = ""DEMO"" ,tag = ""DEMO"")
+#' {
+#' 
+#' library(opalr)
+#' opal <- 
+#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   
+#' tempdir <- basename(tempdir())
+#' try(opal_project_create(opal, tempdir))
+#' 
 #' }
 #'
 #' @import dplyr opalr
@@ -85,13 +91,17 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' The path to Opal needs to be pasted with Opal absolute path.
 #'
 #' @examples
-#' \dontrun{
-#' # use case 1: place all files in a project (""home/project/"") or a user
-#' (""home/administrator/"")
-#' opal_files_push(
-#' opal = o,
-#' from = ""DEMO"",
-#' to = ""home/project/DEMO"")
+#' {
+#' 
+#' library(opalr)
+#' opal <- 
+#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   
+#' tempdir <- tempdir()
+#' invisible(dir.create(paste0(tempdir,"/a_file")))
+#' invisible(file.create(paste0(tempdir,"/a_file","/file.txt")))
+#' try(opal_files_push(opal, from = paste0(tempdir,"/a_file"), to = tempdir))
+#' 
 #' }
 #'
 #' @import dplyr opalr
@@ -102,6 +112,99 @@ opal_files_push <- function(opal, from, to){
 
   opal.file_upload(opal = opal,source = from, destination = to)
   message("Your file(s) has(ve) been succesfully uploaded to Opal")
+}
+
+#' @title
+#' Download files from an Opal environment
+#'
+#' @description
+#' Downloads files from Opal environment to local. It is a wrapper of
+#' [opalr::opal.file_download()].
+#' The user must be allowed to interact with their Opal. The errors
+#' provided may be associated to the handler or the read/write
+#' permissions to Opal. The user must have adequate credentials
+#' to interact with their Opal environment.
+#'
+#' @details
+#' The user must be allowed to interact with their Opal. The errors
+#' provided may be associated to the handler or the read/write
+#' permissions to Opal. The user must have adequate credentials
+#' to interact with their Opal environment.
+#'
+#' @seealso
+#' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
+#' information.
+#'
+#' @param opal Opal login attributes.
+#' @param from A character string of a path where the files will be taken from
+#' in R.
+#' @param to A character string of a path where the files will be placed to in
+#' Opal.
+#'
+#' @return
+#' Folder(s) containing files coming from Opal in user R environment.
+#'
+#' @examples
+#' {
+#' 
+#' library(opalr)
+#' opal <- 
+#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   
+#' tempdir <- tempdir()
+#' invisible(dir.create(paste0(tempdir,"/a_file")))
+#' invisible(file.create(paste0(tempdir,"/a_file","/file.txt")))
+#' try(opal_files_push(opal, from = paste0(tempdir,"/a_file"), to = tempdir))
+#' try(opal_files_pull(opal, from = paste0(tempdir,"/a_file"), to = tempdir))
+#' 
+#' }
+#'
+#' @import dplyr stringr opalr tools
+#' @importFrom rlang .data
+#' @importFrom utils unzip
+#'
+#' @export
+opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
+
+  # if from = ".../.../foo"     and to = ".../.../fuu"
+  #    then > zip the folder, dl and unzip
+  # if from = ".../.../foo.ext" and to = ".../.../fuu"
+  #    then > to <- to + "/" + basename(from), dl
+  # if from = ".../.../foo.ext" and to = ".../.../fuu.ext"
+  #    then >dl
+
+  to <- ifelse(file_ext(from) == file_ext(to),to, paste0(to,"/",basename(from)))
+  to <- ifelse(file_ext(to) == "",paste0(to,".zip"),to)
+  to <- str_replace(to,"/.zip",".zip")
+
+  if(from == ""){
+    message("\nYou must provide an Opal files path\n")}else{
+
+      tryCatch(
+        {opal.file_download(
+          opal = opal,
+          source = from,
+          destination = to)},
+        error = function(cond){
+          file.remove(paste0(to))
+          stop(call. = FALSE,cond)})
+
+      if(file_ext(to) == "zip"){
+        unzip(zipfile = to,
+              exdir = file_path_sans_ext(to),
+              overwrite = TRUE,
+              junkpaths = FALSE)
+        file.remove(paste0(to))
+        message(
+          "The files have been added to your environment in the folder ",
+          file_path_sans_ext(to),".\n")
+      }else{
+        message(
+"The file ",
+  basename(to)," have been added to your environment in the folder ",
+   dirname(to),".\n")
+      }
+    }
 }
 
 #' @title
@@ -141,13 +244,34 @@ opal_files_push <- function(opal, from, to){
 #' A table in Opal.
 #'
 #' @examples
-#' \dontrun{
-#' # use case: send to Opal tables with the data dictionary (not mandatory)
-#' opal_tables_push(
-#' opal = o,
-#' project = ""DEMO"",
-#' table = study_PARIS,
-#' data_dict = dd_PARIS_format_maelstrom)
+#' {
+#' 
+#' #' # use DEMO_files provided by the package
+#' library(opalr)
+#' library(stringr)
+#'
+#' study <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#'
+#' opal <- 
+#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#' tempdir <- basename(tempdir())
+#' try(opal_project_create(opal, tempdir))
+#' 
+#' ###### Example 1: push a table in a project.
+#' try( 
+#'   opal_tables_push(
+#'   opal,
+#'   dataset = study$dataset_MELBOURNE_1,
+#'   table_name = 'dataset_MELBOURNE_1',
+#'   project_name = tempdir,
+#'   .force = TRUE,
+#'   .overwrite = TRUE))
+#'   
+#' ###### Example 2: push a study in a project.
+#' try(
+#'   opal_tables_push(
+#'   opal, study, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+#' 
 #' }
 #'
 #' @import dplyr opalr
@@ -270,98 +394,6 @@ opal_tables_push <- function(
 }
 
 #' @title
-#' Download files from an Opal environment
-#'
-#' @description
-#' Downloads files from Opal environment to local. It is a wrapper of
-#' [opalr::opal.file_download()].
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
-#'
-#' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
-#'
-#' @seealso
-#' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
-#' information.
-#'
-#' @param opal Opal login attributes.
-#' @param from A character string of a path where the files will be taken from
-#' in R.
-#' @param to A character string of a path where the files will be placed to in
-#' Opal.
-#'
-#' @return
-#' Folder(s) containing files coming from Opal in user R environment.
-#'
-#' @examples
-#' \dontrun{
-#' # use case 1: download all files from a project folder (""home/project/"")
-#' # or a
-#' # user's folder (""home/administrator/"").
-#' opal_files_pull(
-#' opal = o,
-#' from = ""/home/administrator/DEMO/data_processing_elements"",
-#' to = ""DEMO"")
-#' # use case 2: download specific file from an Opal folder and rename it.
-#' opal_files_pull(
-#' opal = o,
-#' }
-#'
-#' @import dplyr stringr opalr tools
-#' @importFrom rlang .data
-#' @importFrom utils unzip
-#'
-#' @export
-opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
-
-  # if from = ".../.../foo"     and to = ".../.../fuu"
-  #    then > zip the folder, dl and unzip
-  # if from = ".../.../foo.ext" and to = ".../.../fuu"
-  #    then > to <- to + "/" + basename(from), dl
-  # if from = ".../.../foo.ext" and to = ".../.../fuu.ext"
-  #    then >dl
-
-  to <- ifelse(file_ext(from) == file_ext(to),to, paste0(to,"/",basename(from)))
-  to <- ifelse(file_ext(to) == "",paste0(to,".zip"),to)
-  to <- str_replace(to,"/.zip",".zip")
-
-  if(from == ""){
-    message("\nYou must provide an Opal files path\n")}else{
-
-      tryCatch(
-        {opal.file_download(
-          opal = opal,
-          source = from,
-          destination = to)},
-        error = function(cond){
-          file.remove(paste0(to))
-          stop(call. = FALSE,cond)})
-
-      if(file_ext(to) == "zip"){
-        unzip(zipfile = to,
-              exdir = file_path_sans_ext(to),
-              overwrite = TRUE,
-              junkpaths = FALSE)
-        file.remove(paste0(to))
-        message(
-          "The files have been added to your environment in the folder ",
-          file_path_sans_ext(to),".\n")
-      }else{
-        message(
-"The file ",
-  basename(to)," have been added to your environment in the folder ",
-   dirname(to),".\n")
-      }
-    }
-}
-
-#' @title
 #' Download tables from an Opal project as a study
 #'
 #' @description
@@ -394,11 +426,41 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' respective data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # use case 1: download a table and its data dictionary associated
-#' opal_tables_pull(opal = o,project = ""DEMO"", table = ""study_PARIS"")
-#' # use case 2: download all tables and their data dictionaries associated
-#' opal_tables_pull(opal = o,project = ""DEMO"")
+#' {
+#' 
+#' #' # use DEMO_files provided by the package
+#' library(opalr)
+#' library(stringr)
+#'
+#' study <- 
+#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#'
+#' opal <- 
+#'   opal.login('administrator','password', 
+#'   url ='https://opal-demo.obiba.org/')
+#'   
+#' tempdir <- basename(tempdir())
+#' try(opal_project_create(opal, tempdir))
+#' 
+#' try(
+#'   opal_tables_push(
+#'   opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+#'   
+#' ###### Example 1: pull a table from a project.
+#' try(
+#'   opal_tables_pull(
+#'   opal,project = tempdir,table_list = 'dataset_MELBOURNE_1'))
+#' 
+#' ###### Example 2: pull a study from a project.
+#' try(
+#'   opal_tables_pull(
+#'   opal, project = tempdir))
+#' 
+#' ###### Example 3: pull a data dictionary from a project.
+#' try(
+#'   opal_tables_pull(
+#'   opal, project = tempdir, content = 'data_dict'))
+#' 
 #' }
 #'
 #' @import dplyr opalr
@@ -555,8 +617,14 @@ opal_tables_pull <- function(
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' library(opalr)
+#' opal <- 
+#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   
+#' try(opal_mlstr_taxonomy_get(opal))
+#'   
 #' }
 #'
 #' @import dplyr tidyr opalr
@@ -799,8 +867,14 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' library(opalr)
+#' opal <- 
+#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   
+#' try(opal_taxonomy_get(opal))
+#' 
 #' }
 #'
 #' @import dplyr tidyr stringr opalr fabR
@@ -916,8 +990,34 @@ opal_taxonomy_get <- function(opal){
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' #' # use DEMO_files provided by the package
+#' library(opalr)
+#' library(stringr)
+#'
+#' study <- 
+#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#'
+#' opal <- 
+#'   opal.login('administrator','password', 
+#'   url ='https://opal-demo.obiba.org/')
+#'   
+#' tempdir <- basename(tempdir())
+#' try(opal_project_create(opal, tempdir))
+#' 
+#' try(
+#'   opal_tables_push(
+#'   opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+#' 
+#' # get the data dictionary and reshape it.
+#'  data_dict <- 
+#'    try(
+#'    opal.table_dictionary_get(
+#'    opal,project = tempdir,table = "dataset_MELBOURNE_1"))
+#'    
+#'  data_dict <- try(data_dict_opalr_fix(data_dict))
+#'   
 #' }
 #'
 #' @import dplyr tidyr

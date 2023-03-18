@@ -29,8 +29,13 @@
 #' A tibble providing non unique variables across a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' check_data_dict_variables(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr fabR
@@ -111,8 +116,13 @@ check_data_dict_variables <- function(data_dict){
 #' data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' check_data_dict_categories(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr fabR
@@ -225,8 +235,13 @@ check_data_dict_categories <- function(data_dict){
 #' not a boolean.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' check_data_dict_missing_categories(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr fabR
@@ -316,17 +331,20 @@ check_data_dict_missing_categories <- function(data_dict){
 #' A tibble providing non-standard taxonomy declared in a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
 #'
-#' data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' taxonomy <- DEMO_files$taxonomy_opal
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' check_data_dict_taxonomy(data_dict, taxonomy)
 #'
 #' }
 #'
 #' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
-#' @export
+#' @noRd
 check_data_dict_taxonomy <- function(data_dict, taxonomy){
 
   # check_taxo_one_col function(col, taxonomy, na_allowed = TRUE){
@@ -446,7 +464,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   # # }
   #
   #
-  # #### if mlstr_taxonomy ####
+  # # if mlstr_taxonomy
   #
   # # if area::1 and area::1.term are mandatory
   #
@@ -562,8 +580,13 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' A tibble providing non-standard valueType declared in a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' check_data_dict_valueType(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -694,8 +717,14 @@ check_data_dict_valueType <- function(data_dict){
 #' A tibble providing undeclared variables across a data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' check_dataset_variables(data,data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -781,8 +810,14 @@ check_dataset_variables <- function(data, data_dict = NULL){
 #' their data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
+#' data      <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' check_dataset_categories(data, data_dict)
+#' 
 #' }
 #'
 #' @import dplyr tidyr
@@ -950,8 +985,15 @@ check_dataset_categories <- function(data, data_dict = NULL){
 #' their data dictionary.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
+#' dataset <- data_dict_apply(data, data_dict)
+#' check_dataset_valueType(dataset, data_dict,valueType_guess = TRUE)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -1069,8 +1111,14 @@ check_dataset_valueType <- function(
 #' A tibble providing non-standard names across a vector.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
+#' check_name_standards(
+#'  DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`$Variables$name)
+#'
 #' }
 #'
 #' @import dplyr tidyr stringr

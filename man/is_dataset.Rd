@@ -28,8 +28,15 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# example
+{
+
+# use DEMO_files provided by the package
+# any data-frame (or tibble) can be a dataset by definition.
+
+is_dataset(DEMO_files$dataset_MELBOURNE_1)
+is_dataset(iris)
+is_dataset(AirPassengers)
+
 }
 
 }

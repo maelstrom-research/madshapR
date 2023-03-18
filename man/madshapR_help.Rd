@@ -12,8 +12,9 @@ the package. The user accesses the description of the latest version of the
 package, the vignettes, and the list of functions.
 }
 \examples{
-\dontrun{
+{
 
+library(utils)
 madshapR_help()
 
 }

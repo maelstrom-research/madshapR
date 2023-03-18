@@ -35,9 +35,11 @@ and/or any taxonomy provided.
 }
 \examples{
 {
+
 # use DEMO_files provided by the package
+
 data_dict <- DEMO_files$dd_PARIS_format_maelstrom
-as_data_dict_shape(DEMO_files$dd_PARIS_format_maelstrom)
+as_data_dict(data_dict)
 
 }
 

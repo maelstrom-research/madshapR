@@ -37,10 +37,21 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# use case 1: create a data dictionary from any dataset
+{
+
+# use DEMO_files provided by the package
+
+###### Example 2: extract data dictionary from a labelled dataset.
+data <- DEMO_files$dataset_MELBOURNE_1
+data_dict <- as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+dataset <- data_dict_apply(data,data_dict)
+data_dict_extract(dataset)
+
+###### Example 2: extract data dictionary from any dataset (the 
+# data dictionary will be created upon attributes of the dataset. Factors 
+# will be considered as categorical variables)
 data_dict_extract(iris)
-# use case 2: create a data dictionary with project and categorical variables
+
 }
 
 }

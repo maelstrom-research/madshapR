@@ -45,11 +45,41 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-\dontrun{
-# use case 1: download a table and its data dictionary associated
-opal_tables_pull(opal = o,project = ""DEMO"", table = ""study_PARIS"")
-# use case 2: download all tables and their data dictionaries associated
-opal_tables_pull(opal = o,project = ""DEMO"")
+{
+
+#' # use DEMO_files provided by the package
+library(opalr)
+library(stringr)
+
+study <- 
+  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+
+opal <- 
+  opal.login('administrator','password', 
+  url ='https://opal-demo.obiba.org/')
+  
+tempdir <- basename(tempdir())
+try(opal_project_create(opal, tempdir))
+
+try(
+  opal_tables_push(
+  opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  
+###### Example 1: pull a table from a project.
+try(
+  opal_tables_pull(
+  opal,project = tempdir,table_list = 'dataset_MELBOURNE_1'))
+
+###### Example 2: pull a study from a project.
+try(
+  opal_tables_pull(
+  opal, project = tempdir))
+
+###### Example 3: pull a data dictionary from a project.
+try(
+  opal_tables_pull(
+  opal, project = tempdir, content = 'data_dict'))
+
 }
 
 }

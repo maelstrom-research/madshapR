@@ -33,17 +33,18 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-\dontrun{
-# use case 1: download all files from a project folder (""home/project/"")
-# or a
-# user's folder (""home/administrator/"").
-opal_files_pull(
-opal = o,
-from = ""/home/administrator/DEMO/data_processing_elements"",
-to = ""DEMO"")
-# use case 2: download specific file from an Opal folder and rename it.
-opal_files_pull(
-opal = o,
+{
+
+library(opalr)
+opal <- 
+  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  
+tempdir <- tempdir()
+invisible(dir.create(paste0(tempdir,"/a_file")))
+invisible(file.create(paste0(tempdir,"/a_file","/file.txt")))
+try(opal_files_push(opal, from = paste0(tempdir,"/a_file"), to = tempdir))
+try(opal_files_pull(opal, from = paste0(tempdir,"/a_file"), to = tempdir))
+
 }
 
 }

@@ -27,8 +27,14 @@
 #' A character string which is the valueType of the given object.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' dataset <- DEMO_files$dataset_MELBOURNE_1
+#' valueType_of(dataset$Gender)
+#' valueType_of(iris$Sepal.Length)
+#'
 #' }
 #'
 #' @import dplyr tidyr
@@ -125,8 +131,26 @@ valueType_of <- function(x){
 #' identifying a data dictionary, depending which the input refers to.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+#' data_dict$Variables$valueType <- "text"
+#' dataset <- DEMO_files$dataset_TOKYO
+#' 
+#' ###### Example 1: The valueType of a dataset can be adjusted. each column is
+#' # evaluated as whole, and the best valueType match found is applied. If 
+#' # there is no better match found, the column is left as it is.
+#' valueType_self_adjust(dataset)
+#' 
+#' #' ###### Example 2: The valueType present in a data dictionary can be 
+#' # adjusted (only for categorical variables). Each categorical variable is
+#' # evaluated as whole (with the values present in the 'name' column in the 
+#' # 'Categories' component), and the best valueType match found is applied. If 
+#' # there is no better match found, the valueType is left as it is.
+#' valueType_self_adjust(data_dict)
+#'
 #' }
 #'
 #' @import dplyr tidyr stringr
@@ -316,8 +340,27 @@ valueType will remain as it is.")
 #' identifying a data dictionary, depending which is 'to'.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+#' dataset <- DEMO_files$dataset_TOKYO
+#' 
+#' ###### Example 1: The valueType of a dataset can be adjusted using 
+#' # the valueType present in the data dictionary.
+#' valueType_adjust(from = data_dict,to = dataset)
+#' 
+#' ###### Example 2: The valueType of a dataset can be adjusted using 
+#' # the valueType present in the data dictionary. Here the valueType is 'text'
+#' data_dict[['Variables']]$valueType <- 'text'
+#' valueType_adjust(from = data_dict,to = dataset)
+#' 
+#' ###### Example 1: The valueType of a data dictionary can be adjusted using 
+#' # the valueType of each column of the dataset.
+#' data_dict[['Variables']]$valueType <- 'text'
+#' dataset <- valueType_self_adjust(dataset)
+#' valueType_adjust(from = dataset,to = data_dict)
 #' }
 #'
 #' @import dplyr tidyr
@@ -451,11 +494,17 @@ crayon::bold("\n\nUseful tip:"),
 #' object.
 #'
 #' @examples
-#' \dontrun{
-#' # use case 1: Apply valueType without specifying a data dictionary
-#' as_valueType(""1"") %>% typeof()
-#' tibble(iris %>% mutate(Species = as.character(Species))) %>%
-#' mutate(across(c(starts_with(""Sepal"")), ~ as_valueType(.,""integer"")))
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' dataset <- DEMO_files$dataset_TOKYO
+#' valueType_of(dataset$dob)
+#' valueType_guess(dataset$dob)
+#' 
+#' valueType_of(mtcars$cyl)
+#' valueType_guess(mtcars$cyl)
+#' 
 #'}
 #'
 #' @import dplyr tidyr
@@ -538,11 +587,20 @@ valueType_guess <- function(x){
 #' The object coerced accordingly to the given valueType.
 #'
 #' @examples
-#' \dontrun{
-#' # use case 1: Apply valueType without specifying a data dictionary
-#' as_valueType(""1"") %>% typeof()
-#' tibble(iris %>% mutate(Species = as.character(Species))) %>%
-#' mutate(across(c(starts_with(""Sepal"")), ~ as_valueType(.,""integer"")))
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' dataset <- DEMO_files$dataset_TOKYO
+#' valueType_of(dataset$dob)
+#' valueType_guess(dataset$dob)
+#' as_valueType(dataset$dob,'date') 
+#' 
+#' # as_valueType is compatible with tidyverse philosophy
+#' library(dplyr)
+#' mtcars %>% 
+#'   mutate(BMI = as_valueType(cyl,'integer'))
+#' 
 #'}
 #'
 #' @import dplyr tidyr fabR
@@ -580,7 +638,7 @@ data dictionary")}
   if(dataType     == "as.logical")  x <- as.integer(x)
   if( class(x)[1] == "factor")      x <- as.character(x)
 
-  if(dataType     == "fabR::as_any_date"){
+  if(dataType     == "as_any_date"){
     date_format <-
       fabR::guess_date_format(
         tibble(sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20))))
@@ -662,6 +720,11 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
+#' 
+#' @seealso
+#' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
+#' [opal_taxonomy_get()]
+#'
 #'
 #' @param object A potential taxonomy to be coerced.
 #'
@@ -669,8 +732,21 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' ###### Example 1: this function is compatible with opal_taxonomy_get()
+#' library(opalr)
+#' opal <- 
+#'   opal.login('administrator','password',url = 'https://opal-demo.obiba.org/')
+#' opal_taxo <- opal_mlstr_taxonomy_get(opal)
+#' as_taxonomy(opal_taxo)
+#' 
+#' ###### Example 2: you can create your own taxonomy
+#' print(DEMO_files$taxonomy_PARIS)
+#' as_taxonomy(DEMO_files$taxonomy_PARIS)
+#' 
 #'}
 #'
 #' @import dplyr tidyr
@@ -732,8 +808,11 @@ present in your Opal environment.")}
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#'
+#' is_valueType('integer')
+#' is_valueType('integre')
+#'
 #'}
 #'
 #' @import dplyr tidyr
@@ -777,8 +856,14 @@ is_valueType <- function(object){
 #' A logical.
 #'
 #' @examples
-#' \dontrun{
-#' # example
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' is_taxonomy(DEMO_files$taxonomy_PARIS)
+#' is_taxonomy(DEMO_files$taxonomy_opal_mlstr)
+#' is_taxonomy(iris)
+#'
 #'}
 #'
 #' @import dplyr tidyr

@@ -30,13 +30,17 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-\dontrun{
-# use case 1: place all files in a project (""home/project/"") or a user
-(""home/administrator/"")
-opal_files_push(
-opal = o,
-from = ""DEMO"",
-to = ""home/project/DEMO"")
+{
+
+library(opalr)
+opal <- 
+  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  
+tempdir <- tempdir()
+invisible(dir.create(paste0(tempdir,"/a_file")))
+invisible(file.create(paste0(tempdir,"/a_file","/file.txt")))
+try(opal_files_push(opal, from = paste0(tempdir,"/a_file"), to = tempdir))
+
 }
 
 }

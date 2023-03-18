@@ -56,9 +56,9 @@ Built-in tibbles and lists allowing the user to test the package with demo
 material.
 }
 \examples{
-\dontrun{
+{
 
-valueType_list
+DEMO_files
 
 }
 }

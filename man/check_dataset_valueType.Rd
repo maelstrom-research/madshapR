@@ -50,8 +50,15 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
+dataset <- data_dict_apply(data, data_dict)
+check_dataset_valueType(dataset, data_dict,valueType_guess = TRUE)
+
 }
 
 }

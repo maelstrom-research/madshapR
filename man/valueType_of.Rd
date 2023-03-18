@@ -27,8 +27,14 @@ The valueType list is available using \link{valueType_list}, and their
 corresponding with typeof which is the (R internal) type of any object.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+dataset <- DEMO_files$dataset_MELBOURNE_1
+valueType_of(dataset$Gender)
+valueType_of(iris$Sepal.Length)
+
 }
 
 }

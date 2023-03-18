@@ -65,12 +65,24 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
-dataset <- study_TOKYO \%>\% mutate(
-   dob = fabR::as_any_date(dob, format = ""mdy""))
-data_dict <- dd_TOKYO_format_maelstrom_tagged
-study_assessment_report(dataset, data_dict)
+{
+
+# use DEMO_files provided by the package
+library(dplyr)
+
+###### Example 1: Combine functions and summarise datasets.
+data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <-
+  DEMO_files$dataset_TOKYO \%>\%
+  valueType_adjust(from = data_dict) \%>\%
+  data_dict_apply(data_dict)
+  
+dataset_summarize(dataset,valueType_guess = TRUE)
+dataset_summarize(dataset,valueType_guess = FALSE)
+ 
+###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+dataset_summarize(iris,valueType_guess = FALSE)
+
 }
 
 }

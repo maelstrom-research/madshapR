@@ -28,8 +28,11 @@ The valueType list is available using \link{valueType_list}, and their
 corresponding with typeof which is the (R internal) type of any object.
 }
 \examples{
-\dontrun{
-# example
+{
+
+is_valueType('integer')
+is_valueType('integre')
+
 }
 
 }

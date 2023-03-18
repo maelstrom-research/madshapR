@@ -35,8 +35,34 @@ restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+#' # use DEMO_files provided by the package
+library(opalr)
+library(stringr)
+
+study <- 
+  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+
+opal <- 
+  opal.login('administrator','password', 
+  url ='https://opal-demo.obiba.org/')
+  
+tempdir <- basename(tempdir())
+try(opal_project_create(opal, tempdir))
+
+try(
+  opal_tables_push(
+  opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+
+# get the data dictionary and reshape it.
+ data_dict <- 
+   try(
+   opal.table_dictionary_get(
+   opal,project = tempdir,table = "dataset_MELBOURNE_1"))
+   
+ data_dict <- try(data_dict_opalr_fix(data_dict))
+  
 }
 
 }

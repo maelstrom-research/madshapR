@@ -54,12 +54,14 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
-dataset <- study_TOKYO \%>\% mutate(dob = fabR::as_any_date(
-dob, format = ""mdy""))
-data_dict <- dd_TOKYO_format_maelstrom_tagged
-study_assessment_report(dataset, data_dict)
+{
+
+# use DEMO_files provided by the package
+
+data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+data_dict_evaluate(data_dict,as_mlstr_data_dict = FALSE)
+data_dict_evaluate(data_dict,as_mlstr_data_dict = TRUE)
+
 }
 
 }

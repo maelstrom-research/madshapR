@@ -64,25 +64,26 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Create index of files in one folder and read the files
-#' index_DEMO <- file_index_create(folder = ""DEMO"")
-#' file_index_read(index = index_DEMO, file_name = ""study_TOKYO"")
-#' file_index_read(index = index_DEMO, file_name = ""dd_TOKYO"")
-#' # use case 1: report of demo dataset TOKYO
-#' study_visual_report(
-#' dataset = study_TOKYO,
-#' data_dict = dd_TOKYO_format_maelstrom_tagged,
-#' to = ""DEMO/reports/TOKYO"")
-#' # use case 2: report of demo dataset TOKYO, grouped by gndr
-#' study_visual_report(
-#' dataset = study_TOKYO,
-#' data_dict = dd_TOKYO_format_maelstrom_tagged,
-#' to = ""DEMO/reports/TOKYO_gndr"",group_by = ""gndr"",out = ""ggplot2"")
-#'# re-index files to include new files created
-#' index_DEMO <- file_index_create(folder = ""DEMO"")
-#' # read the book down
-#' file_index_read(
-#'  index_DEMO,file_path = ""DEMO/reports/TOKYO_gndr/docs/index.html"")
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and visualize datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict) 
+#'   
+#' tempdir <- tempdir()
+#' dataset_visualize(dataset,to = tempdir)
+#' open_visual_report(tempdir)
+#' 
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' tempdir <- tempdir()
+#' dataset_visualize(iris,group_by = 'Species', to = tempdir)
+#' open_visual_report(tempdir)
+#'
 #' }
 #'
 #' @import dplyr knitr fabR
@@ -396,11 +397,14 @@ str_squish(", fig.show='hold',
 #' data dictionary provided as an input.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: viz type of iris dataset
-#' library(tidyverse)
-#' identify_visual_type(dataset = iris) %>% .$Variables %>%
-#'  select(name,viz_type)
+#' {
+#' 
+#' library(dplyr)
+#' identify_visual_type(
+#'   dataset = iris, 
+#'   data_dict = data_dict_extract(iris)) %>% .[[1]] %>%
+#'   select(name,viz_type)
+#'   
 #' }
 #'
 #' @import dplyr stringr
@@ -535,12 +539,14 @@ identify_visual_type <- function(dataset, data_dict){
 #' the data dictionary provided as an input.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: plot R stripts for iris variables.
-#' data_dict_extract(iris, categories = ""Species"") %>%
-#' identify_visual_type(data_dict = ., dataset = iris) %>%
-#' identify_plot_type(data_dict = ., dataset = iris) %>% .$Variables %>%
-#' select(name,viz_type, contains(""plot""),contains(""summary""))
+#' {
+#' 
+#' library(dplyr)
+#' identify_plot_type(
+#'   dataset = iris, 
+#'   data_dict = data_dict_extract(iris)) %>% .[[1]] %>%
+#'   select(name,viz_type, plot_1)
+#'
 #' }
 #'
 #' @import dplyr stringr
@@ -751,7 +757,7 @@ identify_plot_type <- function(
         TRUE                                                                   ~
           NA_character_))
 
-  for (i in seq_len(length(data_dict$Variables$index))) {
+  for (i in seq_len(length(data_dict$Variables$name))) {
     data_dict$Variables$plot_1[i]    <-
       eval(parse(text = str_squish(data_dict$Variables$plot_1[i])))
     data_dict$Variables$plot_2[i]    <-
@@ -788,7 +794,26 @@ identify_plot_type <- function(
 #'
 #' @examples
 #' \dontrun{
-#' # Example 1: yyy yyy yyy.
+#' 
+#' # use DEMO_files provided by the package
+#' library(dplyr)
+#'
+#' ###### Example 1: Combine functions and visualize datasets.
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <-
+#'   DEMO_files$dataset_TOKYO %>%
+#'   valueType_adjust(from = data_dict) %>%
+#'   data_dict_apply(data_dict) 
+#'   
+#' tempdir <- tempdir()
+#' dataset_visualize(dataset,to = tempdir)
+#' open_visual_report(tempdir)
+#' 
+#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+#' tempdir <- tempdir()
+#' dataset_visualize(iris,to = tempdir)
+#' open_visual_report(tempdir)
+#' 
 #' }
 #'
 #' @importFrom utils browseURL

@@ -34,8 +34,13 @@ restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-\dontrun{
-# example
+{
+
+# use DEMO_files provided by the package
+
+data_dict <- DEMO_files$dd_PARIS_format_maelstrom
+as_data_dict_shape(data_dict)
+
 }
 
 }

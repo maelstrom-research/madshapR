@@ -32,9 +32,15 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-\dontrun{
-# use case 1: create a project in Opal
-opal_project_create(project = ""DEMO"" ,tag = ""DEMO"")
+{
+
+library(opalr)
+opal <- 
+  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  
+tempdir <- basename(tempdir())
+try(opal_project_create(opal, tempdir))
+
 }
 
 }

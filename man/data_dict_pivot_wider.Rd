@@ -52,10 +52,14 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
 
-  data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+# use DEMO_files provided by the package
+
+taxonomy <- DEMO_files$taxonomy_opal_mlstr
+data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+data_dict_pivot_wider(data_dict, taxonomy)
+
 }
 
 }

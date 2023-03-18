@@ -40,8 +40,23 @@ restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+library(dplyr)
+
+# Create a list of data dictionaries where the column 'table' is added to 
+# refer to the associated dataset. The object created is not a data 
+# data dictionary per say, but can be used as a structure which can be 
+# shaped into a data data dictionary.
+
+data_dict_list <- DEMO_files[
+    c('dd_MELBOURNE_1_format_maelstrom',
+      'dd_MELBOURNE_2_format_maelstrom')] \%>\% 
+    data_dict_list_nest(name_group = 'table')
+ 
+ data_dict_group_split(data_dict_list,col = "table")
+ 
 }
 
 }

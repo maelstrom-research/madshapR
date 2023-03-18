@@ -32,8 +32,19 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+###### Example 1: datasets can be gathered into a study which is a list.
+study <- study_create(
+ dataset_list = list(
+   dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
+   dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
+   
+###### Example 2: any data-frame (or tibble) can be gathered into a study
+study_create(list(iris, mtcars))
+   
 }
 
 }

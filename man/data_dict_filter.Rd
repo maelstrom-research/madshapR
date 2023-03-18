@@ -48,8 +48,38 @@ restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-\dontrun{
-# Example 1: yyy yyy yyy.
+{
+
+# use DEMO_files provided by the package
+
+# Create a list of data dictionaries where the column 'table' is added to 
+# refer to the associated dataset. The object created is not a data 
+# data dictionary per say, but can be used as a structure which can be 
+# shaped into a data data dictionary.
+library(dplyr)
+
+data_dict_list <- list()
+data_dict_1 <-
+  DEMO_files$dd_MELBOURNE_1_format_maelstrom \%>\%
+  lapply(function(x){x \%>\% mutate(table = "MELBOURNE_1")})
+data_dict_2 <- DEMO_files$dd_MELBOURNE_2_format_maelstrom \%>\%
+  lapply(function(x){x \%>\% mutate(table = "MELBOURNE_2")})
+
+data_dict_list <-
+  list(Variables = bind_rows(data_dict_1$Variables,data_dict_2$Variables),
+       Categories = bind_rows(data_dict_1$Categories,data_dict_2$Categories))
+
+###### Example 1 search and filter through a column in 'Variables' component
+data_dict_filter(data_dict_list,filter_var = "valueType == 'integer'")
+
+###### Example 2 search and filter through a column in 'Categories' component
+data_dict_filter(data_dict_list,filter_cat = "missing == TRUE")
+
+###### Example 3 search and filter through a column in 'Variables' component.
+# The column must exist in both 'Variables' and 'Categories' and have the 
+# same meaning
+data_dict_filter(data_dict_list,filter_all = "table == 'MELBOURNE_1'")
+
 }
 
 }

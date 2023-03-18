@@ -33,8 +33,17 @@ such as naming convention restriction, or id columns declaration (which
 full completeness is mandatory.
 }
 \examples{
-\dontrun{
-# example
+{
+
+# use DEMO_files provided by the package
+
+###### Example 1: a dataset can have an id column(s) which is specified as
+# an attribute. 
+dataset <- DEMO_files$dataset_MELBOURNE_1
+as_dataset(dataset, col_id = "id")
+
+###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+as_dataset(iris)
 }
 
 }
