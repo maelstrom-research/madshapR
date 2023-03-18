@@ -598,8 +598,7 @@ valueType_guess <- function(x){
 #' 
 #' # as_valueType is compatible with tidyverse philosophy
 #' library(dplyr)
-#' mtcars %>% 
-#'   mutate(BMI = as_valueType(cyl,'integer'))
+#' mtcars %>% mutate(cyl = as_valueType(cyl,'integer'))
 #' 
 #'}
 #'
@@ -634,7 +633,7 @@ data dictionary")}
 
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
-  if(dataType     == "fabR::as_any_date") x <- as.character(x)
+  if(dataType     == "as_any_date") x <- as.character(x)
   if(dataType     == "as.logical")  x <- as.integer(x)
   if( class(x)[1] == "factor")      x <- as.character(x)
 
@@ -679,12 +678,15 @@ data dictionary")}
         pull(.data$`test`) %>% all}
 
     if(valueType %in% c("date","datetime")){
-      test_condition <- test_condition %>%
-        mutate(across(everything(), ~ silently_run(fabR::as_any_date(.)))) %>%
+      test_condition <-
+        test_condition %>%
+        mutate(across(
+          .data$`original`,
+          ~ fabR::as_any_date(.,date_format$`Date format`))) %>%
         mutate(
           test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
         pull(.data$`test`) %>% all}
-  }
+    }
 
   # test if data and data_dict content match
 

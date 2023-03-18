@@ -1003,7 +1003,7 @@ check_dataset_categories <- function(data, data_dict = NULL){
 check_dataset_valueType <- function(
     data, data_dict = NULL,
     valueType_guess = FALSE){
-
+  
   if(is.null(data_dict)) data_dict <-
       data_dict_extract(data,as_mlstr_data_dict = TRUE)
 
@@ -1015,6 +1015,16 @@ check_dataset_valueType <- function(
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE of FALSE (FALSE by default)')
 
+  data_dict_init <- data_dict
+  data_dict_unique_name <-
+    make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
+  
+  data_dict[['Variables']]$`name` <- data_dict_unique_name
+  
+  data_dict[['Variables']] <-
+    data_dict[['Variables']] %>%
+    mutate(across(everything(),as.character))
+  
   test <- test_vT_dataset <-
     # test_vT_compatible <-
     tibble(
@@ -1074,7 +1084,7 @@ check_dataset_valueType <- function(
     mutate(
       condition = ifelse(
         is.na(.data$`condition`) &
-          .data$`value` %in% c("text","decimal", "integer"),
+          .data$`value` %in% c("text","decimal", "integer","date"),
         "[INFO] - refined valueType proposed",.data$`condition`)) %>%
     filter(.data$`value` != .data$`suggestion`) %>%
     filter(!is.na(.data$`condition`)) %>%

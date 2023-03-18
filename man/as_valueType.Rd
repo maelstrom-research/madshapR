@@ -41,8 +41,7 @@ as_valueType(dataset$dob,'date')
 
 # as_valueType is compatible with tidyverse philosophy
 library(dplyr)
-mtcars \%>\% 
-  mutate(BMI = as_valueType(cyl,'integer'))
+mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer'))
 
 }
 
