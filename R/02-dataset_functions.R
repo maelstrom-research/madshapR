@@ -105,7 +105,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #'
 #' @description
 #' Removes any attributes attached to a tibble. Any value in columns will be
-#' preserved. Any 'Date' (typeof) column will be recasted as character to
+#' preserved. Any 'Date' (typeof) column will be recast as character to
 #' preserve information.
 #'
 #' @details
@@ -146,16 +146,167 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @export
 dataset_zap_data_dict <- function(dataset){
 
-  as_dataset(dataset %>% fabR::add_index(.force = TRUE))
+  as_dataset(dataset)
+  
+  preserve_attributes <- attributes(data)$`Mlstr::col_id`
 
   for(i in seq_len(length(dataset))){
   # stop()}
     if(is.Date(dataset[[i]])) dataset[[i]] <- as.character(dataset[[i]])
   }
 
-  data <- dataset %>% lapply(as.vector) %>% as_tibble()
+  data <- 
+    dataset %>% lapply(as.vector) %>% as_tibble() %>%
+    as_dataset(col_id = preserve_attributes)
 
   return(data)
+}
+
+#' @title
+#' Apply to categorical column(s) their labels declared in the data dictionary
+#' 
+#' @description
+#' Applies to categorical column(s) in a dataset their labels declared in the 
+#' categories in the data dictionary.
+#'
+#' @details
+#' A data dictionary-like structure must be a list of at least one or two
+#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' and 'Categories' (if any), representing meta data of an associated dataset.
+#' The 'Variables' component must contain at least 'name' column and the
+#' 'Categories' component must at least contain 'variable' and 'name'
+#' columns to be usable in any function of the package.
+#' To be considered as a minimum (workable) data dictionary, it must also
+#' have unique and non-null entries in 'name' column and the combination
+#' 'name'/'variable' must also be unique in 'Categories'.
+#' In addition, the data dictionary may follow Maelstrom research standards,
+#' and its content can be evaluated accordingly, such as naming convention
+#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
+#' and/or any taxonomy provided.
+#'
+#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data
+#' dictionary can always be generated, when any column will be reported, and
+#' any factor column will be analysed as categorical variable (the column
+#' 'levels' will be created for that. In addition, the dataset may follow
+#' Maelstrom research standards, and its content can be evaluated accordingly,
+#' such as naming convention restriction, or id columns declaration (which
+#' full completeness is mandatory.
+#'
+#'
+#' @param dataset A tibble identifying the input data observations associated to
+#' its data dictionary.
+#' @param col_names A character string specifying the name(s) of the column(s)
+#' which refer to existing column(s) in the dataset. The column(s) can be named
+#' or indicated by position.
+#' @param data_dict A list of tibble(s) representing meta data of an
+#' associated dataset (to be generated).
+#'
+#' @return
+#' A tibble identifying a dataset.
+#'
+#' @examples
+#' {
+#' 
+#' # use DEMO_files provided by the package
+#'
+#' data <- DEMO_files$dataset_TOKYO
+#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <- data_dict_apply(data,data_dict)
+#' dataset_cat_as_labels(dataset)
+#'
+#' }
+#'
+#' @import dplyr stringr
+#' @importFrom rlang .data
+#'
+#' @export
+dataset_cat_as_labels <- function(
+    dataset, 
+    col_names = names(dataset), 
+    data_dict = NULL){
+  
+  preserve_data_dict <- FALSE  
+  # if data_dict empty
+  if(is.null(data_dict)){
+    preserve_data_dict <- TRUE
+    data_dict <- data_dict_extract(dataset)
+  } else data_dict_apply(dataset,data_dict)
+  
+  # tests
+  as_dataset(dataset)
+  dataset[col_names]
+  preserve_attributes <- attributes(data)$`Mlstr::col_id`
+  dataset <- dataset_zap_data_dict(dataset)
+  
+  if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
+  
+  for(i in col_names){
+    
+    col <- dataset[i]
+    data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
+    
+    if(sum(nrow(data_dict_temp[['Categories']])) > 0){
+      
+      names(col) <- '___values___'
+      
+      cat_col <- 
+        data_dict_temp$Categories %>% select("name",starts_with('label')[1]) %>%
+        distinct()
+      
+      names(cat_col) <- c('___values___','___label___')
+      
+      col <- 
+        col %>% 
+        mutate(across(everything(), ~ str_squish(as.character(.)))) %>%
+        left_join(
+          cat_col %>% mutate(across(everything(), ~ str_squish(as.character(.)))),
+          by = intersect(names(col),names(cat_col))) %>%
+        mutate(
+          `___label___` = 
+            ifelse(is.na(.data$`___label___`),
+                   .data$`___values___`,
+                   .data$`___label___`)) %>%
+        select(.data$`___label___`)
+      
+      names(col) <- i 
+      dataset[i] <- col
+      
+      
+      if(preserve_data_dict == TRUE){
+        label_name <- 
+          names(data_dict_temp[['Categories']] %>% select(starts_with('label')[1]))
+        
+        variable_names <- data_dict[['Categories']]['name']
+        
+        data_dict[['Categories']] <- 
+          data_dict[['Categories']] %>%
+          mutate(
+            `___mlstr_name___` = .data$`name`,
+            name = 
+              ifelse(
+                .data$`variable`== i, 
+                !!as.symbol(label_name),.data$`name`)) %>%
+          mutate(across(
+            any_of(label_name), 
+            ~ifelse(
+              .data$`variable`!= i, 
+              !!as.symbol(label_name),
+              .data$`___mlstr_name___`))) %>% 
+          select(-'___mlstr_name___')
+      }}}
+  
+  dataset <- 
+    dataset %>%
+    valueType_self_adjust() %>%
+    tibble() %>%
+    as_dataset(col_id = preserve_attributes)
+  
+  if(preserve_data_dict == TRUE){
+    data_dict <- valueType_adjust(from = dataset,to = data_dict)
+    dataset <- data_dict_apply(dataset,data_dict)}
+  
+  return(dataset)
 }
 
 #' @title
@@ -248,8 +399,8 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
 #'
 #' @param object A potential dataset to be coerced.
 #' @param col_id A character string specifying the name(s) of the column(s)
-#' which refer to key identifier of the dataset. The column(s) must be named
-#' of indicated by position.
+#' which refer to key identifier of the dataset. The column(s) can be named
+#' or indicated by position.
 #'
 #' @return
 #' A tibble identifying a dataset.
