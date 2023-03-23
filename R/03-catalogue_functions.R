@@ -633,9 +633,9 @@ data dictionary")}
 
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
-  if(dataType     == "as_any_date") x <- as.character(x)
-  if(dataType     == "as.logical")  x <- as.integer(x)
-  if( class(x)[1] == "factor")      x <- as.character(x)
+  if(dataType     == "as_any_date")     x <- as.character(x)
+  if(dataType     == "as_any_boolean")  x <- as_any_boolean(x)
+  if(class(x)[1]  == "factor")          x <- as.character(x)
 
   if(dataType     == "as_any_date"){
     date_format <-

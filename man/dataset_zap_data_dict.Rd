@@ -15,7 +15,7 @@ A tibble identifying a dataset.
 }
 \description{
 Removes any attributes attached to a tibble. Any value in columns will be
-preserved. Any 'Date' (typeof) column will be recasted as character to
+preserved. Any 'Date' (typeof) column will be recast as character to
 preserve information.
 }
 \details{

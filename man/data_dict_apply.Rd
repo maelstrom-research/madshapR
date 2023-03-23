@@ -22,7 +22,7 @@ variable as attributes.
 Applies a data dictionary to a data structure, creating a labelled dataset.
 All previous attributes will be preserved, in particular factors (and its
 associated attribute 'levels' which will be transform into attributes
-'labels' and its values recasted into their proper datatype.
+'labels' and its values recast into their proper datatype.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two

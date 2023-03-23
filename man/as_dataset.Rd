@@ -10,8 +10,8 @@ as_dataset(object, col_id = NULL)
 \item{object}{A potential dataset to be coerced.}
 
 \item{col_id}{A character string specifying the name(s) of the column(s)
-which refer to key identifier of the dataset. The column(s) must be named
-of indicated by position.}
+which refer to key identifier of the dataset. The column(s) can be named
+or indicated by position.}
 }
 \value{
 A tibble identifying a dataset.
