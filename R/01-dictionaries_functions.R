@@ -1735,9 +1735,9 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
   }
 
   names(data_dict[['Variables']])  <-
-    make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
+      make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
   names(data_dict[['Categories']]) <-
-    make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
+      make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
 
   if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
 
