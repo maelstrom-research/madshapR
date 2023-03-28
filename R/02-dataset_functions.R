@@ -148,7 +148,7 @@ dataset_zap_data_dict <- function(dataset){
 
   as_dataset(dataset)
   
-  preserve_attributes <- attributes(data)$`Mlstr::col_id`
+  preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
 
   for(i in seq_len(length(dataset))){
   # stop()}
@@ -196,11 +196,11 @@ dataset_zap_data_dict <- function(dataset){
 #'
 #' @param dataset A tibble identifying the input data observations associated to
 #' its data dictionary.
+#' @param data_dict A list of tibble(s) representing meta data of an
+#' associated dataset (to be generated).
 #' @param col_names A character string specifying the name(s) of the column(s)
 #' which refer to existing column(s) in the dataset. The column(s) can be named
 #' or indicated by position.
-#' @param data_dict A list of tibble(s) representing meta data of an
-#' associated dataset (to be generated).
 #'
 #' @return
 #' A tibble identifying a dataset.
@@ -223,38 +223,39 @@ dataset_zap_data_dict <- function(dataset){
 #' @export
 dataset_cat_as_labels <- function(
     dataset, 
-    col_names = names(dataset), 
-    data_dict = NULL){
-  
-  preserve_data_dict <- FALSE  
-  # if data_dict empty
-  if(is.null(data_dict)){
-    preserve_data_dict <- TRUE
-    data_dict <- data_dict_extract(dataset)
-  } else data_dict_apply(dataset,data_dict)
+    data_dict = NULL,
+    col_names = names(dataset)){
   
   # tests
   as_dataset(dataset)
   dataset[col_names]
-  preserve_attributes <- attributes(data)$`Mlstr::col_id`
-  dataset <- dataset_zap_data_dict(dataset)
+  preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
   
+  # if data_dict empty
+  if(is.null(data_dict)){
+    # preserve_data_dict <- TRUE
+    data_dict <- suppressMessages(data_dict_extract(dataset[col_names]))
+  } else {
+    # preserve_data_dict <- FALSE  
+    data_dict <- data_dict_match_dataset(dataset[col_names])$data_dict}
+
   if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
   
   for(i in col_names){
     
-    col <- dataset[i]
+    col <- dataset_zap_data_dict(as_dataset(dataset[i]))
     data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
     
     if(sum(nrow(data_dict_temp[['Categories']])) > 0){
-      
       names(col) <- '___values___'
+      label_name <- 
+        names(data_dict_temp[['Categories']] %>% 
+                select(
+                  matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1]))
       
       cat_col <- 
-        data_dict_temp$Categories %>% select("name",starts_with('label')[1]) %>%
-        distinct()
-      
-      names(cat_col) <- c('___values___','___label___')
+        data_dict_temp$Categories %>% 
+        select('___values___' = "name", '___label___' = all_of(label_name))
       
       col <- 
         col %>% 
@@ -268,44 +269,34 @@ dataset_cat_as_labels <- function(
                    .data$`___values___`,
                    .data$`___label___`)) %>%
         select(.data$`___label___`)
+    
+      # variable_names <- data_dict_temp[['Categories']]['name']
+      
+      data_dict_temp[['Categories']] <- 
+        data_dict_temp[['Categories']] %>%
+        mutate(
+          `___mlstr_name___` = .data$`name`,
+          name = !!as.symbol(label_name)) %>%
+        mutate(across(
+          any_of(label_name), 
+          ~ .data$`___mlstr_name___`)) %>% 
+        select(-'___mlstr_name___')
       
       names(col) <- i 
-      dataset[i] <- col
-      
-      
-      if(preserve_data_dict == TRUE){
-        label_name <- 
-          names(data_dict_temp[['Categories']] %>% select(starts_with('label')[1]))
-        
-        variable_names <- data_dict[['Categories']]['name']
-        
-        data_dict[['Categories']] <- 
-          data_dict[['Categories']] %>%
-          mutate(
-            `___mlstr_name___` = .data$`name`,
-            name = 
-              ifelse(
-                .data$`variable`== i, 
-                !!as.symbol(label_name),.data$`name`)) %>%
-          mutate(across(
-            any_of(label_name), 
-            ~ifelse(
-              .data$`variable`!= i, 
-              !!as.symbol(label_name),
-              .data$`___mlstr_name___`))) %>% 
-          select(-'___mlstr_name___')
-      }}}
+      col <- valueType_self_adjust(as_dataset(col))
+      data_dict_temp <- valueType_adjust(from = col,to = data_dict_temp)
+      dataset[i] <- data_dict_apply(col, data_dict_temp)  
+    }
+  }
   
   dataset <- 
-    dataset %>%
-    valueType_self_adjust() %>%
-    tibble() %>%
+    tibble(dataset) %>%
     as_dataset(col_id = preserve_attributes)
   
-  if(preserve_data_dict == TRUE){
-    data_dict <- valueType_adjust(from = dataset,to = data_dict)
-    dataset <- data_dict_apply(dataset,data_dict)}
-  
+  # if(preserve_data_dict == TRUE){
+  #   data_dict <- valueType_adjust(from = dataset,to = data_dict)
+  #   dataset <- data_dict_apply(dataset,data_dict)}
+  # 
   return(dataset)
 }
 
