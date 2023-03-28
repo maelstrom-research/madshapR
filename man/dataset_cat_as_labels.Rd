@@ -4,18 +4,18 @@
 \alias{dataset_cat_as_labels}
 \title{Apply to categorical column(s) their labels declared in the data dictionary}
 \usage{
-dataset_cat_as_labels(dataset, col_names = names(dataset), data_dict = NULL)
+dataset_cat_as_labels(dataset, data_dict = NULL, col_names = names(dataset))
 }
 \arguments{
 \item{dataset}{A tibble identifying the input data observations associated to
 its data dictionary.}
 
+\item{data_dict}{A list of tibble(s) representing meta data of an
+associated dataset (to be generated).}
+
 \item{col_names}{A character string specifying the name(s) of the column(s)
 which refer to existing column(s) in the dataset. The column(s) can be named
 or indicated by position.}
-
-\item{data_dict}{A list of tibble(s) representing meta data of an
-associated dataset (to be generated).}
 }
 \value{
 A tibble identifying a dataset.

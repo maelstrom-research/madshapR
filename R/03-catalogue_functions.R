@@ -163,6 +163,7 @@ valueType_self_adjust <- function(...){
 
   if(is_dataset(...) & !is_data_dict(...)){
     data <- as_dataset(...,col_id = attributes(...)$`Mlstr::col_id`)
+    preserve_attributes <- attributes(data)$`Mlstr::col_id`
 
     is_factor <-
       data %>%
@@ -190,7 +191,8 @@ valueType_self_adjust <- function(...){
 
     data <-
       data_dict_apply(data, data_dict_final) %>%
-      mutate(across(c(is_factor$`name`), ~ as.factor(.)))
+      mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
+      as_dataset(col_id = preserve_attributes)
 
     return(data)
   }
@@ -385,7 +387,7 @@ valueType_adjust <- function(from, to = NULL){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
-" Use dataset_evaluate(data_dict) to get a full assessment of your dataset")}
+" Use dataset_evaluate(dataset, data_dict) to get a full assessment of your dataset")}
 
     vT_list<- madshapR::valueType_list
     vT_tables <-
@@ -424,14 +426,15 @@ crayon::bold("\n\nUseful tip:"),
         stop(call. = FALSE,cond)})
 
     # test dataset
-    data <- as_dataset(to)
+    data <- as_dataset(to,col_id = attributes(to)$`Mlstr::col_id`)
+    preserve_attributes <- attributes(data)$`Mlstr::col_id`
 
     # data must match
     if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
-" Use dataset_evaluate(data_dict) to get a full assessment of your dataset")}
+" Use dataset_evaluate(dataset, data_dict) to get a full assessment of your dataset")}
 
     data_dict_data <-
       data_dict_extract(data) %>%
@@ -459,7 +462,8 @@ crayon::bold("\n\nUseful tip:"),
 
     data <-
       data_dict_apply(data, data_dict_data) %>%
-      mutate(across(c(is_factor$`name`), ~ as.factor(.)))
+      mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
+      as_dataset(col_id = preserve_attributes)
 
     return(data)
   }
