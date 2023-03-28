@@ -176,89 +176,89 @@ dataset_evaluate <- function(
 "    Assess the standard adequacy of naming")
   test_name_standards  <- 
     check_name_standards(names(dataset))
-
+  
   message(
-"    Assess the presence of variable names both in dataset and data dictionary")
+    "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
     check_dataset_variables(dataset, data_dict) %>%
     filter(
       str_detect(
         .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
-
+  
   message(
-"    Assess the presence of possible duplicated variable in the dataset")
+    "    Assess the presence of possible duplicated variable in the dataset")
   if(zap_dataset %>% nrow > 0){
     test_duplicated_columns <-
       fabR::get_duplicated_cols(dataset) %>%
       rename(`name_var` = .data$`name_col`)
-    }
-
+  }
+  
   message(
-"    Assess the presence of duplicated participants in the dataset")
+    "    Assess the presence of duplicated participants in the dataset")
   if(dataset %>% nrow > 0){
     test_duplicated_rows <-
       fabR::get_duplicated_rows(dataset, col_id) %>%
-        mutate(
-          value = str_remove(
-            .data$`condition`,
-            "\\[INFO\\] - Duplicated observations : ")) %>%
-        fabR::add_index('index') %>%
-        separate_rows(.data$`value`,sep = " ; ") %>%
-        group_by(.data$`index`) %>%
-        fabR::add_index('index2') %>%
-        group_by(.data$`index`) %>%
-        slice(1:2) %>%
-        mutate(
-          value = 
-            ifelse(.data$`index2` == 2 , "[...]",.data$`value`)) %>%
-        summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-        mutate(condition = "[INFO] - possible duplicated participant") %>%
-        mutate(`name_var` =  !! col_id) %>%
-        select(-.data$`index`)
-    }
-
+      mutate(
+        value = str_remove(
+          .data$`condition`,
+          "\\[INFO\\] - Duplicated observations : ")) %>%
+      fabR::add_index('index') %>%
+      separate_rows(.data$`value`,sep = " ; ") %>%
+      group_by(.data$`index`) %>%
+      fabR::add_index('index2') %>%
+      group_by(.data$`index`) %>%
+      slice(1:2) %>%
+      mutate(
+        value = 
+          ifelse(.data$`index2` == 2 , "[...]",.data$`value`)) %>%
+      summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
+      mutate(condition = "[INFO] - possible duplicated participant") %>%
+      mutate(`name_var` =  !! col_id) %>%
+      select(-.data$`index`)
+  }
+  
   if(dataset %>% nrow > 0){
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
       fabR::get_unique_value_cols(dataset) %>%
       rename(`name_var` = .data$`name_col`) %>%
       distinct()
-    }
-
+  }
+  
   message(
-"    Assess the presence of empty rows in the data dictionary")
+    "    Assess the presence of empty rows in the data dictionary")
   test_empty_row <-
     fabR::get_all_na_rows(dataset,id_col = col_id) %>%
     mutate(
       condition =
         "[INFO] - Empty participant(s) (Except participant identifier column")
-
+  
   message(
-"    Assess the presence all NA(s) of columns in the data dictionary")
+    "    Assess the presence all NA(s) of columns in the data dictionary")
   test_empty_col <-
     fabR::get_all_na_cols(dataset) %>%
     rename(`name_var` = .data$`name_col`)
-
+  
   message(
-"    Assess the presence of categories not in the data dictionary")
-
+    "    Assess the presence of categories not in the data dictionary")
+  
   test_existing_variable_category <-
     suppressMessages({
       check_dataset_categories(dataset,data_dict) %>%
         distinct() %>% group_by(.data$`condition`,.data$`name_var`) %>%
         summarise(`value` = paste0(.data$`value`, collapse = " ; "))
-      }) %>%
+    }) %>%
     filter(!is.na(.data$`name_var`)) %>%
     ungroup()
-
-
+  
+  
   if(as_mlstr_data_dict == TRUE){
     message(
-"    Assess the `valueType` comparison in dataset and data dictionary")
+      "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-
       check_dataset_valueType(
         zap_dataset, data_dict['Variables'],valueType_guess = TRUE)}
-
+  
   # test_name_standards
   # test_matching_variable
   # test_duplicated_columns
@@ -268,7 +268,7 @@ dataset_evaluate <- function(
   # test_unique_value
   # test_existing_variable_category
   # test_valueType
-
+  
   report$`Dataset assessment` <-
     test_name_standards %>%
     bind_rows(test_matching_variable) %>%
@@ -279,13 +279,11 @@ dataset_evaluate <- function(
     bind_rows(test_unique_value) %>%
     bind_rows(test_existing_variable_category) %>%
     bind_rows(test_valueType) %>%
-
+    
     select(name = .data$`name_var`,
            `Quality assessment comment` = .data$`condition`, everything()) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
-    distinct() %>% tibble
-  
-  report$`Dataset assessment` %>%
+    distinct() %>% tibble %>%
     left_join(report$`Data dictionary summary` %>% 
                 select(.data$`index`, .data$`name`)) %>% 
     select('index in data dict.' = .data$`index`, .data$`name`, everything()) %>%
@@ -302,8 +300,8 @@ dataset_evaluate <- function(
     "
   - WARNING MESSAGES (if any): -------------------------------------------------
     "
-    ))
-
+  ))
+  
   return(report)
 }
 
@@ -380,24 +378,24 @@ dataset_evaluate <- function(
 #' @importFrom rlang .data
 #' @export
 study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
-
+  
   # amelioration :rajouter taxonomy
-
+  
   # check on arguments
   as_study(study)
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
          '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
-
+  
   report_list <-
     vector(mode = "list", length = length(names(study)))
   names(report_list) <- names(study)
-
+  
   message(crayon::bold(
-"- STUDY ASSESSMENT: ----------------------------------------------------------"
-))
-
+    "- STUDY ASSESSMENT: ----------------------------------------------------------"
+  ))
+  
   for(i in seq_len(length(study))){
     # stop()}
     report_list[[i]] <-
@@ -407,7 +405,7 @@ study_evaluate <- function(study, taxonomy = NULL, as_mlstr_data_dict = TRUE){
         .dataset_name = names(study[i]),
         as_mlstr_data_dict = as_mlstr_data_dict)
   }
-
+  
   return(report_list)
 }
 
@@ -478,83 +476,80 @@ data_dict_evaluate <- function(
     data_dict,
     taxonomy = NULL,
     as_mlstr_data_dict = TRUE){
-
+  
   fargs <- as.list(match.call(expand.dots = TRUE))
-
+  
   data_dict_name <-
     fabR::silently_run(
       fabR::make_name_list(args_list = fargs['data_dict'], list(NULL)))
-
+  
   # check args
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
          '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
-
+  
   # check on arguments : data dict
   as_data_dict_shape(data_dict)
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     fabR::add_index(.force = TRUE)
-
+  
   data_dict <- data_dict[c('Variables','Categories')]
   data_dict <-
     data_dict[!is.na(names(data_dict))] %>%
     lapply(function(x) x %>% mutate(across(everything(),as.character)))
-
+  
   # add label, valueType and missing if don't exist
   if(as_mlstr_data_dict == TRUE){
-
+    
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
       bind_rows(tibble(valueType = as.character()))
-
+    
     if(length(names(
       data_dict[['Variables']] %>%
       select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
-
+      
       data_dict[['Variables']] <-
         data_dict[['Variables']] %>%
         bind_rows(tibble(label = as.character()))
     }
-
+    
     if(sum(nrow(data_dict[['Categories']])) > 0){
-
+      
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
         bind_rows(tibble(missing = as.character()))
-
+      
       if(length(names(
         data_dict[['Categories']] %>%
         select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
-
+        
         data_dict[['Categories']] <-
           data_dict[['Categories']] %>%
           bind_rows(tibble(label = as.character()))
       }
     }
   }
-
+  
   # check on arguments : taxonomy
   if(!is.null(taxonomy)) taxonomy <- as_taxonomy(taxonomy)
-
+  
   message(
-"- DATA DICTIONARY ASSESSMENT: ",crayon::bold(data_dict_name)," --------------")
-
+    "- DATA DICTIONARY ASSESSMENT: ",crayon::bold(data_dict_name)," --------------")
+  
   # creation of the structure of the report
-  report <- list(
-    `Data dictionary summary` = tibble(),
-    `Data dictionary assessment` = tibble())
-
+  report <- list()
+  
   report$`Data dictionary summary` <-
     suppressWarnings(data_dict_flatten(data_dict))
   report$`Data dictionary summary` <-
     tibble(report$`Data dictionary summary`[['Variables']] %>%
-    select(
-      .data$`index`,.data$`name`,matches(c("^label$","^label:[[:alnum:]]"))[1],
-      matches('^valueType$'),starts_with("Categories::"),everything())) %>%
+             select(
+               .data$`index`,.data$`name`,matches(c("^label$","^label:[[:alnum:]]"))[1],
+               matches('^valueType$'),starts_with("Categories::"),everything())) %>%
     mutate(index = as.integer(.data$`index`))
-
-
+  
   test_name_standards <-
     test_unique_variable <-
     test_duplicated_columns <-
@@ -567,7 +562,7 @@ data_dict_evaluate <- function(
     test_cat_label <-
     test_missing_category <-
     tibble(name_var = as.character())
-
+  
   message("    Assess the standard adequacy of naming")
   test_name_standards  <-
     check_name_standards(data_dict[['Variables']][['name']]) %>%
@@ -581,14 +576,14 @@ data_dict_evaluate <- function(
             name_col = "name",
             sheet    = "Categories")
       }else{tibble(name_var = as.character())})
-
+  
   message("    Assess the uniqueness of variable names")
   test_unique_variable <-
     check_data_dict_variables(data_dict) %>%
     mutate(
       name_col = "name",
       sheet    = "Variables")
-
+  
   message("    Assess the presence of possible duplicated columns")
   test_duplicated_columns <-
     suppressWarnings(fabR::get_duplicated_cols(data_dict[['Variables']])) %>%
@@ -598,7 +593,7 @@ data_dict_evaluate <- function(
         fabR::get_duplicated_cols(data_dict[['Categories']]) %>%
           mutate(sheet    = "Categories")
       }else{tibble()})
-
+  
   # message("    Assess the presence of duplicated variable in the dataset")
   # test_duplicated_rows <-
   #   fabR::get_duplicated_rows(data_dict[['Variables']] %>%
@@ -616,7 +611,7 @@ data_dict_evaluate <- function(
   #   mutate(
   #     condition = "[INFO] - possible duplicated rows (variables)",
   #     sheet    = "Variables")
-
+  
   message("    Assess the presence of empty rows in the data dictionary")
   test_empty_row <-
     data_dict[['Variables']] %>% select(.data$`name`, everything()) %>%
@@ -625,7 +620,7 @@ data_dict_evaluate <- function(
     mutate(
       condition = "[INFO] - Empty line(s)",
       sheet    = "Variables")
-
+  
   message("    Assess the presence of empty columns in the data dictionary")
   test_empty_col <-
     fabR::get_all_na_cols(
@@ -637,9 +632,9 @@ data_dict_evaluate <- function(
           data_dict[['Categories']] %>% select(-.data$`variable`)) %>%
           mutate(sheet    = "Categories")
       }else{tibble()})
-
+  
   if(sum(nrow(data_dict[['Categories']])) > 0){
-
+    
     message("    Assess the presence of categories not in the data dictionary")
     test_existing_variable_category <-
       suppressWarnings(check_data_dict_categories(data_dict)) %>%
@@ -647,12 +642,12 @@ data_dict_evaluate <- function(
         name_col = "variable",
         sheet    = "Categories")
   }
-
-
+  
+  
   if(as_mlstr_data_dict == TRUE){
-
+    
     message(
-"    Assess the completion of `label(:xx)` column in 'Variables'")
+      "    Assess the completion of `label(:xx)` column in 'Variables'")
     test_var_label <-
       data_dict[['Variables']] %>%
       select(
@@ -675,18 +670,18 @@ data_dict_evaluate <- function(
             .data$`name_col`,
             "` should exist and not contain 'NA' values")) %>%
       mutate(sheet    = "Variables")
-
+    
     message("    Assess the `valueType` column in 'Variables'")
     test_valueType <-
       check_data_dict_valueType(data_dict) %>%
       mutate(
         name_col = "valueType",
         sheet    = "Variables")
-
+    
     if(sum(nrow(data_dict[['Categories']])) > 0){
-
+      
       message(
-"    Assess presence and completion of `label(:xx)` column in 'Categories'")
+        "    Assess presence and completion of `label(:xx)` column in 'Categories'")
       test_cat_label <-
         data_dict[['Categories']] %>%
         select(
@@ -708,7 +703,7 @@ data_dict_evaluate <- function(
                    .data$`name_col`,
                    "` should exist not contain 'NA' values")) %>%
         mutate(sheet    = "Categories")
-
+      
       test_missing_category <-
         message("    Assess the logical values of missing column in Categories")
       if(as_mlstr_data_dict){
@@ -718,7 +713,7 @@ data_dict_evaluate <- function(
             sheet    = "Categories")}else{tibble()}
     }
   }
-
+  
   # test_var_label
   # test_valueType
   # test_name_standards
@@ -730,7 +725,7 @@ data_dict_evaluate <- function(
   # # test_duplicated_rows
   # test_empty_row
   # test_empty_col
-
+  
   report$`Data dictionary assessment` <-
     test_name_standards %>%
     bind_rows(test_unique_variable) %>%
@@ -743,13 +738,13 @@ data_dict_evaluate <- function(
     bind_rows(test_valueType) %>%
     bind_rows(test_cat_label) %>%
     bind_rows(test_missing_category) %>%
-
+    
     select(.data$`sheet`,.data$`name_col`,.data$`name_var`,
            `Quality assessment comment` = .data$`condition`) %>%
     arrange(desc(.data$`sheet`),.data$`name_col`,.data$`name_var`) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble
-
+  
   message("    Generate report")
   
   if(nrow(report$`Data dictionary assessment`) == 0){
@@ -760,7 +755,7 @@ data_dict_evaluate <- function(
   message(bold(
     "
   - WARNING MESSAGES (if any): --------------------------------------------\n"))
-
+  
   return(report)
 }
 
