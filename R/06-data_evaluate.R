@@ -284,8 +284,10 @@ dataset_evaluate <- function(
            `Quality assessment comment` = .data$`condition`, everything()) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble %>%
-    left_join(report$`Data dictionary summary` %>% 
-                select(.data$`index`, .data$`name`)) %>% 
+    left_join(
+      report$`Data dictionary summary` %>%
+        select(.data$`index`, .data$`name`),
+      by = join_by(name)) %>% 
     select('index in data dict.' = .data$`index`, .data$`name`, everything()) %>%
     arrange(.data$`index in data dict.`)
   
