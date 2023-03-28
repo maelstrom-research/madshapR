@@ -152,18 +152,10 @@ dataset_evaluate <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
 
   # creation of the structure of the report
-  report <- list(
-    `Data dictionary summary` = tibble(),
-    `Data dictionary assessment` = tibble(),
-    `Dataset assessment` = tibble())
-
-  dictionary_report <-
+  report <- list()
+  report <-
     data_dict_evaluate(data_dict, as_mlstr_data_dict = as_mlstr_data_dict)
-  report$`Data dictionary summary` <-
-    tibble(dictionary_report$`Data dictionary summary`)
-  report$`Data dictionary assessment` <-
-    tibble(dictionary_report$`Data dictionary assessment`)
-
+  
   message(
     "- DATASET ASSESSMENT: ",
     crayon::bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
@@ -291,10 +283,21 @@ dataset_evaluate <- function(
     select(name = .data$`name_var`,
            `Quality assessment comment` = .data$`condition`, everything()) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
-    arrange(.data$`name`) %>%
     distinct() %>% tibble
-
+  
+  report$`Dataset assessment` %>%
+    left_join(report$`Data dictionary summary` %>% 
+                select(.data$`index`, .data$`name`)) %>% 
+    select('index in data dict.' = .data$`index`, .data$`name`, everything()) %>%
+    arrange(.data$`index in data dict.`)
+  
   message("    Generate report")
+  
+  if(nrow(report$`Dataset assessment`) == 0){
+    message("\n    The dataset contains no error/warning.")
+    report$`Dataset assessment` <- NULL
+  }
+  
   message(bold(
     "
   - WARNING MESSAGES (if any): -------------------------------------------------
@@ -750,7 +753,7 @@ data_dict_evaluate <- function(
   message("    Generate report")
   
   if(nrow(report$`Data dictionary assessment`) == 0){
-    message("\n    The data dictionary contains no error.")
+    message("\n    The data dictionary contains no error/warning.")
     report$`Data dictionary assessment` <- NULL
   }
   
