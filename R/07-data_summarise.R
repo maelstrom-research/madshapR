@@ -108,32 +108,15 @@ dataset_summarize <- function(
   # check on argument : taxonomy
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
 
-  # creation of the structure of the report
-  report <- list(
-    `Overview` = c(),
-    `Data dictionary summary` = tibble(),
-    `Data dictionary assessment` = tibble(),
-    `Dataset assessment` = tibble(),
-    `Variables summary (all)` = tibble(),
-    `Text variable summary` = tibble(),
-    `Date variable summary` = tibble(),
-    `Numerical variable summary` = tibble(),
-    `Categorical variable summary` = tibble())
-
-  dataset_report <- 
+  # evaluate the dataset
+  report <- list()
+  report <- 
     dataset_evaluate(
       dataset,
       data_dict,
       taxonomy = taxonomy,
       .dataset_name = .dataset_name,
       as_mlstr_data_dict = TRUE)
-  
-  report$`Data dictionary summary`     <-
-    tibble(dataset_report$`Data dictionary summary`)
-  report$`Data dictionary assessment` <-
-    tibble(dataset_report$`Data dictionary assessment`)
-  report$`Dataset assessment`         <-
-    tibble(dataset_report$`Dataset assessment`)
 
   message(
     "- DATASET SUMMARIZE: ",
@@ -184,14 +167,13 @@ dataset_summarize <- function(
     data_dict[['Variables']] %>%
     select(-matches("^___name_var___$")) %>%
     rename(`___name_var___` = .data$`name`) %>%
-    fabR::add_index("index in data dict.", .force = TRUE) %>%
     mutate(across(everything(),as.character)) %>%
-    select(.data$`index in data dict.`,
-           .data$`___name_var___`,
+    select(.data$`___name_var___`,
            matches(c("^label$","^label:[[:alnum:]]"))[1],
            `Data Dictionary valueType` = .data$`valueType`) %>%
     full_join(estimated_valueType, by = "___name_var___") %>%
-    full_join(dataset_valueType, by = "___name_var___")
+    full_join(dataset_valueType, by = "___name_var___") %>%
+    fabR::add_index("index in data dict.", .force = TRUE)
 
   ## categories
   if(sum(nrow(data_dict[['Categories']])) > 0){
@@ -223,7 +205,8 @@ dataset_summarize <- function(
        # `Categories in data dictionary` = ifelse(
        #   is.na(.data$`name_var`), NA,
        #   .data$`Categories in data dictionary`)) %>%
-      ungroup
+      ungroup %>%
+      select(.data$`___name_var___`,.data$`Categories in data dictionary`)
   }else{
     data_dict[['Categories']] <-
       tibble(
@@ -280,28 +263,32 @@ dataset_summarize <- function(
     message("    Summarise information for text variables")
     .resume_var_text <-
       .resume_var[
-        .resume_var$`name` %in% report$`Text variable summary`$name,]
+        .resume_var$`name` %in% report$`Text variable summary`$name,] %>%
+      filter(categorical != 'yes')
     summary_text <-
       summary_variables_text(.resume_var = .resume_var_text) 
 
     message("    Summarise information for date variables")
     .resume_var_date <-
       .resume_var[
-        .resume_var$`name` %in% report$`Date variable summary`$name,]
+        .resume_var$`name` %in% report$`Date variable summary`$name,] %>%
+      filter(categorical != 'yes')
     summary_date <- # only works for ymd format
       summary_variables_date(.resume_var = .resume_var_date)
 
     message("    Summarise information for numerical variables")
     .resume_var_num <-
       .resume_var[
-        .resume_var$`name` %in% report$`Numerical variable summary`$name,]
+        .resume_var$`name` %in% report$`Numerical variable summary`$name,] %>%
+      filter(categorical != 'yes')
     summary_num <-
       summary_variables_numerical(.resume_var = .resume_var_num)
 
     message("    Summarise information for categorical variables")
     .resume_var_cat <-
       .resume_var[
-        .resume_var$`name` %in% report$`Categorical variable summary`$name,]
+        .resume_var$`name` %in% report$`Categorical variable summary`$name,] %>%
+      filter(categorical != 'no')  
     summary_cat <-
       summary_variables_categorical(.resume_var = .resume_var_cat)
 
@@ -328,8 +315,8 @@ dataset_summarize <- function(
 
     report$`Text variable summary` <-
       report$`Text variable summary` %>%
-      left_join(summary_var, by = "name") %>%
-      left_join(summary_text, by = "name") %>%
+      inner_join(summary_var, by = "name") %>%
+      inner_join(summary_text, by = "name") %>%
       select(
         "index in data dict." ,
         "name",
@@ -349,8 +336,8 @@ dataset_summarize <- function(
 
     report$`Date variable summary` <-
       report$`Date variable summary` %>%
-      left_join(summary_var, by = "name") %>%
-      left_join(summary_date, by = "name") %>%
+      inner_join(summary_var, by = "name") %>%
+      inner_join(summary_date, by = "name") %>%
       select(
         "index in data dict." ,
         "name",
@@ -370,8 +357,8 @@ dataset_summarize <- function(
 
     report$`Numerical variable summary` <-
       report$`Numerical variable summary` %>%
-      left_join(summary_var, by = "name") %>%
-      left_join(summary_num, by = "name") %>%
+      inner_join(summary_var, by = "name") %>%
+      inner_join(summary_num, by = "name") %>%
       select(
         "index in data dict." ,
         "name",
@@ -476,6 +463,8 @@ dataset_summarize <- function(
 
   # create report structure
 
+  report$`Data dictionary summary`       <- NULL
+
   if(nrow(report$`Text variable summary`       ) == 0)
     report$`Text variable summary`       <- NULL
   if(nrow(report$`Date variable summary`       ) == 0)
@@ -484,6 +473,8 @@ dataset_summarize <- function(
     report$`Numerical variable summary`  <- NULL
   if(nrow(report$`Categorical variable summary`) == 0)
     report$`Categorical variable summary`<- NULL
+
+  report <- report[unique(c('Overview', names(report)))]
 
   return(report)
 }
