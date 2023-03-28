@@ -251,7 +251,6 @@ dataset_evaluate <- function(
     filter(!is.na(.data$`name_var`)) %>%
     ungroup()
   
-  
   if(as_mlstr_data_dict == TRUE){
     message(
       "    Assess the `valueType` comparison in dataset and data dictionary")
