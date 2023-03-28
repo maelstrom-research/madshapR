@@ -376,7 +376,7 @@ dataset_summarize <- function(
         "% Valid categorical values (if applicable)",
         "% Missing categorical values (if applicable)",everything())
 
-    report$`Categorical variable summary` <-
+    report$`Categorical variable summary` 
       report$`Categorical variable summary` %>%
       inner_join(summary_var, by = "name") %>%
       inner_join(summary_cat, by = "name") %>%
@@ -395,8 +395,9 @@ dataset_summarize <- function(
         "% total Valid values",
         "% NA",
         "% Valid categorical values (if applicable)",
-        "% Missing categorical values (if applicable)",everything())
-    
+        "% Missing categorical values (if applicable)",
+        everything(),
+        -"% Valid categorical values")
   }
 
   message("    Summarise global information (Overview)")
