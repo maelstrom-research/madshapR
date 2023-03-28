@@ -421,7 +421,7 @@ dataset_summarize <- function(
       '    1_Participant identifier'                                           ,
       '    1_Variables'                                                        ,
       '        1_Total number of variables'                                    ,
-      '    1_Data type in dictionnary (valueType)'                             ,
+      '    1_Data type in dictionary (valueType)'                             ,
       '        1_Nb. text variables'                                           ,
       '        1_Nb. date variables'                                           ,
       '        1_Nb. numerical variables'                                      ,
@@ -446,7 +446,7 @@ dataset_summarize <- function(
         " ",
       .data$`---` == '        1_Total number of variables'                     ~
         report$`Data dictionary summary`    %>% nrow() %>% as.character,
-      .data$`---` == '    1_Data type in dictionnary (valueType)'              ~
+      .data$`---` == '    1_Data type in dictionary (valueType)'               ~
         " ",
       .data$`---` == '        1_Nb. text variables'                            ~
         report$`Text variable summary`            %>% nrow() %>% as.character,
@@ -561,23 +561,23 @@ dataset_summarize <- function(
 #'
 #' @export
 study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
-
+  
   # amelioration :rajouter taxonomy
-
+  
   # check on arguments
   as_study(study)
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
-
+  
   report_list <-
     vector(mode = "list", length = length(names(study)))
   names(report_list) <- names(study)
-
+  
   message(crayon::bold(
-"- STUDY SUMMARY: -------------------------------------------------------"))
-
+    "- STUDY SUMMARY: -------------------------------------------------------"))
+  
   for(i in seq_len(length(study))){
     # stop()}
     report_list[[i]] <-
@@ -587,7 +587,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
         .dataset_name = names(study[i]),
         valueType_guess = valueType_guess)
   }
-
+  
   return(report_list)
 }
 
@@ -664,7 +664,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #'
 #' @export
 resume_variables <- function(data, data_dict = NULL){
-
+  
   # handle atomics
   summary_tbl <-
     tibble(
@@ -676,27 +676,27 @@ resume_variables <- function(data, data_dict = NULL){
       `value_var` = as.character(),
       `index_value` = as.integer(),
       `cat_index` = as.integer())
-
+  
   # handle atomics
   if(is.atomic(data) & length(data) == 0){return(summary_tbl)}
   if(is.atomic(data))
     return(resume_variables(data = tibble(name = data), data_dict))
-
+  
   # tests
   as_dataset(data)
-
+  
   # if no data dict
   if(is.null(data_dict)){
     data_dict <- data_dict_extract(data,as_mlstr_data_dict = TRUE)
   }else{
     data_dict <- as_mlstr_data_dict(data_dict)}
-
+  
   data_dict_var  <-
     data_dict[['Variables']] %>%
     select('name') %>%
     mutate(categorical = NA_character_) %>%
     fabR::add_index()
-
+  
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict_cat <-
       data_dict[['Categories']] %>%
@@ -711,34 +711,34 @@ resume_variables <- function(data, data_dict = NULL){
             .data$`valid_class` == TRUE,
             "2_Missing values", "1_Valid values")) %>%
       mutate(value_var = as.character(.data$`value_var`))
-
+    
   }else{
     data_dict_cat <-
       tibble(cat_index = as.integer(),name = as.character(),
              value_var = as.character(),valid_class = as.character())}
-
+  
   data_dict_var  <-
     data_dict_var %>%
     full_join(data_dict_cat,by = "name") %>%
     mutate(categorical = ifelse(is.na(.data$`valid_class`),"no","yes"))
-
+  
   summary <- tibble(name = as.character())
-
+  
   if(nrow(data) > 0){
     for(i in names(data)){
       # stop()}
-
+      
       tbl_var <- tibble()
       category_var <- tibble()
       summary <- tibble()
-
+      
       # count the different observations in the columm
       tbl_var <-
         data %>% select(value_var = any_of(i)) %>%
         mutate(value_var_occur = 1) %>%
         mutate(value_var = as.character(.data$`value_var`)) %>%
         mutate(name = i)
-
+      
       # count observations in the data, including no-observation of
       # categorical outcomes
       # classification of observations not in the data dict(3) and 'true'
@@ -763,31 +763,31 @@ resume_variables <- function(data, data_dict = NULL){
         group_by(.data$`valid_class`) %>%
         fabR::add_index('index_value', .force = TRUE) %>%
         ungroup
-
+      
       # handle categories which are non-categorical, categorical and mixed
       summary$`categorical` <-
         ifelse(
           nrow(summary[
             summary$`valid_class` ==
               '3_Valid other values',])                >0 &
-          nrow(summary[
-            summary$`valid_class` %in%
-              c('1_Valid values','2_Missing values'),])>= 1,
+            nrow(summary[
+              summary$`valid_class` %in%
+                c('1_Valid values','2_Missing values'),])>= 1,
           "mix",
           unique(summary[!is.na(summary$`categorical`),][['categorical']]))
-
+      
       summary_tbl <- bind_rows(summary_tbl, summary)
     }
   }
-
+  
   # data_dict_var <-
   #   data_dict_var %>%
   #   anti_join(summary_tbl['name'], by = "name")
-
+  
   # summary_tbl <-
   #   summary_tbl %>%
   #   add_row(data_dict_var)
-
+  
   final_resume <-
     summary_tbl %>%
     mutate(value_var_occur = replace_na(.data$`value_var_occur`, 0)) %>%
@@ -798,9 +798,9 @@ resume_variables <- function(data, data_dict = NULL){
     select(.data$index,
            .data$`name`, everything()) %>%
     arrange(.data$`index`,.data$`valid_class`)
-
+  
   return(final_resume)
-
+  
 }
 
 #' @title
@@ -881,54 +881,54 @@ summary_variables <- function(
     data = NULL,
     data_dict = NULL,
     .resume_var = NULL){
-
+  
   # for dev purpose
   if(is.null(.resume_var)) .resume_var <- resume_variables(data, data_dict)
   summary <- .resume_var
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(nrow(summary) == 0) return(summary_tbl)
-
+  
   for(i in unique(summary$name)){
     # stop()}
-
+    
     summary_i <- summary %>% filter(.data$`name` == i)
-
+    
     # summary the output
     summary_i <-
       tibble(
         `name` = i,
-
+        
         `categorical` = unique(summary_i$`categorical`),
-
+        
         `Total number of observations` = sum(summary_i$`value_var_occur`),
-
+        
         `Nb. distinct values` =
           length(unique(summary_i[
             summary_i$`value_var_occur` == 1 &
               !is.na(summary_i$`value_var`),]$`value_var`)),
-
+        
         `% total Valid values` =
           sum(summary_i[
             summary_i$`valid_class` %in%
               c("1_Valid values","3_Valid other values"),]$value_var_occur)/
           sum(summary_i$`value_var_occur`),
-
+        
         `% NA` =
           sum(summary_i[
             summary_i$`valid_class` %in%
               c("4_NA values"),]$value_var_occur)/
           sum(summary_i$`value_var_occur`),
-
+        
         `% Valid categorical values (if applicable)` =
           ifelse(all(summary_i$`categorical` != 'no'),
                  sum(summary_i[
                    summary_i$`valid_class` %in%
                      c("1_Valid values"),]$value_var_occur)/
-                 sum(summary_i$`value_var_occur`),
+                   sum(summary_i$`value_var_occur`),
                  NA_real_),
-
+        
         `% Missing categorical values (if applicable)` =
           ifelse(all(summary_i$`categorical` != 'no'),
                  sum(summary_i[
@@ -937,38 +937,38 @@ summary_variables <- function(
                    sum(summary_i$`value_var_occur`),
                  NA_real_)
       )
-
+    
     summary_tbl <- bind_rows(summary_tbl, summary_i)
   }
-
+  
   summary_tbl <-
     summary_tbl %>%
     mutate(
       `Quality assessment comment` = case_when(
-
+        
         .data$`Total number of observations` == .data$`Nb. distinct values`    ~
-"[INFO] - All observations are unique" ,
-
+          "[INFO] - All observations are unique" ,
+        
         .data$`Nb. distinct values` == 0                                       ~
-"[INFO] - The column is empty" ,
-
+          "[INFO] - The column is empty" ,
+        
         .data$`Nb. distinct values` == 1                                       ~
-"[INFO] - The column has a constant value",
-
+          "[INFO] - The column has a constant value",
+        
         .data$`Nb. distinct values` > 0 & .data$`% total Valid values` == 0    ~
-"[INFO] - All the categorical values present in the dataset are 'missing'",
-
+          "[INFO] - All the categorical values present in the dataset are 'missing'",
+        
         .data$`% total Valid values` > 0 &
-  .data$`% Valid categorical values (if applicable)` == 0                      ~
-"[INFO] - All the categorical values found in the dataset are non categorical" ,
-
+          .data$`% Valid categorical values (if applicable)` == 0                      ~
+          "[INFO] - All the categorical values found in the dataset are non categorical" ,
+        
         TRUE                                                                   ~
-  NA_character_
+          NA_character_
       )) %>%
     select(.data$`name`,.data$`Quality assessment comment`, everything())
-
+  
   return(summary_tbl)
-
+  
 }
 
 #' @title
@@ -1053,7 +1053,7 @@ summary_variables_text <- function(
     data = NULL,
     data_dict = NULL,
     .resume_var = NULL){
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
@@ -1063,24 +1063,24 @@ summary_variables_text <- function(
     .resume_var %>%
     filter(.data$`value_var_occur` == 1 ) %>%
     filter(.data$`valid_class`  == "3_Valid other values")
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(nrow(summary) == 0) return(summary_tbl)
-
+  
   for(i in unique(summary$name)){
     # stop()}
-
+    
     summary_i <-
       summary %>%
       filter(.data$`name` == i)
-
+    
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
       summary_i <-
         tibble(
           `name` = i,
-
+          
           `Most seen value(s)` =
             summary_i %>%
             count(.data$`value_var`) %>%
@@ -1088,7 +1088,7 @@ summary_variables_text <- function(
             slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',.data$`value_var`)) %>%
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
             str_replace('; \\[\\.\\.\\.\\]$','[...]'),
-
+          
           `Rarest value(s)` =
             summary_i %>%
             count(.data$`value_var`) %>%
@@ -1097,18 +1097,18 @@ summary_variables_text <- function(
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
             str_replace('; \\[\\.\\.\\.\\]$','[...]'),
         )
-
+      
     }else{summary_i <- tibble(name = as.character())}
-
+    
     summary_tbl <- bind_rows(summary_tbl, summary_i)
     summary_i <- tibble()
   }
-
+  
   # final_summary <-
   #   summary_variables(data, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
-
+  
   return(summary_tbl)
 }
 
@@ -1199,26 +1199,26 @@ summary_variables_date <- function(
     data = NULL,
     data_dict = NULL,
     .resume_var = NULL){
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
   if(!nrow(.resume_var)) return(summary_tbl)
-
+  
   date_format <-
     fabR::guess_date_format(distinct(.resume_var['value_var']))
-
+  
   if(date_format$`% values formated` < 100){
     warning(
-"Problem while computing date type variables due to ambiguous format.\n",
-"They will be analysed as text variables\n",
-crayon::bold("Useful tip:"),
-"Use dataset_evaluate(data) to get an assessment of your data.")
-
+      "Problem while computing date type variables due to ambiguous format.\n",
+      "They will be analysed as text variables\n",
+      crayon::bold("Useful tip:"),
+      "Use dataset_evaluate(data) to get an assessment of your data.")
+    
     final_summary <- summary_variables_text(.resume_var = .resume_var)
     return(final_summary)
   }
-
+  
   summary <-
     .resume_var %>%
     mutate(
@@ -1226,18 +1226,18 @@ crayon::bold("Useful tip:"),
         fabR::as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
     filter(.data$`value_var_occur` == 1 ) %>%
     filter(.data$`valid_class`  == "3_Valid other values")
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(nrow(summary) == 0) return(summary_tbl)
-
+  
   for(i in unique(summary$name)){
     # stop()}
-
+    
     summary_i <-
       summary %>%
       filter(.data$`name` == i)
-
+    
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
       summary_i <-
@@ -1261,18 +1261,18 @@ crayon::bold("Useful tip:"),
             summary(as.integer(year(summary_i$`value_var`)))[[4]] %>% round,
           `Span\n(year)`     =
             year(.data$`Highest date`) - year(.data$`Lowest date`))
-
+      
     }else{summary_i <- tibble(name = as.character())}
-
+    
     summary_tbl <- bind_rows(summary_tbl, summary_i)
     summary_i <- tibble()
   }
-
+  
   # final_summary <-
   #   summary_variables(data, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
-
+  
   return(summary_tbl)
 }
 
@@ -1355,7 +1355,7 @@ summary_variables_numerical <- function(
     data = NULL,
     data_dict = NULL,
     .resume_var = NULL){
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
@@ -1365,20 +1365,20 @@ summary_variables_numerical <- function(
     .resume_var %>%
     filter(.data$`value_var_occur` == 1 ) %>%
     filter(.data$`valid_class`  == "3_Valid other values")
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(nrow(summary) == 0) return(summary_tbl)
-
+  
   for(i in unique(summary$name)){
     # stop()}
-
+    
     summary_i <-
       summary %>%
       filter(.data$`name` == i)
-
+    
     summary_i$`value_var` <- as.numeric(summary_i$`value_var`)
-
+    
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
       summary_i <-
@@ -1390,18 +1390,18 @@ summary_variables_numerical <- function(
           `Q3`      = summary(summary_i$`value_var`)[[5]],
           `MAX`     = summary(summary_i$`value_var`)[[6]],
           `MEAN`    = summary(summary_i$`value_var`)[[4]])
-
+      
     }else{summary_i <- tibble(name = as.character())}
-
+    
     summary_tbl <- bind_rows(summary_tbl, summary_i)
     summary_i <- tibble()
   }
-
+  
   # final_summary <-
   #   summary_variables(data, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
-
+  
   return(summary_tbl)
 }
 
@@ -1484,7 +1484,7 @@ summary_variables_categorical <- function(
     data = NULL,
     data_dict = NULL,
     .resume_var = NULL){
-
+  
   # init
   summary_tbl <- tibble(name = as.character())
   if(is.null(.resume_var)) return(summary_tbl)
@@ -1498,16 +1498,16 @@ summary_variables_categorical <- function(
       .groups = 'drop') %>%
     arrange(.data$`index`, .data$`valid_class`) %>%
     ungroup
-
+  
   if(nrow(summary) == 0) return(summary_tbl)
-
+  
   for(i in unique(summary$name)){
     # stop()}
-
+    
     summary_i <-
       summary %>%
       filter(.data$`name` == i)
-
+    
     summary_category <-
       summary_i %>%
       filter(.data$`name` == i) %>%
@@ -1520,7 +1520,7 @@ summary_variables_categorical <- function(
         cat_index = replace_na(.data$`cat_index`,1),
         name_var  = str_replace(.data$`name_var`, "^NA$","")) %>%
       ungroup %>%
-
+      
       # handle the round
       mutate(n_perc =
                paste0(round(100*(.data$`n` / sum(.data$`n`)),2),"%")) %>%
@@ -1600,44 +1600,44 @@ summary_variables_categorical <- function(
       ungroup() %>%
       select(-.data$`categorical_index`, -.data$`n`) %>%
       summarise(across(everything(), ~ paste0(.,collapse = "")))
-
+    
     if(nrow(filter(
       summary_i,
       .data$`valid_class` %in% c("1_Valid values","2_Missing values"))) > 0){
-
+      
       summary_i <-
         tibble(
-
+          
           `name`                   =
             unique(summary_i$name),
-
+          
           `% Valid categorical values` =
             round(summary_i %>%
                     filter(.data$`valid_class` == "1_Valid values") %>%
                     pull(.data$`n`) %>% sum /
                     (summary_i %>% pull(.data$`n`) %>% sum),4),
-
+          
           `Values present in dataset`                           =
             summary_category$list_values,
-
-          `Data dictionnary categories not present in dataset`  =
+          
+          `Data dictionary categories not present in dataset`   =
             summary_category$cat_var_absence,
-
-          `Dataset value not present in data dictionnary`       =
+          
+          `Dataset value not present in data dictionary`        =
             summary_category$other_val_presence
-
+          
         )
-
+      
     }else{summary_i <- tibble(name = as.character())}
-
+    
     summary_tbl <- bind_rows(summary_tbl, summary_i)
     summary_i <- tibble()
   }
-
+  
   # final_summary <-
   #   summary_variables(data, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` == 'yes' | .data$`categorical` == 'mix') %>%
   #   full_join(summary_tbl, by = 'name')
-
+  
   return(summary_tbl)
 }
