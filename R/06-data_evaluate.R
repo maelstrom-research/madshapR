@@ -548,7 +548,8 @@ data_dict_evaluate <- function(
     tibble(report$`Data dictionary summary`[['Variables']] %>%
     select(
       .data$`index`,.data$`name`,matches(c("^label$","^label:[[:alnum:]]"))[1],
-      matches('^valueType$'),starts_with("Categories::"),everything()))
+      matches('^valueType$'),starts_with("Categories::"),everything())) %>%
+    mutate(index = as.integer(.data$`index`))
 
 
   test_name_standards <-
@@ -747,6 +748,12 @@ data_dict_evaluate <- function(
     distinct() %>% tibble
 
   message("    Generate report")
+  
+  if(nrow(report$`Data dictionary assessment`) == 0){
+    message("\n    The data dictionary contains no error.")
+    report$`Data dictionary assessment` <- NULL
+  }
+  
   message(bold(
     "
   - WARNING MESSAGES (if any): --------------------------------------------\n"))
