@@ -175,12 +175,12 @@ dataset_evaluate <- function(
   message(
 "    Assess the standard adequacy of naming")
   test_name_standards  <- 
-    check_name_standards(names(dataset))
+    check_name_standards(names(zap_dataset))
   
   message(
     "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
-    check_dataset_variables(dataset, data_dict) %>%
+    check_dataset_variables(zap_dataset, data_dict) %>%
     filter(
       str_detect(
         .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
@@ -189,7 +189,7 @@ dataset_evaluate <- function(
     "    Assess the presence of possible duplicated variable in the dataset")
   if(zap_dataset %>% nrow > 0){
     test_duplicated_columns <-
-      fabR::get_duplicated_cols(dataset) %>%
+      fabR::get_duplicated_cols(zap_dataset) %>%
       rename(`name_var` = .data$`name_col`)
   }
   
@@ -207,20 +207,20 @@ dataset_evaluate <- function(
       group_by(.data$`index`) %>%
       fabR::add_index('index2') %>%
       group_by(.data$`index`) %>%
-      slice(1:2) %>%
+      slice(1:6) %>%
       mutate(
         value = 
-          ifelse(.data$`index2` == 2 , "[...]",.data$`value`)) %>%
+          ifelse(.data$`index2` == 6 , "[...]",.data$`value`)) %>%
       summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
       mutate(condition = "[INFO] - possible duplicated participant") %>%
-      mutate(`name_var` =  !! col_id) %>%
-      select(-.data$`index`)
+      mutate(`name_var` = ifelse(col_id == "___mlstr_index___",NA,!! col_id)) %>%
+      select(-.data$`index`) 
   }
   
   if(dataset %>% nrow > 0){
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
-      fabR::get_unique_value_cols(dataset) %>%
+      fabR::get_unique_value_cols(zap_dataset) %>%
       rename(`name_var` = .data$`name_col`) %>%
       distinct()
   }
@@ -287,7 +287,7 @@ dataset_evaluate <- function(
     left_join(
       report$`Data dictionary summary` %>%
         select(.data$`index`, .data$`name`),
-      by = join_by(name)) %>% 
+      by = 'name') %>% 
     select('index in data dict.' = .data$`index`, .data$`name`, everything()) %>%
     arrange(.data$`index in data dict.`)
   
