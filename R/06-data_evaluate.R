@@ -88,6 +88,14 @@ dataset_evaluate <- function(
 
   fargs <- as.list(match.call(expand.dots = TRUE))
 
+  # check on arguments : dataset
+  as_dataset(dataset)
+  
+  if(!is.logical(as_mlstr_data_dict))
+    stop(call. = FALSE,
+         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+  
+  ## to do : changer name_var pour name
   # check on arguments : data dict
   if(is.null(data_dict)) {
     data_dict <-
@@ -98,12 +106,8 @@ dataset_evaluate <- function(
     if(class(data_dict)[1] == "try-error") data_dict <-
         data_dict_extract(data = dataset,as_mlstr_data_dict = FALSE)}
 
-  if(!is.logical(as_mlstr_data_dict))
-    stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
-
   as_data_dict_shape(data_dict)
-
+  
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     fabR::add_index(.force = TRUE)
@@ -125,11 +129,20 @@ dataset_evaluate <- function(
         data_dict[['Categories']] %>%
         bind_rows(tibble(missing = as.character()))}}
 
-  # check on arguments : dataset
-  as_dataset(dataset)
-  zap_dataset <- dataset_zap_data_dict(dataset)
+  preserve_attributes <- 
+    col_id <- attributes(dataset)$`Mlstr::col_id`
+  
+  if(is.null(col_id) | ncol(dataset) == 1){
+    dataset <- dataset %>% add_index("___mlstr_index___")
+    dataset <-   as_dataset(dataset, names(dataset)[1])}
+  
   col_id <- attributes(dataset)$`Mlstr::col_id`
-  if(is.null(col_id)) col_id <- names(dataset)[1]
+  # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
+  
+  zap_dataset <- 
+    dataset_zap_data_dict(dataset) %>% 
+    select(-all_of(col_id))
+  
   dataset_name <-
     ifelse(!is.null(.dataset_name),.dataset_name,
            fabR::make_name_list(
@@ -165,60 +178,65 @@ dataset_evaluate <- function(
     test_unique_value <-
     test_existing_variable_category <-
     test_valueType <-
-    tibble(name_var = as.character())
+    tibble(name = as.character())
 
   message(
 "    Assess the standard adequacy of naming")
-  test_name_standards  <- check_name_standards(names(zap_dataset))
+  test_name_standards  <- 
+    check_name_standards(names(dataset))
 
   message(
 "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
-    check_dataset_variables(zap_dataset, data_dict) %>%
+    check_dataset_variables(dataset, data_dict) %>%
     filter(
       str_detect(
-        .data$`condition`,"Variable only present") & !is.na(.data$`name_var`))
+        .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
 
   message(
 "    Assess the presence of possible duplicated variable in the dataset")
   if(zap_dataset %>% nrow > 0){
     test_duplicated_columns <-
-      fabR::get_duplicated_cols(zap_dataset) %>%
-      rename(`name_var` = .data$`name_col`)}
+      fabR::get_duplicated_cols(dataset) %>%
+      rename(`name_var` = .data$`name_col`)
+    }
 
   message(
 "    Assess the presence of duplicated participants in the dataset")
   if(dataset %>% nrow > 0){
     test_duplicated_rows <-
-      fabR::get_duplicated_rows(zap_dataset[,names(zap_dataset) != col_id]) %>%
-      mutate(
-        condition = str_remove(
-          .data$`condition`,"\\[INFO\\] - Possible duplicated observations: ")
-        ) %>%
-      separate_rows(.data$`condition`,sep = " ; ") %>%
-      mutate(index = as.integer(.data$`condition`)) %>%
-      full_join(zap_dataset[,col_id] %>%
-                  fabR::add_index(.force = TRUE), by = "index") %>%
-      filter(!is.na(.data$`condition`)) %>%
-      select(`value` = !! col_id) %>%
-      summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-      mutate(condition = "[INFO] - possible duplicated participant") %>%
-      filter(.data$`value` != "")}
+      fabR::get_duplicated_rows(dataset, col_id) %>%
+        mutate(
+          value = str_remove(
+            .data$`condition`,
+            "\\[INFO\\] - Duplicated observations : ")) %>%
+        fabR::add_index('index') %>%
+        separate_rows(.data$`value`,sep = " ; ") %>%
+        group_by(.data$`index`) %>%
+        fabR::add_index('index2') %>%
+        group_by(.data$`index`) %>%
+        slice(1:2) %>%
+        mutate(
+          value = 
+            ifelse(.data$`index2` == 2 , "[...]",.data$`value`)) %>%
+        summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
+        mutate(condition = "[INFO] - possible duplicated participant") %>%
+        mutate(`name_var` =  !! col_id) %>%
+        select(-.data$`index`)
+    }
 
   if(dataset %>% nrow > 0){
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
       fabR::get_unique_value_cols(dataset) %>%
       rename(`name_var` = .data$`name_col`) %>%
-      distinct()}
+      distinct()
+    }
 
   message(
 "    Assess the presence of empty rows in the data dictionary")
   test_empty_row <-
-    fabR::get_all_na_rows(zap_dataset) %>%
-    distinct %>%
-    mutate(participant = str_replace_all(.data$participant,", "," ; ")) %>%
-    rename(`value` = .data$`participant`) %>%
+    fabR::get_all_na_rows(dataset,id_col = col_id) %>%
     mutate(
       condition =
         "[INFO] - Empty participant(s) (Except participant identifier column")
@@ -226,7 +244,7 @@ dataset_evaluate <- function(
   message(
 "    Assess the presence all NA(s) of columns in the data dictionary")
   test_empty_col <-
-    fabR::get_all_na_cols(zap_dataset) %>%
+    fabR::get_all_na_cols(dataset) %>%
     rename(`name_var` = .data$`name_col`)
 
   message(
@@ -270,10 +288,10 @@ dataset_evaluate <- function(
     bind_rows(test_existing_variable_category) %>%
     bind_rows(test_valueType) %>%
 
-    select(.data$`name_var`,
+    select(name = .data$`name_var`,
            `Quality assessment comment` = .data$`condition`, everything()) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
-    arrange(.data$`name_var`) %>%
+    arrange(.data$`name`) %>%
     distinct() %>% tibble
 
   message("    Generate report")
@@ -516,7 +534,6 @@ data_dict_evaluate <- function(
   # check on arguments : taxonomy
   if(!is.null(taxonomy)) taxonomy <- as_taxonomy(taxonomy)
 
-
   message(
 "- DATA DICTIONARY ASSESSMENT: ",crayon::bold(data_dict_name)," --------------")
 
@@ -600,12 +617,12 @@ data_dict_evaluate <- function(
   test_empty_row <-
     data_dict[['Variables']] %>% select(.data$`name`, everything()) %>%
     fabR::get_all_na_rows() %>%
-    rename(name_col = .data$`participant`) %>%
+    rename(name_col = .data$`value`) %>%
     mutate(
       condition = "[INFO] - Empty line(s)",
       sheet    = "Variables")
 
-  message("    Assess the presence of columns in the data dictionary")
+  message("    Assess the presence of empty columns in the data dictionary")
   test_empty_col <-
     fabR::get_all_na_cols(
       data_dict[['Variables']] %>% select(-.data$`name`)) %>%
