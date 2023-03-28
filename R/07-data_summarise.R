@@ -378,8 +378,8 @@ dataset_summarize <- function(
 
     report$`Categorical variable summary` <-
       report$`Categorical variable summary` %>%
-      left_join(summary_var, by = "name") %>%
-      left_join(summary_cat, by = "name") %>%
+      inner_join(summary_var, by = "name") %>%
+      inner_join(summary_cat, by = "name") %>%
       select(
         "index in data dict." ,
         "name",
