@@ -134,7 +134,7 @@ dataset_evaluate <- function(
   
   if(is.null(col_id) | ncol(dataset) == 1){
     dataset <- dataset %>% add_index("___mlstr_index___")
-    dataset <-   as_dataset(dataset, names(dataset)[1])}
+    dataset <- as_dataset(dataset, names(dataset)[1])}
   
   col_id <- attributes(dataset)$`Mlstr::col_id`
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
@@ -180,16 +180,18 @@ dataset_evaluate <- function(
   message(
     "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
-    check_dataset_variables(zap_dataset, data_dict) %>%
+    check_dataset_variables(dataset, data_dict) %>%
+    filter(name_var != '___mlstr_index___') %>% 
     filter(
       str_detect(
         .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
   
   message(
     "    Assess the presence of possible duplicated variable in the dataset")
-  if(zap_dataset %>% nrow > 0){
+  if(dataset %>% nrow > 0){
     test_duplicated_columns <-
-      fabR::get_duplicated_cols(zap_dataset) %>%
+      fabR::get_duplicated_cols(
+        dataset %>% select(-matches('___mlstr_index___'))) %>%
       rename(`name_var` = .data$`name_col`)
   }
   
@@ -197,7 +199,7 @@ dataset_evaluate <- function(
     "    Assess the presence of duplicated participants in the dataset")
   if(dataset %>% nrow > 0){
     test_duplicated_rows <-
-      fabR::get_duplicated_rows(dataset, col_id) %>%
+      fabR::get_duplicated_rows(tbl = dataset, id_col = col_id) %>%
       mutate(
         value = str_remove(
           .data$`condition`,
@@ -213,7 +215,9 @@ dataset_evaluate <- function(
           ifelse(.data$`index2` == 6 , "[...]",.data$`value`)) %>%
       summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
       mutate(condition = "[INFO] - possible duplicated participant") %>%
-      mutate(`name_var` = ifelse(col_id == "___mlstr_index___",NA,!! col_id)) %>%
+      mutate(
+        `name_var` = 
+          ifelse(col_id == "___mlstr_index___",NA_character_,!! col_id)) %>%
       select(-.data$`index`) 
   }
   
