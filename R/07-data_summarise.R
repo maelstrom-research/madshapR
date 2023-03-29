@@ -376,10 +376,10 @@ dataset_summarize <- function(
         "% Valid categorical values (if applicable)",
         "% Missing categorical values (if applicable)",everything())
 
-    report$`Categorical variable summary` 
+    report$`Categorical variable summary` <-
       report$`Categorical variable summary` %>%
       inner_join(summary_var, by = "name") %>%
-      inner_join(summary_cat, by = "name") %>%
+      inner_join(summary_cat, by = "name") %>% 
       select(
         "index in data dict." ,
         "name",
