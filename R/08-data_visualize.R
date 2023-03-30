@@ -86,8 +86,8 @@
 #'
 #' }
 #'
-#' @import dplyr knitr fabR
-#' @import bookdown utils readr stringr fs DT
+#' @import dplyr knitr fabR 
+#' @import bookdown utils readr stringr fs DT viridis ggplot2
 #' @importFrom rlang .data
 #'
 #' @export
