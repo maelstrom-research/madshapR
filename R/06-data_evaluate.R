@@ -95,7 +95,6 @@ dataset_evaluate <- function(
     stop(call. = FALSE,
          '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
   
-  ## to do : changer name_var pour name
   # check on arguments : data dict
   if(is.null(data_dict)) {
     data_dict <-
@@ -181,7 +180,7 @@ dataset_evaluate <- function(
     "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
     check_dataset_variables(dataset, data_dict) %>%
-    filter(name_var != '___mlstr_index___') %>% 
+    filter(.data$`name_var` != '___mlstr_index___') %>% 
     filter(
       str_detect(
         .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
@@ -192,7 +191,7 @@ dataset_evaluate <- function(
     test_duplicated_columns <-
       fabR::get_duplicated_cols(
         dataset %>% select(-matches('___mlstr_index___'))) %>%
-      rename(`name_var` = .data$`name_col`)
+      rename(name_var = "name_col")
   }
   
   message(
@@ -218,14 +217,14 @@ dataset_evaluate <- function(
       mutate(
         `name_var` = 
           ifelse(col_id == "___mlstr_index___",NA_character_,!! col_id)) %>%
-      select(-.data$`index`) 
+      select(-"index") 
   }
   
   if(dataset %>% nrow > 0){
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
       fabR::get_unique_value_cols(zap_dataset) %>%
-      rename(`name_var` = .data$`name_col`) %>%
+      rename(`name_var` = "name_col") %>%
       distinct()
   }
   
@@ -241,7 +240,7 @@ dataset_evaluate <- function(
     "    Assess the presence all NA(s) of columns in the data dictionary")
   test_empty_col <-
     fabR::get_all_na_cols(dataset) %>%
-    rename(`name_var` = .data$`name_col`)
+    rename(`name_var` = "name_col")
   
   message(
     "    Assess the presence of categories not in the data dictionary")
@@ -250,7 +249,8 @@ dataset_evaluate <- function(
     suppressMessages({
       check_dataset_categories(dataset,data_dict) %>%
         distinct() %>% group_by(.data$`condition`,.data$`name_var`) %>%
-        summarise(`value` = paste0(.data$`value`, collapse = " ; "))
+        summarise(
+          `value` = paste0(.data$`value`, collapse = " ; "),.groups = 'keep')
     }) %>%
     filter(!is.na(.data$`name_var`)) %>%
     ungroup()
@@ -283,15 +283,16 @@ dataset_evaluate <- function(
     bind_rows(test_existing_variable_category) %>%
     bind_rows(test_valueType) %>%
     
-    select(name = .data$`name_var`,
-           `Quality assessment comment` = .data$`condition`, everything()) %>%
+    select(
+      name = "name_var",
+      `Quality assessment comment` = "condition", everything()) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble %>%
     left_join(
       report$`Data dictionary summary` %>%
-        select(.data$`index`, .data$`name`),
+        select("index", "name"),
       by = 'name') %>% 
-    select('index in data dict.' = .data$`index`, .data$`name`, everything()) %>%
+    select('index in data dict.' = "index", "name", everything()) %>%
     arrange(.data$`index in data dict.`)
   
   message("    Generate report")
