@@ -907,11 +907,11 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
-#' @param filter_var Expressions that is defined in the element 'Variables' in
+#' @param filter_var Expressions that are defined in the element 'Variables' in
 #' the data dictionary.
-#' @param filter_cat Expressions that is defined in the element 'Categories' in
+#' @param filter_cat Expressions that are defined in the element 'Categories' in
 #' the data dictionary.
-#' @param filter_all Expressions that is defined both in the 'Categories' and
+#' @param filter_all Expressions that are defined both in the 'Categories' and
 #' 'Variables' in the data dictionary.
 #'
 #' @return
