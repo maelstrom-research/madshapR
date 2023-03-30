@@ -759,7 +759,7 @@ check_dataset_variables <- function(data, data_dict = NULL){
       TRUE ~ NA_character_)) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     filter(!is.na(.data$`condition`)) %>%
-    select(.data$`name_var`,.data$`name_var`, .data$`condition`) %>%
+    select(.data$`name_var`, .data$`condition`) %>%
     distinct()
 
   return(test)
