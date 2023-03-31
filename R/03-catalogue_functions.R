@@ -376,7 +376,7 @@ valueType_adjust <- function(from, to = NULL){
 
   # apply the data dictionary of the dataset to the data dictionary
   if(is_dataset(from) & is_data_dict(to)){
-    as_dataset(from)
+    as_dataset(from) # no col_id
     as_data_dict_shape(to)
 
     data <- from
