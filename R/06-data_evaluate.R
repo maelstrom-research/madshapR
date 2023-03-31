@@ -89,7 +89,7 @@ dataset_evaluate <- function(
   fargs <- as.list(match.call(expand.dots = TRUE))
 
   # check on arguments : dataset
-  as_dataset(dataset)
+  as_dataset(dataset) # no col_id
   
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
@@ -151,9 +151,7 @@ dataset_evaluate <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
 
   # creation of the structure of the report
-  report <- list()
-  report <-
-    data_dict_evaluate(data_dict, as_mlstr_data_dict = as_mlstr_data_dict)
+  report <- data_dict_evaluate(data_dict,as_mlstr_data_dict= as_mlstr_data_dict)
   
   message(
     "- DATASET ASSESSMENT: ",
