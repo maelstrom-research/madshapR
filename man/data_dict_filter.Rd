@@ -15,13 +15,13 @@ data_dict_filter(
 \item{data_dict}{A list of tibble(s) representing meta data to be
 transformed.}
 
-\item{filter_var}{Expressions that is defined in the element 'Variables' in
+\item{filter_var}{Expressions that are defined in the element 'Variables' in
 the data dictionary.}
 
-\item{filter_cat}{Expressions that is defined in the element 'Categories' in
+\item{filter_cat}{Expressions that are defined in the element 'Categories' in
 the data dictionary.}
 
-\item{filter_all}{Expressions that is defined both in the 'Categories' and
+\item{filter_all}{Expressions that are defined both in the 'Categories' and
 'Variables' in the data dictionary.}
 }
 \value{

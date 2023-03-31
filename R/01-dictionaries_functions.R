@@ -1503,7 +1503,7 @@ data_dict_apply <- function(data, data_dict = NULL){
   if(is.null(data_dict)) data_dict <- data_dict_extract(data)
   
   # test
-  as_dataset(data)
+  as_dataset(data, attributes(data)$`Mlstr::col_id`)
   preserve_attributes <- attributes(data)$`Mlstr::col_id`
   if(toString(attributes(data_dict)$`Mlstr::class`) == 'Mlstr_data_dict'){
     data_dict <- as_mlstr_data_dict(data_dict,as_data_dict = TRUE)
@@ -1684,7 +1684,7 @@ your dataset")}
 data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
   
   # test
-  as_dataset(data)
+  as_dataset(data) # no col_id
   if(!is.logical(as_mlstr_data_dict))
     stop(call. = FALSE,
          '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
@@ -1817,7 +1817,7 @@ data_dict_match_dataset <- function(
   
   # test
   as_data_dict_shape(data_dict)
-  as_dataset(data)
+  as_dataset(data) # no col_id
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
          '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
@@ -1845,8 +1845,8 @@ data_dict_match_dataset <- function(
   
   # else
   stop(call. = FALSE,
-       "output parameter must be either 'data' or 'data_dict'.
-Leave blank to get both.")
+"`output` parameter must be either 'data' or 'data_dict'.
+Leave blank to get both in a list.")
 }
 
 #' @title
