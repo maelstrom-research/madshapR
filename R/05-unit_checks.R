@@ -737,7 +737,7 @@ check_dataset_variables <- function(data, data_dict = NULL){
 
   # test if enough data_dict or dataset
   as_data_dict_shape(data_dict)
-  as_dataset(data)
+  as_dataset(data) # no col_id
 
   test_cat <- tibble(name_var = as.character(), condition = as.character())
 
@@ -831,7 +831,7 @@ check_dataset_categories <- function(data, data_dict = NULL){
 
   # test if enough data_dict or dataset
   as_data_dict_shape(data_dict)
-  as_dataset(data)
+  as_dataset(data) # no col_id
 
   test <-
     test_cat_in_data_dict_only    <- test_cat_in_dataset_only <-
@@ -1008,7 +1008,7 @@ check_dataset_valueType <- function(
       data_dict_extract(data,as_mlstr_data_dict = TRUE)
 
   # test if enough data_dict or data
-  as_dataset(data)
+  as_dataset(data) # no col_id
   as_data_dict_shape(data_dict)
 
   if(!is.logical(valueType_guess))

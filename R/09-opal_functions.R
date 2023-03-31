@@ -306,9 +306,9 @@ opal_tables_push <- function(
 
   message("Verification of input format.")
   # tests
-  if(!is.null(dataset))        as_dataset(dataset)
-  if(!is.null(study))          as_study(study)
-  if(!is.null(data_dict))      data_dict <- as_mlstr_data_dict(data_dict)
+  if(!is.null(dataset))  as_dataset(dataset,attributes(dataset)$`Mlstr::col_id`)
+  if(!is.null(study))    as_study(study)
+  if(!is.null(data_dict))data_dict <- as_mlstr_data_dict(data_dict)
 
   project <- list()
   if(!is.null(study)) {

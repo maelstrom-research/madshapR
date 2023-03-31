@@ -146,8 +146,8 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @export
 dataset_zap_data_dict <- function(dataset){
 
-  as_dataset(dataset)
-  
+  # test input
+  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
   preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
 
   for(i in seq_len(length(dataset))){
@@ -227,7 +227,7 @@ dataset_cat_as_labels <- function(
     col_names = names(dataset)){
   
   # tests
-  as_dataset(dataset)
+  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
   dataset[col_names]
   preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
   
@@ -511,11 +511,17 @@ as_study <- function(object){
 "The name of your datasets are not unique. Please provide different names.")}
 
   # check if listed datasets
+  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
+  
   tryCatch(
-    object <- object %>% lapply(FUN = function(x) as_dataset(x)),
+    object <- object %>% lapply(
+      FUN = function(x) as_dataset(x, attributes(x)$`Mlstr::col_id`)),
     error = function(x) stop(call. = FALSE,
 "\n\nThis object is not a study as defined by Maelstrom standards, which must be 
-exclusively a list of (at least one) dataset(s).
+exclusively a list of (at least one) dataset(s). Each dataset may have column(s)
+which refer to key identifier of the dataset. If attributed, this(ese) columns 
+must be present in the dataset.
+
 Please refer to documentation."))
 
   attributes(object)$`Mlstr::class` <- "study"
@@ -569,7 +575,12 @@ is_dataset <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(try(as_dataset(object),silent = TRUE))
+  test <- fabR::silently_run(
+    try(
+      as_dataset(
+        object,
+        col_id = attributes(object)$`Mlstr::col_id`),
+      silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
