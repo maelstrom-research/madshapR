@@ -6,7 +6,8 @@
 \usage{
 dataset_summarize(
   dataset,
-  data_dict = NULL,
+  data_dict = data_dict_extract(dataset),
+  group_by = NULL,
   taxonomy = NULL,
   .dataset_name = NULL,
   valueType_guess = FALSE
@@ -18,6 +19,10 @@ its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
+
+\item{group_by}{A character string of one column in the dataset that can be
+taken as a grouping column. The visual element will be grouped and displayed
+by this column.}
 
 \item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
