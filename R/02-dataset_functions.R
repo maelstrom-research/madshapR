@@ -237,11 +237,13 @@ dataset_cat_as_labels <- function(
     data_dict <- suppressMessages(data_dict_extract(dataset[col_names]))
   } else {
     # preserve_data_dict <- FALSE  
-    data_dict <- data_dict_match_dataset(dataset[col_names])$data_dict}
+    data_dict <- 
+      data_dict_match_dataset(dataset[col_names],data_dict)$data_dict}
 
   if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
   
   for(i in col_names){
+    # stop()}
     
     col <- dataset_zap_data_dict(as_dataset(dataset[i]))
     data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
@@ -268,7 +270,7 @@ dataset_cat_as_labels <- function(
             ifelse(is.na(.data$`___label___`),
                    .data$`___values___`,
                    .data$`___label___`)) %>%
-        select(.data$`___label___`)
+        select("___label___")
     
       # variable_names <- data_dict_temp[['Categories']]['name']
       
@@ -283,8 +285,8 @@ dataset_cat_as_labels <- function(
         select(-'___mlstr_name___')
       
       names(col) <- i 
-      col <- valueType_self_adjust(as_dataset(col))
-      data_dict_temp <- valueType_adjust(from = col,to = data_dict_temp)
+      data_dict_temp <- valueType_self_adjust(data_dict_temp)
+      col <- valueType_adjust(from = data_dict_temp, to = as_dataset(col))
       dataset[i] <- data_dict_apply(col, data_dict_temp)  
     }
   }
@@ -509,9 +511,6 @@ as_study <- function(object){
   if(!setequal(length(names(object)),length(unique(names(object))))){
     stop(call. = FALSE,
 "The name of your datasets are not unique. Please provide different names.")}
-
-  # check if listed datasets
-  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
   
   tryCatch(
     object <- object %>% lapply(
