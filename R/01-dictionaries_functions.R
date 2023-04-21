@@ -2312,13 +2312,13 @@ data dictionary")}
   # assess if tO is good
   test_vT <-
     data_dict[['Variables']] %>%
-    select(.data$`name`, .data$`typeof`) %>%
+    select('name', 'typeof') %>%
     mutate(`typeof` = replace_na(.data$`typeof`,"character")) %>%
     left_join(
       madshapR::valueType_list %>%
         select(
-          valueType = .data$`toValueType`,
-          typeof = .data$`toTypeof`) %>%
+          valueType = 'toValueType',
+          typeof = 'toTypeof') %>%
         distinct,
       by = "typeof")
   
@@ -2369,7 +2369,7 @@ investigations.",
       
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
-        rename_with(.cols = "labels", ~ all_of(lab_name_var))
+        rename_with(.cols = "labels", ~ lab_name_var)
       
     }else if(all(data_dict[['Categories']][['labels']] ==
                  data_dict[['Categories']][['name']])) {
