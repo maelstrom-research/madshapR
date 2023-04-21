@@ -1,7 +1,7 @@
 Package: madshapR
 Type: Package
 Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.0.0.1009
+Version: 1.0.0.1010
 Author: Guillaume Fabre
 Authors@R: 
     c(person(given = "Guillaume",
@@ -26,13 +26,14 @@ Imports: dplyr,
     rlang,
     stringr,
     crayon,
-    viridis,
     ggplot2,
+    tidytext,
+    forcats,
     lubridate,
+    janitor,
     knitr,
     opalr,
     bookdown,
-    grDevices,
     stats,
     DT,
     xfun,
@@ -41,7 +42,6 @@ Imports: dplyr,
     fs,
     utils,
     fabR
-Remotes: Guifabre/FabR
 Suggests: 
     rmarkdown
 URL: https://github.com/maelstrom-research/madshapR/
