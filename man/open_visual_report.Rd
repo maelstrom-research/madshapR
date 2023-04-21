@@ -20,25 +20,14 @@ provide dataset composition, with observation distribution and descriptive
 statistics.
 }
 \examples{
-\dontrun{
+{
 
 # use DEMO_files provided by the package
 library(dplyr)
 
-###### Example 1: Combine functions and visualize datasets.
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <-
-  DEMO_files$dataset_TOKYO \%>\%
-  valueType_adjust(from = data_dict) \%>\%
-  data_dict_apply(data_dict) 
-  
+###### Example 1: any data-frame (or tibble) can be a dataset by definition.
 tempdir <- tempdir()
-dataset_visualize(dataset,to = tempdir)
-open_visual_report(tempdir)
-
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-tempdir <- tempdir()
-dataset_visualize(iris,to = tempdir)
+dataset_visualize(iris, to = tempdir,.keep_files = TRUE, group_by = Species)
 open_visual_report(tempdir)
 
 }
