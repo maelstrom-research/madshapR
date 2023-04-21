@@ -214,7 +214,7 @@ dataset_evaluate <- function(
       mutate(condition = "[INFO] - possible duplicated participant") %>%
       mutate(
         `name_var` = 
-          ifelse(col_id == "___mlstr_index___",NA_character_,!! col_id)) %>%
+          ifelse(col_id == "___mlstr_index___",NA_character_, !! col_id)) %>%
       select(-"index") 
   }
   
