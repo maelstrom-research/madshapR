@@ -303,10 +303,10 @@ dataset_cat_as_labels <- function(
 }
 
 #' @title
-#' Create a study as a list of datasets
+#' Create a dossier as a list of datasets
 #'
 #' @description
-#' Assembles a study from datasets. A study is a list containing at least one
+#' Assembles a dossier from datasets. A dossier is a list containing at least one
 #' dataset, that can be used directly in keys functions of the package.
 #'
 #' @details
@@ -326,21 +326,21 @@ dataset_cat_as_labels <- function(
 #' attributes. The factors will be preserved. FALSE by default.
 #'
 #' @return
-#' A list of tibble(s), each of them identifying datasets in a study.
+#' A list of tibble(s), each of them identifying datasets in a dossier.
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #'
-#' ###### Example 1: datasets can be gathered into a study which is a list.
-#' study <- study_create(
+#' ###### Example 1: datasets can be gathered into a dossier which is a list.
+#' dossier <- dossier_create(
 #'  dataset_list = list(
 #'    dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
 #'    dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
 #'    
-#' ###### Example 2: any data-frame (or tibble) can be gathered into a study
-#' study_create(list(iris, mtcars))
+#' ###### Example 2: any data-frame (or tibble) can be gathered into a dossier
+#' dossier_create(list(iris, mtcars))
 #'    
 #' }
 #'
@@ -348,7 +348,7 @@ dataset_cat_as_labels <- function(
 #' @importFrom rlang .data
 #'
 #' @export
-study_create <- function(dataset_list, data_dict_apply = FALSE){
+dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 
   # tests input
   if(is.data.frame(dataset_list)) dataset_list <- list(dataset_list)
@@ -356,19 +356,19 @@ study_create <- function(dataset_list, data_dict_apply = FALSE){
     stop(call. = FALSE,
          '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
 
-  study <- dataset_list %>% lapply(FUN = function(x) {
+  dossier <- dataset_list %>% lapply(FUN = function(x) {
     if(data_dict_apply == TRUE){
       x <- tibble(data_dict_apply(x)) ; return(x)}else{return(x)}
   })
 
   fargs <- as.list(match.call(expand.dots = TRUE))
   if(is.null(names(dataset_list))){
-    names(study) <-
-      fabR::make_name_list(as.character(fargs['dataset_list']), study)}
+    names(dossier) <-
+      fabR::make_name_list(as.character(fargs['dataset_list']), dossier)}
 
-  study <- as_study(study)
+  dossier <- as_dossier(dossier)
 
-  return(study)
+  return(dossier)
 }
 
 #' @title
@@ -455,26 +455,26 @@ Please refer to documentation.")
 }
 
 #' @title
-#' Validate and coerce any object as study
+#' Validate and coerce any object as dossier
 #'
 #' @description
-#' Confirms that the input object is a valid study, and return it as a study
+#' Confirms that the input object is a valid dossier, and return it as a dossier
 #' with the appropriate mlstr_class attribute. This function mainly helps
 #' validate input within other functions of the package but could be used to
-#' check if a study is valid.
+#' check if a dossier is valid.
 #'
 #' @details
-#' A study must be a named list containing at least one data frame or
+#' A dossier must be a named list containing at least one data frame or
 #' data frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
 #' @seealso
 #' For a better assessment, please use [madshapR::dataset_evaluate()].
 #'
-#' @param object A potential study to be coerced.
+#' @param object A potential dossier to be coerced.
 #'
 #' @return
-#' A list of tibble(s), each of them identifying datasets in a study.
+#' A list of tibble(s), each of them identifying datasets in a dossier.
 #'
 #' @examples
 #' {
@@ -482,12 +482,12 @@ Please refer to documentation.")
 #' # use DEMO_files provided by the package
 #' library(stringr)
 #'
-#' ###### Example 1: a dataset list is a study by definition.
-#' as_study(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+#' ###### Example 1: a dataset list is a dossier by definition.
+#' as_dossier(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
 #'    
-#' ###### Example 2: any list of data-frame (or tibble) can be a study by 
+#' ###### Example 2: any list of data-frame (or tibble) can be a dossier by 
 #' # definition.
-#' as_study(list(dataset_1 = iris, dataset_2 = mtcars))
+#' as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 #' 
 #'}
 #'
@@ -495,7 +495,7 @@ Please refer to documentation.")
 #' @importFrom rlang .data
 #'
 #' @export
-as_study <- function(object){
+as_dossier <- function(object){
 
   # check if names in object exist
   name_objs <-
@@ -516,14 +516,14 @@ as_study <- function(object){
     object <- object %>% lapply(
       FUN = function(x) as_dataset(x, attributes(x)$`Mlstr::col_id`)),
     error = function(x) stop(call. = FALSE,
-"\n\nThis object is not a study as defined by Maelstrom standards, which must be 
+"\n\nThis object is not a dossier as defined by Maelstrom standards, which must be 
 exclusively a list of (at least one) dataset(s). Each dataset may have column(s)
 which refer to key identifier of the dataset. If attributed, this(ese) columns 
 must be present in the dataset.
 
 Please refer to documentation."))
 
-  attributes(object)$`Mlstr::class` <- "study"
+  attributes(object)$`Mlstr::class` <- "dossier"
   return(object)
 
 }
@@ -586,19 +586,19 @@ is_dataset <- function(object){
 }
 
 #' @title
-#' Evaluate if any object is a study or not
+#' Evaluate if any object is a dossier or not
 #'
 #' @description
-#' Confirms whether the input object is a valid study.
+#' Confirms whether the input object is a valid dossier.
 #' This function mainly helps validate input within other functions of the
-#' package but could be used to check if a study is valid.
+#' package but could be used to check if a dossier is valid.
 #'
 #' @details
-#' A study must be a named list containing at least one data frame or
+#' A dossier must be a named list containing at least one data frame or
 #' data frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
-#' @param object A potential study to be evaluated.
+#' @param object A potential dossier to be evaluated.
 #'
 #' @return
 #' A logical.
@@ -607,12 +607,12 @@ is_dataset <- function(object){
 #' {
 #' 
 #' # use DEMO_files provided by the package
-#' # Any list of data-frame (or tibble) can be a study by definition.
+#' # Any list of data-frame (or tibble) can be a dossier by definition.
 #' library(stringr)
 #' 
-#' is_study(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
-#' is_study(list(dataset_1 = iris, dataset_2 = mtcars))
-#' is_study(iris)
+#' is_dossier(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+#' is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
+#' is_dossier(iris)
 #' 
 #'}
 #'
@@ -620,11 +620,11 @@ is_dataset <- function(object){
 #' @importFrom rlang .data
 #'
 #' @export
-is_study <- function(object){
+is_dossier <- function(object){
 
   object <- object
-  # if only the study is given in parameter
-  test <- fabR::silently_run(try(as_study(object),silent = TRUE))
+  # if only the dossier is given in parameter
+  test <- fabR::silently_run(try(as_dossier(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 

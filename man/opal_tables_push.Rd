@@ -6,7 +6,7 @@
 \usage{
 opal_tables_push(
   opal,
-  study = NULL,
+  dossier = NULL,
   data_dict = NULL,
   dataset = NULL,
   table_name = NULL,
@@ -18,7 +18,7 @@ opal_tables_push(
 \arguments{
 \item{opal}{Opal login attributes.}
 
-\item{study}{List of tibble, each of them being study specific datasets.}
+\item{dossier}{List of tibble, each of them being datasets.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
@@ -42,7 +42,7 @@ conflict). Default is FALSE.}
 A table in Opal.
 }
 \description{
-Uploads a study or dataset(s) from local environment to Opal
+Uploads a dossier or dataset(s) from local environment to Opal
 environment. It is a wrapper of \code{\link[opalr:opal.table_create]{opalr::opal.table_create()}},
 \code{\link[opalr:opal.table_save]{opalr::opal.table_save()}} and \code{\link[opalr:opal.table_dictionary_update]{opalr::opal.table_dictionary_update()}}.
 }
@@ -59,7 +59,7 @@ to interact with their Opal environment.
 library(opalr)
 library(stringr)
 
-study <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+dossier <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
@@ -70,16 +70,16 @@ try(opal_project_create(opal, tempdir))
 try( 
   opal_tables_push(
   opal,
-  dataset = study$dataset_MELBOURNE_1,
+  dataset = dossier$dataset_MELBOURNE_1,
   table_name = 'dataset_MELBOURNE_1',
   project_name = tempdir,
   .force = TRUE,
   .overwrite = TRUE))
   
-###### Example 2: push a study in a project.
+###### Example 2: push a dossier in a project.
 try(
   opal_tables_push(
-  opal, study, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  opal, dossier, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 
 }
 

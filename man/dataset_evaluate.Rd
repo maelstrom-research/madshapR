@@ -2,7 +2,7 @@
 % Please edit documentation in R/06-data_evaluate.R
 \name{dataset_evaluate}
 \alias{dataset_evaluate}
-\title{Generate a report as an Excel spreadsheet of a study-specific dataset}
+\title{Generate a report as an Excel spreadsheet of a dataset}
 \usage{
 dataset_evaluate(
   dataset,
@@ -23,7 +23,7 @@ associated dataset. Automatically generated if not provided.}
 identifying the scheme used for variables classification as a tibble.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{madshapR::study_evaluate()}).}
+(internally used in the function \code{madshapR::dossier_evaluate()}).}
 
 \item{as_mlstr_data_dict}{Whether the output data dictionary has a simple
 data dictionary structure or not (meaning has a Maelstrom data dictionary
@@ -31,7 +31,7 @@ structure, compatible with Maelstrom ecosystem such as Opal environment).
 FALSE by default.}
 }
 \value{
-A list of tibbles of report for one study-specific data dictionary.
+A list of tibbles of report for one data dictionary.
 }
 \description{
 Generates an Excel spreadsheet report for a dataset
@@ -89,5 +89,5 @@ dataset_evaluate(iris)
 
 }
 \seealso{
-\code{\link[=study_evaluate]{study_evaluate()}}
+\code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }

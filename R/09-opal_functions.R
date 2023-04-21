@@ -211,7 +211,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' Upload datasets into an Opal environment as tables in an Opal project
 #'
 #' @description
-#' Uploads a study or dataset(s) from local environment to Opal
+#' Uploads a dossier or dataset(s) from local environment to Opal
 #' environment. It is a wrapper of [opalr::opal.table_create()],
 #' [opalr::opal.table_save()] and [opalr::opal.table_dictionary_update()].
 #'
@@ -226,7 +226,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' information.
 #'
 #' @param opal Opal login attributes.
-#' @param study List of tibble, each of them being study specific datasets.
+#' @param dossier List of tibble, each of them being datasets.
 #' @param dataset A tibble identifying the input data observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
@@ -250,7 +250,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' library(opalr)
 #' library(stringr)
 #'
-#' study <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#' dossier <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
 #'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
@@ -261,16 +261,16 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' try( 
 #'   opal_tables_push(
 #'   opal,
-#'   dataset = study$dataset_MELBOURNE_1,
+#'   dataset = dossier$dataset_MELBOURNE_1,
 #'   table_name = 'dataset_MELBOURNE_1',
 #'   project_name = tempdir,
 #'   .force = TRUE,
 #'   .overwrite = TRUE))
 #'   
-#' ###### Example 2: push a study in a project.
+#' ###### Example 2: push a dossier in a project.
 #' try(
 #'   opal_tables_push(
-#'   opal, study, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+#'   opal, dossier, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 #' 
 #' }
 #'
@@ -280,7 +280,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' @export
 opal_tables_push <- function(
     opal,
-    study = NULL,
+    dossier = NULL,
     data_dict = NULL,
     dataset = NULL,
     table_name = NULL,
@@ -289,14 +289,14 @@ opal_tables_push <- function(
     .overwrite = FALSE){
 
   # check on arguments
-  if(!is.null(dataset)        & !is.null(study))
+  if(!is.null(dataset)        & !is.null(dossier))
     stop(call. = FALSE,"Too many argments entered")
-  if(!is.null(data_dict)      & !is.null(study))
+  if(!is.null(data_dict)      & !is.null(dossier))
     stop(call. = FALSE,"Too many argments entered")
-  if(!is.null(table_name)     & !is.null(study))
+  if(!is.null(table_name)     & !is.null(dossier))
     stop(call. = FALSE,"Too many argments entered")
 
-  if(is.null(dataset) & is.null(data_dict) & is.null(study))
+  if(is.null(dataset) & is.null(data_dict) & is.null(dossier))
     stop(call. = FALSE,"At least one argument is missing")
 
   if((!is.null(dataset) | !is.null(data_dict)) & is.null(table_name))
@@ -307,15 +307,15 @@ opal_tables_push <- function(
   message("Verification of input format.")
   # tests
   if(!is.null(dataset))  as_dataset(dataset,attributes(dataset)$`Mlstr::col_id`)
-  if(!is.null(study))    as_study(study)
+  if(!is.null(dossier))    as_dossier(dossier)
   if(!is.null(data_dict))data_dict <- as_mlstr_data_dict(data_dict)
 
   project <- list()
-  if(!is.null(study)) {
-    for(i in names(study)){
+  if(!is.null(dossier)) {
+    for(i in names(dossier)){
       # stop()}
-      project[[i]]$`dataset`   <- study[[i]]
-      project[[i]]$`data_dict` <- study[[i]] %>% data_dict_extract()
+      project[[i]]$`dataset`   <- dossier[[i]]
+      project[[i]]$`data_dict` <- dossier[[i]] %>% data_dict_extract()
   }}
 
   if(!is.null(dataset) & !is.null(data_dict)){
@@ -394,10 +394,10 @@ opal_tables_push <- function(
 }
 
 #' @title
-#' Download tables from an Opal project as a study
+#' Download tables from an Opal project as a dossier
 #'
 #' @description
-#' Downloads a study or dataset(s) from Opal project to local
+#' Downloads a dossier or dataset(s) from Opal project to local
 #' environment. It is a wrapper of [opalr::opal.table_get()] and
 #' [opalr::opal.table_dictionary_get()].
 #'
@@ -416,7 +416,7 @@ opal_tables_push <- function(
 #' @param table_list A vector character string specifying Opal tables name.
 #' @param content A vector of character string which indicates if the
 #' function returns a dataset, or data dictionary. Default is 'dataset'.
-#' @param keep_as_study whether to return a study or a dataset if there is only
+#' @param keep_as_dossier whether to return a dossier or a dataset if there is only
 #' one table. TRUE by default, if FALSE returns dataset.
 #' @param .remove_id whether to return the id column created in Opal or not. 
 #' TRUE by default.
@@ -432,7 +432,7 @@ opal_tables_push <- function(
 #' library(opalr)
 #' library(stringr)
 #'
-#' study <- 
+#' dossier <- 
 #'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
@@ -444,14 +444,14 @@ opal_tables_push <- function(
 #' 
 #' try(
 #'   opal_tables_push(
-#'   opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+#'   opal, dossier,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 #'   
 #' ###### Example 1: pull a table from a project.
 #' try(
 #'   opal_tables_pull(
 #'   opal,project = tempdir,table_list = 'dataset_MELBOURNE_1'))
 #' 
-#' ###### Example 2: pull a study from a project.
+#' ###### Example 2: pull a dossier from a project.
 #' try(
 #'   opal_tables_pull(
 #'   opal, project = tempdir))
@@ -472,7 +472,7 @@ opal_tables_pull <- function(
     project,
     table_list = NULL,
     content = c("dataset","data_dict"),
-    keep_as_study = TRUE,
+    keep_as_dossier = TRUE,
     .remove_id = FALSE){
 
   invisible(opal.execute(opal,"invisible(NULL)"))
@@ -481,14 +481,14 @@ opal_tables_pull <- function(
     stop(call. = FALSE,"Too many argments entered")
   if(length(project) == 1 & project[1] == "")
     stop(call. = FALSE,"\nYou must provide an Opal project\n")
-  if(!is.logical(keep_as_study))
+  if(!is.logical(keep_as_dossier))
     stop(call. = FALSE,
-         '`keep_as_study` must be TRUE or FALSE (TRUE by default)')
+         '`keep_as_dossier` must be TRUE or FALSE (TRUE by default)')
   if(!is.logical(.remove_id))
     stop(call. = FALSE,
          '`.keep_id` must be TRUE or FALSE (TRUE by default)')
 
-  study <- list()
+  dossier <- list()
 
   if(is.null(table_list)){
     table_list <- 
@@ -555,42 +555,42 @@ opal_tables_pull <- function(
         as_dataset(col_id = names(table_i)[1])
     }
     
-    study_table_i <- list(dataset = table_i, data_dict = data_dict_i)
-    study_table_i <- list(study_table_i)
-    names(study_table_i) <- i
+    dossier_table_i <- list(dataset = table_i, data_dict = data_dict_i)
+    dossier_table_i <- list(dossier_table_i)
+    names(dossier_table_i) <- i
     
-    study <- append(study, study_table_i)
+    dossier <- append(dossier, dossier_table_i)
 }
   # only data_dict:
   if("dataset" %in% content == FALSE){
 
     data_dict_list <- 
-      study %>% lapply(function(x){
+      dossier %>% lapply(function(x){
         x <- x[['data_dict']]
         return(x)})
 
-    if(length(data_dict_list) == 1 & keep_as_study == FALSE)
+    if(length(data_dict_list) == 1 & keep_as_dossier == FALSE)
       data_dict_list <- data_dict_list[[1]]
 
     return(data_dict_list)}
 
   # if datasets:
   dataset_list <- 
-    study %>% lapply(function(x){
+    dossier %>% lapply(function(x){
       x <- x[['dataset']]
       return(x)}) %>%
-    as_study()
+    as_dossier()
   
-  if(length(dataset_list) == 1 & keep_as_study == FALSE)
+  if(length(dataset_list) == 1 & keep_as_dossier == FALSE)
     dataset_list <- dataset_list[[1]]
   return(dataset_list)
   
-  # # # if only one study.table
-  # # if(length(study) == 1) study <- study[[1]]
-  # study <- as_study(study)
-  # if(keep_as_study == FALSE) study <- study[[1]]
+  # # # if only one dossier.table
+  # # if(length(dossier) == 1) dossier <- dossier[[1]]
+  # dossier <- as_dossier(dossier)
+  # if(keep_as_dossier == FALSE) dossier <- dossier[[1]]
   # 
-  # return(study)
+  # return(dossier)
 }
 
 #' @title
@@ -996,7 +996,7 @@ opal_taxonomy_get <- function(opal){
 #' library(opalr)
 #' library(stringr)
 #'
-#' study <- 
+#' dossier <- 
 #'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
@@ -1008,7 +1008,7 @@ opal_taxonomy_get <- function(opal){
 #' 
 #' try(
 #'   opal_tables_push(
-#'   opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+#'   opal, dossier,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 #' 
 #' # get the data dictionary and reshape it.
 #'  data_dict <- 

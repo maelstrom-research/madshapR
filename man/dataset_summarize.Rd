@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{dataset_summarize}
 \alias{dataset_summarize}
-\title{Generate a report as an Excel spreadsheet of a study-specific dataset}
+\title{Generate a report as an Excel spreadsheet of a dossier (dataset list)}
 \usage{
 dataset_summarize(
   dataset,
@@ -28,13 +28,13 @@ by this column.}
 identifying the scheme used for variables classification as a tibble.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{madshapR::study_evaluate()}).}
+(internally used in the function \code{madshapR::dossier_evaluate()}).}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 }
 \value{
-A list of tibbles of report for one study-specific data dictionary.
+A list of tibbles of report for one data dictionary.
 }
 \description{
 Generates an Excel spreadsheet report for a dataset
@@ -98,5 +98,5 @@ dataset_summarize(
 
 }
 \seealso{
-\code{\link[=study_evaluate]{study_evaluate()}}
+\code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }

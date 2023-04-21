@@ -41,7 +41,7 @@ and/or any taxonomy provided.
 library(opalr)
 library(stringr)
 
-study <- 
+dossier <- 
   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
@@ -53,7 +53,7 @@ try(opal_project_create(opal, tempdir))
 
 try(
   opal_tables_push(
-  opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  opal, dossier,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 
 # get the data dictionary and reshape it.
  data_dict <- 

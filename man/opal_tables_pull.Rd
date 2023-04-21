@@ -2,14 +2,14 @@
 % Please edit documentation in R/09-opal_functions.R
 \name{opal_tables_pull}
 \alias{opal_tables_pull}
-\title{Download tables from an Opal project as a study}
+\title{Download tables from an Opal project as a dossier}
 \usage{
 opal_tables_pull(
   opal,
   project,
   table_list = NULL,
   content = c("dataset", "data_dict"),
-  keep_as_study = TRUE,
+  keep_as_dossier = TRUE,
   .remove_id = FALSE
 )
 }
@@ -23,7 +23,7 @@ opal_tables_pull(
 \item{content}{A vector of character string which indicates if the
 function returns a dataset, or data dictionary. Default is 'dataset'.}
 
-\item{keep_as_study}{whether to return a study or a dataset if there is only
+\item{keep_as_dossier}{whether to return a dossier or a dataset if there is only
 one table. TRUE by default, if FALSE returns dataset.}
 
 \item{.remove_id}{whether to return the id column created in Opal or not.
@@ -34,7 +34,7 @@ R objects (tibbles and list of tibbles) representing tables and their
 respective data dictionary.
 }
 \description{
-Downloads a study or dataset(s) from Opal project to local
+Downloads a dossier or dataset(s) from Opal project to local
 environment. It is a wrapper of \code{\link[opalr:opal.table_get]{opalr::opal.table_get()}} and
 \code{\link[opalr:opal.table_dictionary_get]{opalr::opal.table_dictionary_get()}}.
 }
@@ -51,7 +51,7 @@ to interact with their Opal environment.
 library(opalr)
 library(stringr)
 
-study <- 
+dossier <- 
   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
@@ -63,14 +63,14 @@ try(opal_project_create(opal, tempdir))
 
 try(
   opal_tables_push(
-  opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  opal, dossier,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
   
 ###### Example 1: pull a table from a project.
 try(
   opal_tables_pull(
   opal,project = tempdir,table_list = 'dataset_MELBOURNE_1'))
 
-###### Example 2: pull a study from a project.
+###### Example 2: pull a dossier from a project.
 try(
   opal_tables_pull(
   opal, project = tempdir))

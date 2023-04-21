@@ -48,8 +48,8 @@ open the file in browser, open 'index.html'. Or use
 \code{\link[=open_visual_report]{open_visual_report()}}
 }
 \description{
-Generates a visual report for a study-specific dataset in an HTML
-bookdown document, showing descriptive statistics for each study-specific
+Generates a visual report for a dataset in an HTML
+bookdown document, showing descriptive statistics for each
 variable to facilitate the assessment of input data. Statistics and figures
 are generated according to their valueType.
 This report can be used to assist the user in the assessment of the data
@@ -59,7 +59,7 @@ provide dataset composition, with observation distribution and descriptive
 statistics.
 }
 \details{
-A study must be a named list containing at least one data frame or
+A dossier must be a named list containing at least one data frame or
 data frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
 A data dictionary-like structure must be a list of at least one or two

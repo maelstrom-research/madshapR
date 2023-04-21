@@ -17,7 +17,7 @@ containing errors}
 \item{DEMO_data_processing_elements - work in progress}{Data processing
 element in construction}
 \item{DEMO_dataschema}{DataSchema used, combined with data processing
-elements and study specific material}
+elements and study-specific material}
 \item{dd_MELBOURNE_1_format_maelstrom}{Data dictionary (1) of Melbourne
 dataset}
 \item{dd_MELBOURNE_2_format_maelstrom}{Data dictionary (2) of Melbourne

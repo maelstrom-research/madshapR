@@ -1,5 +1,5 @@
 #' @title
-#' Generate a report as an Excel spreadsheet of a study-specific dataset
+#' Generate a report as an Excel spreadsheet of a dossier (dataset list)
 #'
 #' @description
 #' Generates an Excel spreadsheet report for a dataset
@@ -44,15 +44,15 @@
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .dataset_name A character string specifying the name of the dataset
-#' (internally used in the function `madshapR::study_evaluate()`).
+#' (internally used in the function `madshapR::dossier_evaluate()`).
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @seealso
-#' [madshapR::study_evaluate()]
+#' [madshapR::dossier_evaluate()]
 #'
 #' @return
-#' A list of tibbles of report for one study-specific data dictionary.
+#' A list of tibbles of report for one data dictionary.
 #'
 #' @examples
 #' {
@@ -617,11 +617,11 @@ dataset_summarize <- function(
 }
 
 #' @title
-#' Generate an Excel spreadsheet report of a study-specific datasets list
+#' Generate an Excel spreadsheet report of a dossier (dataset list)
 #'
 #' @description
-#' Generates an Excel spreadsheet report for a study-specific dataset
-#' list (or study) showing descriptive statistics for each variable to
+#' Generates an Excel spreadsheet report for a dataset
+#' list (or dossier) showing descriptive statistics for each variable to
 #' facilitate the assessment of input data. Statistics are generated according
 #' to their valueType.
 #' This report can be used to assist the user in the assessment of the data
@@ -630,7 +630,7 @@ dataset_summarize <- function(
 #' dataset composition, with observation distribution and descriptive statistics.
 #'
 #' @details
-#' A study must be a named list containing at least one data frame or
+#' A dossier must be a named list containing at least one data frame or
 #' data frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
@@ -657,14 +657,14 @@ dataset_summarize <- function(
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param study List of tibble, each of them being study specific datasets.
+#' @param dossier List of tibble, each of them being datasets.
 #' @param taxonomy A data frame or data frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
 #'
 #' @return
-#' A list of tibbles of report for each study-specific dataset.
+#' A list of tibbles of report for each dataset.
 #'
 #' @examples
 #' {
@@ -673,14 +673,14 @@ dataset_summarize <- function(
 #' library(dplyr)
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
-#' study <- 
+#' dossier <- 
 #'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")] %>%
 #'   lapply(valueType_self_adjust)
 #' 
-#' study_summarize(study)
+#' dossier_summarize(dossier)
 #' 
 #' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' study_summarize(list(iris = iris, mtcars = mtcars))
+#' dossier_summarize(list(iris = iris, mtcars = mtcars))
 #' }
 #'
 #' @import dplyr stringr tidyr
@@ -688,32 +688,33 @@ dataset_summarize <- function(
 #' @importFrom rlang .data
 #'
 #' @export
-study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
+dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
   
   # amelioration :rajouter taxonomy
   
   # check on arguments
-  as_study(study)
+  as_dossier(dossier)
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
   
   report_list <-
-    vector(mode = "list", length = length(names(study)))
-  names(report_list) <- names(study)
+    vector(mode = "list", length = length(names(dossier)))
+  names(report_list) <- names(dossier)
   
   message(crayon::bold(
-    "- STUDY SUMMARY: -------------------------------------------------------"))
+    "- DOSSIER SUMMARY: -----------------------------------------------------"))
   
-  for(i in seq_len(length(study))){
+  for(i in seq_len(length(dossier))){
     # stop()}
     report_list[[i]] <-
       dataset_summarize(
-        dataset = study[[i]],
+        dataset = dossier[[i]],
         taxonomy = taxonomy,
-        .dataset_name = names(study[i]),
+        .dataset_name = names(dossier[i]),
         valueType_guess = valueType_guess)
+    
   }
   
   return(report_list)

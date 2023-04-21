@@ -2,7 +2,7 @@
 % Please edit documentation in R/06-data_evaluate.R
 \name{data_dict_evaluate}
 \alias{data_dict_evaluate}
-\title{Generate a report as an Excel spreadsheet of a study-specific data dictionary}
+\title{Generate a report as an Excel spreadsheet of a data dictionary}
 \usage{
 data_dict_evaluate(data_dict, taxonomy = NULL, as_mlstr_data_dict = TRUE)
 }
@@ -18,7 +18,7 @@ structure, compatible with Maelstrom ecosystem such as Opal environment).
 FALSE by default.}
 }
 \value{
-A list of tibbles of report for one study-specific data dictionary.
+A list of tibbles of report for one data dictionary.
 }
 \description{
 Generates an Excel spreadsheet report for a data dictionary
