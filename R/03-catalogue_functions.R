@@ -199,6 +199,7 @@ valueType_self_adjust <- function(...){
 
   if(!is_dataset(...) & is_data_dict(...)){
     data_dict <- as_data_dict_shape(...)
+    attributes(data_dict)$`Mlstr::class` <- attributes(...)$`Mlstr::class`
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
       warning(
