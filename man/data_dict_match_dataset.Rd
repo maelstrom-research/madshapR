@@ -2,17 +2,17 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_match_dataset}
 \alias{data_dict_match_dataset}
-\title{Inner join between any data and data dict variables}
+\title{Inner join between any dataset and data_dict variables}
 \usage{
 data_dict_match_dataset(
-  data,
+  dataset,
   data_dict,
   data_dict_apply = FALSE,
-  output = c("data", "data_dict")
+  output = c("dataset", "data_dict")
 )
 }
 \arguments{
-\item{data}{A tibble identifying the input data observations.}
+\item{dataset}{A tibble identifying the input dataset observations.}
 
 \item{data_dict}{A list of tibble(s) representing meta data.}
 
@@ -36,7 +36,7 @@ both in a list.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -49,9 +49,9 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
+A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+can be associated to a data dictionary. If not, a minimum workable data dictionary
+can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
 Maelstrom research standards, and its content can be evaluated accordingly,
@@ -63,9 +63,9 @@ full completeness is mandatory.
 
 # use DEMO_files provided by the package
 library(dplyr)
-data <- DEMO_files$dataset_MELBOURNE_1 \%>\% select(-1)
+dataset <- DEMO_files$dataset_MELBOURNE_1 \%>\% select(-1)
 data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
-data_dict_match_dataset(data, data_dict)
+data_dict_match_dataset(dataset, data_dict)
 
 }
 

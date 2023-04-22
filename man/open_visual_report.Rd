@@ -13,7 +13,7 @@ folder in users environment) to be opened.}
 \description{
 The visual report previously generated in an HTML bookdown document can be
 opened using this short-cut function.
-This report can be used to assist the user in the assessment of the data
+This report can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation. The summaries and figures associated
 provide dataset composition, with observation distribution and descriptive

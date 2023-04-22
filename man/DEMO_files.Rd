@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{list}}{
 
-A list with 22 elements used for testing purpose (data frames and lists):
+A list with 22 elements used for testing purpose (data-frames and lists):
 
 \describe{
 \item{DEMO_data_processing_elements - final}{Data processing element
@@ -42,8 +42,8 @@ format}
 \item{dataset_TOKYO - ERROR WITH DATA}{Dataset of Tokyo containing errors}
 \item{dataset_TOKYO}{Dataset of Tokyo}
 \item{PARIS_taxonomy}{Taxonomy specific to Paris dataset}
-\item{Mlstr_taxonomy}{Maelstrom Taxonomy}
-\item{Opal_taxonomy}{Opal Taxonomy}
+\item{taxonomy_mlstr}{Maelstrom Taxonomy}
+\item{taxonomy_opal}{Opal Taxonomy}
 ...
 }
 }

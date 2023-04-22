@@ -19,13 +19,13 @@ name is in the 'Categories' but not present in the main list of variable
 names in 'Variables' component. It also reports any categorical variable
 which possible observation (the combination of 'variable' and 'name' in
 'Categories') is not unique.
-This tibble can be used to assist the user in the assessment of the data
+This tibble can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'

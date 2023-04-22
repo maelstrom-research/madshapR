@@ -7,7 +7,7 @@
 dataset_cat_as_labels(dataset, data_dict = NULL, col_names = names(dataset))
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
+\item{dataset}{A tibble identifying the input dataset observations associated to
 its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
@@ -26,7 +26,7 @@ categories in the data dictionary.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -39,9 +39,9 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
+A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+can be associated to a data dictionary. If not, a minimum workable data dictionary
+can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
 Maelstrom research standards, and its content can be evaluated accordingly,
@@ -53,9 +53,9 @@ full completeness is mandatory.
 
 # use DEMO_files provided by the package
 
-data <- DEMO_files$dataset_TOKYO
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <- data_dict_apply(data,data_dict)
+dataset <- DEMO_files$dataset_TOKYO
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <- data_dict_apply(dataset,data_dict)
 dataset_cat_as_labels(dataset)
 
 }

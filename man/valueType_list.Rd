@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{tibble}}{
 
-A data frame with 12 rows and 6 columns:
+A data-frame with 12 rows and 6 columns:
 \describe{
 \item{valueType}{data type as described in Opal}
 \item{typeof}{data type provided by base::typeof}

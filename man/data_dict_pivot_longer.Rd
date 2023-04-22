@@ -10,7 +10,7 @@ data_dict_pivot_longer(data_dict, taxonomy = NULL)
 \item{data_dict}{A list of tibble(s) representing meta data to be
 transformed.}
 
-\item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
+\item{taxonomy}{A data-frame or data-frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
 }
 \value{
@@ -22,12 +22,12 @@ equivalent. If any Opal taxonomy is provided, the correspondent columns in
 the data dictionary will be converted to a format that contains fewer columns
 than an Opal format to work with. This operation is equivalent to perform a
 \code{\link[tidyr:pivot_longer]{tidyr::pivot_longer()}} to these columns following the taxonomy structure
-provided. The data dictionaries data dictionary provided must respect certain
+provided. The data dictionary provided must respect certain
 constrains such as name uniqueness across the variables names.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -40,7 +40,7 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy

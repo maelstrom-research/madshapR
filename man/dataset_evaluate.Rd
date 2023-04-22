@@ -9,23 +9,23 @@ dataset_evaluate(
   data_dict = NULL,
   taxonomy = NULL,
   .dataset_name = NULL,
-  as_mlstr_data_dict = TRUE
+  as_data_dict_mlstr = TRUE
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
+\item{dataset}{A tibble identifying the input dataset observations associated to
 its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
+\item{taxonomy}{A data-frame or data-frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
 (internally used in the function \code{madshapR::dossier_evaluate()}).}
 
-\item{as_mlstr_data_dict}{Whether the output data dictionary has a simple
+\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
 data dictionary structure or not (meaning has a Maelstrom data dictionary
 structure, compatible with Maelstrom ecosystem such as Opal environment).
 FALSE by default.}
@@ -35,15 +35,15 @@ A list of tibbles of report for one data dictionary.
 }
 \description{
 Generates an Excel spreadsheet report for a dataset
-for each variable to facilitate the assessment of input data.
-This report can be used to assist the user in the assessment of the data
+for each variable to facilitate the assessment of input dataset.
+This report can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy, or standard evaluation. The summary associated provides dataset
 composition, with observation distribution and descriptive statistics.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -56,7 +56,7 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy
@@ -73,9 +73,9 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 ###### Example 1: a dataset associated to its data dictionary. These can be
 # assessed combined
-data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
 data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-dataset <- data_dict_apply(data, data_dict)
+dataset <- data_dict_apply(dataset, data_dict)
 dataset_evaluate(dataset)
 
 ###### Example 2: a dataset not associated to a data dictionary. These can be

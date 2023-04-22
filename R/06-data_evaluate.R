@@ -3,15 +3,15 @@
 #'
 #' @description
 #' Generates an Excel spreadsheet report for a dataset
-#' for each variable to facilitate the assessment of input data.
-#' This report can be used to assist the user in the assessment of the data
+#' for each variable to facilitate the assessment of input dataset.
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides dataset
 #' composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -24,7 +24,7 @@
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+#' A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
@@ -34,15 +34,15 @@
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
+#' @param taxonomy A data-frame or data-frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .dataset_name A character string specifying the name of the dataset
 #' (internally used in the function `madshapR::dossier_evaluate()`).
-#' @param as_mlstr_data_dict Whether the output data dictionary has a simple
+#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
 #' structure, compatible with Maelstrom ecosystem such as Opal environment).
 #' FALSE by default.
@@ -60,9 +60,9 @@
 #' 
 #' ###### Example 1: a dataset associated to its data dictionary. These can be
 #' # assessed combined
-#' data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
 #' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-#' dataset <- data_dict_apply(data, data_dict)
+#' dataset <- data_dict_apply(dataset, data_dict)
 #' dataset_evaluate(dataset)
 #' 
 #' ###### Example 2: a dataset not associated to a data dictionary. These can be
@@ -84,26 +84,26 @@ dataset_evaluate <- function(
     data_dict = NULL,
     taxonomy = NULL,
     .dataset_name = NULL,
-    as_mlstr_data_dict = TRUE){
+    as_data_dict_mlstr = TRUE){
 
   fargs <- as.list(match.call(expand.dots = TRUE))
 
   # check on arguments : dataset
   as_dataset(dataset) # no col_id
   
-  if(!is.logical(as_mlstr_data_dict))
+  if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
-  # check on arguments : data dict
+  # check on arguments : data_dict
   if(is.null(data_dict)) {
     data_dict <-
       try({data_dict_extract(
-        data = dataset,
-        as_mlstr_data_dict = as_mlstr_data_dict)},silent = TRUE)
+        dataset = dataset,
+        as_data_dict_mlstr = as_data_dict_mlstr)},silent = TRUE)
 
     if(class(data_dict)[1] == "try-error") data_dict <-
-        data_dict_extract(data = dataset,as_mlstr_data_dict = FALSE)}
+        data_dict_extract(dataset = dataset,as_data_dict_mlstr = FALSE)}
 
   as_data_dict_shape(data_dict)
   
@@ -117,7 +117,7 @@ dataset_evaluate <- function(
     lapply(function(x) x %>% mutate(across(everything(),as.character)))
 
   # add label, valueType and missing if don't exist
-  if(as_mlstr_data_dict == TRUE){
+  if(as_data_dict_mlstr == TRUE){
 
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
@@ -151,7 +151,7 @@ dataset_evaluate <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
 
   # creation of the structure of the report
-  report <- data_dict_evaluate(data_dict,as_mlstr_data_dict= as_mlstr_data_dict)
+  report <- data_dict_evaluate(data_dict,as_data_dict_mlstr= as_data_dict_mlstr)
   
   message(
     "- DATASET ASSESSMENT: ",
@@ -253,7 +253,7 @@ dataset_evaluate <- function(
     filter(!is.na(.data$`name_var`)) %>%
     ungroup()
   
-  if(as_mlstr_data_dict == TRUE){
+  if(as_data_dict_mlstr == TRUE){
     message(
       "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-
@@ -315,20 +315,20 @@ dataset_evaluate <- function(
 #' @description
 #' Generates an Excel spreadsheet report for a a dossier (dataset list)
 #' list (or dossier) showing descriptive statistics for each variable to
-#' facilitate the assessment of input data. Statistics are generated according
+#' facilitate the assessment of input dataset. Statistics are generated according
 #' to their valueType.
-#' This report can be used to assist the user in the assessment of the data
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides
 #' dataset composition, with observation distribution and descriptive statistics.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
+#' A dossier must be a named list containing at least one data-frame or
+#' data-frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -341,9 +341,9 @@ dataset_evaluate <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -351,9 +351,9 @@ dataset_evaluate <- function(
 #' full completeness is mandatory.
 #'
 #' @param dossier List of tibble, each of them being datasets.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
+#' @param taxonomy A data-frame or data-frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
-#' @param as_mlstr_data_dict Whether the output data dictionary has a simple
+#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
 #' structure, compatible with Maelstrom ecosystem such as Opal environment).
 #' TRUE by default.
@@ -381,16 +381,16 @@ dataset_evaluate <- function(
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #' @export
-dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE){
+dossier_evaluate <- function(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE){
   
   # amelioration :rajouter taxonomy
   
   # check on arguments
   as_dossier(dossier)
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
-  if(!is.logical(as_mlstr_data_dict))
+  if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
   report_list <-
     vector(mode = "list", length = length(names(dossier)))
@@ -407,7 +407,7 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE
         dataset = dossier[[i]],
         taxonomy = taxonomy,
         .dataset_name = names(dossier[i]),
-        as_mlstr_data_dict = as_mlstr_data_dict)
+        as_data_dict_mlstr = as_data_dict_mlstr)
   }
   
   return(report_list)
@@ -418,15 +418,15 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE
 #'
 #' @description
 #' Generates an Excel spreadsheet report for a data dictionary
-#' for each variable to facilitate the assessment of input data.
-#' This report can be used to assist the user in the assessment of the data
+#' for each variable to facilitate the assessment of input dataset.
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy, or standard evaluation. The summary associated provides data
+#' and taxonomy, or standard evaluation. The summary associated provides dataset
 #' dictionary composition, and evaluates coherence between elements.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -439,7 +439,7 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+#' A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
@@ -452,7 +452,7 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #' @param taxonomy A tibble identifying the scheme used for variables
 #' classification as a tibble.
-#' @param as_mlstr_data_dict Whether the output data dictionary has a simple
+#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
 #' structure, compatible with Maelstrom ecosystem such as Opal environment).
 #' FALSE by default.
@@ -466,8 +466,8 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE
 #' # use DEMO_files provided by the package
 #'
 #' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
-#' data_dict_evaluate(data_dict,as_mlstr_data_dict = FALSE)
-#' data_dict_evaluate(data_dict,as_mlstr_data_dict = TRUE)
+#' data_dict_evaluate(data_dict,as_data_dict_mlstr = FALSE)
+#' data_dict_evaluate(data_dict,as_data_dict_mlstr = TRUE)
 #'
 #' }
 #'
@@ -479,7 +479,7 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_mlstr_data_dict = TRUE
 data_dict_evaluate <- function(
     data_dict,
     taxonomy = NULL,
-    as_mlstr_data_dict = TRUE){
+    as_data_dict_mlstr = TRUE){
   
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -488,11 +488,11 @@ data_dict_evaluate <- function(
       fabR::make_name_list(args_list = fargs['data_dict'], list(NULL)))
   
   # check args
-  if(!is.logical(as_mlstr_data_dict))
+  if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
-  # check on arguments : data dict
+  # check on arguments : data_dict
   as_data_dict_shape(data_dict)
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
@@ -504,7 +504,7 @@ data_dict_evaluate <- function(
     lapply(function(x) x %>% mutate(across(everything(),as.character)))
   
   # add label, valueType and missing if don't exist
-  if(as_mlstr_data_dict == TRUE){
+  if(as_data_dict_mlstr == TRUE){
     
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
@@ -648,7 +648,7 @@ data_dict_evaluate <- function(
   }
   
   
-  if(as_mlstr_data_dict == TRUE){
+  if(as_data_dict_mlstr == TRUE){
     
     message(
       "    Assess the completion of `label(:xx)` column in 'Variables'")
@@ -662,8 +662,8 @@ data_dict_evaluate <- function(
         cols = !.data$`name`,
         names_to = "name_col",
         values_to = "value") %>%
-      filter(is.na(.data$value)) %>%
-      select(name_var = .data$`name`, .data$`name_col`, -.data$value) %>%
+      filter(is.na(.data$`value`)) %>%
+      select(name_var = .data$`name`, .data$`name_col`, -.data$`value`) %>%
       mutate(
         name_col = names(
           data_dict[['Variables']] %>%
@@ -696,8 +696,8 @@ data_dict_evaluate <- function(
           cols = !.data$`name`,
           names_to = "name_col",
           values_to = "value") %>%
-        filter(is.na(.data$value)) %>%
-        select(name_var = .data$`name`, .data$`name_col`, -.data$value) %>%
+        filter(is.na(.data$`value`)) %>%
+        select(name_var = .data$`name`, .data$`name_col`, -.data$`value`) %>%
         mutate(
           name_col =
             names(data_dict[['Variables']] %>%
@@ -710,7 +710,7 @@ data_dict_evaluate <- function(
       
       test_missing_category <-
         message("    Assess the logical values of missing column in Categories")
-      if(as_mlstr_data_dict){
+      if(as_data_dict_mlstr){
         check_data_dict_missing_categories(data_dict) %>%
           mutate(
             name_col = "missing",

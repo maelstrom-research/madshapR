@@ -2,12 +2,12 @@
 % Please edit documentation in R/05-unit_checks.R
 \name{check_dataset_valueType}
 \alias{check_dataset_valueType}
-\title{Return values which valueType differs between data and their data dictionary}
+\title{Return values which valueType differs between dataset and their data dictionary}
 \usage{
-check_dataset_valueType(data, data_dict = NULL, valueType_guess = FALSE)
+check_dataset_valueType(dataset, data_dict = NULL, valueType_guess = FALSE)
 }
 \arguments{
-\item{data}{A tibble identifying the input data observations.}
+\item{dataset}{A tibble identifying the input dataset observations.}
 
 \item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
 
@@ -15,19 +15,19 @@ check_dataset_valueType(data, data_dict = NULL, valueType_guess = FALSE)
 valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
-A tibble providing values which valueType differs between data and
+A tibble providing values which valueType differs between dataset and
 their data dictionary.
 }
 \description{
 Generates a tibble that reports any valueType differing
-between data observation and their data dictionary declaration.
-This tibble can be used to assist the user in the assessment of the data
+between dataset observation and their data dictionary declaration.
+This tibble can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -40,9 +40,9 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
+A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+can be associated to a data dictionary. If not, a minimum workable data dictionary
+can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
 Maelstrom research standards, and its content can be evaluated accordingly,
@@ -54,9 +54,9 @@ full completeness is mandatory.
 
 # use DEMO_files provided by the package
 
-data <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
 data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-dataset <- data_dict_apply(data, data_dict)
+dataset <- data_dict_apply(dataset, data_dict)
 check_dataset_valueType(dataset, data_dict,valueType_guess = TRUE)
 
 }

@@ -16,13 +16,13 @@ A tibble providing non-standard valueType declared in a data dictionary.
 Generates a tibble that reports any variable whose valueType is
 not present in the list of authorized valueType list. Additionally, it
 evaluates if the valueType is compatible with categorical values declared.
-This tibble can be used to assist the user in the assessment of the data
+This tibble can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'

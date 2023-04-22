@@ -14,7 +14,7 @@ dataset_summarize(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
+\item{dataset}{A tibble identifying the input dataset observations associated to
 its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
@@ -24,7 +24,7 @@ associated dataset. Automatically generated if not provided.}
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
 
-\item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
+\item{taxonomy}{A data-frame or data-frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
@@ -38,15 +38,15 @@ A list of tibbles of report for one data dictionary.
 }
 \description{
 Generates an Excel spreadsheet report for a dataset
-for each variable to facilitate the assessment of input data.
-This report can be used to assist the user in the assessment of the data
+for each variable to facilitate the assessment of input dataset.
+This report can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy, or standard evaluation. The summary associated provides dataset
 composition, with observation distribution and descriptive statistics.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -59,7 +59,7 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy
@@ -77,7 +77,7 @@ library(dplyr)
 library(fabR)
 
 ###### Example 1: Combine functions and summarise datasets.
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 dataset <-
   DEMO_files$dataset_TOKYO \%>\%
   valueType_adjust(from = data_dict) \%>\%

@@ -14,13 +14,13 @@ A list of tibble(s), each of them identifying datasets in a dossier.
 }
 \description{
 Confirms that the input object is a valid dossier, and return it as a dossier
-with the appropriate mlstr_class attribute. This function mainly helps
+with the appropriate madshapR::class attribute. This function mainly helps
 validate input within other functions of the package but could be used to
 check if a dossier is valid.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
+A dossier must be a named list containing at least one data-frame or
+data-frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
 }
 \examples{

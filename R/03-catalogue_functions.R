@@ -99,7 +99,7 @@ valueType_of <- function(x){
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -112,9 +112,9 @@ valueType_of <- function(x){
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -159,47 +159,47 @@ valueType_of <- function(x){
 #' @export
 valueType_self_adjust <- function(...){
 
-  # test data
+  # test dataset
 
   if(is_dataset(...) & !is_data_dict(...)){
-    data <- as_dataset(...,col_id = attributes(...)$`Mlstr::col_id`)
-    preserve_attributes <- attributes(data)$`Mlstr::col_id`
+    dataset <- as_dataset(...,col_id = attributes(...)$`Mlstr::col_id`)
+    preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
 
     is_factor <-
-      data %>%
+      dataset %>%
       summarise(across(everything(), ~ toString(class(.)))) %>%
       pivot_longer(everything()) %>%
       filter(.data$`value` %in% c("factor"))
 
-    data_dict <- data_dict_extract(data)
+    data_dict <- data_dict_extract(dataset)
     data_dict[['Categories']] <-
       bind_rows(
         Categories = tibble(name = as.character(),variable = as.character()),
         data_dict[['Categories']])
 
-    for(i in names(data)) {
-      data[[i]] <-
-        as_valueType(x = data[[i]], valueType = valueType_guess(x = data[[i]]))
+    for(i in names(dataset)) {
+      dataset[[i]] <-
+        as_valueType(x = dataset[[i]], valueType = valueType_guess(x = dataset[[i]]))
       }
 
-    data_dict_final <- data_dict_extract(data)
+    data_dict_final <- data_dict_extract(dataset)
     data_dict[['Variables']]['valueType'] <- NULL
     data_dict_final[['Variables']] <-
       data_dict_final[['Variables']][c('name','valueType')] %>%
       left_join(data_dict[['Variables']], by = c("name"))
     data_dict_final <- c(data_dict_final['Variables'], data_dict['Categories'])
 
-    data <-
-      data_dict_apply(data, data_dict_final) %>%
+    dataset <-
+      data_dict_apply(dataset, data_dict_final) %>%
       mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
 
-    return(data)
+    return(dataset)
   }
 
   if(!is_dataset(...) & is_data_dict(...)){
     data_dict <- as_data_dict_shape(...)
-    attributes(data_dict)$`Mlstr::class` <- attributes(...)$`Mlstr::class`
+    attributes(data_dict)$`madshapR::class` <- attributes(...)$`madshapR::class`
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
       warning(
@@ -307,7 +307,7 @@ valueType will remain as it is.")
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -320,9 +320,9 @@ valueType will remain as it is.")
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -332,10 +332,8 @@ valueType will remain as it is.")
 #' @seealso
 #' [madshapR::valueType_self_adjust()]
 #'
-#' @param from R object to be adjusted. Can be either a dataset or a data
-#' dictionary.
-#' @param to R object to be adjusted. Can be either a dataset or a data
-#' dictionary.
+#' @param from R object to be adjusted. Can be either a dataset or a data dictionary.
+#' @param to R object to be adjusted. Can be either a dataset or a data dictionary.
 #' NULL by default, which is equivalent to valueType_self_adjust(... = from)
 #'
 #' @return
@@ -372,7 +370,7 @@ valueType will remain as it is.")
 #' @export
 valueType_adjust <- function(from, to = NULL){
 
-  # test data
+  # test dataset
   if(is.null(to)) return(valueType_self_adjust(from))
 
   # apply the data dictionary of the dataset to the data dictionary
@@ -380,11 +378,11 @@ valueType_adjust <- function(from, to = NULL){
     as_dataset(from) # no col_id
     as_data_dict_shape(to)
 
-    data <- from
+    dataset <- from
     data_dict <- to
 
-    # data must match
-    if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
+    # dataset must match
+    if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
@@ -392,7 +390,7 @@ crayon::bold("\n\nUseful tip:"),
 
     vT_list<- madshapR::valueType_list
     vT_tables <-
-      data %>%
+      dataset %>%
       summarise(across(everything(), valueType_of)) %>%
       pivot_longer(cols = everything()) %>%
       rename(valueType = .data$`value`) %>%
@@ -420,29 +418,29 @@ crayon::bold("\n\nUseful tip:"),
 
   if(is_data_dict(from) & is_dataset(to)){
 
-    # test data dict
+    # test data_dict
     tryCatch({data_dict <-
-      as_mlstr_data_dict(from)},
+      as_data_dict_mlstr(from)},
       warning = function(cond){
         stop(call. = FALSE,cond)})
 
     # test dataset
-    data <- as_dataset(to,col_id = attributes(to)$`Mlstr::col_id`)
-    preserve_attributes <- attributes(data)$`Mlstr::col_id`
+    dataset <- as_dataset(to,col_id = attributes(to)$`Mlstr::col_id`)
+    preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
 
-    # data must match
-    if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
+    # dataset must match
+    if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) to get a full assessment of your dataset")}
 
     data_dict_data <-
-      data_dict_extract(data) %>%
-      as_mlstr_data_dict()
+      data_dict_extract(dataset) %>%
+      as_data_dict_mlstr()
 
     is_factor <-
-      data %>%
+      dataset %>%
       summarise(across(everything(), ~ class(.))) %>%
       pivot_longer(everything()) %>%
       filter(.data$`value` == "factor")
@@ -453,20 +451,20 @@ crayon::bold("\n\nUseful tip:"),
       left_join(data_dict[['Variables']] %>%
                   select(.data$`name`, .data$`valueType`),by = "name")
 
-    for(i in names(data)){
-      data[[i]] <-
+    for(i in names(dataset)){
+      dataset[[i]] <-
         as_valueType(
-          x = data[[i]],
+          x = dataset[[i]],
           valueType = data_dict[['Variables']][[
             which(data_dict[['Variables']]$`name` == i),
             'valueType']])}
 
-    data <-
-      data_dict_apply(data, data_dict_data) %>%
+    dataset <-
+      data_dict_apply(dataset, data_dict_data) %>%
       mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
 
-    return(data)
+    return(dataset)
   }
 
   stop(call. = FALSE,
@@ -551,12 +549,12 @@ valueType_guess <- function(x){
     mutate(
       valueType =
         case_when(
-          .data$valueType == "boolean|integer|decimal"      ~ "integer"       ,
-          .data$valueType == "integer|decimal"              ~ "integer"       ,
-          .data$valueType == "integer|decimal|date"         ~ "date"          ,
-          .data$valueType == "decimal|date"                 ~ "date"          ,
-          .data$valueType == "boolean|integer|decimal|date" ~ valueType_of(x) ,
-          TRUE                                              ~  .data$valueType
+          .data$`valueType` == "boolean|integer|decimal"      ~ "integer"       ,
+          .data$`valueType` == "integer|decimal"              ~ "integer"       ,
+          .data$`valueType` == "integer|decimal|date"         ~ "date"          ,
+          .data$`valueType` == "decimal|date"                 ~ "date"          ,
+          .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x) ,
+          TRUE                                              ~  .data$`valueType`
         )) %>% pull(.data$`valueType`)
 
   if(test_vT == "") test_vT <- 'text'
@@ -693,7 +691,7 @@ data dictionary")}
         pull(.data$`test`) %>% all}
     }
 
-  # test if data and data_dict content match
+  # test if dataset and data_dict content match
 
   if(test_condition == FALSE){
     stop(call. = FALSE,
@@ -702,7 +700,7 @@ The valueType conflicts with the data type. Object cannot be coerced to
 valueType",
 crayon::bold("\n\nUseful tip:"),
 " Use valueType_guess(x) to evaluate the first potential valueType.
-For further investigation, you can use dataset_evaluate(data, data_dict).")
+For further investigation, you can use dataset_evaluate(dataset, data_dict).")
   }
 
   return(x_temp)
@@ -713,12 +711,12 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #'
 #' @description
 #' Confirms that the input object is a valid taxonomy, and return it as a
-#' taxonomy with the appropriate mlstr_class attribute. This function mainly
+#' taxonomy with the appropriate madshapR::class attribute. This function mainly
 #' helps validate input within other functions of the package but could be used
 #' to check if a taxonomy is valid.
 #'
 #' @details
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+#' A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
@@ -730,7 +728,7 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' 
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
-#' [opal_taxonomy_get()]
+#' [taxonomy_opal_get()]
 #'
 #'
 #' @param object A potential taxonomy to be coerced.
@@ -743,11 +741,11 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' 
 #' # use DEMO_files provided by the package
 #'
-#' ###### Example 1: this function is compatible with opal_taxonomy_get()
+#' ###### Example 1: this function is compatible with taxonomy_opal_get()
 #' library(opalr)
 #' opal <- 
 #'   opal.login('administrator','password',url = 'https://opal-demo.obiba.org/')
-#' opal_taxo <- opal_mlstr_taxonomy_get(opal)
+#' opal_taxo <- taxonomy_opal_mlstr_get(opal)
 #' as_taxonomy(opal_taxo)
 #' 
 #' ###### Example 2: you can create your own taxonomy
@@ -771,7 +769,7 @@ be a data-frame (or tibble) containing at least 'taxonomy', 'vocabulary' and
 Please refer to documentation.",
 
       crayon::bold("\n\nUseful tip:"),
-" Use opal_taxonomy_get(opal) or mlstr_taxonomy_get(opal) to get the taxonomy
+" Use taxonomy_opal_get(opal) or taxonomy_opal_mlstr_get(opal) to get the taxonomy
 present in your Opal environment.")}
 
   # check if names in taxonomy exist
@@ -779,9 +777,9 @@ present in your Opal environment.")}
      c("vocabulary_short","taxonomy_scale",
        "vocabulary_scale","term_scale")) == 4){
 
-    attributes(object)$`Mlstr::class` <- "mlstr_taxonomy"
+    attributes(object)$`madshapR::class` <- "taxonomy_mlstr"
   }else{
-    attributes(object)$`Mlstr::class` <- "opal_taxonomy"}
+    attributes(object)$`madshapR::class` <- "taxonomy_opal"}
 
   return(object)
 
@@ -847,7 +845,7 @@ is_valueType <- function(object){
 #' package but could be used to check if a taxonomy is valid.
 #'
 #' @details
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+#' A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy

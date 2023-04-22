@@ -14,13 +14,13 @@ A list of tibble(s) identifying a data dictionary.
 }
 \description{
 Confirms that the input object is a valid data dictionary, and return it as a
-data dictionary with the appropriate mlstr_class attribute. This function
+data dictionary with the appropriate madshapR::class attribute. This function
 mainly helps validate input within other functions of the package but could
 be used to check if a data dictionary is valid.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'

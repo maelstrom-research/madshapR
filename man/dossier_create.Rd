@@ -7,7 +7,7 @@
 dossier_create(dataset_list, data_dict_apply = FALSE)
 }
 \arguments{
-\item{dataset_list}{A list of tibble(s), identifying the input data
+\item{dataset_list}{A list of tibble(s), identifying the input dataset
 observations.}
 
 \item{data_dict_apply}{whether to apply the data dictionary to its dataset.
@@ -22,9 +22,9 @@ Assembles a dossier from datasets. A dossier is a list containing at least one
 dataset, that can be used directly in keys functions of the package.
 }
 \details{
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
+A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+can be associated to a data dictionary. If not, a minimum workable data dictionary
+can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
 Maelstrom research standards, and its content can be evaluated accordingly,

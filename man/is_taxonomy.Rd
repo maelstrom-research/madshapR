@@ -18,7 +18,7 @@ This function mainly helps validate input within other functions of the
 package but could be used to check if a taxonomy is valid.
 }
 \details{
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy

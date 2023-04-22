@@ -227,7 +227,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #'
 #' @param opal Opal login attributes.
 #' @param dossier List of tibble, each of them being datasets.
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -308,7 +308,7 @@ opal_tables_push <- function(
   # tests
   if(!is.null(dataset))  as_dataset(dataset,attributes(dataset)$`Mlstr::col_id`)
   if(!is.null(dossier))    as_dossier(dossier)
-  if(!is.null(data_dict))data_dict <- as_mlstr_data_dict(data_dict)
+  if(!is.null(data_dict))data_dict <- as_data_dict_mlstr(data_dict)
 
   project <- list()
   if(!is.null(dossier)) {
@@ -518,7 +518,7 @@ opal_tables_pull <- function(
 
     data_dict_i <- 
       data_dict_opalr_fix(data_dict_i) %>%
-      as_mlstr_data_dict()
+      as_data_dict_mlstr()
 
     # creation of dataset
     if("dataset" %in% content == TRUE){
@@ -598,7 +598,7 @@ opal_tables_pull <- function(
 #'
 #' @description
 #' Downloads all taxonomies from an Opal server in a tibble format. This
-#' taxonomy is specifically the Maelstrom taxonomy used for any purpose of data
+#' taxonomy is specifically the Maelstrom taxonomy used for any purpose of dataset
 #' transformation, cleaning or assessment, following Maelstrom standards.
 #'
 #' @details
@@ -623,7 +623,7 @@ opal_tables_pull <- function(
 #' opal <- 
 #'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
 #'   
-#' try(opal_mlstr_taxonomy_get(opal))
+#' try(taxonomy_opal_mlstr_get(opal))
 #'   
 #' }
 #'
@@ -631,9 +631,9 @@ opal_tables_pull <- function(
 #' @importFrom rlang .data
 #'
 #' @export
-opal_mlstr_taxonomy_get <- function(opal = NULL){
+taxonomy_opal_mlstr_get <- function(opal = NULL){
 
-  taxonomy <- opal_taxonomy_get(opal)
+  taxonomy <- taxonomy_opal_get(opal)
 
   taxonomy_unknown <-
     taxonomy %>%
@@ -848,7 +848,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #'
 #' @description
 #' Downloads all taxonomies from an Opal server in the format used by Opal.
-#' This taxonomy is used for any purpose of data transformation, cleaning
+#' This taxonomy is used for any purpose of dataset transformation, cleaning
 #' or assessment.
 #'
 #' @details
@@ -873,7 +873,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' opal <- 
 #'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
 #'   
-#' try(opal_taxonomy_get(opal))
+#' try(taxonomy_opal_get(opal))
 #' 
 #' }
 #'
@@ -881,7 +881,7 @@ opal_mlstr_taxonomy_get <- function(opal = NULL){
 #' @importFrom rlang .data
 #'
 #' @export
-opal_taxonomy_get <- function(opal){
+taxonomy_opal_get <- function(opal){
 
   # get taxons
   taxonomy <- tibble(opal.taxonomies(opal))
@@ -965,7 +965,7 @@ opal_taxonomy_get <- function(opal){
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'

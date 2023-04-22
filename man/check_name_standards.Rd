@@ -15,7 +15,7 @@ A tibble providing non-standard names across a vector.
 \description{
 Generates a tibble that reports any variable whose name is not
 standard, as defined by Maelstrom naming standards.
-This tibble can be used to assist the user in the assessment of the data
+This tibble can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy or standard evaluation.
 }

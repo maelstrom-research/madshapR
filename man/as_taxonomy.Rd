@@ -14,12 +14,12 @@ A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 }
 \description{
 Confirms that the input object is a valid taxonomy, and return it as a
-taxonomy with the appropriate mlstr_class attribute. This function mainly
+taxonomy with the appropriate madshapR::class attribute. This function mainly
 helps validate input within other functions of the package but could be used
 to check if a taxonomy is valid.
 }
 \details{
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy
@@ -34,11 +34,11 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use DEMO_files provided by the package
 
-###### Example 1: this function is compatible with opal_taxonomy_get()
+###### Example 1: this function is compatible with taxonomy_opal_get()
 library(opalr)
 opal <- 
   opal.login('administrator','password',url = 'https://opal-demo.obiba.org/')
-opal_taxo <- opal_mlstr_taxonomy_get(opal)
+opal_taxo <- taxonomy_opal_mlstr_get(opal)
 as_taxonomy(opal_taxo)
 
 ###### Example 2: you can create your own taxonomy
@@ -50,5 +50,5 @@ as_taxonomy(DEMO_files$taxonomy_PARIS)
 }
 \seealso{
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
-\code{\link[=opal_taxonomy_get]{opal_taxonomy_get()}}
+\code{\link[=taxonomy_opal_get]{taxonomy_opal_get()}}
 }

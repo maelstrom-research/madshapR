@@ -4,7 +4,7 @@
 \alias{data_dict_evaluate}
 \title{Generate a report as an Excel spreadsheet of a data dictionary}
 \usage{
-data_dict_evaluate(data_dict, taxonomy = NULL, as_mlstr_data_dict = TRUE)
+data_dict_evaluate(data_dict, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 }
 \arguments{
 \item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
@@ -12,7 +12,7 @@ data_dict_evaluate(data_dict, taxonomy = NULL, as_mlstr_data_dict = TRUE)
 \item{taxonomy}{A tibble identifying the scheme used for variables
 classification as a tibble.}
 
-\item{as_mlstr_data_dict}{Whether the output data dictionary has a simple
+\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
 data dictionary structure or not (meaning has a Maelstrom data dictionary
 structure, compatible with Maelstrom ecosystem such as Opal environment).
 FALSE by default.}
@@ -22,15 +22,15 @@ A list of tibbles of report for one data dictionary.
 }
 \description{
 Generates an Excel spreadsheet report for a data dictionary
-for each variable to facilitate the assessment of input data.
-This report can be used to assist the user in the assessment of the data
+for each variable to facilitate the assessment of input dataset.
+This report can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy, or standard evaluation. The summary associated provides data
+and taxonomy, or standard evaluation. The summary associated provides dataset
 dictionary composition, and evaluates coherence between elements.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -43,7 +43,7 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 The taxonomy must be compatible with (and generally extracted from) an
 Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 'terms' to work with some specific functions. In addition, the taxonomy
@@ -59,8 +59,8 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 # use DEMO_files provided by the package
 
 data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
-data_dict_evaluate(data_dict,as_mlstr_data_dict = FALSE)
-data_dict_evaluate(data_dict,as_mlstr_data_dict = TRUE)
+data_dict_evaluate(data_dict,as_data_dict_mlstr = FALSE)
+data_dict_evaluate(data_dict,as_data_dict_mlstr = TRUE)
 
 }
 

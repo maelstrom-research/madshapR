@@ -24,7 +24,7 @@ group their data dictionary analogously they would do to a tibble with
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -42,9 +42,10 @@ and/or any taxonomy provided.
 
 # use DEMO_files provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
-# refer to the associated dataset. The object created is not a data 
-# data dictionary per say, but can be used as a structure which can be 
-# shaped into a data data dictionary.
+# refer to the associated dataset. The object created is not a data dictionary 
+# per say, but can be used as a structure which can be 
+# shaped into a data dictionary.
+
 library(dplyr)
 
 data_dict_list <- 

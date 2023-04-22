@@ -4,10 +4,10 @@
 \alias{summary_variables_date}
 \title{Provide statistical description of 'date' variables of a dataset}
 \usage{
-summary_variables_date(data = NULL, data_dict = NULL, .resume_var = NULL)
+summary_variables_date(dataset = NULL, data_dict = NULL, .resume_var = NULL)
 }
 \arguments{
-\item{data}{A tibble identifying the input data observations associated to
+\item{dataset}{A tibble identifying the input dataset observations associated to
 its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
@@ -32,7 +32,7 @@ composition, with observation distribution and descriptive statistics.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -45,9 +45,9 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
+A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+can be associated to a data dictionary. If not, a minimum workable data dictionary
+can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
 Maelstrom research standards, and its content can be evaluated accordingly,
@@ -63,7 +63,7 @@ library(fabR)
 library(lubridate)
 
 ###### Example 1: Combine functions and summarise datasets.
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 dataset <-
   DEMO_files$dataset_TOKYO \%>\%
   valueType_adjust(from = data_dict) \%>\%

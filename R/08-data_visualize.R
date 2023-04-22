@@ -6,7 +6,7 @@
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -19,16 +19,16 @@
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param col A character string specifying the name of the column.
 #' @param data_dict A list of tibble(s) representing meta data of an
@@ -103,11 +103,11 @@ variable_visualize <- function(
   if(!is.null(data_dict)){
     col_dict <- 
       data_dict %>%
-      data_dict_match_dataset(data = colset,output = 'data_dict') %>%
-      as_mlstr_data_dict()
+      data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
+      as_data_dict_mlstr()
   }else{
     col_dict <- 
-      data_dict_extract(colset,as_mlstr_data_dict = TRUE)
+      data_dict_extract(colset,as_data_dict_mlstr = TRUE)
   }
   
   if(group_by != ''){
@@ -207,7 +207,7 @@ variable_visualize <- function(
     as.data.frame(t(
       
       summary_var$`Variables summary (all)` %>%
-        filter(.data$name %in% col) %>%
+        filter(.data$`name` %in% col) %>%
         select(c("Total number of observations":last_col()))
       
     ))
@@ -217,7 +217,7 @@ variable_visualize <- function(
       
       unique(pull(
         summary_var$`Variables summary (all)` %>%
-          filter(.data$name %in% col) %>%
+          filter(.data$`name` %in% col) %>%
           select(starts_with('Grouping variable:'))
       ))
     
@@ -229,7 +229,7 @@ variable_visualize <- function(
     mutate(across(-c("col"), 
                   ~ ifelse(. == 0,NA_real_,.))) %>%
     mutate(across(-c("col"), 
-                  ~ ifelse(str_detect(.data$col,'% '),round(.*100,2),round(.)))) %>%
+                  ~ ifelse(str_detect(.data$`col`,'% '),round(.*100,2),round(.)))) %>%
     select(-'col') %>%
     mutate(across(everything(),as.character))
     
@@ -241,7 +241,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           summary_var$`Numerical variable summary` %>%
-            filter(.data$name %in% col) %>%
+            filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -251,7 +251,7 @@ variable_visualize <- function(
           
           unique(pull(
             summary_var$`Numerical variable summary` %>%
-              filter(.data$name %in% col) %>%
+              filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
             
@@ -330,7 +330,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           summary_var$`Text variable summary` %>%
-            filter(.data$name %in% col) %>%
+            filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -340,7 +340,7 @@ variable_visualize <- function(
           
           unique(pull(
             summary_var$`Text variable summary` %>%
-              filter(.data$name %in% col) %>%
+              filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -441,7 +441,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           summary_var$`Date variable summary` %>%
-            filter(.data$name %in% col) %>%
+            filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -451,7 +451,7 @@ variable_visualize <- function(
           
           unique(pull(
             summary_var$`Date variable summary` %>%
-              filter(.data$name %in% col) %>%
+              filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -472,7 +472,7 @@ variable_visualize <- function(
       if(group_by != '') {
         colset_values <- colset_values %>% group_by(!! as.symbol(group_by))}
       
-      # convert data to wide format
+      # convert dataset to wide format
       colset_span <- 
         colset_values %>%
         filter(if_any(col) == min(!! as.symbol(col)) | 
@@ -716,13 +716,13 @@ variable_visualize <- function(
   if(sum(nrow(summary_var[['Categorical variable summary']])) > 0) {
 
     if(nrow(summary_var$`Categorical variable summary` %>% 
-            filter(.data$name %in% col)) > 0){
+            filter(.data$`name` %in% col)) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
           summary_var$`Categorical variable summary` %>%
-            filter(.data$name %in% col) %>%
+            filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -732,7 +732,7 @@ variable_visualize <- function(
           
           unique(pull(
             summary_var$`Categorical variable summary` %>%
-              filter(.data$name %in% col) %>%
+              filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -804,20 +804,20 @@ variable_visualize <- function(
 #' @description
 #' Generates a visual report for a dataset in an HTML
 #' bookdown document, showing descriptive statistics for each 
-#' variable to facilitate the assessment of input data. Statistics and figures
+#' variable to facilitate the assessment of input dataset. Statistics and figures
 #' are generated according to their valueType.
-#' This report can be used to assist the user in the assessment of the data
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy or standard evaluation. The summaries and figures associated
 #' provide dataset composition, with observation distribution and descriptive
 #' statistics.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
+#' A dossier must be a named list containing at least one data-frame or
+#' data-frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -830,9 +830,9 @@ variable_visualize <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -842,7 +842,7 @@ variable_visualize <- function(
 #' @seealso
 #' [madshapR::open_visual_report()]
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -851,7 +851,7 @@ variable_visualize <- function(
 #' by this column.
 #' @param to A character string identifying the folder path where the bookdown
 #' report will be saved.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
+#' @param taxonomy A data-frame or data-frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .keep_files whether to keep the R-markdown files.
 #' TRUE by default.
@@ -927,14 +927,14 @@ dataset_visualize <- function(
   dataset <-
     data_dict_match_dataset(
       dataset,data_dict,
-      output = 'data') %>%
+      output = 'dataset') %>%
     as_dataset(attributes(dataset)$`Mlstr::col_id`)
   
   data_dict <- 
     data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict') %>%
-    as_mlstr_data_dict()
+    as_data_dict_mlstr()
   
   # summarize initial information
   
@@ -1228,7 +1228,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #' @description
 #' The visual report previously generated in an HTML bookdown document can be
 #' opened using this short-cut function.
-#' This report can be used to assist the user in the assessment of the data
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy or standard evaluation. The summaries and figures associated
 #' provide dataset composition, with observation distribution and descriptive

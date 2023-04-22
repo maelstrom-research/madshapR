@@ -9,7 +9,7 @@
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -49,13 +49,13 @@
 data_extract <- function(data_dict, data_dict_apply = FALSE){
 
   # tests
-  if(toString(attributes(data_dict)$`Mlstr::class`) == "Mlstr_data_dict"){
-    data_dict <- as_mlstr_data_dict(data_dict, as_data_dict = TRUE)}else{
+  if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
+    data_dict <- as_data_dict_mlstr(data_dict, as_data_dict = TRUE)}else{
       data_dict <- as_data_dict(data_dict)}
 
   if(nrow(data_dict[['Variables']]) == 0){
-    data <- tibble(.rows = 0)
-    return(data)}
+    dataset <- tibble(.rows = 0)
+    return(dataset)}
 
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
@@ -79,29 +79,29 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
           distinct, by = "typeof") %>%
       mutate(valueType = replace_na(.data$`valueType`, "character"))}
 
-  data <-
+  dataset <-
     data_dict_temp[["Variables"]]  %>%
     select(.data$`name`) %>%
     pivot_wider(names_from = .data$`name`, values_from = .data$`name`) %>%
     slice(0)
 
-  for(i in seq_len(ncol(data))){
+  for(i in seq_len(ncol(dataset))){
     # stop()}
-    data[i] <-
-      as_valueType(data[i], data_dict_temp[["Variables"]]$`valueType`[i])
+    dataset[i] <-
+      as_valueType(dataset[i], data_dict_temp[["Variables"]]$`valueType`[i])
   }
 
   if(data_dict_apply == TRUE){
-    data <- data_dict_apply(data, data_dict)
-    return(data)
+    dataset <- data_dict_apply(dataset, data_dict)
+    return(dataset)
   }
 
-  dataset <- as_dataset(data,attributes(data)$`Mlstr::col_id`)
-  return(data)
+  dataset <- as_dataset(dataset,attributes(dataset)$`Mlstr::col_id`)
+  return(dataset)
 }
 
 #' @title
-#' Remove value labels of a data frame, leaving its unlabelled columns
+#' Remove value labels of a data-frame, leaving its unlabelled columns
 #'
 #' @description
 #' Removes any attributes attached to a tibble. Any value in columns will be
@@ -109,9 +109,9 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' preserve information.
 #'
 #' @details
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -121,7 +121,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @seealso
 #' [haven::zap_labels()].
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #'
 #' @return
@@ -132,9 +132,9 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' 
 #' # use DEMO_files provided by the package
 #'
-#' data <- DEMO_files$dataset_TOKYO
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <- data_dict_apply(data,data_dict)
+#' dataset <- DEMO_files$dataset_TOKYO
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <- data_dict_apply(dataset,data_dict)
 #' dataset_zap_data_dict(dataset)
 #'
 #' }
@@ -155,11 +155,11 @@ dataset_zap_data_dict <- function(dataset){
     if(is.Date(dataset[[i]])) dataset[[i]] <- as.character(dataset[[i]])
   }
 
-  data <- 
+  dataset <- 
     dataset %>% lapply(as.vector) %>% as_tibble() %>%
     as_dataset(col_id = preserve_attributes)
 
-  return(data)
+  return(dataset)
 }
 
 #' @title
@@ -171,7 +171,7 @@ dataset_zap_data_dict <- function(dataset){
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -184,9 +184,9 @@ dataset_zap_data_dict <- function(dataset){
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -194,7 +194,7 @@ dataset_zap_data_dict <- function(dataset){
 #' full completeness is mandatory.
 #'
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset (to be generated).
@@ -210,9 +210,9 @@ dataset_zap_data_dict <- function(dataset){
 #' 
 #' # use DEMO_files provided by the package
 #'
-#' data <- DEMO_files$dataset_TOKYO
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <- data_dict_apply(data,data_dict)
+#' dataset <- DEMO_files$dataset_TOKYO
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <- data_dict_apply(dataset,data_dict)
 #' dataset_cat_as_labels(dataset)
 #'
 #' }
@@ -310,16 +310,16 @@ dataset_cat_as_labels <- function(
 #' dataset, that can be used directly in keys functions of the package.
 #'
 #' @details
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param dataset_list A list of tibble(s), identifying the input data
+#' @param dataset_list A list of tibble(s), identifying the input dataset
 #' observations.
 #' @param data_dict_apply whether to apply the data dictionary to its dataset.
 #' The resulting tibble will have for each column its associated meta data as
@@ -376,14 +376,14 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #'
 #' @description
 #' Confirms that the input object is a valid dataset, and return it as a dataset
-#' with the appropriate mlstr_class attribute. This function mainly helps
+#' with the appropriate madshapR::class attribute. This function mainly helps
 #' validate input within other functions of the package but could be used to
 #' check if a dataset is valid.
 #'
 #' @details
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -423,7 +423,7 @@ as_dataset <- function(object, col_id = NULL){
 
     # first column must be completly filled
     if(ncol(object) == 0){
-      attributes(object)$`Mlstr::class` <- "dataset"
+      attributes(object)$`madshapR::class` <- "dataset"
       attributes(object)$`Mlstr::col_id` <- NULL
       return(object)}
 
@@ -437,7 +437,7 @@ as_dataset <- function(object, col_id = NULL){
       stop(call. = FALSE,
            "Your id column(s) must not contain any NA values.")
 
-    attributes(object)$`Mlstr::class` <- "dataset"
+    attributes(object)$`madshapR::class` <- "dataset"
     attributes(object)$`Mlstr::col_id` <- col_id
 
     object <-
@@ -459,13 +459,13 @@ Please refer to documentation.")
 #'
 #' @description
 #' Confirms that the input object is a valid dossier, and return it as a dossier
-#' with the appropriate mlstr_class attribute. This function mainly helps
+#' with the appropriate madshapR::class attribute. This function mainly helps
 #' validate input within other functions of the package but could be used to
 #' check if a dossier is valid.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
+#' A dossier must be a named list containing at least one data-frame or
+#' data-frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
 #' @seealso
@@ -523,7 +523,7 @@ must be present in the dataset.
 
 Please refer to documentation."))
 
-  attributes(object)$`Mlstr::class` <- "dossier"
+  attributes(object)$`madshapR::class` <- "dossier"
   return(object)
 
 }
@@ -537,9 +537,9 @@ Please refer to documentation."))
 #' package but could be used to check if a dataset is valid.
 #'
 #' @details
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -594,8 +594,8 @@ is_dataset <- function(object){
 #' package but could be used to check if a dossier is valid.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
+#' A dossier must be a named list containing at least one data-frame or
+#' data-frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
 #' @param object A potential dossier to be evaluated.

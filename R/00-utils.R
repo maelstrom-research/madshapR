@@ -42,7 +42,7 @@ madshapR_help <- function(){
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
 #' @format ## `tibble`
-#' A data frame with 12 rows and 6 columns:
+#' A data-frame with 12 rows and 6 columns:
 #' \describe{
 #'   \item{valueType}{data type as described in Opal}
 #'   \item{typeof}{data type provided by base::typeof}
@@ -70,7 +70,7 @@ madshapR_help <- function(){
 #' material.
 #'
 #' @format ## `list`
-#' A list with 22 elements used for testing purpose (data frames and lists):
+#' A list with 22 elements used for testing purpose (data-frames and lists):
 #'
 #' \describe{
 #'   \item{DEMO_data_processing_elements - final}{Data processing element
@@ -105,8 +105,8 @@ madshapR_help <- function(){
 #'   \item{dataset_TOKYO - ERROR WITH DATA}{Dataset of Tokyo containing errors}
 #'   \item{dataset_TOKYO}{Dataset of Tokyo}
 #'   \item{PARIS_taxonomy}{Taxonomy specific to Paris dataset}
-#'   \item{Mlstr_taxonomy}{Maelstrom Taxonomy}
-#'   \item{Opal_taxonomy}{Opal Taxonomy}
+#'   \item{taxonomy_mlstr}{Maelstrom Taxonomy}
+#'   \item{taxonomy_opal}{Opal Taxonomy}
 #'   ...
 #' }
 #'

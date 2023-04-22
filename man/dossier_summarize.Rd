@@ -9,7 +9,7 @@ dossier_summarize(dossier, taxonomy = NULL, valueType_guess = TRUE)
 \arguments{
 \item{dossier}{List of tibble, each of them being datasets.}
 
-\item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
+\item{taxonomy}{A data-frame or data-frame extension (e.g. a tibble),
 identifying the scheme used for variables classification as a tibble.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
@@ -21,20 +21,20 @@ A list of tibbles of report for each dataset.
 \description{
 Generates an Excel spreadsheet report for a dataset
 list (or dossier) showing descriptive statistics for each variable to
-facilitate the assessment of input data. Statistics are generated according
+facilitate the assessment of input dataset. Statistics are generated according
 to their valueType.
-This report can be used to assist the user in the assessment of the data
+This report can be used to assist the user in the assessment of the dataset
 structure, fields investigation (mandatory or not), coherence across elements
 and taxonomy, or standard evaluation. The summary associated provides
 dataset composition, with observation distribution and descriptive statistics.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
+A dossier must be a named list containing at least one data-frame or
+data-frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
 
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'
@@ -47,9 +47,9 @@ and its content can be evaluated accordingly, such as naming convention
 restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
+A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+can be associated to a data dictionary. If not, a minimum workable data dictionary
+can always be generated, when any column will be reported, and
 any factor column will be analysed as categorical variable (the column
 'levels' will be created for that. In addition, the dataset may follow
 Maelstrom research standards, and its content can be evaluated accordingly,

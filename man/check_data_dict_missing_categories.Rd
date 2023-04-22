@@ -17,12 +17,12 @@ not a boolean.
 Generates a tibble that reports any categorical variable where
 'missing' column is not a boolean (or compatible value that can be coerced
 into a boolean). This tibble can be used to assist the user in the assessment
-of the data structure, fields investigation (mandatory or not), coherence
+of the dataset structure, fields investigation (mandatory or not), coherence
 across elements and taxonomy or standard evaluation.
 }
 \details{
 A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
+data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 and 'Categories' (if any), representing meta data of an associated dataset.
 The 'Variables' component must contain at least 'name' column and the
 'Categories' component must at least contain 'variable' and 'name'

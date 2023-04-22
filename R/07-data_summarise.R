@@ -3,15 +3,15 @@
 #'
 #' @description
 #' Generates an Excel spreadsheet report for a dataset
-#' for each variable to facilitate the assessment of input data.
-#' This report can be used to assist the user in the assessment of the data
+#' for each variable to facilitate the assessment of input dataset.
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides dataset
 #' composition, with observation distribution and descriptive statistics.
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -24,7 +24,7 @@
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
+#' A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
 #' The taxonomy must be compatible with (and generally extracted from) an
 #' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
 #' 'terms' to work with some specific functions. In addition, the taxonomy
@@ -34,14 +34,14 @@
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
-#' @param dataset A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
+#' @param taxonomy A data-frame or data-frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param .dataset_name A character string specifying the name of the dataset
 #' (internally used in the function `madshapR::dossier_evaluate()`).
@@ -62,7 +62,7 @@
 #' library(fabR)
 #'
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -116,14 +116,14 @@ dataset_summarize <- function(
   dataset <-
     data_dict_match_dataset(
       dataset,data_dict,
-      output = 'data') %>%
+      output = 'dataset') %>%
     as_dataset(attributes(dataset)$`Mlstr::col_id`)
   
   data_dict <- 
     data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict') %>%
-    as_mlstr_data_dict()
+    as_data_dict_mlstr()
   
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
@@ -187,7 +187,7 @@ dataset_summarize <- function(
       data_dict,
       taxonomy = taxonomy,
       .dataset_name = .dataset_name,
-      as_mlstr_data_dict = TRUE)
+      as_data_dict_mlstr = TRUE)
 
   message(
     "- DATASET SUMMARIZE: ",
@@ -336,7 +336,7 @@ dataset_summarize <- function(
       summary_group <- summary_variables(.resume_var = resume_group)
       summary_var <- 
         lapply(summary_var,function(x){
-          x %>% filter(.data$name != group_by) %>%
+          x %>% filter(.data$`name` != group_by) %>%
             add_row(summary_group)})}
 
     message("    Summarise information for numerical variables")
@@ -380,7 +380,7 @@ dataset_summarize <- function(
         summary_variables_categorical(.resume_var = resume_group)
       summary_cat <- 
         lapply(summary_cat,function(x){
-          x %>% filter(.data$name != group_by) %>%
+          x %>% filter(.data$`name` != group_by) %>%
             add_row(summary_group_cat)})}
     
     # add grouping variable to each group
@@ -388,23 +388,23 @@ dataset_summarize <- function(
       for(i in names(summary_var)) {
         summary_var [[i]] <- summary_var [[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
-            ifelse(.data$name == group_by, paste0(group_by,' (all)'),i)))
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
         
         summary_num [[i]] <- summary_num [[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
-            ifelse(.data$name == group_by, paste0(group_by,' (all)'),i)))
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
         
         summary_text[[i]] <- summary_text[[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
-            ifelse(.data$name == group_by, paste0(group_by,' (all)'),i)))
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
         
         summary_date[[i]] <- summary_date[[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
-            ifelse(.data$name == group_by, paste0(group_by,' (all)'),i)))
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
         
         summary_cat [[i]] <- summary_cat [[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
-            ifelse(.data$name == group_by, paste0(group_by,' (all)'),i)))
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
       }}
     
     # binding information
@@ -622,20 +622,20 @@ dataset_summarize <- function(
 #' @description
 #' Generates an Excel spreadsheet report for a dataset
 #' list (or dossier) showing descriptive statistics for each variable to
-#' facilitate the assessment of input data. Statistics are generated according
+#' facilitate the assessment of input dataset. Statistics are generated according
 #' to their valueType.
-#' This report can be used to assist the user in the assessment of the data
+#' This report can be used to assist the user in the assessment of the dataset
 #' structure, fields investigation (mandatory or not), coherence across elements
 #' and taxonomy, or standard evaluation. The summary associated provides
 #' dataset composition, with observation distribution and descriptive statistics.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
+#' A dossier must be a named list containing at least one data-frame or
+#' data-frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset.
 #'
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -648,9 +648,9 @@ dataset_summarize <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -658,7 +658,7 @@ dataset_summarize <- function(
 #' full completeness is mandatory.
 #'
 #' @param dossier List of tibble, each of them being datasets.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
+#' @param taxonomy A data-frame or data-frame extension (e.g. a tibble),
 #' identifying the scheme used for variables classification as a tibble.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
@@ -697,7 +697,7 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
   report_list <-
     vector(mode = "list", length = length(names(dossier)))
@@ -734,7 +734,7 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -747,9 +747,9 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
@@ -759,7 +759,7 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #' @seealso
 #' [madshapR::summary_variables()]
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -775,7 +775,7 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #' library(dplyr)
 #'
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -792,7 +792,7 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #' @importFrom rlang .data
 #'
 #' @export
-resume_variables <- function(data, data_dict = NULL){
+resume_variables <- function(dataset, data_dict = NULL){
   
   # handle atomics
   summary_tbl <-
@@ -808,18 +808,18 @@ resume_variables <- function(data, data_dict = NULL){
       `cat_label` = as.character())
   
   # handle atomics
-  if(is.atomic(data) & length(data) == 0){return(summary_tbl)}
-  if(is.atomic(data))
-    return(resume_variables(data = tibble(name = data), data_dict))
+  if(is.atomic(dataset) & length(dataset) == 0){return(summary_tbl)}
+  if(is.atomic(dataset))
+    return(resume_variables(dataset = tibble(name = dataset), data_dict))
   
   # tests
-  as_dataset(data)
+  as_dataset(dataset)
   
-  # if no data dict
+  # if no data_dict
   if(is.null(data_dict)){
-    data_dict <- data_dict_extract(data,as_mlstr_data_dict = TRUE)
+    data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
   }else{
-    data_dict <- as_mlstr_data_dict(data_dict)}
+    data_dict <- as_data_dict_mlstr(data_dict)}
   
   data_dict_var  <-
     data_dict[['Variables']] %>%
@@ -858,8 +858,8 @@ resume_variables <- function(data, data_dict = NULL){
   
   summary <- tibble(name = as.character())
   
-  if(nrow(data) > 0){
-    for(i in names(data)){
+  if(nrow(dataset) > 0){
+    for(i in names(dataset)){
       # stop()}
       
       tbl_var <- tibble()
@@ -868,15 +868,15 @@ resume_variables <- function(data, data_dict = NULL){
       
       # count the different observations in the columm
       tbl_var <-
-        data %>% select(value_var = any_of(i)) %>%
+        dataset %>% select(value_var = any_of(i)) %>%
         mutate(value_var_occur = 1) %>%
         mutate(value_var = as.character(.data$`value_var`)) %>%
         mutate(name = i) %>%
         add_index('index_in_dataset')
       
-      # count observations in the data, including no-observation of
+      # count observations in the dataset, including no-observation of
       # categorical outcomes
-      # classification of observations not in the data dict(3) and 'true'
+      # classification of observations not in the data_dict(3) and 'true'
       # NA as na values(4)
       # arrange (1),(2),(3),(4), by original index
       summary   <-
@@ -945,7 +945,7 @@ resume_variables <- function(data, data_dict = NULL){
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -958,16 +958,16 @@ resume_variables <- function(data, data_dict = NULL){
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -985,7 +985,7 @@ resume_variables <- function(data, data_dict = NULL){
 #' library(dplyr)
 #'
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -1005,12 +1005,12 @@ resume_variables <- function(data, data_dict = NULL){
 #'
 #' @export
 summary_variables <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
     .resume_var = NULL){
   
   # for dev purpose
-  if(is.null(.resume_var)) .resume_var <- resume_variables(data, data_dict)
+  if(is.null(.resume_var)) .resume_var <- resume_variables(dataset, data_dict)
   summary <- .resume_var
   
   # init
@@ -1114,7 +1114,7 @@ summary_variables <- function(
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -1127,16 +1127,16 @@ summary_variables <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -1154,7 +1154,7 @@ summary_variables <- function(
 #' library(dplyr)
 #'
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -1177,7 +1177,7 @@ summary_variables <- function(
 #'
 #' @export
 summary_variables_text <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
     .resume_var = NULL){
   
@@ -1232,7 +1232,7 @@ summary_variables_text <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1254,7 +1254,7 @@ summary_variables_text <- function(
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -1267,16 +1267,16 @@ summary_variables_text <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -1296,7 +1296,7 @@ summary_variables_text <- function(
 #' library(lubridate)
 #'
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -1323,7 +1323,7 @@ summary_variables_text <- function(
 #'
 #' @export
 summary_variables_date <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
     .resume_var = NULL){
   
@@ -1340,7 +1340,7 @@ summary_variables_date <- function(
       "Problem while computing date type variables due to ambiguous format.\n",
       "They will be analysed as text variables\n",
       crayon::bold("Useful tip:"),
-      "Use dataset_evaluate(data) to get an assessment of your data.")
+      "Use dataset_evaluate(dataset) to get an assessment of your dataset.")
     
     final_summary <- summary_variables_text(.resume_var = .resume_var)
     return(final_summary)
@@ -1396,7 +1396,7 @@ summary_variables_date <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1419,7 +1419,7 @@ summary_variables_date <- function(
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -1432,16 +1432,16 @@ summary_variables_date <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -1458,7 +1458,7 @@ summary_variables_date <- function(
 #' library(dplyr)
 #'
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -1480,7 +1480,7 @@ summary_variables_date <- function(
 #'
 #' @export
 summary_variables_numerical <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
     .resume_var = NULL){
   
@@ -1528,7 +1528,7 @@ summary_variables_numerical <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1550,7 +1550,7 @@ summary_variables_numerical <- function(
 #'
 #' @details
 #' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
+#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
 #' and 'Categories' (if any), representing meta data of an associated dataset.
 #' The 'Variables' component must contain at least 'name' column and the
 #' 'Categories' component must at least contain 'variable' and 'name'
@@ -1563,16 +1563,16 @@ summary_variables_numerical <- function(
 #' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 #' and/or any taxonomy provided.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
+#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
+#' can be associated to a data dictionary. If not, a minimum workable data dictionary
+#' can always be generated, when any column will be reported, and
 #' any factor column will be analysed as categorical variable (the column
 #' 'levels' will be created for that. In addition, the dataset may follow
 #' Maelstrom research standards, and its content can be evaluated accordingly,
 #' such as naming convention restriction, or id columns declaration (which
 #' full completeness is mandatory.
 #'
-#' @param data A tibble identifying the input data observations associated to
+#' @param dataset A tibble identifying the input dataset observations associated to
 #' its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -1590,7 +1590,7 @@ summary_variables_numerical <- function(
 #' library(dplyr)
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
@@ -1611,7 +1611,7 @@ summary_variables_numerical <- function(
 #'
 #' @export
 summary_variables_categorical <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
     .resume_var = NULL){
   
@@ -1779,7 +1779,7 @@ summary_variables_categorical <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .resume_var) %>%
   #   filter(.data$`categorical` == 'yes' | .data$`categorical` == 'mix') %>%
   #   full_join(summary_tbl, by = 'name')
   
