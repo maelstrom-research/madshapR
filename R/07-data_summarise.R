@@ -337,7 +337,7 @@ dataset_summarize <- function(
       summary_var <- 
         lapply(summary_var,function(x){
           x %>% filter(.data$`name` != group_by) %>%
-            add_row(summary_group)})}
+            bind_rows(summary_group)})}
 
     message("    Summarise information for numerical variables")
     .resume_var_num <-
@@ -381,7 +381,7 @@ dataset_summarize <- function(
       summary_cat <- 
         lapply(summary_cat,function(x){
           x %>% filter(.data$`name` != group_by) %>%
-            add_row(summary_group_cat)})}
+            bind_rows(summary_group_cat)})}
     
     # add grouping variable to each group
     if(group_by != ''){
