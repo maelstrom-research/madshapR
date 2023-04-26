@@ -170,6 +170,7 @@ dataset_summarize <- function(
     # rename group
     name_group <- 
       name_group %>%
+      mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
       left_join(cat_lab, by = join_by(!!as.symbol(group_by))) %>%
       arrange(.data$`___category_level___`) %>% 
       pull('___labels___') %>%
