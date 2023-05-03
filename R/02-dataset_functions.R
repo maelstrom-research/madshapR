@@ -96,7 +96,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
     return(dataset)
   }
 
-  dataset <- as_dataset(dataset,attributes(dataset)$`Mlstr::col_id`)
+  dataset <- as_dataset(dataset,attributes(dataset)$`madshapR::col_id`)
   return(dataset)
 }
 
@@ -147,8 +147,8 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 dataset_zap_data_dict <- function(dataset){
 
   # test input
-  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
-  preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
+  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
   for(i in seq_len(length(dataset))){
   # stop()}
@@ -227,9 +227,9 @@ dataset_cat_as_labels <- function(
     col_names = names(dataset)){
   
   # tests
-  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
+  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   dataset[col_names]
-  preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
+  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   
   # if data_dict empty
   if(is.null(data_dict)){
@@ -424,7 +424,7 @@ as_dataset <- function(object, col_id = NULL){
     # first column must be completly filled
     if(ncol(object) == 0){
       attributes(object)$`madshapR::class` <- "dataset"
-      attributes(object)$`Mlstr::col_id` <- NULL
+      attributes(object)$`madshapR::col_id` <- NULL
       return(object)}
 
     # if(is.null(col_id)) col_id <- names(object)[[1]]
@@ -438,7 +438,7 @@ as_dataset <- function(object, col_id = NULL){
            "Your id column(s) must not contain any NA values.")
 
     attributes(object)$`madshapR::class` <- "dataset"
-    attributes(object)$`Mlstr::col_id` <- col_id
+    attributes(object)$`madshapR::col_id` <- col_id
 
     object <-
       object %>% select(all_of(col_id), everything())
@@ -514,7 +514,7 @@ as_dossier <- function(object){
   
   tryCatch(
     object <- object %>% lapply(
-      FUN = function(x) as_dataset(x, attributes(x)$`Mlstr::col_id`)),
+      FUN = function(x) as_dataset(x, attributes(x)$`madshapR::col_id`)),
     error = function(x) stop(call. = FALSE,
 "\n\nThis object is not a dossier as defined by Maelstrom standards, which must be 
 exclusively a list of (at least one) dataset(s). Each dataset may have column(s)
@@ -578,7 +578,7 @@ is_dataset <- function(object){
     try(
       as_dataset(
         object,
-        col_id = attributes(object)$`Mlstr::col_id`),
+        col_id = attributes(object)$`madshapR::col_id`),
       silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)

@@ -1505,8 +1505,8 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   if(is.null(data_dict)) data_dict <- data_dict_extract(dataset)
   
   # test
-  as_dataset(dataset, attributes(dataset)$`Mlstr::col_id`)
-  preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
+  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   if(toString(attributes(data_dict)$`madshapR::class`) == 'data_dict_mlstr'){
     data_dict <- as_data_dict_mlstr(data_dict,as_data_dict = TRUE)
   }else{data_dict <- as_data_dict(data_dict)}
@@ -1690,6 +1690,8 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
          '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+  
+  dataset <- ungroup(dataset)
   
   data_dict <-
     list(

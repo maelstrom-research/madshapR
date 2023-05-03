@@ -76,24 +76,18 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 library(dplyr)
 library(fabR)
 
-###### Example 1: Combine functions and summarise datasets.
+###### Example 1 : Combine functions and summarise datasets.
 data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 dataset <-
   DEMO_files$dataset_TOKYO \%>\%
   valueType_adjust(from = data_dict) \%>\%
   data_dict_apply(data_dict)
   
-dataset_summarize(dataset,valueType_guess = TRUE)
-dataset_summarize(dataset,valueType_guess = FALSE)
- 
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-dataset_summarize(iris,valueType_guess = FALSE)
-dataset_summarize(
-  dataset = add_index(mtcars), 
-  data_dict = data_dict_extract(mtcars), 
-  .dataset_name = 'mtcars',
-  valueType_guess = FALSE)
+dataset_summarize(dataset)
 
+#' ###### Example 2 : any data-frame (or tibble) can be summarized
+dataset_summarize(iris)
+ 
 }
 
 }

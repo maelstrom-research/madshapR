@@ -71,20 +71,12 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use DEMO_files provided by the package
 
-###### Example 1: a dataset associated to its data dictionary. These can be
-# assessed combined
-dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-dataset <- data_dict_apply(dataset, data_dict)
-dataset_evaluate(dataset)
-
 ###### Example 2: a dataset not associated to a data dictionary. These can be
 # assessed separated
 data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
 dataset_evaluate(dataset, data_dict)
 
-###### Example 2: any data-frame (or tibble) can be assessed
-dataset_evaluate(iris)
 }
 
 }

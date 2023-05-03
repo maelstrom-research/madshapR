@@ -58,20 +58,12 @@
 #' 
 #' # use DEMO_files provided by the package
 #' 
-#' ###### Example 1: a dataset associated to its data dictionary. These can be
-#' # assessed combined
-#' dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-#' dataset <- data_dict_apply(dataset, data_dict)
-#' dataset_evaluate(dataset)
-#' 
 #' ###### Example 2: a dataset not associated to a data dictionary. These can be
 #' # assessed separated
 #' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
 #' dataset_evaluate(dataset, data_dict)
 #' 
-#' ###### Example 2: any data-frame (or tibble) can be assessed
-#' dataset_evaluate(iris)
 #' }
 #'
 #' @import dplyr tidyr stringr fabR
@@ -129,13 +121,13 @@ dataset_evaluate <- function(
         bind_rows(tibble(missing = as.character()))}}
 
   preserve_attributes <- 
-    col_id <- attributes(dataset)$`Mlstr::col_id`
+    col_id <- attributes(dataset)$`madshapR::col_id`
   
   if(is.null(col_id) | ncol(dataset) == 1){
     dataset <- dataset %>% add_index("___mlstr_index___")
     dataset <- as_dataset(dataset, names(dataset)[1])}
   
-  col_id <- attributes(dataset)$`Mlstr::col_id`
+  col_id <- attributes(dataset)$`madshapR::col_id`
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
   
   zap_dataset <- 
@@ -367,13 +359,9 @@ dataset_evaluate <- function(
 #' # use DEMO_files provided by the package
 #' library(stringr)
 #'
-#' ###### Example 1: a dataset list is a dossier by definition.
+#' ###### Example : a dataset list is a dossier by definition.
 #' dossier_evaluate(
 #'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")])
-#'    
-#' ###### Example 2: any list of data-frame (or tibble) can be a dossier by 
-#' # definition.
-#' dossier_evaluate(list(dataset_1 = iris, dataset_2 = mtcars))
 #'
 #' }
 #'
@@ -466,8 +454,7 @@ dossier_evaluate <- function(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE
 #' # use DEMO_files provided by the package
 #'
 #' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
-#' data_dict_evaluate(data_dict,as_data_dict_mlstr = FALSE)
-#' data_dict_evaluate(data_dict,as_data_dict_mlstr = TRUE)
+#' data_dict_evaluate(data_dict)
 #'
 #' }
 #'

@@ -162,8 +162,8 @@ valueType_self_adjust <- function(...){
   # test dataset
 
   if(is_dataset(...) & !is_data_dict(...)){
-    dataset <- as_dataset(...,col_id = attributes(...)$`Mlstr::col_id`)
-    preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
+    dataset <- as_dataset(...,col_id = attributes(...)$`madshapR::col_id`)
+    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
     is_factor <-
       dataset %>%
@@ -425,8 +425,8 @@ crayon::bold("\n\nUseful tip:"),
         stop(call. = FALSE,cond)})
 
     # test dataset
-    dataset <- as_dataset(to,col_id = attributes(to)$`Mlstr::col_id`)
-    preserve_attributes <- attributes(dataset)$`Mlstr::col_id`
+    dataset <- as_dataset(to,col_id = attributes(to)$`madshapR::col_id`)
+    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% nrow > 0){

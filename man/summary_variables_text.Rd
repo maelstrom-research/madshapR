@@ -57,25 +57,11 @@ full completeness is mandatory.
 }
 \examples{
 {
-
-# use DEMO_files provided by the package
+   
+###### Example : any data-frame (or tibble) can be a dataset by definition.
 library(dplyr)
 
-###### Example 1: Combine functions and summarise datasets.
-data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <-
-  DEMO_files$dataset_TOKYO \%>\%
-  valueType_adjust(from = data_dict) \%>\%
-  data_dict_apply(data_dict) \%>\%
-  select(where(is.character))
-  
-.resume_var <- resume_variables(dataset)
-summary_variables_text(.resume_var = .resume_var)
-  
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-.resume_var <- 
-  resume_variables(
-    mutate(iris['Species'],Species = as.character(Species)))
+.resume_var <- resume_variables(starwars['homeworld'])
 summary_variables_text(.resume_var = .resume_var)
 
 }

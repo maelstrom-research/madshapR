@@ -58,8 +58,8 @@ full completeness is mandatory.
 }
 \examples{
 {
+
 # use DEMO_files provided by the package
-library(stringr)
 library(dplyr)
 
 ###### Example 1: Combine functions and summarise datasets.
@@ -69,8 +69,6 @@ dossier <-
 
 dossier_summarize(dossier)
 
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-dossier_summarize(list(iris = iris, mtcars = mtcars))
 }
 
 }

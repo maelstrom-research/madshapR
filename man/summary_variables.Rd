@@ -57,20 +57,7 @@ full completeness is mandatory.
 \examples{
 {
 
-# use DEMO_files provided by the package
-library(dplyr)
-
-###### Example 1: Combine functions and summarise datasets.
-data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <-
-  DEMO_files$dataset_TOKYO \%>\%
-  valueType_adjust(from = data_dict) \%>\%
-  data_dict_apply(data_dict)
-  
-.resume_var <- resume_variables(dataset)
-summary_variables(.resume_var = .resume_var)
-  
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
+###### Example : any data-frame (or tibble) can be a dataset by definition.
 .resume_var <- resume_variables(iris)
 summary_variables(.resume_var = .resume_var)
 

@@ -9,7 +9,7 @@ variable_visualize(
   col,
   data_dict = NULL,
   group_by = NULL,
-  summary_var = NULL
+  .summary_var = NULL
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ associated dataset. Automatically generated if not provided.}
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
 
-\item{summary_var}{A summary list which provides summary of the variables (
+\item{.summary_var}{A summary list which provides summary of the variables (
 If provided, the function will not do this action internally, enhancing the
 speed of completion)}
 }

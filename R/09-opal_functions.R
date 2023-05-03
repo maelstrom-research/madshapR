@@ -306,7 +306,7 @@ opal_tables_push <- function(
 
   message("Verification of input format.")
   # tests
-  if(!is.null(dataset))  as_dataset(dataset,attributes(dataset)$`Mlstr::col_id`)
+  if(!is.null(dataset))  as_dataset(dataset,attributes(dataset)$`madshapR::col_id`)
   if(!is.null(dossier))    as_dossier(dossier)
   if(!is.null(data_dict))data_dict <- as_data_dict_mlstr(data_dict)
 
@@ -340,9 +340,9 @@ opal_tables_push <- function(
   for(i in table_names){
     # stop()}
 
-    # col_id <- attributes(project[[i]][['dataset']])$`Mlstr::col_i`
+    # col_id <- attributes(project[[i]][['dataset']])$`madshapR::col_i`
     # if(is.null(col_id))
-    #   attributes(project[[i]][['dataset']])$`Mlstr::col_i` <-
+    #   attributes(project[[i]][['dataset']])$`madshapR::col_i` <-
     #     names(project[[i]][['dataset']][1])
     
     project[[i]][['dataset']] <-

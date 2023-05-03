@@ -12,7 +12,7 @@ dataset_visualize(
   taxonomy = NULL,
   .dataset_name = NULL,
   .keep_files = TRUE,
-  summary_var = NULL
+  .summary_var = NULL
 )
 }
 \arguments{
@@ -38,7 +38,7 @@ identifying the scheme used for variables classification as a tibble.}
 \item{.keep_files}{whether to keep the R-markdown files.
 TRUE by default.}
 
-\item{summary_var}{A summary list which provides summary of the variables (
+\item{.summary_var}{A summary list which provides summary of the variables (
 If provided, the function will not do this action internally, enhancing the
 speed of completion)}
 }
@@ -90,10 +90,19 @@ full completeness is mandatory.
 
 # use DEMO_files provided by the package
 library(dplyr)
+library(fabR)
 
-###### Example 1: any data-frame (or tibble) can be a dataset by definition.
+###### Example : Combine functions and summarise datasets.
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <-
+  DEMO_files$dataset_TOKYO \%>\%
+  valueType_adjust(from = data_dict) \%>\%
+  data_dict_apply(data_dict)
+
 tempdir <- tempdir()
-dataset_visualize(iris, to = tempdir,.keep_files = TRUE, group_by = Species)
+
+dataset_visualize(dataset,group_by = gndr,to = tempdir)
+  
 open_visual_report(tempdir)
 
 }

@@ -59,8 +59,7 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 # use DEMO_files provided by the package
 
 data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
-data_dict_evaluate(data_dict,as_data_dict_mlstr = FALSE)
-data_dict_evaluate(data_dict,as_data_dict_mlstr = TRUE)
+data_dict_evaluate(data_dict)
 
 }
 

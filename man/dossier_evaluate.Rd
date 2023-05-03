@@ -64,13 +64,9 @@ full completeness is mandatory.
 # use DEMO_files provided by the package
 library(stringr)
 
-###### Example 1: a dataset list is a dossier by definition.
+###### Example : a dataset list is a dossier by definition.
 dossier_evaluate(
   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")])
-   
-###### Example 2: any list of data-frame (or tibble) can be a dossier by 
-# definition.
-dossier_evaluate(list(dataset_1 = iris, dataset_2 = mtcars))
 
 }
 

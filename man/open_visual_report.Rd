@@ -27,7 +27,7 @@ library(dplyr)
 
 ###### Example 1: any data-frame (or tibble) can be a dataset by definition.
 tempdir <- tempdir()
-dataset_visualize(iris, to = tempdir,.keep_files = TRUE, group_by = Species)
+dataset_visualize(iris, to = tempdir)
 open_visual_report(tempdir)
 
 }
