@@ -77,6 +77,9 @@ dataset_evaluate <- function(
     taxonomy = NULL,
     .dataset_name = NULL,
     as_data_dict_mlstr = TRUE){
+  
+  # future dev
+  # add emptiness of the dataset in the Dataset assessment
 
   fargs <- as.list(match.call(expand.dots = TRUE))
 
@@ -159,7 +162,7 @@ dataset_evaluate <- function(
     test_unique_value <-
     test_existing_variable_category <-
     test_valueType <-
-    tibble(name = as.character())
+    tibble(name_var = as.character())
 
   message(
 "    Assess the standard adequacy of naming")
@@ -224,7 +227,7 @@ dataset_evaluate <- function(
     fabR::get_all_na_rows(dataset,id_col = col_id) %>%
     mutate(
       condition =
-        "[INFO] - Empty participant(s) (Except participant identifier column")
+        "[INFO] - Empty participant(s) (Except participant identifier column)")
   
   message(
     "    Assess the presence all NA(s) of columns in the data dictionary")
@@ -250,7 +253,8 @@ dataset_evaluate <- function(
       "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-
       check_dataset_valueType(
-        zap_dataset, data_dict['Variables'],valueType_guess = TRUE)}
+       dataset = zap_dataset, 
+       data_dict = data_dict['Variables'],valueType_guess = TRUE)}
   
   # test_name_standards
   # test_matching_variable
@@ -369,7 +373,8 @@ dataset_evaluate <- function(
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #' @export
-dossier_evaluate <- function(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE){
+dossier_evaluate <- function(
+    dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE){
   
   # amelioration :rajouter taxonomy
   

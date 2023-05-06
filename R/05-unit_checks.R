@@ -1037,11 +1037,11 @@ check_dataset_valueType <- function(
     warning("Unknown or uninitialised column: `valueType`")
     return(test)}
 
-  dataset <-
-    dataset[vapply(
-      X = dataset, FUN = function(x) !all(is.na(x)), FUN.VALUE = logical(1))]
+  # dataset <-
+  #   dataset[vapply(
+  #     X = dataset, FUN = function(x) !all(is.na(x)), FUN.VALUE = logical(1))]
 
-  dataset <-      data_dict_match_dataset(dataset, data_dict, output = "dataset")
+  dataset <-   data_dict_match_dataset(dataset, data_dict, output = "dataset")
   data_dict <- data_dict_match_dataset(dataset, data_dict, output = "data_dict")
 
   for(i in names(dataset)){
