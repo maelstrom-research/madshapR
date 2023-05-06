@@ -744,7 +744,8 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' ###### Example 1: this function is compatible with taxonomy_opal_get()
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password',url = 'https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password',
+#'     url = 'https://opal-demo.maelstrom-research.org/')
 #' opal_taxo <- taxonomy_opal_mlstr_get(opal)
 #' as_taxonomy(opal_taxo)
 #' 

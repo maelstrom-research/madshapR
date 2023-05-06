@@ -37,7 +37,7 @@ to interact with their Opal environment.
 
 library(opalr)
 opal <- 
-  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  opal.login('administrator','password', url ='https://opal-demo.maelstrom-research.org')
   
 tempdir <- tempdir()
 invisible(dir.create(paste0(tempdir,"/a_file")))

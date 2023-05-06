@@ -31,7 +31,8 @@
 #' 
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password', 
+#'     url ='https://opal-demo.maelstrom-research.org')
 #'   
 #' tempdir <- basename(tempdir())
 #' try(opal_project_create(opal, tempdir))
@@ -95,7 +96,8 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' 
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password', 
+#'     url ='https://opal-demo.maelstrom-research.org')
 #'   
 #' tempdir <- tempdir()
 #' invisible(dir.create(paste0(tempdir,"/a_file")))
@@ -149,7 +151,8 @@ opal_files_push <- function(opal, from, to){
 #' 
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password', 
+#'     url ='https://opal-demo.maelstrom-research.org')
 #'   
 #' tempdir <- tempdir()
 #' invisible(dir.create(paste0(tempdir,"/a_file")))
@@ -253,7 +256,9 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' dossier <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
-#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password', 
+#'     url ='https://opal-demo.maelstrom-research.org')
+#'     
 #' tempdir <- basename(tempdir())
 #' try(opal_project_create(opal, tempdir))
 #' 
@@ -437,7 +442,7 @@ opal_tables_push <- function(
 #'
 #' opal <- 
 #'   opal.login('administrator','password', 
-#'   url ='https://opal-demo.obiba.org/')
+#'     url ='https://opal-demo.maelstrom-research.org')
 #'   
 #' tempdir <- basename(tempdir())
 #' try(opal_project_create(opal, tempdir))
@@ -621,7 +626,8 @@ opal_tables_pull <- function(
 #' 
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password', 
+#'     url ='https://opal-demo.maelstrom-research.org/ui/index.html')
 #'   
 #' try(taxonomy_opal_mlstr_get(opal))
 #'   
@@ -871,7 +877,8 @@ taxonomy_opal_mlstr_get <- function(opal = NULL){
 #' 
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+#'   opal.login('administrator','password', 
+#'     url ='https://opal-demo.maelstrom-research.org')
 #'   
 #' try(taxonomy_opal_get(opal))
 #' 
@@ -1001,7 +1008,7 @@ taxonomy_opal_get <- function(opal){
 #'
 #' opal <- 
 #'   opal.login('administrator','password', 
-#'   url ='https://opal-demo.obiba.org/')
+#'     url ='https://opal-demo.maelstrom-research.org')
 #'   
 #' tempdir <- basename(tempdir())
 #' try(opal_project_create(opal, tempdir))
