@@ -400,7 +400,7 @@ variable_visualize <- function(
       
       if(vT_col$valueType == "integer") {
         #  Freedman-Diaconis rule
-        bin <- 2 * IQR(colset_values[[col]]) / length(colset_values[[col]])^(1/3)
+        bin <- ceiling(2 * IQR(colset_values[[col]]) / length(colset_values[[col]])^(1/3))
         geom_viz <- geom_histogram(bins = bin)}
       
         plot_2 <- 
