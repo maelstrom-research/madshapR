@@ -586,7 +586,7 @@ data_dict_evaluate <- function(
     mutate(sheet    = "Variables") %>%
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
-        fabR::get_duplicated_cols(data_dict[['Categories']]) %>%
+        suppressWarnings(fabR::get_duplicated_cols(data_dict[['Categories']])) %>%
           mutate(sheet    = "Categories")
       }else{tibble()})
   
