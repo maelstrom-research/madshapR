@@ -28,7 +28,8 @@ to interact with their Opal environment.
 
 library(opalr)
 opal <- 
-  opal.login('administrator','password', url ='https://opal-demo.maelstrom-research.org/ui/index.html')
+  opal.login('administrator','password', 
+    url ='https://opal-demo.maelstrom-research.org/ui/index.html')
   
 try(taxonomy_opal_mlstr_get(opal))
   
