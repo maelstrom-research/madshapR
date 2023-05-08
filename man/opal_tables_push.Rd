@@ -53,7 +53,7 @@ permissions to Opal. The user must have adequate credentials
 to interact with their Opal environment.
 }
 \examples{
-{
+\dontrun{
 
 #' # use DEMO_files provided by the package
 library(opalr)

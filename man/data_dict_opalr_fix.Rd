@@ -35,7 +35,7 @@ restriction, columns like 'valueType', 'missing' and 'label(:xx)',
 and/or any taxonomy provided.
 }
 \examples{
-{
+\dontrun{
 
 #' # use DEMO_files provided by the package
 library(opalr)

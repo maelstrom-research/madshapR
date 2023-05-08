@@ -27,7 +27,7 @@
 #' environment.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' library(opalr)
 #' opal <- 
@@ -92,7 +92,7 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' The path to Opal needs to be pasted with Opal absolute path.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' library(opalr)
 #' opal <- 
@@ -147,7 +147,7 @@ opal_files_push <- function(opal, from, to){
 #' Folder(s) containing files coming from Opal in user R environment.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' library(opalr)
 #' opal <- 
@@ -247,7 +247,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' A table in Opal.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' #' # use DEMO_files provided by the package
 #' library(opalr)
@@ -431,7 +431,7 @@ opal_tables_push <- function(
 #' respective data dictionary.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' #' # use DEMO_files provided by the package
 #' library(opalr)
@@ -622,7 +622,7 @@ opal_tables_pull <- function(
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' library(opalr)
 #' opal <- 
@@ -873,7 +873,7 @@ taxonomy_opal_mlstr_get <- function(opal = NULL){
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' library(opalr)
 #' opal <- 
@@ -997,7 +997,7 @@ taxonomy_opal_get <- function(opal){
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
-#' {
+#' \dontrun{
 #' 
 #' #' # use DEMO_files provided by the package
 #' library(opalr)
