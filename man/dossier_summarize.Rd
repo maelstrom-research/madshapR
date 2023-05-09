@@ -2,72 +2,72 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{dossier_summarize}
 \alias{dossier_summarize}
-\title{Generate an Excel spreadsheet report of a dossier (dataset list)}
+\title{Generate a report and summary of a dossier (list of datasets)}
 \usage{
 dossier_summarize(dossier, taxonomy = NULL, valueType_guess = TRUE)
 }
 \arguments{
 \item{dossier}{List of tibble, each of them being datasets.}
 
-\item{taxonomy}{A data-frame or data-frame extension (e.g. a tibble),
-identifying the scheme used for variables classification as a tibble.}
+\item{taxonomy}{A tibble identifying the scheme used for variables
+classification.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
-A list of tibbles of report for each dataset.
+A list of tibbles of report for each listed dataset.
 }
 \description{
-Generates an Excel spreadsheet report for a dataset
-list (or dossier) showing descriptive statistics for each variable to
-facilitate the assessment of input dataset. Statistics are generated according
-to their valueType.
-This report can be used to assist the user in the assessment of the dataset
-structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy, or standard evaluation. The summary associated provides
-dataset composition, with observation distribution and descriptive statistics.
+Assesses and summarizes the content and structure of a dossier
+(list of datasets)  and reports potential issues to facilitate the assessment
+of input data. The report can be used to help assess data structure, presence
+of fields, coherence across elements, and taxonomy or data dictionary
+formats. The summary provides additional information about variable
+distributions and descriptive statistics. This report is compatible with
+Excel and can be exported as an Excel spredsheet.
 }
 \details{
-A dossier must be a named list containing at least one data-frame or
-data-frame extension (e.g. a tibble), each of them being datasets.
+A dossier must be a named list containing at least one data frame or
+data frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
+This report is compatible with Excel and can be exported as an Excel
+spredsheet.
 
-A data dictionary-like structure must be a list of at least one or two
-data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A taxonomy is classification scheme that can be defined for variable
+attributes. If defined, a taxonomy must be a data frame-like object. It must
+be compatible with (and is generally extracted from) an Opal environment. To
+work with certain functions, a valid taxonomy must contain at least the
+columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+may follow Maelstrom research taxonomy, and its content can be evaluated
+accordingly, such as naming convention restriction, tagging elements,
+or scales, which are specific to Maelstrom Research. In this particular
+case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
+'vocabulary_scale' and 'term_scale' to work with some specific functions.
 
-A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data dictionary
-can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers to
+the OBiBa-internal type of a variable. It is specified in a data dictionary
+in a column \code{valueType} and can be associated with variables as attributes.
+Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean',
+'datetime', 'date'). The full list of OBiBa valueType possibilities and their
+correspondance with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 library(dplyr)
+library(stringr)
 
 ###### Example 1: Combine functions and summarise datasets.
 dossier <- 
-  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")] \%>\%
+  DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")] \%>\%
   lapply(valueType_self_adjust)
 
-dossier_summarize(dossier)
+dossier_summary <- dossier_summarize(dossier)
+glimpse(dossier_summary)
 
 }
 

@@ -2,29 +2,48 @@
 % Please edit documentation in R/03-catalogue_functions.R
 \name{valueType_guess}
 \alias{valueType_guess}
-\title{Guess the first possible valueType of any object}
+\title{Guess the first possible valueType of an object (Can be a vector)}
 \usage{
 valueType_guess(x)
 }
 \arguments{
-\item{x}{R object. Can be a vector.}
+\item{x}{Object. Can be a vector.}
 }
 \value{
-A character string which is the first possible valueType of the given
-object.
+A character string which is the first possible valueType of the input object.
 }
 \description{
-Provides the first possible valueType, by trying to assign the object to
-'boolean', then 'integer', then 'decimal', then 'date'.
-If all fails, 'text', by default.
+Provides the first possible valueType of a variable. The function tries to
+assign the valueType of the object first to 'boolean', then 'integer', then
+'decimal', then 'date'. If all others fail, the default valueType is 'text'.
 }
 \details{
-valueType is one of the property of a variable entity. It refers to
-the (Obiba internal) type of any variable. The valueType can be 'text',
-'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-'point', 'linestring', 'polygon'
-The valueType list is available using \link{valueType_list}, and their
-corresponding with typeof which is the (R internal) type of any object.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
+
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
+
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers to
+the OBiBa-internal type of a variable. It is specified in a data dictionary
+in a column \code{valueType} and can be associated with variables as attributes.
+Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean',
+'datetime', 'date'). The full list of OBiBa valueType possibilities and their
+correspondance with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {

@@ -2,12 +2,12 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{dossier_create}
 \alias{dossier_create}
-\title{Create a dossier as a list of datasets}
+\title{Create a dossier object from a list of dataset(s)}
 \usage{
 dossier_create(dataset_list, data_dict_apply = FALSE)
 }
 \arguments{
-\item{dataset_list}{A list of tibble(s), identifying the input dataset
+\item{dataset_list}{A list of tibble(s), identifying the input data
 observations.}
 
 \item{data_dict_apply}{whether to apply the data dictionary to its dataset.
@@ -18,18 +18,18 @@ attributes. The factors will be preserved. FALSE by default.}
 A list of tibble(s), each of them identifying datasets in a dossier.
 }
 \description{
-Assembles a dossier from datasets. A dossier is a list containing at least one
-dataset, that can be used directly in keys functions of the package.
+Assembles a dossier object from the listed datasets. A dossier is a list
+containing at least one valid dataset and is the input used by key functions
+of the package.
 }
 \details{
-A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data dictionary
-can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 }
 \examples{
 {
@@ -42,7 +42,7 @@ dossier <- dossier_create(
    dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
    dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
    
-###### Example 2: any data-frame (or tibble) can be gathered into a dossier
+###### Example 2: any data frame (or tibble) can be gathered into a dossier
 dossier_create(list(iris, mtcars))
    
 }

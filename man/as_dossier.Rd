@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{as_dossier}
 \alias{as_dossier}
-\title{Validate and coerce any object as dossier}
+\title{Validate and coerce an object to dossier format}
 \usage{
 as_dossier(object)
 }
@@ -13,14 +13,14 @@ as_dossier(object)
 A list of tibble(s), each of them identifying datasets in a dossier.
 }
 \description{
-Confirms that the input object is a valid dossier, and return it as a dossier
+Confirms that the input object is a valid dossier and returns it as a dossier
 with the appropriate madshapR::class attribute. This function mainly helps
 validate input within other functions of the package but could be used to
 check if a dossier is valid.
 }
 \details{
-A dossier must be a named list containing at least one data-frame or
-data-frame extension (e.g. a tibble), each of them being datasets.
+A dossier must be a named list containing at least one data frame or
+data frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
 }
 \examples{
@@ -30,9 +30,10 @@ The name of each tibble will be use as the reference name of the dataset.
 library(stringr)
 
 ###### Example 1: a dataset list is a dossier by definition.
-as_dossier(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+dossier <- 
+  as_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
    
-###### Example 2: any list of data-frame (or tibble) can be a dossier by 
+###### Example 2: any list of data frame (or tibble) can be a dossier by 
 # definition.
 as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 

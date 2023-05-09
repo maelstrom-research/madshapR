@@ -2,7 +2,7 @@
 % Please edit documentation in R/03-catalogue_functions.R
 \name{as_taxonomy}
 \alias{as_taxonomy}
-\title{Validate and coerce any object as taxonomy}
+\title{Validate and coerce an object to taxonomy format}
 \usage{
 as_taxonomy(object)
 }
@@ -13,17 +13,18 @@ as_taxonomy(object)
 A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 }
 \description{
-Confirms that the input object is a valid taxonomy, and return it as a
+Confirms that the input object is a valid taxonomy and returns it as a
 taxonomy with the appropriate madshapR::class attribute. This function mainly
 helps validate input within other functions of the package but could be used
 to check if a taxonomy is valid.
 }
 \details{
-A taxonomy must be a data-frame or data-frame extension (e.g. a tibble).
-The taxonomy must be compatible with (and generally extracted from) an
-Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-'terms' to work with some specific functions. In addition, the taxonomy
-may follow Maelstrom research standards, and its content can be evaluated
+A taxonomy is classification scheme that can be defined for variable
+attributes. If defined, a taxonomy must be a data frame-like object. It must
+be compatible with (and is generally extracted from) an Opal environment. To
+work with certain functions, a valid taxonomy must contain at least the
+columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+may follow Maelstrom research taxonomy, and its content can be evaluated
 accordingly, such as naming convention restriction, tagging elements,
 or scales, which are specific to Maelstrom Research. In this particular
 case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',

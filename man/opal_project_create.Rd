@@ -22,14 +22,15 @@ The user must have adequate credentials to interact with their Opal
 environment.
 }
 \description{
-Creates an empty project in Opal environment. It is a wrapper
-of \code{\link[opalr:opal.project_create]{opalr::opal.project_create()}}.
+Creates an empty project in an Opal environment. This is a wrapper function
+for \code{\link[opalr:opal.project_create]{opalr::opal.project_create()}}.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
 \dontrun{

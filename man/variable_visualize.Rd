@@ -2,7 +2,7 @@
 % Please edit documentation in R/08-data_visualize.R
 \name{variable_visualize}
 \alias{variable_visualize}
-\title{Generate a combined plot of a variable in a dataset}
+\title{Generate a list of charts, figures and summary tables of a variable}
 \usage{
 variable_visualize(
   dataset = tibble(id = as.character()),
@@ -13,8 +13,8 @@ variable_visualize(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations associated
+to its data dictionary.}
 
 \item{col}{A character string specifying the name of the column.}
 
@@ -25,48 +25,73 @@ associated dataset. Automatically generated if not provided.}
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
 
-\item{.summary_var}{A summary list which provides summary of the variables (
-If provided, the function will not do this action internally, enhancing the
-speed of completion)}
+\item{.summary_var}{A summary list which is the summary of the variables.}
 }
 \value{
-xxx xxx xxx
+A list of up to seven elements (charts and figures and datatables) which can
+be used to summarize visualize data.
 }
 \description{
-xxx xxx xxx
+Analyses the content of a variable and its data dictionary (if any),
+identifies its data type and values accordingly and generates figures and
+summaries (datatable format). The figures and tables are representations of
+data distribution, statistics and valid/non valid/missing values (based on
+the data dictionary information if provided and the data type of the
+variable). This function can be used to personalize report parameters and is
+internally used in the function \code{\link[=dataset_visualize]{dataset_visualize()}}. Up to seven objects
+are generated which include : One datatable of the key elements of the
+data dictionary, one datatable summarizing statistics (such as mean,
+quartiles, most seen value, most recent date, ... , depending on the
+data type of the variable), two graphs showing the distribution of the
+variable, One bar chart for categorical values (if any), One bar chart for
+missing values (if any), One pie chart for the proportion of valid and
+missing values (if any). The variable can be grouped using \code{group_by}
+parameter, which is a (categorical) column in the dataset. The user may need
+to use \code{\link[=as.factor]{as.factor()}} in this context. To fasten the process (and allow
+recycling object in a workflow) the user can feed the function with a
+\code{.summary_var}, which is the output of the function \code{\link[=dataset_summarize]{dataset_summarize()}}
+of the column(s) \code{col} and  \code{group_by}. The summary must have the same
+parameters to operate.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 
-A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data dictionary
-can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {
 
-variable_visualize(dataset = iris, col = Petal.Length, group_by = Species)
-
+ summary_variable <-
+   dataset_summarize(dataset = iris, group_by = Species)
+  
+ variable_viz <-
+   variable_visualize(
+   dataset = iris, col = Petal.Length, group_by = Species,
+   .summary_var =  summary_variable)
+ 
+ variable_viz$summary_table
+ variable_viz$main_values_1
+ variable_viz$main_values_2
+ 
 }
 
 }
 \seealso{
-\code{\link[=open_visual_report]{open_visual_report()}}
+\code{\link[=as.factor]{as.factor()}}
+\code{\link[DT:datatable]{DT::datatable()}}, \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}
+\code{\link[=dataset_summarize]{dataset_summarize()}}, \code{\link[=dataset_visualize]{dataset_visualize()}}
 }

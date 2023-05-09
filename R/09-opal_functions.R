@@ -2,14 +2,15 @@
 #' Create a project in an Opal environment
 #'
 #' @description
-#' Creates an empty project in Opal environment. It is a wrapper
-#' of [opalr::opal.project_create()].
+#' Creates an empty project in an Opal environment. This is a wrapper function 
+#' for [opalr::opal.project_create()].
 #'
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -68,14 +69,15 @@ opal_project_create <- function(opal, project, tag = NULL,...){
 #' Upload files to an Opal environment
 #'
 #' @description
-#' Uploads files from local to Opal environment. It is a wrapper of
-#' [opalr::opal.file_upload()].
+#' Uploads files from the local environment to an Opal environment. This is a 
+#' wrapper function for [opalr::opal.file_upload()].
 #'
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -118,20 +120,17 @@ opal_files_push <- function(opal, from, to){
 
 #' @title
 #' Download files from an Opal environment
-#'
+#' 
 #' @description
-#' Downloads files from Opal environment to local. It is a wrapper of
-#' [opalr::opal.file_download()].
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
-#'
+#' Downloads files from an Opal environment to the local environment. This is a 
+#' wrapper function for [opalr::opal.file_download()].
+#' 
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -214,15 +213,16 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' Upload datasets into an Opal environment as tables in an Opal project
 #'
 #' @description
-#' Uploads a dossier or dataset(s) from local environment to Opal
-#' environment. It is a wrapper of [opalr::opal.table_create()],
+#' Uploads a dossier or dataset from the local environment to an Opal
+#' environment. This is a wrapper function for [opalr::opal.table_create()],
 #' [opalr::opal.table_save()] and [opalr::opal.table_dictionary_update()].
 #'
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -230,8 +230,8 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #'
 #' @param opal Opal login attributes.
 #' @param dossier List of tibble, each of them being datasets.
-#' @param dataset A tibble identifying the input dataset observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations associated 
+#' to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param project_name A character string specifying the Opal project name.
@@ -244,7 +244,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' conflict). Default is FALSE.
 #'
 #' @return
-#' A table in Opal.
+#' A table or table(s) in Opal.
 #'
 #' @examples
 #' \dontrun{
@@ -253,7 +253,7 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #' library(opalr)
 #' library(stringr)
 #'
-#' dossier <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#' dossier <- DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
 #'   opal.login('administrator','password', 
@@ -311,9 +311,12 @@ opal_tables_push <- function(
 
   message("Verification of input format.")
   # tests
-  if(!is.null(dataset))  as_dataset(dataset,attributes(dataset)$`madshapR::col_id`)
-  if(!is.null(dossier))    as_dossier(dossier)
-  if(!is.null(data_dict))data_dict <- as_data_dict_mlstr(data_dict)
+  if(!is.null(dataset)) 
+    as_dataset(dataset,attributes(dataset)$`madshapR::col_id`)
+  if(!is.null(dossier))    
+    as_dossier(dossier)
+  if(!is.null(data_dict))
+    data_dict <- as_data_dict_mlstr(data_dict)
 
   project <- list()
   if(!is.null(dossier)) {
@@ -402,15 +405,16 @@ opal_tables_push <- function(
 #' Download tables from an Opal project as a dossier
 #'
 #' @description
-#' Downloads a dossier or dataset(s) from Opal project to local
-#' environment. It is a wrapper of [opalr::opal.table_get()] and
+#' Downloads a dossier or dataset from an Opal environment to the local 
+#' environment. This is a wrapper function for[opalr::opal.table_get()] and
 #' [opalr::opal.table_dictionary_get()].
 #'
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -421,13 +425,13 @@ opal_tables_push <- function(
 #' @param table_list A vector character string specifying Opal tables name.
 #' @param content A vector of character string which indicates if the
 #' function returns a dataset, or data dictionary. Default is 'dataset'.
-#' @param keep_as_dossier whether to return a dossier or a dataset if there is only
-#' one table. TRUE by default, if FALSE returns dataset.
+#' @param keep_as_dossier whether to return a dossier or a dataset if there is 
+#' only one table. TRUE by default, if FALSE returns dataset.
 #' @param .remove_id whether to return the id column created in Opal or not. 
 #' TRUE by default.
 #'
 #' @return
-#' R objects (tibbles and list of tibbles) representing tables and their
+#' Objects (tibbles and list of tibbles) representing tables and their
 #' respective data dictionary.
 #'
 #' @examples
@@ -438,7 +442,7 @@ opal_tables_push <- function(
 #' library(stringr)
 #'
 #' dossier <- 
-#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#'   DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
 #'   opal.login('administrator','password', 
@@ -599,18 +603,18 @@ opal_tables_pull <- function(
 }
 
 #' @title
-#' Get the taxonomy as used by Maelstrom Research
+#' Get available taxonomies in format used by Maelstrom Research 
 #'
 #' @description
-#' Downloads all taxonomies from an Opal server in a tibble format. This
-#' taxonomy is specifically the Maelstrom taxonomy used for any purpose of dataset
-#' transformation, cleaning or assessment, following Maelstrom standards.
+#' Downloads all taxonomies from an Opal server in a specific tibble format
+#' used in the Maelstrom Research ecosystem.
 #'
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -850,18 +854,18 @@ taxonomy_opal_mlstr_get <- function(opal = NULL){
 }
 
 #' @title
-#' Get the taxonomy as used by Opal
+#' Get available taxonomies in format used by Opal
 #'
 #' @description
-#' Downloads all taxonomies from an Opal server in the format used by Opal.
-#' This taxonomy is used for any purpose of dataset transformation, cleaning
-#' or assessment.
+#' Downloads all taxonomies from an Opal server in a specific tibble format
+#' used by Opal.
 #'
 #' @details
-#' The user must be allowed to interact with their Opal. The errors
-#' provided may be associated to the handler or the read/write
-#' permissions to Opal. The user must have adequate credentials
-#' to interact with their Opal environment.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
@@ -929,7 +933,8 @@ taxonomy_opal_get <- function(opal){
       term = ifelse(
         str_detect(
           .data$`vocabulary`,"Unknown_vocabulary"),"",
-        toString(opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)$name))) %>%
+        toString(
+          opal.terms(opal,.data$`taxonomy`, .data$`vocabulary`)$name))) %>%
     tibble() %>%
     mutate(
       term =
@@ -962,31 +967,23 @@ taxonomy_opal_get <- function(opal){
 }
 
 #' @title
-#' Transform a data dictionary object from opalr to Opal format
+#' Transform a data dictionary object from 'opalr' format to Opal format
 #'
 #' @description
-#' Transforms a data dictionary from Opalr format to Opal format.
-#' A data dictionary imported using opalr package has a different structure
-#' from the rest of the package functions. This structure will be transformed
-#' to match with the rest of the package environment.
+#' Transforms a data dictionary from 'opalr' format to Opal format.
+#' A data dictionary imported using the 'opalr' package has a different 
+#' structure and will be transformed to the structure used in 'madshapR' 
+#' functions.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' Opal is the OBiBa application for data management, and Opal environments can 
+#' be integrated with RStudio environments using the package `opalr`. 
+#' The user must have adequate credentials to interact with a specific Opal 
+#' environment. Some function errors produced may be associated with the 
+#' handler or Opal read/write permissions.
 #'
 #' @seealso
-#' [madshapR::as_data_dict()]
+#' [as_data_dict()]
 #' Please see [Opal documentation](https://opaldoc.obiba.org/en/dev/)for further
 #' information.
 #'
@@ -1004,7 +1001,7 @@ taxonomy_opal_get <- function(opal){
 #' library(stringr)
 #'
 #' dossier <- 
-#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+#'   DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 #'
 #' opal <- 
 #'   opal.login('administrator','password', 

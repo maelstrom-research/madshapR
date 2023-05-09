@@ -3,11 +3,11 @@
 \docType{data}
 \name{DEMO_files}
 \alias{DEMO_files}
-\title{Built-in material allowing the user to test the package with demo material}
+\title{Built-in material allowing the user to test the package with demo data}
 \format{
 \subsection{\code{list}}{
 
-A list with 22 elements used for testing purpose (data-frames and lists):
+A list with 22 elements used for testing the package (data frames and lists):
 
 \describe{
 \item{DEMO_data_processing_elements - final}{Data processing element
@@ -58,7 +58,7 @@ material.
 \examples{
 {
 
-DEMO_files
+ print(DEMO_files$dataset_TOKYO)
 
 }
 }

@@ -2,14 +2,13 @@
 #' Call the help center for full documentation
 #'
 #' @description
-#' This feature is a direct call of the documentation in the repository hosting
-#' the package. The user accesses the description of the latest version of the
+#' This function is a direct call to the documentation in the repository hosting
+#' the package. The user can access the description of the latest version of the
 #' package, the vignettes, and the list of functions.
 #'
 #' @examples
 #' {
 #'
-#' library(utils)
 #' madshapR_help()
 #' 
 #' }
@@ -23,26 +22,29 @@ madshapR_help <- function(){
 
 }
 
-
 #' @title
-#' Give list of authorized valueType values
+#' Built-in tibble of allowed valueType values
 #'
 #' @description
-#' Built-in tibbles showing the list of authorized valueType values, as
-#' described in Opal, and their data type (R wise) corresponding. This tibble
-#' is designed for programmatic use.
+#' Provides a built-in tibble showing the list of allowed Opal valueType values
+#' and their corresponding R data types. This tibble is mainly used for internal 
+#' processes and programming.
 #'
 #' @details
-#' valueType is one of the property of a variable entity. It refers to
-#' the (Obiba internal) type of any variable. The valueType can be 'text',
-#' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-#' 'point', 'linestring', 'polygon'.
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers to 
+#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
+#' in a column `valueType` and can be associated with variables as attributes. 
+#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
+#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
+#' correspondance with R data types are available using 
+#' [madshapR::valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
 #' @format ## `tibble`
-#' A data-frame with 12 rows and 6 columns:
+#' A data frame with 12 rows and 6 columns:
 #' \describe{
 #'   \item{valueType}{data type as described in Opal}
 #'   \item{typeof}{data type provided by base::typeof}
@@ -63,14 +65,14 @@ madshapR_help <- function(){
 "valueType_list"
 
 #' @title
-#' Built-in material allowing the user to test the package with demo material
+#' Built-in material allowing the user to test the package with demo data
 #'
 #' @description
 #' Built-in tibbles and lists allowing the user to test the package with demo
 #' material.
 #'
 #' @format ## `list`
-#' A list with 22 elements used for testing purpose (data-frames and lists):
+#' A list with 22 elements used for testing the package (data frames and lists):
 #'
 #' \describe{
 #'   \item{DEMO_data_processing_elements - final}{Data processing element
@@ -110,11 +112,10 @@ madshapR_help <- function(){
 #'   ...
 #' }
 #'
-#'
 #' @examples
 #' {
 #'
-#' DEMO_files
+#'  print(DEMO_files$dataset_TOKYO)
 #'
 #' }
 "DEMO_files"

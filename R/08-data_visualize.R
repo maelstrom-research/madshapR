@@ -1,56 +1,81 @@
 #' @title
-#' Generate a combined plot of a variable in a dataset
+#' Generate a list of charts, figures and summary tables of a variable
 #'
 #' @description
-#' xxx xxx xxx
+#' Analyses the content of a variable and its data dictionary (if any), 
+#' identifies its data type and values accordingly and generates figures and 
+#' summaries (datatable format). The figures and tables are representations of
+#' data distribution, statistics and valid/non valid/missing values (based on 
+#' the data dictionary information if provided and the data type of the 
+#' variable). This function can be used to personalize report parameters and is 
+#' internally used in the function [dataset_visualize()]. Up to seven objects 
+#' are generated which include : One datatable of the key elements of the 
+#' data dictionary, one datatable summarizing statistics (such as mean, 
+#' quartiles, most seen value, most recent date, ... , depending on the 
+#' data type of the variable), two graphs showing the distribution of the 
+#' variable, One bar chart for categorical values (if any), One bar chart for 
+#' missing values (if any), One pie chart for the proportion of valid and 
+#' missing values (if any). The variable can be grouped using `group_by` 
+#' parameter, which is a (categorical) column in the dataset. The user may need 
+#' to use [as.factor()] in this context. To fasten the process (and allow 
+#' recycling object in a workflow) the user can feed the function with a 
+#' `.summary_var`, which is the output of the function [dataset_summarize()] 
+#' of the column(s) `col` and  `group_by`. The summary must have the same 
+#' parameters to operate. 
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
-#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data dictionary
-#' can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param dataset A tibble identifying the input dataset observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations associated 
+#' to its data dictionary.
 #' @param col A character string specifying the name of the column.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
-#' @param .summary_var A summary list which provides summary of the variables (
-#' If provided, the function will not do this action internally, enhancing the
-#' speed of completion)
+#' @param .summary_var A summary list which is the summary of the variables.
 #'
 #' @seealso
-#' [madshapR::open_visual_report()]
+#' [as.factor()]
+#' [DT::datatable()], [ggplot2::ggplot()]
+#' [dataset_summarize()], [dataset_visualize()]
 #'
 #' @return
-#' xxx xxx xxx
-#'
+#' A list of up to seven elements (charts and figures and datatables) which can 
+#' be used to summarize visualize data.
+#' 
 #' @examples
 #' {
 #' 
-#' variable_visualize(dataset = iris, col = Petal.Length, group_by = Species)
-#'
+#'  summary_variable <-
+#'    dataset_summarize(dataset = iris, group_by = Species)
+#'   
+#'  variable_viz <-
+#'    variable_visualize(
+#'    dataset = iris, col = Petal.Length, group_by = Species,
+#'    .summary_var =  summary_variable)
+#'  
+#'  variable_viz$summary_table
+#'  variable_viz$main_values_1
+#'  variable_viz$main_values_2
+#'  
 #' }
 #'
 #' @import dplyr fabR
@@ -68,7 +93,6 @@ variable_visualize <- function(
     group_by = NULL,
     .summary_var = NULL){
 
- 
   dataset <- as_dataset(dataset)
   
   if(nrow(dataset) == 0) {
@@ -121,30 +145,32 @@ variable_visualize <- function(
   
   if(group_by != ''){
     
-    resume_var <- 
-      resume_group <- 
-      resume_variables(colset[c(col,group_by)], col_dict)
+    preprocess_var <- 
+      preprocess_group <- 
+      dataset_preprocess(colset[c(col,group_by)], col_dict)
     
-    resume_var <- resume_var[resume_var$name == col,] 
-    resume_group <- resume_group[resume_group$name == group_by,] 
+    preprocess_var <- preprocess_var[preprocess_var$name == col,] 
+    preprocess_group <- preprocess_group[preprocess_group$name == group_by,] 
     
   } else {
-    resume_var <- resume_variables(colset[col], col_dict)
+    preprocess_var <- dataset_preprocess(colset[col], col_dict)
   }
   
   colset <- as_dataset(dataset_zap_data_dict(colset))
     
   if(group_by != ''){
-    if(toString(unique(resume_group$`Categorical variable`)) %in% c('mix','no'))
+    if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
+       c('mix','no'))
       stop(call. = FALSE,
            'Your grouping variable must be a categorical variable.')}
   
-  resume_var_values <-
-    resume_var[resume_var$valid_class == '3_Valid other values',]
-  resume_var_cat_values <- 
-    resume_var[resume_var$valid_class == '1_Valid values',]
-  resume_var_cat_miss_values <- 
-    resume_var[resume_var$valid_class %in% c('2_Missing values','4_NA values'),]
+  preprocess_var_values <-
+    preprocess_var[preprocess_var$valid_class == '3_Valid other values',]
+  preprocess_var_cat_values <- 
+    preprocess_var[preprocess_var$valid_class == '1_Valid values',]
+  preprocess_var_cat_miss_values <- 
+    preprocess_var[preprocess_var$valid_class %in% 
+                     c('2_Missing values','4_NA values'),]
   
   if(is.null(.summary_var)){
     temp_group <- if(group_by == ''){NULL}else{group_by}
@@ -194,15 +220,15 @@ variable_visualize <- function(
   
   colset_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% resume_var_values$value_var)
+    filter(!! as.symbol(col) %in% preprocess_var_values$value_var)
   
   colset_cat_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% resume_var_cat_values$value_var) 
+    filter(!! as.symbol(col) %in% preprocess_var_cat_values$value_var) 
   
   colset_cat_miss_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% resume_var_cat_miss_values$value_var) 
+    filter(!! as.symbol(col) %in% preprocess_var_cat_miss_values$value_var) 
   
   # guess the generic valueType of the variable (excluding categories):
   vT_col <- 
@@ -240,7 +266,8 @@ variable_visualize <- function(
     mutate(across(-c("col"), 
                   ~ ifelse(. == 0,NA_real_,.))) %>%
     mutate(across(-c("col"), 
-                  ~ ifelse(str_detect(.data$`col`,'% '),round(.*100,2),round(.)))) %>%
+                  ~ ifelse(str_detect(.data$`col`,'% '),round(.*100,2),
+                           round(.)))) %>%
     select(-'col') %>%
     mutate(across(everything(),as.character))
     
@@ -265,7 +292,8 @@ variable_visualize <- function(
   
   palette_categories <- 
     c(palette_values,
-      palette_mlstr[seq_len(length(palette_values) + length(unique(colset_cat_values[[col]])))],
+      palette_mlstr[seq_len(length(palette_values) + 
+                              length(unique(colset_cat_values[[col]])))],
       sample(palette_mlstr_fct(
         length(unique(colset_cat_values[[col]])) +
           length(palette_values)
@@ -278,7 +306,8 @@ variable_visualize <- function(
   
   palette_group <- 
     c(palette_values,palette_categories,
-      palette_mlstr[seq_len(length(palette_values)+length(palette_categories)+length(unique(colset[[group_by]])))],
+      palette_mlstr[seq_len(length(palette_values)+length(palette_categories)+
+                              length(unique(colset[[group_by]])))],
       sample(palette_mlstr_fct(
         length(unique(colset[[group_by]])) +
           length(palette_values) +
@@ -287,11 +316,13 @@ variable_visualize <- function(
     tolower() %>% unique
   
   palette_group <- 
-    palette_group[(!palette_group %in% c(palette_values,palette_categories,NA))][
-      seq_len(length(unique(colset[[group_by]])))]
+    palette_group[(!palette_group %in% 
+                     c(palette_values,palette_categories,NA))][seq_len(
+                       length(unique(colset[[group_by]])))]
   
   palette_NA <- "#afb1b2"
-  palette_missing     <- c("darkseagreen3", "lemonchiffon3","darksalmon","slategray3")
+  palette_missing     <- 
+    c("darkseagreen3", "lemonchiffon3","darksalmon","slategray3")
   palette_missing_fct <- colorRampPalette(palette_missing, 1)
   
   palette_missing <- 
@@ -377,7 +408,8 @@ variable_visualize <- function(
         geom_boxplot(outlier.color = 'red') +
         theme_bw() +
         coord_flip() + 
-        theme(legend.position="none",plot.title = element_text(size=8, face = "bold")) +
+        theme(legend.position="none",plot.title = 
+                element_text(size=8, face = "bold")) +
         ggtitle(paste0('Box plot', title)) +
         ylab("") +
         xlab("") +
@@ -400,7 +432,8 @@ variable_visualize <- function(
       
       if(vT_col$valueType == "integer") {
         #  Freedman-Diaconis rule
-        bin <- ceiling(2 * IQR(colset_values[[col]]) / length(colset_values[[col]])^(1/3))
+        bin <- ceiling(2 * IQR(colset_values[[col]]) / 
+                         length(colset_values[[col]])^(1/3))
         geom_viz <- geom_histogram(bins = bin)}
       
         plot_2 <- 
@@ -408,8 +441,9 @@ variable_visualize <- function(
           geom_viz +
           theme_bw() +
           ggtitle(paste0('Histogram', title)) +
-          theme(legend.position="none",plot.title = element_text(size=8, face = "bold"),
-                strip.background = element_rect(color = "white", fill="white")) +
+          theme(legend.position="none",plot.title = 
+                  element_text(size=8, face = "bold"),
+                strip.background = element_rect(color="white", fill="white")) +
           ylab("") +
           xlab("") +
           scale_fill_manual(values = palette_values)
@@ -445,7 +479,8 @@ variable_visualize <- function(
       summary_2 <-
         summary_2 %>% 
         mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), ~ str_trunc(.,width = 39,ellipsis = ' [...]'))) %>%
+        mutate(across(-c("col"), 
+                      ~ str_trunc(.,width = 39,ellipsis = ' [...]'))) %>%
         select(-'col') %>%
         mutate(across(everything(),as.character))
       
@@ -510,7 +545,8 @@ variable_visualize <- function(
         ggplot(colset_values_main_word) + aes + 
         geom_col() +
         theme_bw() +
-        theme(legend.position="none",plot.title = element_text(size=8,face = "bold"),
+        theme(legend.position="none",plot.title = 
+                element_text(size=8,face = "bold"),
               strip.background = element_rect(color = "white", fill="white")) +
         ggtitle(paste0('Most common entry', title)) +
         ylab("") +
@@ -543,7 +579,8 @@ variable_visualize <- function(
         ggplot(colset_values_all_word) + aes + 
         geom_col() +
         theme_bw() +
-        theme(legend.position="none",plot.title = element_text(size=8,face = "bold"),
+        theme(legend.position="none",plot.title =
+                element_text(size=8,face = "bold"),
               strip.background = element_rect(color = "white", fill="white")) +
         ggtitle(paste0('Bar plot', title)) +
         ylab("") +
@@ -621,7 +658,8 @@ variable_visualize <- function(
         geom_point(size = 3) +
         ggtitle(paste0('Span date', title)) +
         theme_bw()+
-        theme(legend.position="none",plot.title = element_text(size=8,face = "bold")) +
+        theme(legend.position="none",plot.title = 
+                element_text(size=8,face = "bold")) +
         ylab("") +
         xlab("") +
         scale_color_manual(values = palette_values) 
@@ -654,7 +692,8 @@ variable_visualize <- function(
         geom_histogram(bins = bins) +
         theme_bw() +
         ggtitle(paste0('Histogram', title)) +
-        theme(legend.position="none",plot.title = element_text(size=8,face = "bold"),
+        theme(legend.position="none",plot.title = 
+                element_text(size=8,face = "bold"),
               strip.background = element_rect(color = "white", fill="white")) +
         ylab("") +
         xlab("") +
@@ -691,8 +730,9 @@ variable_visualize <- function(
       mutate(
         `___labels___` = 
           ifelse(!! as.symbol(col) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,ellipsis = '...'),']'))) %>%
-      unite(!! col,c(col,'___labels___'),sep = '', remove = TRUE,na.rm = TRUE) %>%
+                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
+                                       ellipsis = '...'),']'))) %>%
+      unite(!! col,c(col,'___labels___'),sep='', remove = TRUE,na.rm = TRUE) %>%
       mutate(across(all_of(col), ~ na_if(.,'')))
     
     cat_var_levels <- 
@@ -706,10 +746,11 @@ variable_visualize <- function(
     #### plot_3 categorical_values ####    
     colset_cat_values <- 
       colset_cat_values %>% 
-      mutate(across(!! as.symbol(col), ~ factor(.,levels=c(cat_var_levels)))) %>%
+      mutate(across(!! as.symbol(col), ~factor(.,levels=c(cat_var_levels)))) %>%
       select(-'___category_level___')
     
-    title <- paste0(' representation of categorical values in ',col,' (N obs. : ',n_obs,')')
+    title <- paste0(' representation of categorical values in ',col,
+                    ' (N obs. : ',n_obs,')')
     if(group_by != '') title <- paste0(title, ' - per ',group_by)
     
     aes <- aes(x    = fct_rev(!! as.symbol(col)), 
@@ -719,7 +760,8 @@ variable_visualize <- function(
       ggplot(colset_cat_values) + aes +
       geom_bar() +
       theme_bw() + 
-      theme(legend.position="none",plot.title = element_text(size=8, face = "bold"),
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold"),
             strip.background = element_rect(color = "white", fill="white")) +
       ggtitle(paste0('Bar plot', title)) +
       ylab("") +
@@ -759,8 +801,10 @@ variable_visualize <- function(
       mutate(
         `___labels___` = 
           ifelse(!! as.symbol(col) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,ellipsis = '...'),']'))) %>%
-      unite(!! col,c(any_of(col),'___labels___'),sep = '', remove = TRUE,na.rm = TRUE) %>%
+                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
+                                       ellipsis = '...'),']'))) %>%
+      unite(!! col,c(any_of(col),'___labels___'),sep = '', 
+            remove = TRUE,na.rm = TRUE) %>%
       mutate(across(all_of(col), ~ na_if(.,'')))
     
     cat_var_levels <- 
@@ -780,7 +824,8 @@ variable_visualize <- function(
     names(palette_missing) <- levels(colset_cat_miss_values[[col]])
 
     #### plot_4 missing_values ####    
-    title <- paste0(' representation of missing categorical values in ',col,' (N obs. : ',n_obs,')')
+    title <- paste0(' representation of missing categorical values in ',col,
+                    ' (N obs. : ',n_obs,')')
     if(group_by != '') title <- paste0(title, ' - per ',group_by)
     
     aes <- aes(x = fct_rev(!! as.symbol(col)), 
@@ -790,7 +835,8 @@ variable_visualize <- function(
       ggplot(colset_cat_miss_values) + aes +
       geom_bar() +
       theme_bw() +
-      theme(legend.position="none",plot.title = element_text(size=8, face = "bold"),
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold"),
             strip.background = element_rect(color = "white", fill="white")) +
       ggtitle(paste0('Bar plot', title)) +
       ylab("") +
@@ -802,8 +848,8 @@ variable_visualize <- function(
   }
 
   # categorization of variable (valid/missing/others/NA)
-  resume_var <-
-    resume_var %>%
+  preprocess_var <-
+    preprocess_var %>%
     select('valid_class', 'value_var') %>% 
     rename_with(.cols = 'valid_class', ~ '___valid_class___') %>%
     rename_with(.cols = 'value_var', ~ col) %>%
@@ -812,7 +858,8 @@ variable_visualize <- function(
   colset_valid <-
     colset %>%
     mutate(across(col,as.character)) %>%
-    left_join(resume_var,by = intersect(names(colset), names(resume_var))) %>%
+    left_join(preprocess_var,by = 
+                intersect(names(colset), names(preprocess_var))) %>%
     select(- !! col) %>%
     mutate(`___valid_class___` = str_sub(.data$`___valid_class___`,3)) %>%
     rename_with(.cols = '___valid_class___', ~ col) %>% 
@@ -820,7 +867,8 @@ variable_visualize <- function(
     tally %>%
     rename(`___n___` = last_col()) %>%
     mutate(!! as.symbol(col) := factor(!! as.symbol(col),
-      levels = c('Valid values','Valid other values','Missing values','NA values')))
+      levels = 
+        c('Valid values','Valid other values','Missing values','NA values')))
   
   plot_5 <- NULL
   
@@ -828,7 +876,8 @@ variable_visualize <- function(
     
     #### plot_5 pie_values ####    
     n_obs <- nrow(colset)
-    title <- paste0(' representation of validity values distribution in ',col,' (N obs. : ',n_obs,')')
+    title <- paste0(' representation of validity values distribution in ',col,
+                    ' (N obs. : ',n_obs,')')
     if(group_by != '') title <- paste0(title, ' - per ',group_by)
     
     group_n <- "___n___"
@@ -939,51 +988,59 @@ variable_visualize <- function(
 }
 
 #' @title
-#' Generate a web application (bookdown) report of list of a datasets
+#' Generate a web-based bookdown visual report of a dataset
 #'
 #' @description
-#' Generates a visual report for a dataset in an HTML
-#' bookdown document, showing descriptive statistics for each 
-#' variable to facilitate the assessment of input dataset. Statistics and figures
-#' are generated according to their valueType.
-#' This report can be used to assist the user in the assessment of the dataset
-#' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy or standard evaluation. The summaries and figures associated
-#' provide dataset composition, with observation distribution and descriptive
-#' statistics.
+#' Generates a visual report for a dataset in an HTML bookdown document. The 
+#' report provides figures and descriptive statistics for each variable to 
+#' facilitate the assessment of input data. Statistics and figures are generated 
+#' according to variable data type. The report can be used to help assess 
+#' data structure, coherence across elements, and taxonomy or 
+#' data dictionary formats. The summaries and figures provide additional 
+#' information about variable distributions and descriptive statistics. 
+#' The charts and tables are produced based on their data type. The variable can 
+#' be grouped using `group_by` parameter, which is a (categorical) column in the 
+#' dataset. The user may need to use [as.factor()] in this context. To fasten 
+#' the process (and allow recycling object in a workflow) the user can feed the 
+#' function with a `.summary_var`, which is the output of the function 
+#' [dataset_summarize()] of the column(s) `col` and  `group_by`. The summary 
+#' must have the same parameters to operate. 
 #'
 #' @details
-#' A dossier must be a named list containing at least one data-frame or
-#' data-frame extension (e.g. a tibble), each of them being datasets.
-#' The name of each tibble will be use as the reference name of the dataset.
-#' A data dictionary-like structure must be a list of at least one or two
-#' data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
-#'
-#' A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data dictionary
-#' can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
+#' accordingly, such as naming convention restriction, tagging elements,
+#' or scales, which are specific to Maelstrom Research. In this particular
+#' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
+#' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [madshapR::open_visual_report()]
+#' [open_visual_report()]
 #'
-#' @param dataset A tibble identifying the input dataset observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations associated 
+#' to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
@@ -991,27 +1048,25 @@ variable_visualize <- function(
 #' by this column.
 #' @param to A character string identifying the folder path where the bookdown
 #' report will be saved.
-#' @param taxonomy A data-frame or data-frame extension (e.g. a tibble),
-#' identifying the scheme used for variables classification as a tibble.
+#' @param taxonomy A tibble identifying the scheme used for variables 
+#' classification.
+#' @param .summary_var A list which is the summary of the variables.
 #' @param .keep_files whether to keep the R-markdown files.
-#' TRUE by default.
+#' TRUE by default. (used for internal processes and programming)
 #' @param .dataset_name A character string specifying the name of the dataset
-#' (internally used in the function `madshapR::dataset_summarise()`).
-#' @param .summary_var A summary list which provides summary of the variables (
-#' If provided, the function will not do this action internally, enhancing the
-#' speed of completion)
+#' (used for internal processes and programming).
 #'
 #' @return
 #' A bookdown folder containing files in the specified output folder. To
-#' open the file in browser, open 'index.html'. Or use
-#' [madshapR::open_visual_report()]
+#' open the file in browser, open 'docs/index.html'. Or use 
+#' [open_visual_report()]
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' library(fabR)
+#' library(fabR)  # silently_run
 #'
 #' ###### Example : Combine functions and summarise datasets.
 #' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
@@ -1020,11 +1075,13 @@ variable_visualize <- function(
 #'   valueType_adjust(from = data_dict) %>%
 #'   data_dict_apply(data_dict)
 #' 
-#' tempdir <- tempdir()
-#' 
-#' dataset_visualize(dataset,group_by = gndr,to = tempdir)
+#' # Silencing the process, remove silently_run() to see the full process in 
+#' # the console. 
+#' to <- tempdir()
+#' silently_run(dataset_visualize(dataset,group_by = gndr,to = to))
 #'   
-#' open_visual_report(tempdir)
+#' # To open the file in browser, open 'to/docs/index.html'. 
+#' # Or use [open_visual_report(to)]
 #'
 #' }
 #'
@@ -1039,9 +1096,9 @@ dataset_visualize <- function(
     group_by = NULL,
     to,
     taxonomy = NULL,
+    .summary_var = NULL,
     .dataset_name = NULL,
-    .keep_files = TRUE,
-    .summary_var = NULL){
+    .keep_files = TRUE){
   
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -1055,7 +1112,8 @@ dataset_visualize <- function(
     stop(call. = FALSE,'`.keep_files` must be TRUE or FALSE (TRUE by default)')
   
   # if(!toc %in% c('variables','group_by'))
-  #   stop(call. = FALSE,'`toc` must be "variables" or "group_by". ("variables" by default)')
+  #   stop(call. = FALSE,'`toc` must be "variables" or "group_by". 
+  # ("variables" by default)')
   # 
   # if(!toc == c('group_by') & toString(substitute(group_by))=='')
   #   stop(call. = FALSE,'If `toc` == "group_by", `group_by` must be provided.')
@@ -1118,19 +1176,20 @@ dataset_visualize <- function(
   data_dict$Variables <- data_dict$Variables %>% add_index(.force = TRUE)
   
   data_dict_flat <-
-    data_dict_flatten(data_dict)[[1]] %>%
+    data_dict_collapse(data_dict)[[1]] %>%
     select(
       "index in data dict." = matches("index"),
       "name",
       matches(c("^label$","^label:[[:alnum:]]"))[1],
       matches('valueType'),
-      Categories = matches(c("^Categories::label$","^Categories::label:[[:alnum:]]"))[1]) %>% 
+      Categories = matches(c("^Categories::label$",
+                             "^Categories::label:[[:alnum:]]"))[1]) %>% 
     mutate(
       Categories = str_replace_all(.data$`Categories`,"; \n","<br>"))
   
   path_to <- fs::path_abs(to)
   fabR::template_visual_report(path_to)
-  save(path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var, col_id,
+  save(path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
        # toc,
        file = paste0(path_to,"/temp_bookdown_report/bookdown_report.RData"))
   
@@ -1145,7 +1204,7 @@ site: bookdown::bookdown_site
 
 ') %>% write_lines(
   file = paste0(path_to,
-                "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
+         "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
   append = FALSE)
   
   
@@ -1160,7 +1219,7 @@ language:
 
 ') %>% write_lines(
   file = paste0(path_to,
-                "/temp_bookdown_report/file/bookdown-template-master/_bookdown.yml"),
+     "/temp_bookdown_report/file/bookdown-template-master/_bookdown.yml"),
   append = FALSE)
   
   ##### _output.yml ##########
@@ -1176,7 +1235,7 @@ language:
 
 ') %>% write_lines(
   file = paste0(path_to,
-                "/temp_bookdown_report/file/bookdown-template-master/_output.yml"),
+          "/temp_bookdown_report/file/bookdown-template-master/_output.yml"),
   append = FALSE)
   
   paste0(
@@ -1201,7 +1260,7 @@ load(file = paste0("', path_to,'/temp_bookdown_report/bookdown_report.RData"))
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
-datatable(.summary_var$Overview,  colnames = rep("",ncol(.summary_var$Overview)),
+datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
     options = list(pageLength = nrow(.summary_var$Overview)),
     rownames = FALSE,escape = FALSE)
 
@@ -1270,7 +1329,8 @@ datatable(.summary_var$Overview,  colnames = rep("",ncol(.summary_var$Overview))
       paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
       paste0(
         "\n```{r ",
-        str_squish("echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
+        str_squish(
+          "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
 
   datatable(t(
@@ -1282,13 +1342,14 @@ datatable(.summary_var$Overview,  colnames = rep("",ncol(.summary_var$Overview))
         "\n```\n") %>%
       
       paste0("\n</div>\n\n") %>%
-      paste0(ifelse(nrow(data_dict[['Categories']] %>%
-                           filter(.data$`variable` == data_dict$Variables$name[i])) > 0,
-                    paste0("\n* **Categories**: ","\n\n") %>%
-                      paste0("\n<div style= \"display:flex; margin:auto\" > \n\n")%>%
-                      paste0(
-                        "\n```{r echo = FALSE, message = FALSE, warning = FALSE}",
-                        "\n
+      paste0(ifelse(
+        nrow(data_dict[['Categories']] %>%
+               filter(.data$`variable` == data_dict$Variables$name[i])) > 0,
+        paste0("\n* **Categories**: ","\n\n") %>%
+          paste0("\n<div style= \"display:flex; margin:auto\" > \n\n")%>%
+          paste0(
+            "\n```{r echo = FALSE, message = FALSE, warning = FALSE}",
+            "\n
                    
   datatable(
     data_dict$Categories %>% 
@@ -1309,7 +1370,8 @@ datatable(.summary_var$Overview,  colnames = rep("",ncol(.summary_var$Overview))
       paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
       paste0(
         "\n```{r ",
-        str_squish("echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
+        str_squish(
+          "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
         
  plots <- variable_visualize(
@@ -1328,7 +1390,8 @@ datatable(.summary_var$Overview,  colnames = rep("",ncol(.summary_var$Overview))
       paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
       paste0(
         "\n```{r ",
-        str_squish("echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
+        str_squish(
+          "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
         
   if(!is.null(plots$summary_categories)) plots$summary_categories             ",
@@ -1338,13 +1401,14 @@ datatable(.summary_var$Overview,  colnames = rep("",ncol(.summary_var$Overview))
       paste0("\n</div>\n\n") %>%
       
       paste0(
-        "\n---------------------------------------------------------------------\n") %>%
+"\n---------------------------------------------------------------------\n") %>%
       
       paste0("\n**VISUAL REPRESENTATION**\n") %>%
       
       paste0(
         "\n```{r, figures-plot12-",i,
-        str_squish(", fig.show='hold',fig.align = 'center',echo = FALSE,message = FALSE,
+        str_squish(
+        ", fig.show='hold',fig.align = 'center',echo = FALSE,message = FALSE,
               warning = FALSE, results='hide'}"),
         "\n
         
@@ -1391,11 +1455,14 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #       mutate(
 #         `___labels___` = 
 #           ifelse(.data$name == .data$`___labels___`,'',
-#                  paste0(' [',str_trunc(.data$`___labels___`,width = 19,ellipsis = '...'),']'))) %>%
-#       unite('___labels___',c('name','___labels___'),sep = '', remove = FALSE,na.rm = TRUE)
+#                  paste0(' [',str_trunc(.data$`___labels___`,width = 19,
+#       ellipsis = '...'),']'))) %>%
+#       unite('___labels___',c('name','___labels___'),sep = '', 
+#       remove = FALSE,na.rm = TRUE)
 # 
 #     increment <-
-#       paste0(rep(0,nchar(length(names_group$name_group))) %>% paste(collapse = ""))
+#       paste0(rep(0,nchar(length(names_group$name_group))) %>% 
+#       paste(collapse = ""))
 #     
 #     for(i in seq_len(length(names_group$name_group))){
 #       # stop()
@@ -1416,7 +1483,8 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #         paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
 #         paste0(
 #           "\n```{r ",
-#           str_squish("echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
+#            str_squish(
+#          "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
 #           "\n
 # 
 #   datatable(
@@ -1449,14 +1517,16 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #         paste0("\n</div>\n\n") %>%
 #         write_lines(file = rmd_file_name, append = FALSE)
 #       
-#       names_var <- str_subset(data_dict$Variables$name,group_by,negate = TRUE) %>%
+#       names_var <- 
+#       str_subset(data_dict$Variables$name,group_by,negate = TRUE) %>%
 #         str_subset(paste0('^',col_id,'$'),negate = TRUE) 
 # 
 #         for(j in seq_len(length(names_var))){
 #           # stop()}
 #       
 #           paste0("
-# \n----------------------------------------------------------------------\n\n") %>%
+# \n----------------------------------------------------------------------
+# \n") %>%
 #           paste0("## **",names_var[j],"**\n") %>%
 #             
 #             paste0("\n**SUMMARY STATISTICS**\n") %>%
@@ -1464,7 +1534,8 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #             paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
 #             paste0(
 #               "\n```{r ",
-#               str_squish("echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
+#               str_squish(
+#          "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
 #               "\n
 #         
 #   .summary_group <- 
@@ -1485,7 +1556,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #     .summary_var = .summary_group)
 # 
 # 
-#   if(!is.null(plots$summary_table))      plots$summary_table                  ",
+#   if(!is.null(plots$summary_table))      plots$summary_table              ",
 #           
 #           "\n```\n") %>%
 #         
@@ -1494,23 +1565,26 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #         paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
 #         paste0(
 #           "\n```{r ",
-#           str_squish("echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
+#           str_squish(
+#          "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
 #           "\n
 #         
-#   if(!is.null(plots$summary_categories)) plots$summary_categories             ",
+#   if(!is.null(plots$summary_categories)) plots$summary_categories           ",
 #           
 #           "\n```\n") %>%
 #         
 #         paste0("\n</div>\n\n") %>%
 #         
 #         paste0(
-#           "\n---------------------------------------------------------------------\n") %>%
+# "\n---------------------------------------------------------------------\n
+#   ") %>%
 #         
 #         paste0("\n**VISUAL REPRESENTATION**\n") %>%
 #         
 #         paste0(
 #           "\n```{r, figures-plot12-",i,j,
-#           str_squish(", fig.show='hold',fig.align = 'center',echo = FALSE,message = FALSE,
+#           str_squish(
+#          ", fig.show='hold',fig.align = 'center',echo = FALSE,message = FALSE,
 #               warning = FALSE, results='hide'}"),
 #           "\n
 #         
@@ -1518,7 +1592,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 # if(!is.null(plots$main_values_2))      plots$main_values_2
 # if(!is.null(plots$cat_values))         plots$cat_values
 # if(!is.null(plots$missing_values))     plots$missing_values
-# if(!is.null(plots$pie_values))         plots$pie_values                       ",
+# if(!is.null(plots$pie_values))         plots$pie_values                     ",
 #           
 #           "\n```\n") %>%
 #         write_lines(file = rmd_file_name, append = TRUE)
@@ -1550,7 +1624,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
     try(dir_delete(paste0(path_to,"/temp_bookdown_report/")))}
   
   return(message(
-    "\n\nTo edit your file, You can use the function `open_visual_report('",to,"')`
+"\n\nTo edit your file, You can use the function `open_visual_report('",to,"')`
 (Compatibility tested on Chrome and Mozilla)\n\n"))
   
 }
@@ -1559,30 +1633,30 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #' Open a visual report in a browser
 #'
 #' @description
-#' The visual report previously generated in an HTML bookdown document can be
-#' opened using this short-cut function.
-#' This report can be used to assist the user in the assessment of the dataset
-#' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy or standard evaluation. The summaries and figures associated
-#' provide dataset composition, with observation distribution and descriptive
-#' statistics.
+#' Opens a previously generated HTML bookdown document. This is a shortcut 
+#' function to access an existing visual report.
 #'
 #' @seealso
-#' [madshapR::dataset_visualize()]
+#' [dataset_visualize()]
 #'
-#' @param report_name A character string specifying the name of the report (a
-#' folder in users environment) to be opened.
+#' @param report_path A character string specifying the path of the report to 
+#' be opened.
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
+#' library(fabR)  # silently_run
 #'
-#' ###### Example 1: any data-frame (or tibble) can be a dataset by definition.
-#' tempdir <- tempdir()
-#' dataset_visualize(iris, to = tempdir)
-#' open_visual_report(tempdir)
+#' ###### Example any data frame (or tibble) can be a dataset by definition.
+#' 
+#' to <- tempdir()
+#' # Silencing the process, remove silently_run() to see the full process in 
+#' # the console. 
+#' silently_run(dataset_visualize(iris, to = to))
+#' 
+#' open_visual_report(to)
 #' 
 #' }
 #'
@@ -1590,10 +1664,9 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #' @importFrom utils browseURL
 #'
 #' @export
-#'
-open_visual_report <- function(report_name){
+open_visual_report <- function(report_path){
 
-  path_report <- str_remove(paste0(report_name,"/docs/index.html"), '^/')
-  utils::browseURL(path_report)
+  report_path <- str_remove(paste0(report_path,"/docs/index.html"), '^/')
+  utils::browseURL(report_path)
 
 }

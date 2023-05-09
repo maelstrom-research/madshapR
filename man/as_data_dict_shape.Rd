@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{as_data_dict_shape}
 \alias{as_data_dict_shape}
-\title{Validate and coerce any object as data dictionary}
+\title{Validate and coerce an object to a workable data dictionary structure}
 \usage{
 as_data_dict_shape(object)
 }
@@ -13,25 +13,21 @@ as_data_dict_shape(object)
 A list of tibble(s) identifying a data dictionary.
 }
 \description{
-Confirms that the input object is a valid data dictionary, and return it as a
-data dictionary with the appropriate madshapR::class attribute. This function
+Validates the input object as a workable data dictionary structure and
+returns it with the appropriate madshapR::class attribute. This function
 mainly helps validate input within other functions of the package but could
-be used to check if a data dictionary is valid.
+be used to check if a data dictionary is valid for use in a function.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/05-unit_checks.R
 \name{check_data_dict_missing_categories}
 \alias{check_data_dict_missing_categories}
-\title{Return categorical values which 'missing' column is not a boolean}
+\title{Assess categorical variables for non-Boolean values in 'missing' column}
 \usage{
 check_data_dict_missing_categories(data_dict)
 }
@@ -10,30 +10,26 @@ check_data_dict_missing_categories(data_dict)
 \item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
 }
 \value{
-A tibble providing categorical values which 'missing' column is
-not a boolean.
+A tibble providing categorical values which 'missing' column is not a
+boolean.
 }
 \description{
-Generates a tibble that reports any categorical variable where
-'missing' column is not a boolean (or compatible value that can be coerced
-into a boolean). This tibble can be used to assist the user in the assessment
-of the dataset structure, fields investigation (mandatory or not), coherence
-across elements and taxonomy or standard evaluation.
+Generates a tibble report of any categorical variables with non-Boolean (or
+coercible to boolean) values in the 'missing' column of the 'Categories'
+element.
+This report can be used to help assess data structure, presence of fields,
+coherence across elements, and taxonomy or data dictionary formats.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {

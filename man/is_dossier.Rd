@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{is_dossier}
 \alias{is_dossier}
-\title{Evaluate if any object is a dossier or not}
+\title{Test if an object is a valid dossier}
 \usage{
 is_dossier(object)
 }
@@ -13,23 +13,23 @@ is_dossier(object)
 A logical.
 }
 \description{
-Confirms whether the input object is a valid dossier.
-This function mainly helps validate input within other functions of the
-package but could be used to check if a dossier is valid.
+Tests if the input object is a valid dossier. This function mainly helps
+validate input within other functions of the package but could be used to
+check if a dossier is valid.
 }
 \details{
-A dossier must be a named list containing at least one data-frame or
-data-frame extension (e.g. a tibble), each of them being datasets.
+A dossier must be a named list containing at least one data frame or
+data frame extension (e.g. a tibble), each of them being datasets.
 The name of each tibble will be use as the reference name of the dataset.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
-# Any list of data-frame (or tibble) can be a dossier by definition.
+# Any list of data frame (or tibble) can be a dossier by definition.
 library(stringr)
 
-is_dossier(DEMO_files[stringr::str_detect(names(DEMO_files),"dataset")])
+is_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
 is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 is_dossier(iris)
 

@@ -4,31 +4,31 @@
 \alias{open_visual_report}
 \title{Open a visual report in a browser}
 \usage{
-open_visual_report(report_name)
+open_visual_report(report_path)
 }
 \arguments{
-\item{report_name}{A character string specifying the name of the report (a
-folder in users environment) to be opened.}
+\item{report_path}{A character string specifying the path of the report to
+be opened.}
 }
 \description{
-The visual report previously generated in an HTML bookdown document can be
-opened using this short-cut function.
-This report can be used to assist the user in the assessment of the dataset
-structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy or standard evaluation. The summaries and figures associated
-provide dataset composition, with observation distribution and descriptive
-statistics.
+Opens a previously generated HTML bookdown document. This is a shortcut
+function to access an existing visual report.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 library(dplyr)
+library(fabR)  # silently_run
 
-###### Example 1: any data-frame (or tibble) can be a dataset by definition.
-tempdir <- tempdir()
-dataset_visualize(iris, to = tempdir)
-open_visual_report(tempdir)
+###### Example any data frame (or tibble) can be a dataset by definition.
+
+to <- tempdir()
+# Silencing the process, remove silently_run() to see the full process in 
+# the console. 
+silently_run(dataset_visualize(iris, to = to))
+
+open_visual_report(to)
 
 }
 

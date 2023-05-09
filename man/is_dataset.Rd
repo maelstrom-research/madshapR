@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{is_dataset}
 \alias{is_dataset}
-\title{Evaluate if any object is a dataset or not}
+\title{Test if an object is a valid dataset}
 \usage{
 is_dataset(object)
 }
@@ -13,25 +13,24 @@ is_dataset(object)
 A logical.
 }
 \description{
-Confirms whether the input object is a valid dataset.
-This function mainly helps validate input within other functions of the
-package but could be used to check if a dataset is valid.
+Tests if the input object is a valid dataset. This function mainly helps
+validate input within other functions of the package but could be used
+to check if a dataset is valid.
 }
 \details{
-A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data dictionary
-can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
-# any data-frame (or tibble) can be a dataset by definition.
+# any data frame (or tibble) can be a dataset by definition.
 
 is_dataset(DEMO_files$dataset_MELBOURNE_1)
 is_dataset(iris)

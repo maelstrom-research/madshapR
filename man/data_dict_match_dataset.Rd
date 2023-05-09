@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_match_dataset}
 \alias{data_dict_match_dataset}
-\title{Inner join between any dataset and data_dict variables}
+\title{Inner join between a dataset and its associated data dictionary}
 \usage{
 data_dict_match_dataset(
   dataset,
@@ -29,34 +29,28 @@ Either a tibble, identifying the dataset, or a list of tibble(s)
 identifying a data dictionary. Returns both in a list by default.
 }
 \description{
-Proceeds an inner jointure between any dataset and its associated
-data dictionary.
-It returns the user either the sub-dataset or the sub-data dictionary, or
-both in a list.
+Performs an inner join between a dataset and its associated data dictionary,
+keeping only variables present in both. This function returns the matched
+dataset rows, the matched data dictionary rows, or both, in a list.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 
-A dataset must be a data-frame or data-frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data dictionary
-can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {

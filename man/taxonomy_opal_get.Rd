@@ -2,7 +2,7 @@
 % Please edit documentation in R/09-opal_functions.R
 \name{taxonomy_opal_get}
 \alias{taxonomy_opal_get}
-\title{Get the taxonomy as used by Opal}
+\title{Get available taxonomies in format used by Opal}
 \usage{
 taxonomy_opal_get(opal)
 }
@@ -13,15 +13,15 @@ taxonomy_opal_get(opal)
 A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 }
 \description{
-Downloads all taxonomies from an Opal server in the format used by Opal.
-This taxonomy is used for any purpose of dataset transformation, cleaning
-or assessment.
+Downloads all taxonomies from an Opal server in a specific tibble format
+used by Opal.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
 \dontrun{

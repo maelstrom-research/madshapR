@@ -23,26 +23,27 @@ opal_tables_pull(
 \item{content}{A vector of character string which indicates if the
 function returns a dataset, or data dictionary. Default is 'dataset'.}
 
-\item{keep_as_dossier}{whether to return a dossier or a dataset if there is only
-one table. TRUE by default, if FALSE returns dataset.}
+\item{keep_as_dossier}{whether to return a dossier or a dataset if there is
+only one table. TRUE by default, if FALSE returns dataset.}
 
 \item{.remove_id}{whether to return the id column created in Opal or not.
 TRUE by default.}
 }
 \value{
-R objects (tibbles and list of tibbles) representing tables and their
+Objects (tibbles and list of tibbles) representing tables and their
 respective data dictionary.
 }
 \description{
-Downloads a dossier or dataset(s) from Opal project to local
-environment. It is a wrapper of \code{\link[opalr:opal.table_get]{opalr::opal.table_get()}} and
+Downloads a dossier or dataset from an Opal environment to the local
+environment. This is a wrapper function for\code{\link[opalr:opal.table_get]{opalr::opal.table_get()}} and
 \code{\link[opalr:opal.table_dictionary_get]{opalr::opal.table_dictionary_get()}}.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
 \dontrun{
@@ -52,7 +53,7 @@ library(opalr)
 library(stringr)
 
 dossier <- 
-  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+  DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
   opal.login('administrator','password', 

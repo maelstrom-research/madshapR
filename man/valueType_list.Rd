@@ -3,11 +3,11 @@
 \docType{data}
 \name{valueType_list}
 \alias{valueType_list}
-\title{Give list of authorized valueType values}
+\title{Built-in tibble of allowed valueType values}
 \format{
 \subsection{\code{tibble}}{
 
-A data-frame with 12 rows and 6 columns:
+A data frame with 12 rows and 6 columns:
 \describe{
 \item{valueType}{data type as described in Opal}
 \item{typeof}{data type provided by base::typeof}
@@ -24,15 +24,19 @@ A data-frame with 12 rows and 6 columns:
 valueType_list
 }
 \description{
-Built-in tibbles showing the list of authorized valueType values, as
-described in Opal, and their data type (R wise) corresponding. This tibble
-is designed for programmatic use.
+Provides a built-in tibble showing the list of allowed Opal valueType values
+and their corresponding R data types. This tibble is mainly used for internal
+processes and programming.
 }
 \details{
-valueType is one of the property of a variable entity. It refers to
-the (Obiba internal) type of any variable. The valueType can be 'text',
-'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-'point', 'linestring', 'polygon'.
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers to
+the OBiBa-internal type of a variable. It is specified in a data dictionary
+in a column \code{valueType} and can be associated with variables as attributes.
+Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean',
+'datetime', 'date'). The full list of OBiBa valueType possibilities and their
+correspondance with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {

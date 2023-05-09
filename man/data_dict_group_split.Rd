@@ -14,30 +14,27 @@ transformed.}
 splitting will be done on the grouping element of a grouped data dictionary.}
 }
 \value{
-A list of tibble(s) identifying a list of data dictionary - like structure.
+A list of tibble(s) identifying a list of workable data dictionary structure.
 }
 \description{
-Divides the data dictionary both in the 'Variables' and 'Categories'
-(assuming the group is defined in both elements) into the groups defined by
-the query. The list is created analogously the user would do with
-\code{\link[dplyr:group_by]{dplyr::group_by()}} and \code{\link[dplyr:group_split]{dplyr::group_split()}}. Each element is named using
-the group values. \code{\link[=data_dict_list_nest]{data_dict_list_nest()}} reverses the effect of
-\code{\link[=data_dict_group_split]{data_dict_group_split()}}.
+Divides data dictionary element(s) into the groups defined by the query.
+This function divides both the 'Variables' and 'Categories' elements (if
+the group exists under the same definition in in both) into a list of
+data dictionaries, each with the rows of the associated group and all the
+original columns, including grouping variables. This function is analagous
+to running \code{\link[dplyr:group_by]{dplyr::group_by()}} and \code{\link[dplyr:group_split]{dplyr::group_split()}}. Each element is
+named using the group values. \code{\link[=data_dict_list_nest]{data_dict_list_nest()}} reverses the effect.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data-frame or data-frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {
@@ -46,9 +43,9 @@ and/or any taxonomy provided.
 library(dplyr)
 
 # Create a list of data dictionaries where the column 'table' is added to 
-# refer to the associated dataset. The object created is not a data dictionary 
-# per say, but can be used as a structure which can be 
-# shaped into a data dictionary.
+# refer to the associated dataset. The object created is not a 
+# data dictionary per say, but can be used as a structure which can be shaped 
+# into a data dictionary.
 
 data_dict_list <- DEMO_files[
     c('dd_MELBOURNE_1_format_maelstrom',
