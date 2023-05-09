@@ -6,7 +6,7 @@
 \alias{madshapR-package}
 \title{madshapR: Support Technical Processes Following 'Maelstrom Research' Standards}
 \description{
-The goal of this package is to help the user through the processes involving the Maelstrom Research guidelines. The user can: a) Create an R environment where the user can place files in an organized structure. b) Identify the location and content of files in user's environment. c) Generate bookdown reports of study-specific variables (input). e) Generate bookdown reports of study specific variables.
+Functions to support rigorous processes in data cleaning, evaluation, and documentation across datasets from different studies based on Maelstrom Research guidelines. The package includes the core functions to evaluate and format the main inputs that define the process, diagnose errors, and summarize and evaluate datasets and their associated data dictionaries. The main outputs are clean datasets and associated metadata, and tabular and visual summary reports.
 }
 \seealso{
 Useful links:
