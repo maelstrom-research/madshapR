@@ -947,7 +947,7 @@ variable_visualize <- function(
                            scrollX = TRUE,
                            pageLength = nrow(summary_categories),
                            ordering = FALSE,
-                           paging = TRUE),
+                           paging = FALSE),
                     filter = 'none' ,  
                     escape = FALSE) 
       }
@@ -966,7 +966,7 @@ variable_visualize <- function(
                      scrollX = TRUE,
                      pageLength = nrow(summary_table),
                      ordering = FALSE,
-                     paging = TRUE),
+                     paging = FALSE),
               filter = 'none' ,  
               escape = FALSE)
   
@@ -1336,7 +1336,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
   datatable(t(
      data_dict$Variables %>%
      filter(name == '",data_dict$Variables$name[i],"')),
-   options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = TRUE),
+   options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
         "\n```\n") %>%
@@ -1507,7 +1507,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #       pivot_longer(cols = c(-'name'),names_to = c('columns')) %>% 
 #       pivot_wider(names_from = name, values_from = value),
 #       
-#    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = TRUE),
+#    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
 #    rownames = FALSE,filter = 'none' ,  escape = FALSE)
 #           
 #           ",
