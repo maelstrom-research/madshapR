@@ -908,6 +908,7 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
     bind_rows(test, test_cat_in_data_dict_only, test_cat_in_dataset_only,
               test_values_in_data_dict_only, test_values_in_dataset_only) %>%
     filter(!is.na(.data$`name_var`)) %>%
+    filter(!is.na(.data$`value`)) %>%
     distinct()
 
   return(test)
