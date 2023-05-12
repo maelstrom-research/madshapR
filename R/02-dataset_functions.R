@@ -275,7 +275,8 @@ dataset_cat_as_labels <- function(
         select(-'___mlstr_name___')
       
       names(col) <- i 
-      data_dict_temp <- valueType_self_adjust(data_dict_temp)
+      data_dict_temp <- 
+        valueType_adjust(from = as_dataset(col), to = data_dict_temp)
       col <- valueType_adjust(from = data_dict_temp, to = as_dataset(col))
       dataset[i] <- data_dict_apply(col, data_dict_temp)
     }
