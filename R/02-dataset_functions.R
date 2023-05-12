@@ -216,7 +216,7 @@ dataset_cat_as_labels <- function(
     col_names = names(dataset)){
   
   # tests
-  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  dataset <- as_dataset(dataset) # no col_id
   dataset[col_names]
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   
@@ -277,7 +277,7 @@ dataset_cat_as_labels <- function(
       names(col) <- i 
       data_dict_temp <- valueType_self_adjust(data_dict_temp)
       col <- valueType_adjust(from = data_dict_temp, to = as_dataset(col))
-      dataset[i] <- data_dict_apply(col, data_dict_temp)  
+      dataset[i] <- data_dict_apply(col, data_dict_temp)
     }
   }
   
