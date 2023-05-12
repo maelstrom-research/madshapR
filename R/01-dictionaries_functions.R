@@ -2063,11 +2063,10 @@ data dictionary")}}
     # addition of valueType for sorting elements
     # if index, preserve it.
     index <- data_dict[['Categories']][['index']]
-    data_dict[['Categories']][['index']] <- NULL
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      select('variable','name') %>% fabR::add_index() %>%
+      select('variable','name') %>% fabR::add_index(.force = TRUE) %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
@@ -2490,8 +2489,14 @@ New name: ",new_name)
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       select(.data$`variable`,.data$`name`,
-             matches(c("^label$","^label:[[:alnum:]]")),everything())
-    
+             matches(c("^label$","^label:[[:alnum:]]")),
+             everything()) %>%
+      left_join(data_dict[['Variables']] %>%
+                  select(variable =  'name') %>%
+                  add_index('madshapR::index'),by = join_by('variable')) %>%
+      arrange(.data$`madshapR::index`) %>%
+      select(-'madshapR::index')
+      
     data_dict[['Categories']] <-
       data_dict[['Categories']][vapply(
         X = data_dict[['Categories']],
