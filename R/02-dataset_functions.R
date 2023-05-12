@@ -234,6 +234,7 @@ dataset_cat_as_labels <- function(
   for(i in col_names){
     # stop()}
     
+    message(paste0('Processing of : ',i)
     col <- dataset_zap_data_dict(as_dataset(dataset[i]))
     data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
     
