@@ -237,6 +237,8 @@ dataset_cat_as_labels <- function(
     message(paste0('Processing of : ',i))
     col <- dataset_zap_data_dict(as_dataset(dataset[i]))
     data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
+    data_dict_temp <- 
+      valueType_adjust(from = as_dataset(col), to = data_dict_temp)
     
     if(sum(nrow(data_dict_temp[['Categories']])) > 0){
       names(col) <- '___values___'
@@ -275,8 +277,6 @@ dataset_cat_as_labels <- function(
         select(-'___mlstr_name___')
       
       names(col) <- i 
-      data_dict_temp <- 
-        valueType_adjust(from = as_dataset(col), to = data_dict_temp)
       col <- valueType_adjust(from = data_dict_temp, to = as_dataset(col))
       dataset[i] <- data_dict_apply(col, data_dict_temp)
     }
