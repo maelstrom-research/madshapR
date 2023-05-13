@@ -277,7 +277,7 @@ variable_visualize <- function(
   palette_mlstr_fct <- colorRampPalette(palette_mlstr, 1)
   
   # levels if group_by
-  palette_mlstr_first <- palette_mlstr[(length(colset_values[[col]]) > 1)*1]
+  palette_mlstr_first <- palette_mlstr[(length(colset_values[[col]]) >= 1)*1]
   palette_values <- 
     c(palette_mlstr_first, 
       palette_mlstr[seq_len(length(unique(colset_values[[group_by]])))],
@@ -1086,7 +1086,8 @@ variable_visualize <- function(
 #' }
 #'
 #' @import dplyr knitr fabR 
-#' @import bookdown utils readr stringr fs DT ggplot2
+#' @import bookdown utils readr stringr fs DT ggplot2 
+#' @importFrom xfun in_dir
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1603,7 +1604,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 # invisible(grDevices::graphics.off())
   
   suppressMessages({
-  xfun::in_dir(
+  in_dir(
     dir = paste0(
       path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
     expr = render_book(
