@@ -771,7 +771,7 @@ variable_visualize <- function(
 
   plot_4 <- NULL
   if(nrow(colset_cat_miss_values) > 0 & 
-     length(unique(colset_cat_miss_values)) > 1){
+     nrow(unique(colset_cat_miss_values)) > 1){
     
     n_obs <- nrow(colset_cat_miss_values)
     
