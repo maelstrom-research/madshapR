@@ -92,7 +92,7 @@ variable_visualize <- function(
     data_dict = NULL, 
     group_by = NULL,
     .summary_var = NULL){
-
+  
   dataset <- as_dataset(dataset)
   
   if(nrow(dataset) == 0) {
@@ -770,7 +770,9 @@ variable_visualize <- function(
     if(group_by != '') {plot_3 <- plot_3 + facet_wrap(group_by)}}
 
   plot_4 <- NULL
-  if(nrow(colset_cat_miss_values) > 0){
+  if(nrow(colset_cat_miss_values) > 0 & 
+     length(unique(colset_cat_miss_values)) > 1){
+    
     n_obs <- nrow(colset_cat_miss_values)
     
     if(sum(nrow(col_dict[['Categories']])) > 0){
