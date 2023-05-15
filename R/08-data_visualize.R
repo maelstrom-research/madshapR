@@ -1345,7 +1345,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
       paste0("\n</div>\n\n") %>%
       paste0(ifelse(
         sum(nrow(
-          data_dict[['Categories']][data_dict[['Categories']][['variables']] == 
+          data_dict[['Categories']][data_dict[['Categories']][['variable']] == 
                                       data_dict$Variables$name[i],])) > 0,
         paste0("\n* **Categories**: ","\n\n") %>%
           paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
