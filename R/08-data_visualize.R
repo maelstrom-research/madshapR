@@ -431,9 +431,7 @@ variable_visualize <- function(
          geom_viz <- geom_density(color="black",na.rm = FALSE)}
       
       if(vT_col$valueType == "integer") {
-        #  Freedman-Diaconis rule
-        bin <- ceiling(2 * IQR(colset_values[[col]]) / 
-                         length(colset_values[[col]])^(1/3))
+        bin <- length(hist(colset_values[[col]],plot = FALSE)$breaks)
         geom_viz <- geom_histogram(bins = bin)}
       
         plot_2 <- 
@@ -947,7 +945,7 @@ variable_visualize <- function(
                            scrollX = TRUE,
                            pageLength = nrow(summary_categories),
                            ordering = FALSE,
-                           paging = FALSE),
+                           paging = TRUE),
                     filter = 'none' ,  
                     escape = FALSE) 
       }
@@ -966,7 +964,7 @@ variable_visualize <- function(
                      scrollX = TRUE,
                      pageLength = nrow(summary_table),
                      ordering = FALSE,
-                     paging = FALSE),
+                     paging = TRUE),
               filter = 'none' ,  
               escape = FALSE)
   
@@ -1176,8 +1174,9 @@ dataset_visualize <- function(
 
   data_dict$Variables <- data_dict$Variables %>% add_index(.force = TRUE)
   
-  data_dict_flat <-
-    data_dict_collapse(data_dict)[[1]] %>%
+  data_dict_flat <- 
+    suppressWarnings(data_dict_collapse(data_dict)[[1]]) %>%
+    bind_rows(tibble("Categories::label" = as.character())) %>%
     select(
       "index in data dict." = matches("index"),
       "name",
@@ -1185,9 +1184,8 @@ dataset_visualize <- function(
       matches('valueType'),
       Categories = matches(c("^Categories::label$",
                              "^Categories::label:[[:alnum:]]"))[1]) %>% 
-    mutate(
-      Categories = str_replace_all(.data$`Categories`,"; \n","<br>"))
-  
+    mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>"))
+
   path_to <- fs::path_abs(to)
   fabR::template_visual_report(path_to)
   save(path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
@@ -1312,7 +1310,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
     paste0(rep(0,nchar(nrow(data_dict$Variables))) %>% paste(collapse = ""))
   
   for(i in seq_len(nrow(data_dict$Variables))){
-    # stop()
+    # stop()}
     
     rmd_file_name <-
       paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/",
@@ -1344,10 +1342,11 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
       
       paste0("\n</div>\n\n") %>%
       paste0(ifelse(
-        nrow(data_dict[['Categories']] %>%
-               filter(.data$`variable` == data_dict$Variables$name[i])) > 0,
+        sum(nrow(
+          data_dict[['Categories']][data_dict[['Categories']][['variables']] == 
+                                      data_dict$Variables$name[i],])) > 0,
         paste0("\n* **Categories**: ","\n\n") %>%
-          paste0("\n<div style= \"display:flex; margin:auto\" > \n\n")%>%
+          paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
           paste0(
             "\n```{r echo = FALSE, message = FALSE, warning = FALSE}",
             "\n
