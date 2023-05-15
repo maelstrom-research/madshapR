@@ -1178,7 +1178,7 @@ dataset_visualize <- function(
   
   data_dict_flat <- 
     suppressWarnings(data_dict_collapse(data_dict)[[1]]) %>%
-    bind_rows(tibble("Categories::label" = as.character())) %>%
+    bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
     select(
       "index in data dict." = matches("index"),
       "name",
