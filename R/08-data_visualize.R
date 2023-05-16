@@ -81,6 +81,7 @@
 #' @import dplyr fabR
 #' @import ggplot2 tidytext janitor forcats
 #' @importFrom grDevices colorRampPalette
+#' @importFrom graphics hist
 #' @importFrom stats IQR
 #' @importFrom rlang .data
 #' @importFrom rlang :=
@@ -1176,8 +1177,27 @@ dataset_visualize <- function(
 
   data_dict$Variables <- data_dict$Variables %>% add_index(.force = TRUE)
   
+  data_dict_flat <- data_dict
+  data_dict_flat[['Variables']] = data_dict$Variables
+  
+  if(sum(nrow(data_dict_flat[['Categories']])) > 0){
+    data_dict_flat[['Categories']] = 
+      data_dict[['Categories']] %>% 
+      add_index("madshapR::index_original",.force = TRUE) %>%
+      group_by(.data$`variable`) %>%
+      slice(1:6) %>%
+      add_index("madshapR::index_group",.force = TRUE) %>%
+      mutate(across(
+        -c("variable","madshapR::index_group","madshapR::index_original"), ~ 
+        ifelse(.data$`madshapR::index_group` == 6,'[...]',.) )) %>%
+      ungroup() %>%
+      arrange(.data$`madshapR::index_original`) %>%
+      select(-"madshapR::index_group",-"madshapR::index_original")
+  }
+
+    
   data_dict_flat <- 
-    suppressWarnings(data_dict_collapse(data_dict)[[1]]) %>%
+    suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
     bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
     select(
       "index in data dict." = matches("index"),
@@ -1186,8 +1206,10 @@ dataset_visualize <- function(
       matches('valueType'),
       Categories = matches(c("^Categories::label$",
                              "^Categories::label:[[:alnum:]]"))[1]) %>% 
-    mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>"))
-
+    mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>")) %>%
+    mutate(Categories = str_replace_all(
+      .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
+    
   path_to <- fs::path_abs(to)
   fabR::template_visual_report(path_to)
   save(path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
@@ -1262,7 +1284,7 @@ load(file = paste0("', path_to,'/temp_bookdown_report/bookdown_report.RData"))
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
 datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
-    options = list(pageLength = nrow(.summary_var$Overview)),
+    options = list(pageLength = nrow(.summary_var$Overview),scrollX = TRUE),
     rownames = FALSE,escape = FALSE)
 
 ```
