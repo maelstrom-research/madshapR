@@ -74,16 +74,15 @@
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' library(fabR)
-#'
+#' 
 #' ###### Example 1 : Combine functions and summarise datasets.
 #' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
 #'   data_dict_apply(data_dict)
-#'   
-#' dataset_summarize(dataset)
+#' 
+#' dataset_summarize(dataset,data_dict,valueType_guess = FALSE)
 #' 
 #' #' ###### Example 2 : any data frame (or tibble) can be summarized
 #' dataset_summarize(iris)
@@ -558,7 +557,8 @@ dataset_summarize <- function(
       '    1_Identifier Variable'                                              ,
       '    1_Grouping variable'                                                ,
       '    1_Variables'                                                        ,
-      '        1_Total number of variables'                                    ,
+      '        1_Total number of variables (incl. identifier)'                 ,
+      '        1_Total number of empty columns'                                ,
       '    1_Data type in dictionary (valueType)'                              ,
       '        1_Nb. text variables'                                           ,
       '        1_Nb. date variables'                                           ,
@@ -588,8 +588,13 @@ dataset_summarize <- function(
           toString(group_by),  
         .data$`---` == '    1_Variables'                                       ~
           " ",
-        .data$`---` == '        1_Total number of variables'                   ~
-      as.character(length(unique(report$`Data dictionary summary`$name)))      ,
+        .data$`---` == '        1_Total number of variables (incl. identifier)'~
+          as.character(length(unique(report$`Data dictionary summary`$name))),
+        .data$`---` == '        1_Total number of empty columns'                 ~
+          as.character(
+            ncol(Overview_group[[i]][vapply(X = Overview_group[[i]],
+                          FUN = function(x) all(is.na(x)),
+                          FUN.VALUE = logical(1))])),
         .data$`---` == '    1_Data type in dictionary (valueType)'             ~
           " ",
         .data$`---` == '        1_Nb. text variables'                          ~
