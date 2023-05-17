@@ -89,7 +89,6 @@ correspondance with R data types are available using
 
 # use DEMO_files provided by the package
 library(dplyr)
-library(fabR)
 
 ###### Example 1 : Combine functions and summarise datasets.
 data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
@@ -97,8 +96,8 @@ dataset <-
   DEMO_files$dataset_TOKYO \%>\%
   valueType_adjust(from = data_dict) \%>\%
   data_dict_apply(data_dict)
-  
-dataset_summarize(dataset)
+
+dataset_summarize(dataset,data_dict,valueType_guess = FALSE)
 
 #' ###### Example 2 : any data frame (or tibble) can be summarized
 dataset_summarize(iris)

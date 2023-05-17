@@ -546,11 +546,14 @@ opal_tables_pull <- function(
         # take the Variable part of the dd created with the first column
         data_dict_temp <- data_dict_extract(table_i[1])[[1]]
         
-        data_dict_i[['Variables']] <-
-          full_join(data_dict_temp,
-          data_dict_i[['Variables']],
-          by = intersect(
-            names(data_dict_temp),names(data_dict_i[['Variables']])))
+        if(!data_dict_temp$name %in% data_dict_i[['Variables']]$`name`){
+          
+          data_dict_i[['Variables']] <-
+            full_join(data_dict_temp,
+                      data_dict_i[['Variables']],
+                      by = intersect(
+                        names(data_dict_temp),names(data_dict_i[['Variables']])))          
+        }
     }
     
     if(ncol(table_i) == 0) table_i <- data_extract(data_dict_i)
