@@ -210,7 +210,7 @@ dataset_evaluate <- function(
         value = 
           ifelse(.data$`index2` == 6 , "[...]",.data$`value`)) %>%
       summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-      mutate(condition = "[INFO] - possible duplicated participant") %>%
+      mutate(condition = "[INFO] - possible duplicated row values") %>%
       mutate(
         `name_var` = 
           ifelse(col_id == "___mlstr_index___",NA_character_, !! col_id)) %>%

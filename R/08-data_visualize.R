@@ -429,11 +429,13 @@ variable_visualize <- function(
         }
     
       if(vT_col$valueType == "decimal") {
-         geom_viz <- geom_density(color="black",na.rm = FALSE)}
+         geom_viz <- geom_density(color="black",na.rm = FALSE)
+         title <- paste0('Density graph', title)}
       
       if(vT_col$valueType == "integer") {
         bin <- length(hist(colset_values[[col]],plot = FALSE)$breaks)
-        geom_viz <- geom_histogram(bins = bin)}
+        geom_viz <- geom_histogram(bins = bin)
+        title <- paste0('Histogram', title)}
       
         plot_2 <- 
           ggplot(colset_values) + aes +
