@@ -1,30 +1,31 @@
 #' @title
-#' Give the valueType of any object
+#' Return the valueType of an object
 #'
 #' @description
-#' Determines the valueType based on [base::typeof()] and [base::class()] of
-#' an object.
-#' The possible values returned are 'date', 'boolean', 'integer',
-#' 'decimal', and 'text'.
+#' Determines the valueType of an object based on [base::typeof()] and 
+#' [base::class()]. The possible values returned are 'date', 'boolean', 
+#' 'integer', 'decimal', and 'text'.
 #'
 #' @details
-#' valueType is one of the property of a variable entity. It refers to
-#' the (Obiba internal) type of any variable. The valueType can be 'text',
-#' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-#' 'point', 'linestring', 'polygon'.
-#' The valueType list is available using [madshapR::valueType_list], and their
-#' corresponding with typeof which is the (R internal) type of any object.
-#'
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
+#' [madshapR::valueType_list].
+#' 
 #' @seealso
 #' [base::typeof()], [base::class()]
 #' [madshapR::valueType_list] for insights about possible valueType and
 #' translation into type and class in R.
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
-#' @param x R object. Can be a vector.
+#' @param x Object. Can be a vector.
 #'
 #' @return
-#' A character string which is the valueType of the given object.
+#' A character string which is the valueType of the input object.
 #'
 #' @examples
 #' {
@@ -88,43 +89,46 @@ valueType_of <- function(x){
 }
 
 #' @title
-#' Search and replace the valueType of any data dictionary or dataset
+#' Guess and attribute the valueType of a data dictionary or dataset variable
 #'
 #' @description
-#' Using the function [madshapR::valueType_guess()], this function provides the
-#' first possible valueType, by trying to assign the object to 'boolean', then
-#' 'integer', then 'decimal', then 'date'. (If all fails, 'text', by default),
-#' then either replace the valueType column of a data dictionary of casts a
-#' column in the dataset. This depending on the input provided.
+#' Determines the valueType of an object based on `base::typeof()` and 
+#' `base::class().
+#' The possible values returned are 'date', 'boolean', 'integer', 'decimal', and
+#' 'text'.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
+#' [madshapR::valueType_list].
 #'
 #' @seealso
-#' [madshapR::valueType_adjust()]
+#' [valueType_adjust()]
 #'
-#' @param ... R object that can be either a dataset or a data dictionary.
+#' @param ... Object that can be either a dataset or a data dictionary.
 #'
 #' @return
 #' Either a tibble, identifying the dataset, or a list of tibble(s)
@@ -147,7 +151,7 @@ valueType_of <- function(x){
 #' #' ###### Example 2: The valueType present in a data dictionary can be 
 #' # adjusted (only for categorical variables). Each categorical variable is
 #' # evaluated as whole (with the values present in the 'name' column in the 
-#' # 'Categories' component), and the best valueType match found is applied. If 
+#' # 'Categories' element), and the best valueType match found is applied. If 
 #' # there is no better match found, the valueType is left as it is.
 #' valueType_self_adjust(data_dict)
 #'
@@ -159,46 +163,48 @@ valueType_of <- function(x){
 #' @export
 valueType_self_adjust <- function(...){
 
-  # test data
+  # test dataset
 
   if(is_dataset(...) & !is_data_dict(...)){
-    data <- as_dataset(...,col_id = attributes(...)$`Mlstr::col_id`)
-    preserve_attributes <- attributes(data)$`Mlstr::col_id`
+    dataset <- as_dataset(...,col_id = attributes(...)$`madshapR::col_id`)
+    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
     is_factor <-
-      data %>%
+      dataset %>%
       summarise(across(everything(), ~ toString(class(.)))) %>%
       pivot_longer(everything()) %>%
       filter(.data$`value` %in% c("factor"))
 
-    data_dict <- data_dict_extract(data)
+    data_dict <- data_dict_extract(dataset)
     data_dict[['Categories']] <-
       bind_rows(
         Categories = tibble(name = as.character(),variable = as.character()),
         data_dict[['Categories']])
 
-    for(i in names(data)) {
-      data[[i]] <-
-        as_valueType(x = data[[i]], valueType = valueType_guess(x = data[[i]]))
+    for(i in names(dataset)) {
+      dataset[[i]] <-
+        as_valueType(x = dataset[[i]], 
+                     valueType = valueType_guess(x = dataset[[i]]))
       }
 
-    data_dict_final <- data_dict_extract(data)
+    data_dict_final <- data_dict_extract(dataset)
     data_dict[['Variables']]['valueType'] <- NULL
     data_dict_final[['Variables']] <-
       data_dict_final[['Variables']][c('name','valueType')] %>%
       left_join(data_dict[['Variables']], by = c("name"))
     data_dict_final <- c(data_dict_final['Variables'], data_dict['Categories'])
 
-    data <-
-      data_dict_apply(data, data_dict_final) %>%
+    dataset <-
+      data_dict_apply(dataset, data_dict_final) %>%
       mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
 
-    return(data)
+    return(dataset)
   }
 
   if(!is_dataset(...) & is_data_dict(...)){
     data_dict <- as_data_dict_shape(...)
+    attributes(data_dict)$`madshapR::class` <- attributes(...)$`madshapR::class`
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
       warning(
@@ -294,48 +300,52 @@ valueType will remain as it is.")
 }
 
 #' @title
-#' Replace the valueType from (or to) any data dictionary to (or from) dataset
+#' Attribute the valueType from a data dictionary to a dataset, or vice versa
 #'
 #' @description
-#' Depending on the input provided (from and to can be either a dataset or a
-#' data dictionary, this function takes the valueType of the first input (from),
-#' and assigns it to the second attribute (to). The valueType replaced is
-#' either in the 'valueType' column of a data dictionary or cast to a column
-#' in the dataset. If 'to' is not provided, the function calls the function
-#' [valueType_self_adjust()] instead.
+#' Takes the valueType of the input (from) and attributes it to the output (to).
+#' The parameters 'from' and 'to' can be either a dataset or a data dictionary.
+#' Depending on the input provided, the valueType replaced is either in the
+#' 'valueType' column of a data dictionary or cast to a column in a dataset.
+#' If 'to' is not provided, the function calls [valueType_self_adjust()] 
+#' instead. The possible values returned are 'date', 'boolean', 'integer', 
+#' 'decimal', and text'.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
+#' [madshapR::valueType_list].
 #'
 #' @seealso
-#' [madshapR::valueType_self_adjust()]
+#' [valueType_self_adjust()]
 #'
-#' @param from R object to be adjusted. Can be either a dataset or a data
+#' @param from Object to be adjusted. Can be either a dataset or a data 
 #' dictionary.
-#' @param to R object to be adjusted. Can be either a dataset or a data
-#' dictionary.
-#' NULL by default, which is equivalent to valueType_self_adjust(... = from)
+#' @param to Object to be adjusted. Can be either a dataset or a data 
+#' dictionary. NULL by default.
 #'
 #' @return
 #' Either a tibble, identifying the dataset, or a list of tibble(s)
@@ -371,27 +381,28 @@ valueType will remain as it is.")
 #' @export
 valueType_adjust <- function(from, to = NULL){
 
-  # test data
+  # test dataset
   if(is.null(to)) return(valueType_self_adjust(from))
 
   # apply the data dictionary of the dataset to the data dictionary
   if(is_dataset(from) & is_data_dict(to)){
-    as_dataset(from)
+    as_dataset(from) # no col_id
     as_data_dict_shape(to)
 
-    data <- from
+    dataset <- from
     data_dict <- to
 
-    # data must match
-    if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
+    # dataset must match
+    if(nrow(suppressWarnings(check_dataset_variables(dataset, data_dict))) > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
-" Use dataset_evaluate(dataset, data_dict) to get a full assessment of your dataset")}
+" Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
+)}
 
     vT_list<- madshapR::valueType_list
     vT_tables <-
-      data %>%
+      dataset %>%
       summarise(across(everything(), valueType_of)) %>%
       pivot_longer(cols = everything()) %>%
       rename(valueType = .data$`value`) %>%
@@ -419,29 +430,30 @@ crayon::bold("\n\nUseful tip:"),
 
   if(is_data_dict(from) & is_dataset(to)){
 
-    # test data dict
+    # test data_dict
     tryCatch({data_dict <-
-      as_mlstr_data_dict(from)},
+      as_data_dict_mlstr(from)},
       warning = function(cond){
         stop(call. = FALSE,cond)})
 
     # test dataset
-    data <- as_dataset(to,col_id = attributes(to)$`Mlstr::col_id`)
-    preserve_attributes <- attributes(data)$`Mlstr::col_id`
+    dataset <- as_dataset(to,col_id = attributes(to)$`madshapR::col_id`)
+    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
-    # data must match
-    if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
+    # dataset must match
+    if(nrow(suppressWarnings(check_dataset_variables(dataset, data_dict))) > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 crayon::bold("\n\nUseful tip:"),
-" Use dataset_evaluate(dataset, data_dict) to get a full assessment of your dataset")}
+" Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
+)}
 
     data_dict_data <-
-      data_dict_extract(data) %>%
-      as_mlstr_data_dict()
+      data_dict_extract(dataset) %>%
+      as_data_dict_mlstr()
 
     is_factor <-
-      data %>%
+      dataset %>%
       summarise(across(everything(), ~ class(.))) %>%
       pivot_longer(everything()) %>%
       filter(.data$`value` == "factor")
@@ -452,20 +464,20 @@ crayon::bold("\n\nUseful tip:"),
       left_join(data_dict[['Variables']] %>%
                   select(.data$`name`, .data$`valueType`),by = "name")
 
-    for(i in names(data)){
-      data[[i]] <-
+    for(i in names(dataset)){
+      dataset[[i]] <-
         as_valueType(
-          x = data[[i]],
+          x = dataset[[i]],
           valueType = data_dict[['Variables']][[
             which(data_dict[['Variables']]$`name` == i),
             'valueType']])}
 
-    data <-
-      data_dict_apply(data, data_dict_data) %>%
+    dataset <-
+      data_dict_apply(dataset, data_dict_data) %>%
       mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
 
-    return(data)
+    return(dataset)
   }
 
   stop(call. = FALSE,
@@ -473,29 +485,48 @@ crayon::bold("\n\nUseful tip:"),
 }
 
 #' @title
-#' Guess the first possible valueType of any object
+#' Guess the first possible valueType of an object (Can be a vector)
 #'
 #' @description
-#' Provides the first possible valueType, by trying to assign the object to
-#' 'boolean', then 'integer', then 'decimal', then 'date'.
-#' If all fails, 'text', by default.
+#' Provides the first possible valueType of a variable. The function tries to 
+#' assign the valueType of the object first to 'boolean', then 'integer', then 
+#' 'decimal', then 'date'. If all others fail, the default valueType is 'text'.
 #'
 #' @details
-#' valueType is one of the property of a variable entity. It refers to
-#' the (Obiba internal) type of any variable. The valueType can be 'text',
-#' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-#' 'point', 'linestring', 'polygon'
-#' The valueType list is available using [madshapR::valueType_list], and their
-#' corresponding with typeof which is the (R internal) type of any object.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#'
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
+#' [madshapR::valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
-#' @param x R object. Can be a vector.
+#' @param x Object. Can be a vector.
 #'
 #' @return
-#' A character string which is the first possible valueType of the given
-#' object.
+#' A character string which is the first possible valueType of the input object.
 #'
 #' @examples
 #' {
@@ -550,12 +581,12 @@ valueType_guess <- function(x){
     mutate(
       valueType =
         case_when(
-          .data$valueType == "boolean|integer|decimal"      ~ "integer"       ,
-          .data$valueType == "integer|decimal"              ~ "integer"       ,
-          .data$valueType == "integer|decimal|date"         ~ "date"          ,
-          .data$valueType == "decimal|date"                 ~ "date"          ,
-          .data$valueType == "boolean|integer|decimal|date" ~ valueType_of(x) ,
-          TRUE                                              ~  .data$valueType
+          .data$`valueType` == "boolean|integer|decimal"      ~ "integer"      ,
+          .data$`valueType` == "integer|decimal"              ~ "integer"      ,
+          .data$`valueType` == "integer|decimal|date"         ~ "date"         ,
+          .data$`valueType` == "decimal|date"                 ~ "date"         ,
+          .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
+          TRUE                                              ~  .data$`valueType`
         )) %>% pull(.data$`valueType`)
 
   if(test_vT == "") test_vT <- 'text'
@@ -564,31 +595,30 @@ valueType_guess <- function(x){
 }
 
 #' @title
-#' Validate and coerce any object according to a given valueType
+#' Validate and coerce an object according to a given valueType
 #'
 #' @description
-#' Uses a data dictionary in the Maelstrom Research formats (with 'Variables'
-#' and 'Categories' in separate tibbles and standard columns in each) to apply
-#' their valueType to a dataset in tibble format. If no data dictionary is
-#' provided, the function will automatically evaluate the most restrictive
-#' valueType for each variable in the dataset and apply it.
+#' Attributes a valueType to an object, that can be a vector, or in a tibble 
+#' using [dplyr::mutate].
 #'
 #' @details
-#' valueType is one of the property of a variable entity. It refers to
-#' the (Obiba internal) type of any variable. The valueType can be 'text',
-#' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-#' 'point', 'linestring', 'polygon'
-#' The valueType list is available using [madshapR::valueType_list], and their
-#' corresponding with typeof which is the (R internal) type of any object.
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
+#' [madshapR::valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
-#' @param x R object to be coerced. Can be a vector.
+#' @param x Object to be coerced. Can be a vector.
 #' @param valueType A character string of the valueType used to coerce x.
 #'
 #' @return
-#' The object coerced accordingly to the given valueType.
+#' The object coerced accordingly to the input valueType.
 #'
 #' @examples
 #' {
@@ -692,7 +722,7 @@ data dictionary")}
         pull(.data$`test`) %>% all}
     }
 
-  # test if data and data_dict content match
+  # test if dataset and data_dict content match
 
   if(test_condition == FALSE){
     stop(call. = FALSE,
@@ -701,27 +731,28 @@ The valueType conflicts with the data type. Object cannot be coerced to
 valueType",
 crayon::bold("\n\nUseful tip:"),
 " Use valueType_guess(x) to evaluate the first potential valueType.
-For further investigation, you can use dataset_evaluate(data, data_dict).")
+For further investigation, you can use dataset_evaluate(dataset, data_dict).")
   }
 
   return(x_temp)
 }
 
 #' @title
-#' Validate and coerce any object as taxonomy
+#' Validate and coerce an object to taxonomy format
 #'
 #' @description
-#' Confirms that the input object is a valid taxonomy, and return it as a
-#' taxonomy with the appropriate mlstr_class attribute. This function mainly
-#' helps validate input within other functions of the package but could be used
-#' to check if a taxonomy is valid.
+#' Confirms that the input object is a valid taxonomy and returns it as a
+#' taxonomy with the appropriate madshapR::class attribute. This function 
+#' mainly helps validate input within other functions of the package but could 
+#' be used to check if a taxonomy is valid.
 #'
 #' @details
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-#' The taxonomy must be compatible with (and generally extracted from) an
-#' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-#' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research standards, and its content can be evaluated
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
@@ -729,7 +760,7 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' 
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
-#' [opal_taxonomy_get()]
+#' [taxonomy_opal_get()]
 #'
 #'
 #' @param object A potential taxonomy to be coerced.
@@ -742,11 +773,12 @@ For further investigation, you can use dataset_evaluate(data, data_dict).")
 #' 
 #' # use DEMO_files provided by the package
 #'
-#' ###### Example 1: this function is compatible with opal_taxonomy_get()
+#' ###### Example 1: this function is compatible with taxonomy_opal_get()
 #' library(opalr)
 #' opal <- 
-#'   opal.login('administrator','password',url = 'https://opal-demo.obiba.org/')
-#' opal_taxo <- opal_mlstr_taxonomy_get(opal)
+#'   opal.login('administrator','password',
+#'     url = 'https://opal-demo.maelstrom-research.org/')
+#' opal_taxo <- taxonomy_opal_mlstr_get(opal)
 #' as_taxonomy(opal_taxo)
 #' 
 #' ###### Example 2: you can create your own taxonomy
@@ -764,23 +796,24 @@ as_taxonomy <- function(object){
   # check if names in object exist
   if(sum(names(object) %in% c("taxonomy","vocabulary" ,"term")) != 3){
     stop(call. = FALSE,
-"\n\nThis object is not a taxonomy as defined by Maelstrom standards, which must 
-be a data-frame (or tibble) containing at least 'taxonomy', 'vocabulary' and 
+"\n
+This object is not a taxonomy as defined by Maelstrom standards, which must 
+be a data frame (or tibble) containing at least 'taxonomy', 'vocabulary' and 
 'term' columns. 
 Please refer to documentation.",
 
       crayon::bold("\n\nUseful tip:"),
-" Use opal_taxonomy_get(opal) or mlstr_taxonomy_get(opal) to get the taxonomy
-present in your Opal environment.")}
+" Use taxonomy_opal_get(opal) or taxonomy_opal_mlstr_get(opal) to get 
+the taxonomy present in your Opal environment.")}
 
   # check if names in taxonomy exist
   if(sum(names(object) %in%
      c("vocabulary_short","taxonomy_scale",
        "vocabulary_scale","term_scale")) == 4){
 
-    attributes(object)$`Mlstr::class` <- "mlstr_taxonomy"
+    attributes(object)$`madshapR::class` <- "taxonomy_mlstr"
   }else{
-    attributes(object)$`Mlstr::class` <- "opal_taxonomy"}
+    attributes(object)$`madshapR::class` <- "taxonomy_opal"}
 
   return(object)
 
@@ -788,22 +821,22 @@ present in your Opal environment.")}
 
 
 #' @title
-#' Evaluate if any object is a valid valueType name or not
+#' Test if a character object is one of the valid valueType values
 #'
 #' @description
-#' Uses a data dictionary in the Maelstrom Research formats (with 'Variables'
-#' and 'Categories' in separate tibbles and standard columns in each) to apply
-#' their valueType to a dataset in tibble format. If no data dictionary is
-#' provided, the function will automatically evaluate the most restrictive
-#' valueType for each variable in the dataset and apply it.
+#' Confirms whether the input object is a valid valueType. This function mainly
+#' helps validate input within other functions of the package but could be used 
+#' to check if a valueType is valid.
 #'
 #' @details
-#' valueType is one of the property of a variable entity. It refers to
-#' the (Obiba internal) type of any variable. The valueType can be 'text',
-#' 'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-#' 'point', 'linestring', 'polygon'.
-#' The valueType list is available using [madshapR::valueType_list], and their
-#' corresponding with typeof which is the (R internal) type of any object.
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
+#' [madshapR::valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -838,19 +871,20 @@ is_valueType <- function(object){
 }
 
 #' @title
-#' Evaluate if any object is a taxonomy scheme or not
+#' Test if an object is a valid taxonomy
 #'
 #' @description
-#' Confirms whether the input object is a valid taxonomy.
-#' This function mainly helps validate input within other functions of the
-#' package but could be used to check if a taxonomy is valid.
+#' Confirms whether the input object is a valid taxonomy. This function mainly
+#' helps validate input within other functions of the  package but could be 
+#' used to check if a taxonomy is valid.
 #'
 #' @details
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-#' The taxonomy must be compatible with (and generally extracted from) an
-#' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-#' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research standards, and its content can be evaluated
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',

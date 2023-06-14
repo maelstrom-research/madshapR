@@ -2,96 +2,109 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{dataset_summarize}
 \alias{dataset_summarize}
-\title{Generate a report as an Excel spreadsheet of a study-specific dataset}
+\title{Generate a report and summary of a dataset}
 \usage{
 dataset_summarize(
   dataset,
-  data_dict = NULL,
+  data_dict = data_dict_extract(dataset),
+  group_by = NULL,
   taxonomy = NULL,
   .dataset_name = NULL,
   valueType_guess = FALSE
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{taxonomy}{A data frame or data frame extension (e.g. a tibble),
-identifying the scheme used for variables classification as a tibble.}
+\item{group_by}{A character string of one column in the dataset that can be
+taken as a grouping column. The visual element will be grouped and displayed
+by this column.}
+
+\item{taxonomy}{A tibble identifying the scheme used for variables
+classification.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{madshapR::study_evaluate()}).}
+(internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 }
 \value{
-A list of tibbles of report for one study-specific data dictionary.
+A list of tibbles of report for one data dictionary.
 }
 \description{
-Generates an Excel spreadsheet report for a dataset
-for each variable to facilitate the assessment of input data.
-This report can be used to assist the user in the assessment of the data
-structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy, or standard evaluation. The summary associated provides dataset
-composition, with observation distribution and descriptive statistics.
+Assesses and summarizes the content and structure of a dataset and data
+dictionary and reports potential issues to facilitate the assessment of
+input. The report can be used to help assess data structure, presence of
+fields, coherence across elements, and taxonomy or data dictionary formats.
+The summary provides additional information about variable distributions and
+descriptive statistics. This report is compatible with Excel and can be
+exported as an Excel spreadsheet.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-The taxonomy must be compatible with (and generally extracted from) an
-Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-'terms' to work with some specific functions. In addition, the taxonomy
-may follow Maelstrom research standards, and its content can be evaluated
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
+
+A taxonomy is classification scheme that can be defined for variable
+attributes. If defined, a taxonomy must be a data frame-like object. It must
+be compatible with (and is generally extracted from) an Opal environment. To
+work with certain functions, a valid taxonomy must contain at least the
+columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+may follow Maelstrom research taxonomy, and its content can be evaluated
 accordingly, such as naming convention restriction, tagging elements,
 or scales, which are specific to Maelstrom Research. In this particular
 case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 'vocabulary_scale' and 'term_scale' to work with some specific functions.
+
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 library(dplyr)
-library(fabR)
 
-###### Example 1: Combine functions and summarise datasets.
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+###### Example 1 : Combine functions and summarise datasets.
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 dataset <-
   DEMO_files$dataset_TOKYO \%>\%
   valueType_adjust(from = data_dict) \%>\%
   data_dict_apply(data_dict)
-  
-dataset_summarize(dataset,valueType_guess = TRUE)
-dataset_summarize(dataset,valueType_guess = FALSE)
- 
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-dataset_summarize(iris,valueType_guess = FALSE)
-dataset_summarize(
-  dataset = add_index(mtcars), 
-  data_dict = data_dict_extract(mtcars), 
-  .dataset_name = 'mtcars',
-  valueType_guess = FALSE)
 
+dataset_summarize(dataset,data_dict,valueType_guess = FALSE)
+
+#' ###### Example 2 : any data frame (or tibble) can be summarized
+dataset_summarize(iris)
+ 
 }
 
 }
 \seealso{
-\code{\link[=study_evaluate]{study_evaluate()}}
+\code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }

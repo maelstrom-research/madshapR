@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_group_by}
 \alias{data_dict_group_by}
-\title{Group listed data dictionaries using column names}
+\title{Group listed data dictionaries by specified column names}
 \usage{
 data_dict_group_by(data_dict, col)
 }
@@ -13,38 +13,35 @@ transformed.}
 \item{col}{variable to group by.}
 }
 \value{
-A list of tibble(s) identifying a data dictionary - like structure.
+A list of tibble(s) identifying a workable data dictionary structure.
 }
 \description{
-Groups the data dictionary both in the 'Variables' and 'Categories' (assuming
-the group is defined in both elements) defined by the query. The user would
-group their data dictionary analogously they would do to a tibble with
-\code{\link[dplyr:group_by]{dplyr::group_by()}}. \code{\link[=data_dict_ungroup]{data_dict_ungroup()}} reverses the effect of
-\link{data_dict_group_by}.
+Groups the data dictionary element(s) by the groups defined by the query.
+This function groups both the 'Variables' and 'Categories' elements (if
+the group exists under the same definition in in both). This function is
+analogous to running \code{\link[dplyr:group_by]{dplyr::group_by()}}. Each element is named using the
+group values. \code{\link[=data_dict_ungroup]{data_dict_ungroup()}} reverses the effect.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
-# refer to the associated dataset. The object created is not a data 
+# refer to the associated dataset. The object created is not a 
 # data dictionary per say, but can be used as a structure which can be 
-# shaped into a data data dictionary.
+# shaped into a data dictionary.
+
 library(dplyr)
 
 data_dict_list <- 

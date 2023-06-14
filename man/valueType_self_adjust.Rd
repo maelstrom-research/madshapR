@@ -2,47 +2,50 @@
 % Please edit documentation in R/03-catalogue_functions.R
 \name{valueType_self_adjust}
 \alias{valueType_self_adjust}
-\title{Search and replace the valueType of any data dictionary or dataset}
+\title{Guess and attribute the valueType of a data dictionary or dataset variable}
 \usage{
 valueType_self_adjust(...)
 }
 \arguments{
-\item{...}{R object that can be either a dataset or a data dictionary.}
+\item{...}{Object that can be either a dataset or a data dictionary.}
 }
 \value{
 Either a tibble, identifying the dataset, or a list of tibble(s)
 identifying a data dictionary, depending which the input refers to.
 }
 \description{
-Using the function \code{\link[=valueType_guess]{valueType_guess()}}, this function provides the
-first possible valueType, by trying to assign the object to 'boolean', then
-'integer', then 'decimal', then 'date'. (If all fails, 'text', by default),
-then either replace the valueType column of a data dictionary of casts a
-column in the dataset. This depending on the input provided.
+Determines the valueType of an object based on \code{base::typeof()} and
+`base::class().
+The possible values returned are 'date', 'boolean', 'integer', 'decimal', and
+'text'.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
+
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {
@@ -61,7 +64,7 @@ valueType_self_adjust(dataset)
 #' ###### Example 2: The valueType present in a data dictionary can be 
 # adjusted (only for categorical variables). Each categorical variable is
 # evaluated as whole (with the values present in the 'name' column in the 
-# 'Categories' component), and the best valueType match found is applied. If 
+# 'Categories' element), and the best valueType match found is applied. If 
 # there is no better match found, the valueType is left as it is.
 valueType_self_adjust(data_dict)
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/03-catalogue_functions.R
 \name{is_taxonomy}
 \alias{is_taxonomy}
-\title{Evaluate if any object is a taxonomy scheme or not}
+\title{Test if an object is a valid taxonomy}
 \usage{
 is_taxonomy(object)
 }
@@ -13,16 +13,17 @@ is_taxonomy(object)
 A logical.
 }
 \description{
-Confirms whether the input object is a valid taxonomy.
-This function mainly helps validate input within other functions of the
-package but could be used to check if a taxonomy is valid.
+Confirms whether the input object is a valid taxonomy. This function mainly
+helps validate input within other functions of the  package but could be
+used to check if a taxonomy is valid.
 }
 \details{
-A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-The taxonomy must be compatible with (and generally extracted from) an
-Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-'terms' to work with some specific functions. In addition, the taxonomy
-may follow Maelstrom research standards, and its content can be evaluated
+A taxonomy is classification scheme that can be defined for variable
+attributes. If defined, a taxonomy must be a data frame-like object. It must
+be compatible with (and is generally extracted from) an Opal environment. To
+work with certain functions, a valid taxonomy must contain at least the
+columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+may follow Maelstrom research taxonomy, and its content can be evaluated
 accordingly, such as naming convention restriction, tagging elements,
 or scales, which are specific to Maelstrom Research. In this particular
 case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',

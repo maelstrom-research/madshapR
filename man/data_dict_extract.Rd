@@ -2,39 +2,49 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_extract}
 \alias{data_dict_extract}
-\title{Create a data dictionary in the Maelstrom Research format from a dataset}
+\title{Create a data dictionary from a dataset}
 \usage{
-data_dict_extract(data, as_mlstr_data_dict = TRUE)
+data_dict_extract(dataset, as_data_dict_mlstr = TRUE)
 }
 \arguments{
-\item{data}{A tibble identifying the input data observations which contains
-meta data as attributes.}
+\item{dataset}{A tibble identifying the input dataset observations which
+contains meta data as attributes.}
 
-\item{as_mlstr_data_dict}{Whether the output data dictionary has a simple
+\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
 data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom ecosystem such as Opal environment).
-FALSE by default.}
+structure, compatible with Maelstrom Research ecosystem, including Opal).
+TRUE by default.}
 }
 \value{
 A list of tibble(s) identifying a data dictionary.
 }
 \description{
-Creates a data dictionary in the Maelstrom Research formats (with 'Variables'
-and Categories' in separate tibbles and standard columns in each) from any
+Creates a data dictionary in a format compliant with formats used in
+Maelstrom Research ecosystem, including Opal (with 'Variables' and
+'Categories' in separate tibbles and standard columns in each) from any
 dataset in tibble format. If the input dataset has no associated metadata, a
-data dictionary with a minimal of information is created from the column
+data dictionary with minimal required information is created from the column
 (variable) names to create the data dictionary structure required for
-madshapR (all columns except variable names will be blank).
+'madshapR'. All columns except variable names will be blank.
 }
 \details{
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
+
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {
@@ -42,9 +52,9 @@ full completeness is mandatory.
 # use DEMO_files provided by the package
 
 ###### Example 2: extract data dictionary from a labelled dataset.
-data <- DEMO_files$dataset_MELBOURNE_1
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
-dataset <- data_dict_apply(data,data_dict)
+dataset <- DEMO_files$dataset_MELBOURNE_1
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+dataset <- data_dict_apply(dataset,data_dict)
 data_dict_extract(dataset)
 
 ###### Example 2: extract data dictionary from any dataset (the 

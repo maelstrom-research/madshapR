@@ -20,21 +20,23 @@ Folder(s) containing files coming from the user R environment in Opal.
 The path to Opal needs to be pasted with Opal absolute path.
 }
 \description{
-Uploads files from local to Opal environment. It is a wrapper of
-\code{\link[opalr:opal.file_upload]{opalr::opal.file_upload()}}.
+Uploads files from the local environment to an Opal environment. This is a
+wrapper function for \code{\link[opalr:opal.file_upload]{opalr::opal.file_upload()}}.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
-{
+\dontrun{
 
 library(opalr)
 opal <- 
-  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  opal.login('administrator','password', 
+    url ='https://opal-demo.maelstrom-research.org')
   
 tempdir <- tempdir()
 invisible(dir.create(paste0(tempdir,"/a_file")))

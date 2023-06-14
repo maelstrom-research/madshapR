@@ -1,43 +1,42 @@
 #' @title
-#' Transform a columns in a data dictionary component to a new component
+#' Transform single-row category information to multiple rows as element 
 #'
 #' @description
-#' Transforms any columns in a data dictionary component to a new component.
-#' If the component 'from' contains any column starting with 'prefix', (xx,yy),
-#' these columns will be added as 'xx' and 'yy' in the component identified by
+#' Expands data dictionary column(s) in a element (the parameter 'from'),
+#' into another element (the parameter 'to').
+#' If the element 'from' contains any column starting with 'prefix', (xx,yy),
+#' these columns will be added as 'xx' and 'yy' in the element identified by
 #' 'to'. This tibble will be created if necessary, and columns will be added,
 #' from left to right. (unique names will be generated if necessary).
 #' Separator of each element is the following structure :
 #' 'name = xx1 ; name = xx2'.
-#' This function is the reversed operation of [madshapR::data_dict_flatten()]
+#' This function is mainly used to expand the column(s) 'Categories::xx' in 
+#' "Variables" to "Categories" element with column(s) xx.
+#' This function is the reversed operation of [data_dict_collapse()]
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' [madshapR::data_dict_flatten()]
+#' [data_dict_collapse()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed. Automatically generated if not provided.
-#' @param from Symbol identifying the name of the component (tibble) to take
+#' @param from Symbol identifying the name of the element (tibble) to take
 #' column(s) from. Default is 'Variables'.
-#' @param to Symbol identifying the name of the component (tibble) to create
+#' @param to Symbol identifying the name of the element (tibble) to create
 #' column(s) to. Default is 'Categories'.
 #' @param name_prefix Character string of the prefix of columns of interest.
 #' This prefix will be used to select columns, and to rename them in the 'to'
-#' component. Default is 'Categories::'.
+#' element. Default is 'Categories::'.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary.
@@ -77,7 +76,7 @@ data_dict_expand <- function(
 
   if(is.null(data_dict[[from]])){
     stop(call. = FALSE,
-         "Your data dictionary contains no '",from,"' component.")}
+         "Your data dictionary contains no '",from,"' element.")}
 
   names_col <-
     data_dict[[from]] %>%
@@ -181,44 +180,44 @@ Example:
 }
 
 #' @title
-#' Transform a component in a data dictionary in column(s) in another component
+#' Transform multi-row category column(s) to single rows and join to "Variables"
 #'
 #' @description
-#' If the component 'to' exists, and contains any column 'xx' or 'yy', these
-#' columns will be added to the component 'from' under the names 'to:xx'
+#' Collapses a data dictionary element (the parameter 'from'),
+#' into column(s) in another element (the parameter 'to')
+#' If the element 'to' exists, and contains any column 'xx' or 'yy', these
+#' columns will be added to the element 'from' under the names 'to:xx'
 #' and 'to:yy'. (unique names will be generated if necessary). Each element
 #' of these column will gather all information to process the reverse operation.
 #' Separator of each element is the following structure :
 #' 'name = xx1 ; name = xx2'.
-#' This function is the reversed operation of [madshapR::data_dict_expand()]
+#' This function is mainly used to collapse the 'Categories' element into 
+#' columns in 'Variables'.
+#' This function is the reversed operation of [data_dict_expand()]
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' [madshapR::data_dict_expand()]
+#' [data_dict_expand()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed. Automatically generated if not provided.
-#' @param from Symbol identifying the name of the component (tibble) to take
+#' @param from Symbol identifying the name of the element (tibble) to take
 #' column(s) from. Default is 'Categories'.
-#' @param to Symbol identifying the name of the component (tibble) to create
+#' @param to Symbol identifying the name of the element (tibble) to create
 #' column(s) to. Default is 'Variables'.
 #' @param name_prefix Character string of the prefix of columns of interest.
 #' This prefix will be used to select columns, and to rename them in the 'to'
-#' component. Default is 'Categories::'.
+#' element. Default is 'Categories::'.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary.
@@ -229,7 +228,7 @@ Example:
 #' # use DEMO_files provided by the package
 #'
 #' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
-#' data_dict_flatten(data_dict)
+#' data_dict_collapse(data_dict)
 #'
 #' }
 #'
@@ -237,7 +236,7 @@ Example:
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_flatten <- function(
+data_dict_collapse <- function(
     data_dict,
     from = 'Categories',
     to = 'Variables',
@@ -257,11 +256,11 @@ data_dict_flatten <- function(
   if(typeof(to) == "language")  to <- as.symbol(to)
 
   if(is.null(data_dict[[from]])){
-    warning("Your data dictionary contains no '",from,"' component.")
+    warning("Your data dictionary contains no '",from,"' element.")
     return(data_dict)}
 
   if(is.null(data_dict[[to]])){
-    warning("Your data dictionary contains no '",to,"' component.")
+    warning("Your data dictionary contains no '",to,"' element.")
     return(data_dict)}
 
   # add categories content
@@ -308,50 +307,45 @@ data_dict_flatten <- function(
 }
 
 #' @title
-#' Turn column(s) in a data dictionary component into their wider equivalent
+#' Transform column(s) of a data dictionary from long format to wide format
 #'
 #' @description
-#' Transforms column(s) in a data dictionary component into their wider
-#' equivalent. If any Opal taxonomy is provided, the correspondent columns in
-#' the data dictionary will be converted to a format compatible with Opal
-#' environment (with the taxonomy expanded).
-#' This operation is equivalent to perform a pivot_wider() to these columns
-#' following the taxonomy structure provided.
-#' The data dictionaries data dictionary provided must respect certain
-#' constrains such as name uniqueness across the variables names.
+#' Transforms column(s) of a data dictionary from long format to wide format. 
+#' If a taxonomy is provided, the corresponding columns in the data
+#' dictionary will be converted to a format with the taxonomy expanded.
+#' This operation is equivalent to performing a 'tidyr::pivot_wider()' on these 
+#' columns following the taxonomy structure provided. Variable names in the  
+#' data dictionary must be unique.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
-#'
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-#' The taxonomy must be compatible with (and generally extracted from) an
-#' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-#' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research standards, and its content can be evaluated
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [tidyr::pivot_wider()], [madshapR::as_data_dict()]
+#' [tidyr::pivot_wider()], [as_data_dict()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
-#' identifying the scheme used for variables classification as a tibble.
+#' @param taxonomy A tibble identifying the scheme used for variables 
+#' classification.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary.
@@ -483,7 +477,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
       data_dict[['Variables']][,c(name_col,name_term)] <- NULL
     }
 
-    if(paste0(attributes(taxonomy)$`Mlstr::class`,"") == "mlstr_taxonomy"){
+    if(paste0(attributes(taxonomy)$`madshapR::class`,"") == "taxonomy_mlstr"){
 
       keys <-
         taxonomy[!is.na(taxonomy$`vocabulary_short`),
@@ -578,7 +572,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
           na.rm = TRUE, sep = "::", remove = FALSE) %>%
     pull(.data$`taxonomy_id`)
   
-  if(paste0(attributes(taxonomy)$`Mlstr::class`,"") == "mlstr_taxonomy"){
+  if(paste0(attributes(taxonomy)$`madshapR::class`,"") == "taxonomy_mlstr"){
     
     authorized_names <- 
       c(authorized_names ,
@@ -603,49 +597,45 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 }
 
 #' @title
-#' Turn column(s) in a data dictionary component into their longer equivalent
+#' Transform column(s) of a data dictionary from wide format to long format
 #'
 #' @description
-#' Transforms column(s) in a data dictionary component into their longer
-#' equivalent. If any Opal taxonomy is provided, the correspondent columns in
-#' the data dictionary will be converted to a format that contains fewer columns
-#' than an Opal format to work with. This operation is equivalent to perform a
-#' [tidyr::pivot_longer()] to these columns following the taxonomy structure
-#' provided. The data dictionaries data dictionary provided must respect certain
-#' constrains such as name uniqueness across the variables names.
+#' Transforms column(s) of a data dictionary from wide format to long format. 
+#' If a taxonomy is provided, the corresponding columns in the data
+#' dictionary will be converted to a standardized format with fewer columns.
+#' This operation is equivalent to performing a [tidyr::pivot_longer()] on 
+#' these columns following the taxonomy structure provided. Variable names in 
+#' the data dictionary must be unique.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
-#'
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-#' The taxonomy must be compatible with (and generally extracted from) an
-#' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-#' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research standards, and its content can be evaluated
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [tidyr::pivot_longer()], [madshapR::as_data_dict()]
+#' [tidyr::pivot_longer()], [as_data_dict()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
-#' identifying the scheme used for variables classification as a tibble.
+#' @param taxonomy A tibble identifying the scheme used for variables 
+#' classification.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary.
@@ -674,7 +664,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
     as_taxonomy(taxonomy) 
   }
 
-  # make unique names for names in data dict
+  # make unique names for names in data dictionary 
   data_dict_init <- data_dict
   data_dict[['Variables']]$`name` <-
     make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
@@ -707,7 +697,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
     taxonomy_i <-
       taxonomy_id[[i]] %>%
       filter(.data$`taxonomy_id` %in% (names(data_dict[['Variables']]))) %>%
-      select('voc_term','taxonomy_id','index_vocabulary', 'index_term','vocabulary') %>%
+      select('voc_term','taxonomy_id','index_vocabulary', 
+             'index_term','vocabulary') %>%
       distinct
 
     if(taxonomy_i %>% nrow > 0){
@@ -780,7 +771,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
   }
   
   
-  if(paste0(attributes(taxonomy)$`Mlstr::class`,"") == "mlstr_taxonomy"){
+  if(paste0(attributes(taxonomy)$`madshapR::class`,"") == "taxonomy_mlstr"){
     
     keys <-
       taxonomy %>%
@@ -880,27 +871,23 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 }
 
 #' @title
-#' Subset data dictionary using column values
+#' Subset data dictionary by row values
 #'
 #' @description
-#' Subsets either or both the 'Variables' and the 'Categories' tibbles of a data
-#' dictionary. Rows are conserved if the value of one column satisfy a
-#' condition. This function is a wrapper analogous to [dplyr::filter()].
+#' Subsets either or both the 'Variables' and 'Categories' elements of a data
+#' dictionary. Rows are conserved if their values satisfy the condition.
+#' This is a wrapper function analogous to [dplyr::filter()].
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
 #' [dplyr::filter()]
@@ -915,7 +902,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' 'Variables' in the data dictionary.
 #'
 #' @return
-#' A list of tibble(s) identifying a data dictionary - like structure.
+#' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
 #' {
@@ -923,9 +910,9 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' # use DEMO_files provided by the package
 #' 
 #' # Create a list of data dictionaries where the column 'table' is added to 
-#' # refer to the associated dataset. The object created is not a data 
+#' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
-#' # shaped into a data data dictionary.
+#' # shaped into a data dictionary.
 #' library(dplyr)
 #' 
 #' data_dict_list <- list()
@@ -939,13 +926,13 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #'   list(Variables = bind_rows(data_dict_1$Variables,data_dict_2$Variables),
 #'        Categories = bind_rows(data_dict_1$Categories,data_dict_2$Categories))
 #' 
-#' ###### Example 1 search and filter through a column in 'Variables' component
+#' ###### Example 1 search and filter through a column in 'Variables' element
 #' data_dict_filter(data_dict_list,filter_var = "valueType == 'integer'")
 #' 
-#' ###### Example 2 search and filter through a column in 'Categories' component
+#' ###### Example 2 search and filter through a column in 'Categories' element
 #' data_dict_filter(data_dict_list,filter_cat = "missing == TRUE")
 #' 
-#' ###### Example 3 search and filter through a column in 'Variables' component.
+#' ###### Example 3 search and filter through a column in 'Variables' element.
 #' # The column must exist in both 'Variables' and 'Categories' and have the 
 #' # same meaning
 #' data_dict_filter(data_dict_list,filter_all = "table == 'MELBOURNE_1'")
@@ -1000,31 +987,28 @@ data_dict_filter <- function(
 #' Split grouped data dictionaries into a named list
 #'
 #' @description
-#' Divides the data dictionary both in the 'Variables' and 'Categories'
-#' (assuming the group is defined in both elements) into the groups defined by
-#' the query. The list is created analogously the user would do with
-#' [dplyr::group_by()] and [dplyr::group_split()]. Each element is named using
-#' the group values. [madshapR::data_dict_list_nest()] reverses the effect of
-#' [madshapR::data_dict_group_split()].
+#' Divides data dictionary element(s) into the groups defined by the query.
+#' This function divides both the 'Variables' and 'Categories' elements (if 
+#' the group exists under the same definition in in both) into a list of 
+#' data dictionaries, each with the rows of the associated group and all the 
+#' original columns, including grouping variables. This function is analogous 
+#' to running [dplyr::group_by()] and [dplyr::group_split()]. Each element is 
+#' named using the group values. [data_dict_list_nest()] reverses the effect.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
 #' [dplyr::group_by()], [dplyr::group_split()] ,
-#' [madshapR::data_dict_group_by()], [madshapR::data_dict_list_nest()]
+#' [data_dict_group_by()], [data_dict_list_nest()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
@@ -1032,7 +1016,7 @@ data_dict_filter <- function(
 #' splitting will be done on the grouping element of a grouped data dictionary.
 #'
 #' @return
-#' A list of tibble(s) identifying a list of data dictionary - like structure.
+#' A list of tibble(s) identifying a list of workable data dictionary structure.
 #'
 #' @examples
 #' {
@@ -1041,9 +1025,9 @@ data_dict_filter <- function(
 #' library(dplyr)
 #'
 #' # Create a list of data dictionaries where the column 'table' is added to 
-#' # refer to the associated dataset. The object created is not a data 
+#' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
-#' # shaped into a data data dictionary.
+#' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- DEMO_files[
 #'     c('dd_MELBOURNE_1_format_maelstrom',
@@ -1068,7 +1052,7 @@ data_dict_group_split <- function(data_dict, ...){
   
   if(!is_grouped_df(data_dict[['Variables']]))
     stop(call. = FALSE,
-         "\n\nThe data dictionary list must be grouped to be split. Please group them
+"\n\nThe data dictionary list must be grouped to be split. Please group them
 using data_dict_group_by(data_dict, col)")
   
   col <- as.symbol(names(group_keys(data_dict[['Variables']])))
@@ -1092,7 +1076,7 @@ using data_dict_group_by(data_dict, col)")
   group_names_cat <- pull(group_keys(data_dict[['Categories']]))
   
   if(!all(group_names_cat %in% group_names_var)) stop(call. = FALSE,
-                                                      "\nThese data dictionaries contain group of variables in 'Categories' which
+"\nThese data dictionaries contain group of variables in 'Categories' which
 cannot be found accross the variables declared in 'Variables'.")
   
   # if(length(group_names_var) == 1) return(data_dict)
@@ -1133,27 +1117,22 @@ cannot be found accross the variables declared in 'Variables'.")
 }
 
 #' @title
-#' Regroup listed split data dictionaries
+#' Bind listed data dictionaries
 #'
 #' @description
-#' Regroups data dictionaries provided in a list, and binds them together.
-#' This function is a wrapper analogous to [dplyr::bind_rows()] from the
-#' tidyverse.
+#' Binds a list of data dictionaries into one data dictionary.
+#' This is a wrapper function analogous to [dplyr::bind_rows()].
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
 #' [dplyr::bind_rows()]
@@ -1164,16 +1143,16 @@ cannot be found accross the variables declared in 'Variables'.")
 #' taken as a grouping column.
 #'
 #' @return
-#' A list of tibble(s) identifying a data dictionary - like structure.
+#' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
-#' # refer to the associated dataset. The object created is not a data 
+#' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
-#' # shaped into a data data dictionary.
+#' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- DEMO_files[
 #'     c('dd_MELBOURNE_1_format_maelstrom',
@@ -1259,48 +1238,45 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 
 
 #' @title
-#' Group listed data dictionaries using column names
+#' Group listed data dictionaries by specified column names
 #'
 #' @description
-#' Groups the data dictionary both in the 'Variables' and 'Categories' (assuming
-#' the group is defined in both elements) defined by the query. The user would
-#' group their data dictionary analogously they would do to a tibble with
-#' [dplyr::group_by()]. [madshapR::data_dict_ungroup()] reverses the effect of
-#' [madshapR::data_dict_group_by].
+#' Groups the data dictionary element(s) by the groups defined by the query.
+#' This function groups both the 'Variables' and 'Categories' elements (if 
+#' the group exists under the same definition in in both). This function is 
+#' analogous to running [dplyr::group_by()]. Each element is named using the 
+#' group values. [data_dict_ungroup()] reverses the effect.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' [dplyr::group_by()], [madshapR::data_dict_ungroup()]
+#' [dplyr::group_by()], [data_dict_ungroup()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
 #' @param col variable to group by.
 #'
 #' @return
-#' A list of tibble(s) identifying a data dictionary - like structure.
+#' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
-#' # refer to the associated dataset. The object created is not a data 
+#' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
-#' # shaped into a data data dictionary.
+#' # shaped into a data dictionary.
+#' 
 #' library(dplyr)
 #' 
 #' data_dict_list <- 
@@ -1341,11 +1317,13 @@ data_dict_group_by <- function(data_dict, col){
   group_names_cat <-
     c(sort(unique(data_dict[['Categories']][[col]]),na.last = TRUE))
   
-  if(is.null(group_names_cat)) stop(call. = FALSE,
-                                    paste0("Column '",col,"' not found in Categories."))
+  if(is.null(group_names_cat)) 
+    stop(call. = FALSE,
+paste0("Column '",col,"' not found in Categories."))
   
-  if(!all(group_names_cat %in% group_names_var)) stop(call. = FALSE,
-                                                      "\n\nThese data dictionaries contain group of variables in 'Categories' which
+  if(!all(group_names_cat %in% group_names_var)) 
+    stop(call. = FALSE,
+"\n\nThese data dictionaries contain group of variables in 'Categories' which
 cannot be found accross the variables declared in 'Variables'.")
   
   data_dict[['Variables']] <-
@@ -1364,46 +1342,45 @@ cannot be found accross the variables declared in 'Variables'.")
 }
 
 #' @title
-#' Ungroup data dictionaries
+#' Ungroup data dictionary
 #'
 #' @description
-#' Ungroup data dictionaries, both in the 'Variables' and 'Categories' (assuming
-#' the group is defined in both elements). The user would group their
-#' data dictionary analogously they would do to a tibble with
-#' [dplyr::ungroup()].
+#' Ungroups the data dictionary element(s). This function ungroups both the
+#' 'Variables' and 'Categories' elements (if both are grouped tibbles). 
+#' This function is analogous to running [dplyr::ungroup()].
+#' [data_dict_group_by()] allows to group a data dictionary and this function 
+#' reverses the effect.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
 #' [dplyr::ungroup()]
+#' [data_dict_group_by()]
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
 #'
 #' @return
-#' A list of tibble(s) identifying a data dictionary - like structure.
+#' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
-#' # refer to the associated dataset. The object created is not a data 
+#' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
-#' # shaped into a data data dictionary.
+#' # shaped into a data dictionary.
+#' 
 #' library(dplyr)
 #' 
 #' data_dict_list <- DEMO_files[
@@ -1437,43 +1414,38 @@ data_dict_ungroup <- function(data_dict){
 }
 
 #' @title
-#' Apply a data dictionary to any dataset
+#' Apply a data dictionary to a dataset
 #'
 #' @description
 #' Applies a data dictionary to a data structure, creating a labelled dataset.
-#' All previous attributes will be preserved, in particular factors (and its
-#' associated attribute 'levels' which will be transform into attributes
-#' 'labels' and its values recast into their proper datatype.
+#' All previous attributes will be preserved. For factors, the attribute 
+#' 'levels' will be transformed into attribute 'labels' and values will be 
+#' recast into appropriate datatypes.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
 #' [base::attributes()]
 #'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset.
 #' Automatically generated if not provided.
@@ -1488,7 +1460,7 @@ data_dict_ungroup <- function(data_dict){
 #' # use DEMO_files provided by the package
 #'
 #' dataset <- DEMO_files$dataset_MELBOURNE_1
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
 #' data_dict_apply(dataset, data_dict)
 #' 
 #' }
@@ -1497,63 +1469,63 @@ data_dict_ungroup <- function(data_dict){
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_apply <- function(data, data_dict = NULL){
+data_dict_apply <- function(dataset, data_dict = NULL){
   
   # if data_dict empty
-  if(is.null(data_dict)) data_dict <- data_dict_extract(data)
+  if(is.null(data_dict)) data_dict <- data_dict_extract(dataset)
   
   # test
-  as_dataset(data)
-  preserve_attributes <- attributes(data)$`Mlstr::col_id`
-  if(toString(attributes(data_dict)$`Mlstr::class`) == 'Mlstr_data_dict'){
-    data_dict <- as_mlstr_data_dict(data_dict,as_data_dict = TRUE)
+  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+  if(toString(attributes(data_dict)$`madshapR::class`) == 'data_dict_mlstr'){
+    data_dict <- as_data_dict_mlstr(data_dict,as_data_dict = TRUE)
   }else{data_dict <- as_data_dict(data_dict)}
   
   # names must exist both in dataset and data dictionary
   # data dictionary is not applied to dataset, since it may come from an
   # automated datadict (text by default).
-  if(suppressWarnings(check_dataset_variables(data, data_dict)) %>% nrow > 0){
+  if(suppressWarnings(nrow(check_dataset_variables(dataset, data_dict))) > 0){
     stop(call. = FALSE,
-         "Names across your data dictionary differ from names across the dataset.",
+"Names across your data dictionary differ from names across the dataset.",
          crayon::bold("\n\nUseful tip:"),
-         " Use dataset_evaluate(dataset, data_dict) to get a full assessment of
+" Use dataset_evaluate(dataset, data_dict) to get a full assessment of
 your dataset")}
   
-  # set cleaning prefix of Variables component
+  # set cleaning prefix of Variables element
   # (addition of Variables:: before all variables except name)
   names(data_dict[['Variables']])  <-
     make.unique(str_remove(names(data_dict[['Variables']]),"^Variables::"))
   names(data_dict[['Variables']])[-
-                                    which(names(data_dict[['Variables']])=='name')] <-
+          which(names(data_dict[['Variables']])=='name')] <-
     paste0("Variables::",
-           names(data_dict[['Variables']]))[-
-                                              which(names(data_dict[['Variables']])=='name')]
+  names(data_dict[['Variables']]))[-
+          which(names(data_dict[['Variables']])=='name')]
   
-  # set cleaning prefix of Categories component
+  # set cleaning prefix of Categories element
   # (addition of Categories:: before all variables
   # except variable, name, labels and na_values)
   if(!is.null(data_dict[['Categories']])){
     names(data_dict[['Categories']]) <-
       make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
     names(data_dict[['Categories']])[-
-                                       which(names(data_dict[['Categories']]) %in%
-                                               c('variable','name','labels', 'na_values'))] <-
+          which(names(data_dict[['Categories']]) %in%
+          c('variable','name','labels', 'na_values'))] <-
       paste0("Categories::",
-             names(data_dict[['Categories']])[-
-                                                which(names(data_dict[['Categories']]) %in%
-                                                        c('variable','name','labels','na_values'))])}
+          names(data_dict[['Categories']])[-
+          which(names(data_dict[['Categories']]) %in%
+          c('variable','name','labels','na_values'))])}
   
-  names_data <- names(data)
+  names_data <- names(dataset)
   names_data_dict <- data_dict[['Variables']]$`name`
   
   for (i in names_data) {
     # stop()}
     
     vT_list <- madshapR::valueType_list
-    vT <- valueType_of(x = data[[i]])
-    data[[i]] <- as_valueType(x = as.character(data[[i]]),valueType = vT)
+    vT <- valueType_of(x = dataset[[i]])
+    dataset[[i]] <- as_valueType(x = as.character(dataset[[i]]),valueType = vT)
     
-    attrs_init <- attributes(data[[i]])
+    attrs_init <- attributes(dataset[[i]])
     
     attrs_var <-
       data_dict[['Variables']][which(data_dict[['Variables']]$`name` == i),]
@@ -1578,8 +1550,8 @@ your dataset")}
       if(is.null(cat_i[['na_values']])) cat_i[['na_values']] <- NA
       
       if(nrow(cat_i) > 0) {
-        # create vector of data
-        attributes(data[[i]])$`class` <- NULL
+        # create vector of dataset
+        attributes(dataset[[i]])$`class` <- NULL
         
         vec_data <-
           try({as_valueType(x = cat_i$`name`, valueType = vT)},silent = TRUE)
@@ -1603,58 +1575,68 @@ your dataset")}
             attrs_cat[[names(cat_i[j])]] <- vec_attr
           }}
         
-        # labelled::val_labels(data[[i]]) <- vec_data
-        attributes(data[[i]])$`labels` <- vec_data
-        attributes(data[[i]])$`class` <-
+        # labelled::val_labels(dataset[[i]]) <- vec_data
+        attributes(dataset[[i]])$`labels` <- vec_data
+        attributes(dataset[[i]])$`class` <-
           c("haven_labelled","vctrs_vctr",
             vT_list[[which(vT_list$`valueType` == vT),"class"]])
-        attrs_fct <- attributes(data[[i]])
+        attrs_fct <- attributes(dataset[[i]])
         
       }}
     
     attrs_total <- c(attrs_fct,attrs_na, attrs_init, attrs_var,attrs_cat)
-    attributes(data[[i]]) <- attrs_total
+    attributes(dataset[[i]]) <- attrs_total
     
     # suppression of na_values if empty
-    if(length(attrs_na[[1]]) == 0) attributes(data[[i]])$`na_values` <- NULL
+    if(length(attrs_na[[1]]) == 0) attributes(dataset[[i]])$`na_values` <- NULL
     
   }
   
-  data <-
-    data[names_data_dict] %>%
+  dataset <-
+    dataset[names_data_dict] %>%
     as_tibble() %>%
     as_dataset(col_id = preserve_attributes)
   
-  return(data)
+  return(dataset)
 }
 
 #' @title
-#' Create a data dictionary in the Maelstrom Research format from a dataset
+#' Create a data dictionary from a dataset
 #'
 #' @description
-#' Creates a data dictionary in the Maelstrom Research formats (with 'Variables'
-#' and Categories' in separate tibbles and standard columns in each) from any
-#' dataset in tibble format. If the input dataset has no associated metadata, a
-#' data dictionary with a minimal of information is created from the column
-#' (variable) names to create the data dictionary structure required for
-#' madshapR (all columns except variable names will be blank).
+#' Creates a data dictionary in a format compliant with formats used in 
+#' Maelstrom Research ecosystem, including Opal (with 'Variables' and 
+#' 'Categories' in separate tibbles and standard columns in each) from any 
+#' dataset in tibble format. If the input dataset has no associated metadata, a 
+#' data dictionary with minimal required information is created from the column 
+#' (variable) names to create the data dictionary structure required for 
+#' 'madshapR'. All columns except variable names will be blank.
 #'
 #' @details
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
-#' @param data A tibble identifying the input data observations which contains
-#' meta data as attributes.
-#' @param as_mlstr_data_dict Whether the output data dictionary has a simple
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#'
+#' @param dataset A tibble identifying the input dataset observations which 
+#' contains meta data as attributes.
+#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom ecosystem such as Opal environment).
-#' FALSE by default.
+#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
+#' TRUE by default.
 #'
 #' @return
 #' A list of tibble(s) identifying a data dictionary.
@@ -1665,9 +1647,9 @@ your dataset")}
 #' # use DEMO_files provided by the package
 #'
 #' ###### Example 2: extract data dictionary from a labelled dataset.
-#' data <- DEMO_files$dataset_MELBOURNE_1
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
-#' dataset <- data_dict_apply(data,data_dict)
+#' dataset <- DEMO_files$dataset_MELBOURNE_1
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' dataset <- data_dict_apply(dataset,data_dict)
 #' data_dict_extract(dataset)
 #' 
 #' ###### Example 2: extract data dictionary from any dataset (the 
@@ -1681,25 +1663,27 @@ your dataset")}
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
+data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   
   # test
-  as_dataset(data)
-  if(!is.logical(as_mlstr_data_dict))
+  as_dataset(dataset) # no col_id
+  if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+  
+  dataset <- ungroup(dataset)
   
   data_dict <-
     list(
       Variables = tibble(name = as.character()),
       Categories = tibble(variable = as.character(), name = as.character()))
   
-  for(i in names(data)){
+  for(i in names(dataset)){
     # stop()}
     
-    attrs_i <- attributes(data[[i]])
+    attrs_i <- attributes(dataset[[i]])
     attrs_i$`class` <- NULL
-    if(is.factor(data[[i]])){
+    if(is.factor(dataset[[i]])){
       names(attrs_i$`levels`) <- make.unique(attrs_i$`levels`)
     }
     
@@ -1742,46 +1726,40 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
   if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
   
   data_dict <-
-    valueType_adjust(from = data, to = data_dict) %>%
-    as_mlstr_data_dict(as_data_dict = !as_mlstr_data_dict)
+    valueType_adjust(from = dataset, to = data_dict) %>%
+    as_data_dict_mlstr(as_data_dict = !as_data_dict_mlstr)
   
   return(data_dict)
 }
 
 #' @title
-#' Inner join between any data and data dict variables
+#' Inner join between a dataset and its associated data dictionary
 #'
 #' @description
-#' Proceeds an inner jointure between any dataset and its associated
-#' data dictionary.
-#' It returns the user either the sub-dataset or the sub-data dictionary, or
-#' both in a list.
+#' Performs an inner join between a dataset and its associated data dictionary, 
+#' keeping only variables present in both. This function returns the matched
+#' dataset rows, the matched data dictionary rows, or both, in a list.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
-#' @param data A tibble identifying the input data observations.
+#' @param dataset A tibble identifying the input dataset observations.
 #' @param data_dict A list of tibble(s) representing meta data.
 #' @param data_dict_apply whether to apply the data dictionary to its dataset.
 #' The resulting tibble will have for each column its associated meta data as
@@ -1799,9 +1777,9 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' data <- DEMO_files$dataset_MELBOURNE_1 %>% select(-1)
+#' dataset <- DEMO_files$dataset_MELBOURNE_1 %>% select(-1)
 #' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
-#' data_dict_match_dataset(data, data_dict)
+#' data_dict_match_dataset(dataset, data_dict)
 #' 
 #' }
 #'
@@ -1810,71 +1788,67 @@ data_dict_extract <- function(data, as_mlstr_data_dict = TRUE){
 #'
 #' @export
 data_dict_match_dataset <- function(
-    data,
+    dataset,
     data_dict,
     data_dict_apply = FALSE,
-    output = c("data","data_dict")){
+    output = c("dataset","data_dict")){
   
   # test
   as_data_dict_shape(data_dict)
-  as_dataset(data)
+  as_dataset(dataset) # no col_id
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
          '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
   
   names_data <-
-    paste0("name %in% c('",paste0(names(data),collapse = "','"),"')")
+    paste0("name %in% c('",paste0(names(dataset),collapse = "','"),"')")
   data_dict <- data_dict_filter(data_dict, filter_var = names_data)
   
-  data <- data %>% select(data_dict[['Variables']]$`name`)
+  dataset <- dataset %>% select(data_dict[['Variables']]$`name`)
   
-  if(length(data) == 0)
-    warning("No match found between data and data dictionary")
+  if(length(dataset) == 0)
+    warning("No match found between dataset and data dictionary")
   
   if(data_dict_apply == TRUE)
-    return(data_dict_apply(data, data_dict))
+    return(data_dict_apply(dataset, data_dict))
   
-  if(all(output[2:1] %in% c("data","data_dict")))
-    return(list(data = data, data_dict = data_dict))
+  if(all(output[2:1] %in% c("dataset","data_dict")))
+    return(list(dataset = dataset, data_dict = data_dict))
   
-  if(output[1] == c("data"))
-    return(data)
+  if(output[1] == c("dataset"))
+    return(dataset)
   
   if(output[1] == c("data_dict"))
     return(data_dict)
   
   # else
   stop(call. = FALSE,
-       "output parameter must be either 'data' or 'data_dict'.
-Leave blank to get both.")
+"`output` parameter must be either 'dataset' or 'data_dict'.
+Leave blank to get both in a list.")
 }
 
 #' @title
-#' Validate and coerce any object as data dictionary
+#' Validate and coerce an object to a workable data dictionary structure
 #'
 #' @description
-#' Confirms that the input object is a valid data dictionary, and return it as a
-#' data dictionary with the appropriate mlstr_class attribute. This function
-#' mainly helps validate input within other functions of the package but could
-#' be used to check if a data dictionary is valid.
+#' Validates the input object as a workable data dictionary structure and 
+#' returns it with the appropriate madshapR::class attribute. This function 
+#' mainly helps validate input within other functions of the package but could 
+#' be used to check if a data dictionary is valid for use in a function.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' For a better assessment, please use [madshapR::data_dict_evaluate()].
+#' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #'
@@ -1897,7 +1871,7 @@ Leave blank to get both.")
 #' @export
 as_data_dict_shape <- function(object){
   
-  # if the Variables sheet is given in parameter
+  # if the Variables sheet is input in parameter
   if(sum(names(object) %in% c('Variables')) == 1 & !is.data.frame(object)){
     
     # name column must exist
@@ -1911,23 +1885,23 @@ as_data_dict_shape <- function(object){
       #, variable column must exist
       if(is.null(object[['Categories']][['variable']])){
         stop(call. = FALSE,
-             "Column 'variable' in 'Categories' is missing in your data dictionary.")}
+"Column 'variable' in 'Categories' is missing in your data dictionary.")}
       
       #, name column must exist
       if(is.null(object[['Categories']][['name']])){
         stop(call. = FALSE,
-             "Column 'name' in 'Categories' is missing in your data dictionary.")}
+"Column 'name' in 'Categories' is missing in your data dictionary.")}
     }
     
     # if all test pass:
-    attributes(object)$`Mlstr::class` <- "data_dict_structure"
+    attributes(object)$`madshapR::class` <- "data_dict_structure"
     return(object)
     
   }
   
   # else
   stop(call. = FALSE,
-       "\n\nThis object is not a data dictionary as defined by Maelstrom standards, 
+"\n\nThis object is not a data dictionary as defined by Maelstrom standards, 
 which must be a list containing at least 'Variables' list of elements.
 Please refer to documentation.")
   
@@ -1937,28 +1911,24 @@ Please refer to documentation.")
 #' Validate and coerce any object as data dictionary
 #'
 #' @description
-#' Confirms that the input object is a valid data dictionary, and return it as a
-#' data dictionary with the appropriate mlstr_class attribute. This function
-#' mainly helps validate input within other functions of the package but could
-#' be used to check if a data dictionary is valid.
-#'
+#' Validates the input object as a valid data dictionary and coerces it with 
+#' the appropriate madshapR::class attribute. This function mainly helps 
+#' validate input within other functions of the package but could be used to 
+#' check if an object is valid for use in a function.
+#' 
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' For a better assessment, please use [madshapR::data_dict_evaluate()].
+#' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #'
@@ -1977,6 +1947,7 @@ Please refer to documentation.")
 #'
 #' @import dplyr tidyr stringr fabR
 #' @importFrom rlang .data
+#' 
 #' @export
 as_data_dict <- function(object){
   
@@ -1985,28 +1956,28 @@ as_data_dict <- function(object){
   # variable names must be unique and non-null
   if(check_data_dict_variables(data_dict) %>% nrow > 0){
     stop(call. = FALSE,
-         "Variable names must exist and be unique in your data dictionary.",
+"Variable names must exist and be unique in your data dictionary.",
          crayon::bold("\n\nUseful tip:"),
-         " Use data_dict_evaluate(data_dict) to get a full assessment of your
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   
   # variable names must be unique and non-null
   if(sum(nrow(data_dict[['Categories']])) > 0){
     if(check_data_dict_categories(data_dict) %>% nrow > 0){
       stop(call. = FALSE,
-           "Variable names in categories must exist and be unique in your data dictionary.",
+"Variable names in categories must exist and be unique in the data dictionary.",
            crayon::bold("\n\nUseful tip:"),
-           " Use data_dict_evaluate(data_dict) to get a full assessment of your
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}}
   
   if(nrow(data_dict[['Variables']]) == 0){
     data_dict <-
       list(Variables = tibble(name = as.character(),typeof = as.character()))
-    attributes(data_dict)$`Mlstr::class` <- "data_dict"
+    attributes(data_dict)$`madshapR::class` <- "data_dict"
     
     return(data_dict) }
   
-  # data shaping
+  # dataset shaping
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     ungroup() %>%
@@ -2092,11 +2063,10 @@ data dictionary")}}
     # addition of valueType for sorting elements
     # if index, preserve it.
     index <- data_dict[['Categories']][['index']]
-    data_dict[['Categories']][['index']] <- NULL
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      select('variable','name') %>% fabR::add_index() %>%
+      select('variable','name') %>% fabR::add_index(.force = TRUE) %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
@@ -2189,7 +2159,7 @@ data dictionary")}}
   }
   
   # reorder things
-  # data shaping
+  # dataset shaping
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>% select('name','typeof',everything())
   data_dict[['Variables']] <-
@@ -2216,41 +2186,38 @@ data dictionary")}}
   }
   
   # if all test pass:
-  attributes(data_dict)$`Mlstr::class` <- "data_dict"
+  attributes(data_dict)$`madshapR::class` <- "data_dict"
   return(data_dict)
 }
 
 #' @title
-#' Validate and coerce any object as data dictionary in the Maelstrom format
+#' Validate and coerce an object to an Opal data dictionary format
 #'
 #' @description
-#' Confirms that the input object is a valid data dictionary compliant with
-#' Maelstrom Research format, and return it as a taxonomy with the appropriate
-#' mlstr_class attribute. This function mainly helps validate input within other
-#' functions of the package but could be used to check if a taxonomy is valid.
+#' Validates the input object as a valid data dictionary compliant with formats 
+#' used in Maelstrom Research ecosystem, including Opal, and returns it with 
+#' the appropriate madshapR::class attribute. This function mainly helps 
+#' validate input within other functions of the package but could be used to 
+#' check if an object is valid for use in a function.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' For a better assessment, please use [madshapR::data_dict_evaluate()].
+#' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #' @param as_data_dict Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom ecosystem such as Opal environment.
+#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' FALSE by default.
 #'
 #' @return
@@ -2262,7 +2229,7 @@ data dictionary")}}
 #' # use DEMO_files provided by the package
 #'
 #' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
-#' as_mlstr_data_dict(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
 #'
 #' }
 #'
@@ -2270,7 +2237,7 @@ data dictionary")}}
 #' @importFrom rlang .data
 #'
 #' @export
-as_mlstr_data_dict <- function(object, as_data_dict = FALSE){
+as_data_dict_mlstr <- function(object, as_data_dict = FALSE){
   
   # test if data_dict is already data dictionary
   data_dict <- as_data_dict(object)
@@ -2312,13 +2279,13 @@ data dictionary")}
   # assess if tO is good
   test_vT <-
     data_dict[['Variables']] %>%
-    select(.data$`name`, .data$`typeof`) %>%
+    select('name', 'typeof') %>%
     mutate(`typeof` = replace_na(.data$`typeof`,"character")) %>%
     left_join(
       madshapR::valueType_list %>%
         select(
-          valueType = .data$`toValueType`,
-          typeof = .data$`toTypeof`) %>%
+          valueType = 'toValueType',
+          typeof = 'toTypeof') %>%
         distinct,
       by = "typeof")
   
@@ -2369,7 +2336,7 @@ investigations.",
       
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
-        rename_with(.cols = "labels", ~ all_of(lab_name_var))
+        rename_with(.cols = "labels", ~ lab_name_var)
       
     }else if(all(data_dict[['Categories']][['labels']] ==
                  data_dict[['Categories']][['name']])) {
@@ -2459,7 +2426,7 @@ investigations.",
             names(data_dict[['Categories']]))
         
         warning(
-          "Your data dictionary contains 'labels' column, which usage is protected in R.
+"The data dictionary contains 'labels' column, which usage is protected in R.
 new name: ",new_name)
         
         names(data_dict[['Categories']]) <-
@@ -2478,7 +2445,7 @@ new name: ",new_name)
             names(data_dict[['Categories']]))
         
         warning(
-          "Your data dictionary contains 'na_values' column, which usage is protected in R.
+"The data dictionary contains 'na_values' column, which usage is protected in R.
 New name: ",new_name)
         
         names(data_dict[['Categories']]) <-
@@ -2522,8 +2489,14 @@ New name: ",new_name)
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       select(.data$`variable`,.data$`name`,
-             matches(c("^label$","^label:[[:alnum:]]")),everything())
-    
+             matches(c("^label$","^label:[[:alnum:]]")),
+             everything()) %>%
+      left_join(data_dict[['Variables']] %>%
+                  select(variable =  'name') %>%
+                  add_index('madshapR::index'),by = join_by('variable')) %>%
+      arrange(.data$`madshapR::index`) %>%
+      select(-'madshapR::index')
+      
     data_dict[['Categories']] <-
       data_dict[['Categories']][vapply(
         X = data_dict[['Categories']],
@@ -2532,39 +2505,35 @@ New name: ",new_name)
   }
   
   if(as_data_dict == TRUE) {
-    attributes(data_dict)$`Mlstr::class` <- "data_dict"
+    attributes(data_dict)$`madshapR::class` <- "data_dict"
   }else{
-    attributes(data_dict)$`Mlstr::class` <- "Mlstr_data_dict"}
+    attributes(data_dict)$`madshapR::class` <- "data_dict_mlstr"}
   
   return(data_dict)
 }
 
 #' @title
-#' Evaluate if any object is a potential data dictionary
+#' Test if an object is a workable data dictionary structure
 #'
 #' @description
-#' Confirms whether the input object is a valid enough or not to work with some
-#' functions involving data dictionary shaping. This function mainly helps
-#' validate input within other functions of the package but could be used to
-#' check if a data dictionary minimal stricture is valid.
+#' Tests if the input object has adequate structure to work with functions 
+#' involving data dictionary shaping. This function mainly helps validate input 
+#' within other functions of the package but could be used to check if an 
+#' object is valid for use in a function.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' For a better assessment, please use [madshapR::data_dict_evaluate()].
+#' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential data dictionary structure to be evaluated.
 #'
@@ -2595,30 +2564,26 @@ is_data_dict_shape <- function(object){
 }
 
 #' @title
-#' Evaluate if any object is a data dictionary or not
+#' Test if an object is a valid data dictionary
 #'
 #' @description
-#' Confirms whether the input object is a valid data dictionary.
-#' This function mainly helps validate input within other functions of the
-#' package but could be used to check if a data dictionary is valid.
+#' Tests if the input object is a valid data dictionary. This function mainly 
+#' helps validate input within other functions of the package but could be used 
+#' to check if an object is valid for use in a function.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' For a better assessment, please use [madshapR::data_dict_evaluate()].
+#' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential data dictionary to be coerced.
 #'
@@ -2651,31 +2616,27 @@ is_data_dict <- function(object){
 }
 
 #' @title
-#' Evaluate if any object is a Maelstrom formatted data dictionary or not
+#' Test if an object is a valid Maelstrom data dictionary
 #'
 #' @description
-#' Confirms whether the input object is a valid data dictionary compliant with
-#' Maelstrom Research format. This function mainly helps validate input within
-#' other functions of the package but could be used to check if a taxonomy is
-#' valid.
+#' Tests if the input object is a valid data dictionary compliant with formats 
+#' used in Maelstrom Research ecosystem, including Opal. This function mainly 
+#' helps validate input within other functions of the package but could be used 
+#' to check if an object is valid for use in a function.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
 #'
 #' @seealso
-#' For a better assessment, please use [madshapR::data_dict_evaluate()].
+#' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential Maelstrom formatted data dictionary to be
 #' evaluated.
@@ -2689,8 +2650,8 @@ is_data_dict <- function(object){
 #' # use DEMO_files provided by the package
 #'
 #' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
-#' is_mlstr_data_dict(data_dict)
-#' is_mlstr_data_dict(iris)
+#' is_data_dict_mlstr(data_dict)
+#' is_data_dict_mlstr(iris)
 #'
 #'}
 #'
@@ -2698,11 +2659,11 @@ is_data_dict <- function(object){
 #' @importFrom rlang .data
 #'
 #' @export
-is_mlstr_data_dict <- function(object){
+is_data_dict_mlstr <- function(object){
   
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(try(as_mlstr_data_dict(object),silent = TRUE))
+  test <- fabR::silently_run(try(as_data_dict_mlstr(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 }

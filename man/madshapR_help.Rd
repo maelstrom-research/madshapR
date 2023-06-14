@@ -7,14 +7,13 @@
 madshapR_help()
 }
 \description{
-This feature is a direct call of the documentation in the repository hosting
-the package. The user accesses the description of the latest version of the
+This function is a direct call to the documentation in the repository hosting
+the package. The user can access the description of the latest version of the
 package, the vignettes, and the list of functions.
 }
 \examples{
 {
 
-library(utils)
 madshapR_help()
 
 }

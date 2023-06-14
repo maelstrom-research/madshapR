@@ -2,7 +2,7 @@
 % Please edit documentation in R/03-catalogue_functions.R
 \name{is_valueType}
 \alias{is_valueType}
-\title{Evaluate if any object is a valid valueType name or not}
+\title{Test if a character object is one of the valid valueType values}
 \usage{
 is_valueType(object)
 }
@@ -13,19 +13,19 @@ is_valueType(object)
 A logical.
 }
 \description{
-Uses a data dictionary in the Maelstrom Research formats (with 'Variables'
-and 'Categories' in separate tibbles and standard columns in each) to apply
-their valueType to a dataset in tibble format. If no data dictionary is
-provided, the function will automatically evaluate the most restrictive
-valueType for each variable in the dataset and apply it.
+Confirms whether the input object is a valid valueType. This function mainly
+helps validate input within other functions of the package but could be used
+to check if a valueType is valid.
 }
 \details{
-valueType is one of the property of a variable entity. It refers to
-the (Obiba internal) type of any variable. The valueType can be 'text',
-'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-'point', 'linestring', 'polygon'.
-The valueType list is available using \link{valueType_list}, and their
-corresponding with typeof which is the (R internal) type of any object.
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {

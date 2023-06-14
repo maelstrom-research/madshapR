@@ -2,7 +2,7 @@
 % Please edit documentation in R/05-unit_checks.R
 \name{check_name_standards}
 \alias{check_name_standards}
-\title{Return non-standard names across a vector}
+\title{Assess variable names in a data dictionary for non-standard formats}
 \usage{
 check_name_standards(var_names)
 }
@@ -13,19 +13,18 @@ check_name_standards(var_names)
 A tibble providing non-standard names across a vector.
 }
 \description{
-Generates a tibble that reports any variable whose name is not
-standard, as defined by Maelstrom naming standards.
-This tibble can be used to assist the user in the assessment of the data
-structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy or standard evaluation.
+Generates a tibble report of any variable names that are not compatible in
+Maelstrom Research ecosystem, including Opal.
+This report can be used to help assess data structure, presence of fields,
+coherence across elements, and taxonomy or data dictionary formats.
 }
 \details{
 The user must provide element which respect a certain structure to work with
 the functions of the package or its environment (Maelstrom and/or
-Obiba suite). In addition, any element may follow Maelstrom research
-standards, and its content can be evaluated accordingly, such as naming
-convention restriction, columns like 'valueType', , and 'label(:xx)',
-and/or any taxonomy provided.
+Obiba suite). In addition, any element may be compatible with Maelstrom
+Research ecosystem, including Opal, and its content can be evaluated
+accordingly, such as naming convention restriction, columns like 'valueType'
+and 'label(:xx)' and/or any taxonomy provided.
 }
 \examples{
 {

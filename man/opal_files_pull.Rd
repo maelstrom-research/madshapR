@@ -19,25 +19,23 @@ Opal.}
 Folder(s) containing files coming from Opal in user R environment.
 }
 \description{
-Downloads files from Opal environment to local. It is a wrapper of
-\code{\link[opalr:opal.file_download]{opalr::opal.file_download()}}.
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Downloads files from an Opal environment to the local environment. This is a
+wrapper function for \code{\link[opalr:opal.file_download]{opalr::opal.file_download()}}.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
-{
+\dontrun{
 
 library(opalr)
 opal <- 
-  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  opal.login('administrator','password', 
+    url ='https://opal-demo.maelstrom-research.org')
   
 tempdir <- tempdir()
 invisible(dir.create(paste0(tempdir,"/a_file")))

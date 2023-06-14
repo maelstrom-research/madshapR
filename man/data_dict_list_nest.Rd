@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_list_nest}
 \alias{data_dict_list_nest}
-\title{Regroup listed split data dictionaries}
+\title{Bind listed data dictionaries}
 \usage{
 data_dict_list_nest(data_dict_list, name_group = NULL)
 }
@@ -14,36 +14,31 @@ transformed.}
 taken as a grouping column.}
 }
 \value{
-A list of tibble(s) identifying a data dictionary - like structure.
+A list of tibble(s) identifying a workable data dictionary structure.
 }
 \description{
-Regroups data dictionaries provided in a list, and binds them together.
-This function is a wrapper analogous to \code{\link[dplyr:bind_rows]{dplyr::bind_rows()}} from the
-tidyverse.
+Binds a list of data dictionaries into one data dictionary.
+This is a wrapper function analogous to \code{\link[dplyr:bind_rows]{dplyr::bind_rows()}}.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
-# refer to the associated dataset. The object created is not a data 
+# refer to the associated dataset. The object created is not a 
 # data dictionary per say, but can be used as a structure which can be 
-# shaped into a data data dictionary.
+# shaped into a data dictionary.
 
 data_dict_list <- DEMO_files[
     c('dd_MELBOURNE_1_format_maelstrom',

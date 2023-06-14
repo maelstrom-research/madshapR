@@ -2,7 +2,7 @@
 % Please edit documentation in R/09-opal_functions.R
 \name{data_dict_opalr_fix}
 \alias{data_dict_opalr_fix}
-\title{Transform a data dictionary object from opalr to Opal format}
+\title{Transform a data dictionary object from 'opalr' format to Opal format}
 \usage{
 data_dict_opalr_fix(data_dict)
 }
@@ -14,46 +14,38 @@ transformed. Automatically generated if not provided.}
 A list of tibble(s) identifying a data dictionary.
 }
 \description{
-Transforms a data dictionary from Opalr format to Opal format.
-A data dictionary imported using opalr package has a different structure
-from the rest of the package functions. This structure will be transformed
-to match with the rest of the package environment.
+Transforms a data dictionary from 'opalr' format to Opal format.
+A data dictionary imported using the 'opalr' package has a different
+structure and will be transformed to the structure used in 'madshapR'
+functions.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
-{
+\dontrun{
 
 #' # use DEMO_files provided by the package
 library(opalr)
 library(stringr)
 
-study <- 
-  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+dossier <- 
+  DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
   opal.login('administrator','password', 
-  url ='https://opal-demo.obiba.org/')
+    url ='https://opal-demo.maelstrom-research.org')
   
 tempdir <- basename(tempdir())
 try(opal_project_create(opal, tempdir))
 
 try(
   opal_tables_push(
-  opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  opal, dossier,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 
 # get the data dictionary and reshape it.
  data_dict <- 

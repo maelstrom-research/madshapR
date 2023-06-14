@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{as_dataset}
 \alias{as_dataset}
-\title{Validate and coerce any object as dataset}
+\title{Validate and coerce an object to dataset format}
 \usage{
 as_dataset(object, col_id = NULL)
 }
@@ -17,20 +17,19 @@ or indicated by position.}
 A tibble identifying a dataset.
 }
 \description{
-Confirms that the input object is a valid dataset, and return it as a dataset
-with the appropriate mlstr_class attribute. This function mainly helps
-validate input within other functions of the package but could be used to
+Confirms that the input object is a valid dataset and returns it as a dataset
+with the appropriate madshapR::class attribute. This function mainly helps
+validate inputs within other functions of the package but could be used to
 check if a dataset is valid.
 }
 \details{
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 }
 \examples{
 {
@@ -39,11 +38,10 @@ full completeness is mandatory.
 
 ###### Example 1: a dataset can have an id column(s) which is specified as
 # an attribute. 
-dataset <- DEMO_files$dataset_MELBOURNE_1
-as_dataset(dataset, col_id = "id")
+dataset <- as_dataset(DEMO_files$dataset_MELBOURNE_1, col_id = "id")
 
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-as_dataset(iris)
+###### Example 2: any data frame (or tibble) can be a dataset by definition.
+as_dataset(iris, col_id = "Species")
 }
 
 }

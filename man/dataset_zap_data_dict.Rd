@@ -2,13 +2,13 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{dataset_zap_data_dict}
 \alias{dataset_zap_data_dict}
-\title{Remove value labels of a data frame, leaving its unlabelled columns}
+\title{Remove labels (attributes) from a data frame, leaving its unlabelled columns}
 \usage{
 dataset_zap_data_dict(dataset)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 }
 \value{
 A tibble identifying a dataset.
@@ -19,23 +19,22 @@ preserved. Any 'Date' (typeof) column will be recast as character to
 preserve information.
 }
 \details{
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 
-data <- DEMO_files$dataset_TOKYO
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <- data_dict_apply(data,data_dict)
+dataset <- DEMO_files$dataset_TOKYO
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <- data_dict_apply(dataset,data_dict)
 dataset_zap_data_dict(dataset)
 
 }

@@ -2,13 +2,13 @@
 % Please edit documentation in R/02-dataset_functions.R
 \name{dataset_cat_as_labels}
 \alias{dataset_cat_as_labels}
-\title{Apply to categorical column(s) their labels declared in the data dictionary}
+\title{Apply data dictionary category labels to the associated dataset variables}
 \usage{
 dataset_cat_as_labels(dataset, data_dict = NULL, col_names = names(dataset))
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset (to be generated).}
@@ -21,41 +21,36 @@ or indicated by position.}
 A tibble identifying a dataset.
 }
 \description{
-Applies to categorical column(s) in a dataset their labels declared in the
-categories in the data dictionary.
+Applies category labels declared in a data dictionary to the associated
+columns (variables) in the dataset.
 }
 \details{
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
 }
 \examples{
 {
 
 # use DEMO_files provided by the package
 
-data <- DEMO_files$dataset_TOKYO
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <- data_dict_apply(data,data_dict)
+dataset <- DEMO_files$dataset_TOKYO
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <- data_dict_apply(dataset,data_dict)
 dataset_cat_as_labels(dataset)
 
 }

@@ -3,11 +3,11 @@
 \docType{data}
 \name{DEMO_files}
 \alias{DEMO_files}
-\title{Built-in material allowing the user to test the package with demo material}
+\title{Built-in material allowing the user to test the package with demo data}
 \format{
 \subsection{\code{list}}{
 
-A list with 22 elements used for testing purpose (data frames and lists):
+A list with 22 elements used for testing the package (data frames and lists):
 
 \describe{
 \item{DEMO_data_processing_elements - final}{Data processing element
@@ -17,7 +17,7 @@ containing errors}
 \item{DEMO_data_processing_elements - work in progress}{Data processing
 element in construction}
 \item{DEMO_dataschema}{DataSchema used, combined with data processing
-elements and study specific material}
+elements and study-specific material}
 \item{dd_MELBOURNE_1_format_maelstrom}{Data dictionary (1) of Melbourne
 dataset}
 \item{dd_MELBOURNE_2_format_maelstrom}{Data dictionary (2) of Melbourne
@@ -42,8 +42,8 @@ format}
 \item{dataset_TOKYO - ERROR WITH DATA}{Dataset of Tokyo containing errors}
 \item{dataset_TOKYO}{Dataset of Tokyo}
 \item{PARIS_taxonomy}{Taxonomy specific to Paris dataset}
-\item{Mlstr_taxonomy}{Maelstrom Taxonomy}
-\item{Opal_taxonomy}{Opal Taxonomy}
+\item{taxonomy_mlstr}{Maelstrom Taxonomy}
+\item{taxonomy_opal}{Opal Taxonomy}
 ...
 }
 }
@@ -58,7 +58,7 @@ material.
 \examples{
 {
 
-DEMO_files
+ print(DEMO_files$dataset_TOKYO)
 
 }
 }

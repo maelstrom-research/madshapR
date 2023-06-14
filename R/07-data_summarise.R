@@ -1,81 +1,92 @@
 #' @title
-#' Generate a report as an Excel spreadsheet of a study-specific dataset
+#' Generate a report and summary of a dataset
 #'
 #' @description
-#' Generates an Excel spreadsheet report for a dataset
-#' for each variable to facilitate the assessment of input data.
-#' This report can be used to assist the user in the assessment of the data
-#' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy, or standard evaluation. The summary associated provides dataset
-#' composition, with observation distribution and descriptive statistics.
+#' Assesses and summarizes the content and structure of a dataset and data
+#' dictionary and reports potential issues to facilitate the assessment of 
+#' input. The report can be used to help assess data structure, presence of 
+#' fields, coherence across elements, and taxonomy or data dictionary formats. 
+#' The summary provides additional information about variable distributions and
+#' descriptive statistics. This report is compatible with Excel and can be 
+#' exported as an Excel spreadsheet.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
-#'
-#' A taxonomy must be a data frame or data frame extension (e.g. a tibble).
-#' The taxonomy must be compatible with (and generally extracted from) an
-#' Opal environment, and must contain at least 'taxonomy', 'vocabulary' and
-#' 'terms' to work with some specific functions. In addition, the taxonomy
-#' may follow Maelstrom research standards, and its content can be evaluated
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
 #' accordingly, such as naming convention restriction, tagging elements,
 #' or scales, which are specific to Maelstrom Research. In this particular
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
-#' @param dataset A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
+#' [madshapR::valueType_list].
+#'
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
-#' identifying the scheme used for variables classification as a tibble.
+#' @param group_by A character string of one column in the dataset that can be
+#' taken as a grouping column. The visual element will be grouped and displayed
+#' by this column.
+#' @param taxonomy A tibble identifying the scheme used for variables 
+#' classification.
 #' @param .dataset_name A character string specifying the name of the dataset
-#' (internally used in the function `madshapR::study_evaluate()`).
+#' (internally used in the function [dossier_evaluate()]).
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @seealso
-#' [madshapR::study_evaluate()]
+#' [dossier_evaluate()]
 #'
 #' @return
-#' A list of tibbles of report for one study-specific data dictionary.
+#' A list of tibbles of report for one data dictionary.
 #'
 #' @examples
 #' {
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' library(fabR)
-#'
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' 
+#' ###### Example 1 : Combine functions and summarise datasets.
+#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 #' dataset <-
 #'   DEMO_files$dataset_TOKYO %>%
 #'   valueType_adjust(from = data_dict) %>%
 #'   data_dict_apply(data_dict)
-#'   
-#' dataset_summarize(dataset,valueType_guess = TRUE)
-#' dataset_summarize(dataset,valueType_guess = FALSE)
+#' 
+#' dataset_summarize(dataset,data_dict,valueType_guess = FALSE)
+#' 
+#' #' ###### Example 2 : any data frame (or tibble) can be summarized
+#' dataset_summarize(iris)
 #'  
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' dataset_summarize(iris,valueType_guess = FALSE)
-#' dataset_summarize(
-#'   dataset = add_index(mtcars), 
-#'   data_dict = data_dict_extract(mtcars), 
-#'   .dataset_name = 'mtcars',
-#'   valueType_guess = FALSE)
-#'
 #' }
 #'
 #' @import dplyr stringr tidyr fabR
@@ -85,35 +96,111 @@
 #' @export
 dataset_summarize <- function(
     dataset,
-    data_dict = NULL,
+    data_dict = data_dict_extract(dataset),
+    group_by = NULL,
     taxonomy = NULL,
     .dataset_name = NULL,
     valueType_guess = FALSE){
-
+  
   fargs <- as.list(match.call(expand.dots = TRUE))
   
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
-
-  if(is.null(data_dict)) {
-    data_dict <- data_dict_extract(data = dataset,as_mlstr_data_dict = TRUE)
-  }else{
-    data_dict <- as_mlstr_data_dict(data_dict)}
   
-  # check on arguments : dataset
-  as_dataset(dataset)
+  dataset <- as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  col_id <- attributes(dataset)$`madshapR::col_id`
   
-  dataset_name <-
+  dataset_name <- 
     ifelse(
       !is.null(.dataset_name),
       .dataset_name,
       fabR::make_name_list(
         as.character(fargs[['dataset']]),list_elem = list(NULL)))
-
+  
   # check on argument : taxonomy
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
+  
+  if(toString(substitute(group_by)) == '') group_by <- NULL
+  # attempt to catch group_by from the group_vars if the dataset is grouped
+  if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
+    group_by <- group_vars(dataset)
+  }
 
+  dataset <- 
+    as_dataset(ungroup(dataset),col_id = attributes(dataset)$`madshapR::col_id`)
+    
+  dataset <-
+    data_dict_match_dataset(
+      dataset,
+      data_dict,
+      output = 'dataset') %>%
+    as_dataset(attributes(dataset)$`madshapR::col_id`)
+  
+  data_dict <- 
+    data_dict_match_dataset(
+      dataset,data_dict,
+      output = 'data_dict') %>%
+    as_data_dict_mlstr()
+  
+  # attempt to catch group_by
+  if(toString(substitute(group_by)) != ''){
+    group_by <- tryCatch(
+      expr  = {toString(names(dataset[toString(substitute(group_by))]))},
+      error = function(cond){return(toString(names(dataset[group_by])))})    
+  }else{ group_by <- ''}
+
+  if(group_by != ''){
+    
+    preprocess_group <- 
+      dataset_preprocess(dataset[c(group_by)], data_dict)
+    
+    if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
+       c('mix','no'))
+      stop(call. = FALSE,
+           'Your grouping variable must be a categorical variable.')
+    
+    cat_lab <-  
+      data_dict[['Categories']] %>% 
+      filter(if_any('variable') == group_by) %>%
+      select(
+        !! group_by := 'name', 
+        `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
+      mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
+      add_index('___category_level___') %>%
+      mutate(
+        `___labels___` = 
+          ifelse(!! as.symbol(group_by) == .data$`___labels___`,'',
+                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
+                                       ellipsis = '...'),']'))) %>%
+      unite('___labels___',c(group_by,'___labels___'),sep = '', 
+            remove = FALSE,na.rm = TRUE)
+    
+    # create group
+    dataset_group <- dataset %>% group_by(!! as.symbol(group_by))
+    name_group <- group_keys(dataset_group)
+    dataset_group <- group_split(dataset_group)
+    names(dataset_group) <- as.character(name_group[[1]])
+    
+    # arrange group
+    dataset_group <- 
+      dataset_group[unique(
+        c(intersect(cat_lab[[group_by]],names(dataset_group)),
+          names(dataset_group)[length(names(dataset_group))]))]
+    
+    # rename group
+    name_group <- 
+      name_group %>%
+      mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
+      left_join(cat_lab, by = join_by(!!as.symbol(group_by))) %>%
+      arrange(.data$`___category_level___`) %>% 
+      pull('___labels___') %>%
+      str_replace_na('NA Values') 
+    
+    names(dataset_group) <- name_group
+    
+  } else { dataset_group <- list(no_group = dataset)}
+  
   # evaluate the dataset
   report <- list()
   report <- 
@@ -122,26 +209,26 @@ dataset_summarize <- function(
       data_dict,
       taxonomy = taxonomy,
       .dataset_name = .dataset_name,
-      as_mlstr_data_dict = TRUE)
+      as_data_dict_mlstr = TRUE)
 
   message(
     "- DATASET SUMMARIZE: ",
     crayon::bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
     " --------------------------")
 
-  preserve_attributes <- 
-    col_id <- attributes(dataset)$`Mlstr::col_id`
+
   
-  if(is.null(col_id) | ncol(dataset) == 1){
-    dataset <- dataset %>% add_index("___mlstr_index___")
-    dataset <-   as_dataset(dataset, names(dataset)[1])}
-  
-  if(!is.null(preserve_attributes)) col_id <- preserve_attributes
-  
+  # 
+  # if(is.null(col_id) | ncol(dataset) == 1){
+  #   dataset <- dataset %>% add_index("___mlstr_index___")
+  #   dataset <-   as_dataset(dataset, names(dataset)[1])}
+  # 
+  # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
+
   # exclude id col if is the index
   dataset_valueType <-
-    dataset %>% 
-    select(-matches("^___mlstr_index___$")) %>%
+    dataset %>%
+    # select(-matches("^___mlstr_index___$")) %>%
     summarise(across(
       everything(),
       ~ valueType_of(.))) %>%
@@ -153,7 +240,7 @@ dataset_summarize <- function(
   if(valueType_guess == TRUE){
     estimated_valueType <-
       dataset %>%
-      select(-matches("^___mlstr_index___$")) %>%
+      # select(-matches("^___mlstr_index___$")) %>%
       summarise(across(
         everything(),
         ~ valueType_guess(.))) %>%
@@ -186,7 +273,7 @@ dataset_summarize <- function(
     data_dict_cat <-
       data_dict[['Categories']] %>% 
       select(-matches("^___name_var___$")) %>%
-      rename(`___name_var___` = "variable") %>%
+      rename("___name_var___" = "variable") %>%
       mutate(
         missing =
           ifelse(
@@ -195,17 +282,17 @@ dataset_summarize <- function(
             "Valid categorical values :")) %>%
       unite(
         "Categories in data dictionary",
-        .data$`name`,matches(c("^label$","^label:[[:alnum:]]"))[1],
+        c("name",matches(c("^label$","^label:[[:alnum:]]"))[1]),
         sep = " = ",remove = TRUE) %>%
-      group_by_at(vars(c(-.data$`Categories in data dictionary`))) %>%
-      summarise(across(c(.data$`Categories in data dictionary`),
+      group_by(pick(c(-"Categories in data dictionary"))) %>%
+      summarise(across(c("Categories in data dictionary"),
                        ~ paste0(.,collapse = "\n")),.groups = "drop") %>%
       arrange(.data$`___name_var___`,desc(.data$`missing`)) %>%
       unite("Categories in data dictionary",
-            .data$`missing`,.data$`Categories in data dictionary`,
+            c("missing","Categories in data dictionary"),
             sep = "\n",remove = TRUE) %>%
-      group_by_at(vars(c(-.data$`Categories in data dictionary`))) %>%
-      summarise(across(c(.data$`Categories in data dictionary`),
+      group_by(pick(c(-"Categories in data dictionary"))) %>%
+      summarise(across(c("Categories in data dictionary"),
                        ~ paste0(.,collapse = "\n\n")),.groups = "drop") %>%
       ungroup %>%
       select("___name_var___","Categories in data dictionary")
@@ -255,48 +342,103 @@ dataset_summarize <- function(
       !is.na(report$`Variables summary (all)`$`Categories in data dictionary`),
       ] %>% filter(!.data$`name` %in% col_id)
 
-   if(nrow(dataset) > 0){
+  if(nrow(dataset) > 0){
 
     message("    Summarise information for all variables")
-    .resume_var <- 
-      resume_variables(dataset %>% select(-any_of(col_id)), data_dict)
-    summary_var <- summary_variables(.resume_var = .resume_var)
-
-    message("    Summarise information for text variables")
-    .resume_var_text <-
-      .resume_var[
-        .resume_var$`name` %in% report$`Text variable summary`$name,] %>%
-      filter(.data$`Categorical variable` != 'yes')
-    summary_text <-
-      summary_variables_text(.resume_var = .resume_var_text) 
-
-    message("    Summarise information for date variables")
-    .resume_var_date <-
-      .resume_var[
-        .resume_var$`name` %in% report$`Date variable summary`$name,] %>%
-      filter(.data$`Categorical variable` != 'yes')
-    summary_date <- # only works for ymd format
-      summary_variables_date(.resume_var = .resume_var_date)
+    
+    .dataset_preprocess <- 
+      lapply(dataset_group,function(x){
+        dataset_preprocess(select(x,-any_of(col_id)),data_dict)})
+    
+    summary_var <- 
+      lapply(.dataset_preprocess,function(x){
+        summary_variables(.dataset_preprocess = x)})
+    
+    if(group_by != ''){
+      summary_group <- summary_variables(.dataset_preprocess = preprocess_group)
+      summary_var <- 
+        lapply(summary_var,function(x){
+          x %>% filter(.data$`name` != group_by) %>%
+            bind_rows(summary_group)})}
 
     message("    Summarise information for numerical variables")
-    .resume_var_num <-
-      .resume_var[
-        .resume_var$`name` %in% report$`Numerical variable summary`$name,] %>%
-      filter(.data$`Categorical variable` != 'yes')
+    .dataset_preprocess_num <-
+      lapply(.dataset_preprocess,function(x){
+      x[x$`name` %in% report$`Numerical variable summary`$name,] %>%
+      filter(.data$`Categorical variable` != 'yes')})
     summary_num <-
-      summary_variables_numerical(.resume_var = .resume_var_num)
+      lapply(.dataset_preprocess_num,function(x){
+        summary_variables_numeric(.dataset_preprocess = x)})
+    
+    message("    Summarise information for text variables")
+    .dataset_preprocess_text <-
+      lapply(.dataset_preprocess,function(x){
+        x[x$`name` %in% report$`Text variable summary`$name,] %>%
+          filter(.data$`Categorical variable` != 'yes')})
+    summary_text <-
+      lapply(.dataset_preprocess_text,function(x){
+        summary_variables_text(.dataset_preprocess = x)})
 
+    message("    Summarise information for date variables")
+    .dataset_preprocess_date <-
+      lapply(.dataset_preprocess,function(x){
+        x[x$`name` %in% report$`Date variable summary`$name,] %>%
+          filter(.data$`Categorical variable` != 'yes')})
+    summary_date <-
+      lapply(.dataset_preprocess_date,function(x){
+        summary_variables_date(.dataset_preprocess = x)})
+    
     message("    Summarise information for categorical variables")
-    .resume_var_cat <-
-      .resume_var[
-        .resume_var$`name` %in% report$`Categorical variable summary`$name,] %>%
-      filter(.data$`Categorical variable` != 'no')  
+    .dataset_preprocess_cat <-
+      lapply(.dataset_preprocess,function(x){
+        x[x$`name` %in% report$`Categorical variable summary`$name,] %>%
+          filter(.data$`Categorical variable` != 'no')}) 
     summary_cat <-
-      summary_variables_categorical(.resume_var = .resume_var_cat)
-
+      lapply(.dataset_preprocess_cat,function(x){
+        summary_variables_categorical(.dataset_preprocess = x)})
+    
+    if(group_by != ''){
+      summary_group_cat <- 
+        summary_variables_categorical(.dataset_preprocess = preprocess_group)
+      summary_cat <- 
+        lapply(summary_cat,function(x){
+          x %>% filter(.data$`name` != group_by) %>%
+            bind_rows(summary_group_cat)})}
+    
+    # add grouping variable to each group
+    if(group_by != ''){
+      for(i in names(summary_var)) {
+        summary_var [[i]] <- summary_var [[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+        
+        summary_num [[i]] <- summary_num [[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+        
+        summary_text[[i]] <- summary_text[[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+        
+        summary_date[[i]] <- summary_date[[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+        
+        summary_cat [[i]] <- summary_cat [[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+      }}
+    
+    # binding information
+    summary_var  <- bind_rows(summary_var)  %>% distinct()
+    summary_num  <- bind_rows(summary_num)  %>% distinct()
+    summary_text <- bind_rows(summary_text) %>% distinct()
+    summary_date <- bind_rows(summary_date) %>% distinct()
+    summary_cat  <- bind_rows(summary_cat)  %>% distinct()
+    
     report$`Variables summary (all)` <-
       report$`Variables summary (all)` %>%
-      left_join(summary_var, by = "name") %>%
+      left_join(summary_var, by = "name", multiple = "all") %>%
       select(
         "index in data dict." ,
         "name",
@@ -306,7 +448,8 @@ dataset_summarize <- function(
         "Estimated dataset valueType",
         "Actual dataset valueType",
         'Categorical variable',
-        "Categories in data dictionary",   
+        "Categories in data dictionary",
+        starts_with('Grouping variable: '),
         "Total number of observations",
         "Nb. distinct values",
         "% total Valid values",
@@ -314,11 +457,10 @@ dataset_summarize <- function(
         "% Valid categorical values (if applicable)",
         "% Missing categorical values (if applicable)")
     
-
     report$`Text variable summary` <-
-      report$`Text variable summary` %>%
-      inner_join(summary_var, by = "name") %>%
-      inner_join(summary_text, by = "name") %>%
+      suppressMessages(report$`Text variable summary` %>%
+      inner_join(summary_var , by = "name", multiple = "all") %>%
+      inner_join(summary_text, multiple = "all")) %>%
       select(
         "index in data dict." ,
         "name",
@@ -328,7 +470,8 @@ dataset_summarize <- function(
         "Estimated dataset valueType",
         "Actual dataset valueType",
         'Categorical variable',
-        "Categories in data dictionary",   
+        "Categories in data dictionary",
+        starts_with('Grouping variable: '),
         "Total number of observations",
         "Nb. distinct values",
         "% total Valid values",
@@ -337,9 +480,9 @@ dataset_summarize <- function(
         "% Missing categorical values (if applicable)",everything())
 
     report$`Date variable summary` <-
-      report$`Date variable summary` %>%
-      inner_join(summary_var, by = "name") %>%
-      inner_join(summary_date, by = "name") %>%
+      suppressMessages(report$`Date variable summary` %>%
+      inner_join(summary_var, by = "name", multiple = "all") %>%
+      inner_join(summary_date, multiple = "all")) %>%
       select(
         "index in data dict." ,
         "name",
@@ -349,7 +492,8 @@ dataset_summarize <- function(
         "Estimated dataset valueType",
         "Actual dataset valueType",
         'Categorical variable',
-        "Categories in data dictionary",   
+        "Categories in data dictionary",
+        starts_with('Grouping variable: '),   
         "Total number of observations",
         "Nb. distinct values",
         "% total Valid values",
@@ -358,9 +502,9 @@ dataset_summarize <- function(
         "% Missing categorical values (if applicable)",everything())
 
     report$`Numerical variable summary` <-
-      report$`Numerical variable summary` %>%
-      inner_join(summary_var, by = "name") %>%
-      inner_join(summary_num, by = "name") %>%
+      suppressMessages(report$`Numerical variable summary` %>%
+      inner_join(summary_var, by = "name", multiple = "all") %>%
+      inner_join(summary_num, multiple = "all")) %>%
       select(
         "index in data dict." ,
         "name",
@@ -370,7 +514,8 @@ dataset_summarize <- function(
         "Estimated dataset valueType",
         "Actual dataset valueType",
         'Categorical variable',
-        "Categories in data dictionary",   
+        "Categories in data dictionary",
+        starts_with('Grouping variable: '),   
         "Total number of observations",
         "Nb. distinct values",
         "% total Valid values",
@@ -379,9 +524,9 @@ dataset_summarize <- function(
         "% Missing categorical values (if applicable)",everything())
 
     report$`Categorical variable summary` <-
-      report$`Categorical variable summary` %>%
-      inner_join(summary_var, by = "name") %>%
-      inner_join(summary_cat, by = "name") %>% 
+      suppressMessages(report$`Categorical variable summary` %>%
+      inner_join(summary_var, by = "name", multiple = "all") %>%
+      inner_join(summary_cat, multiple = "all")) %>% 
       select(
         "index in data dict." ,
         "name",
@@ -391,7 +536,8 @@ dataset_summarize <- function(
         "Estimated dataset valueType",
         "Actual dataset valueType",
         'Categorical variable',
-        "Categories in data dictionary",   
+        "Categories in data dictionary",
+        starts_with('Grouping variable: '),   
         "Total number of observations",
         "Nb. distinct values",
         "% total Valid values",
@@ -399,153 +545,168 @@ dataset_summarize <- function(
         "% Valid categorical values (if applicable)",
         "% Missing categorical values (if applicable)",
         everything())
-  }
-
+    }
+    
   message("    Summarise global information (Overview)")
-  report$Overview <-
+  
+  Overview <-
     tibble(`---` = c(
-      'Quality control of study specific dataset'                              ,
+      'Quality control of dataset'                                             ,
       'Date'                                                                   ,
       '1_Name of the dataset'                                                  ,
-      '    1_Participant identifier'                                           ,
+      '    1_Identifier Variable'                                              ,
+      '    1_Grouping variable'                                                ,
       '    1_Variables'                                                        ,
-      '        1_Total number of variables'                                    ,
-      '    1_Data type in dictionary (valueType)'                             ,
+      '        1_Total number of variables (incl. identifier)'                 ,
+      '        1_Total number of empty columns'                                ,
+      '    1_Data type in dictionary (valueType)'                              ,
       '        1_Nb. text variables'                                           ,
       '        1_Nb. date variables'                                           ,
       '        1_Nb. numerical variables'                                      ,
       '        1_Nb. categorical variables'                                    ,
       '    2_Rows'                                                             ,
       '        2_Total number of observations'                                 ,
-      '        2_Nb. unique participants'                                     ))
+      '        2_Nb. distinct observations'                                   ))
+  
 
-  report$Overview <-
-    report$Overview %>%
-    mutate(`-----` = case_when(
-
-      .data$`---` == 'Quality control of study specific dataset'               ~
-        " ",
-      .data$`---` == 'Date'                                                    ~
-        Sys.Date() %>% as.character,
-      .data$`---` == '1_Name of the dataset'                                   ~
-        dataset_name %>% str_remove_all("`"),
-      .data$`---` == '    1_Participant identifier'                            ~
-        toString(preserve_attributes),
-      .data$`---` == '    1_Variables'                                         ~
-        " ",
-      .data$`---` == '        1_Total number of variables'                     ~
-        report$`Data dictionary summary`    %>% nrow() %>% as.character,
-      .data$`---` == '    1_Data type in dictionary (valueType)'               ~
-        " ",
-      .data$`---` == '        1_Nb. text variables'                            ~
-        report$`Text variable summary`            %>% nrow() %>% as.character,
-      .data$`---` == '        1_Nb. date variables'                            ~
-        report$`Date variable summary`            %>% nrow() %>% as.character,
-      .data$`---` == '        1_Nb. numerical variables'                       ~
-        report$`Numerical variable summary` %>% nrow() %>% as.character,
-      .data$`---` == '        1_Nb. categorical variables'                     ~
-        report$`Categorical variable summary`    %>% nrow() %>% as.character,
-      .data$`---` == '    2_Rows'                                              ~
-        " ",
-      .data$`---` == '        2_Total number of observations'                  ~
-        dataset %>% select(1) %>% nrow %>% as.character,
-      .data$`---` == '        2_Nb. unique participants'                       ~
-        dataset %>% select(1) %>% distinct() %>% nrow %>% as.character,
-      TRUE                                                                     ~
-        "EMPTY",
-    )) %>%
-    mutate(
-      `---` = str_remove_all(.data$`---`, "1_"),
-      `---` = str_remove_all(.data$`---`, "2_")) %>%
-    rename(
-      `Quality control of study specific dataset` = .data$`---`,
-      ` ` = .data$`-----`) %>% slice(-1)
-
+  Overview_group <- c(list(`(all)` = dataset),dataset_group)
+  
+  for(i in names(Overview_group)){
+    
+    Overview_group[[i]] <-
+      Overview %>%
+      mutate(`-----` = case_when(
+        .data$`---` == 'Quality control of dataset'                            ~
+          " ",
+        .data$`---` == 'Date'                                                  ~
+          as.character(Sys.Date()),
+        .data$`---` == '1_Name of the dataset'                                 ~
+          dataset_name %>% str_remove_all("`"),
+        .data$`---` == '    1_Identifier Variable'                             ~
+          toString(col_id),
+        .data$`---` == '    1_Grouping variable'                               ~
+          toString(group_by),  
+        .data$`---` == '    1_Variables'                                       ~
+          " ",
+        .data$`---` == '        1_Total number of variables (incl. identifier)'~
+          as.character(length(unique(report$`Data dictionary summary`$name))),
+        .data$`---` == '        1_Total number of empty columns'               ~
+          as.character(
+            ncol(Overview_group[[i]][vapply(X = Overview_group[[i]],
+                          FUN = function(x) all(is.na(x)),
+                          FUN.VALUE = logical(1))])),
+        .data$`---` == '    1_Data type in dictionary (valueType)'             ~
+          " ",
+        .data$`---` == '        1_Nb. text variables'                          ~
+      as.character(length(unique(report$`Text variable summary`$name))),
+        .data$`---` == '        1_Nb. date variables'                          ~
+      as.character(length(unique(report$`Date variable summary`$name))),
+        .data$`---` == '        1_Nb. numerical variables'                     ~
+      as.character(length(unique(report$`Numerical variable summary`$name))),
+        .data$`---` == '        1_Nb. categorical variables'                   ~
+      as.character(length(unique(report$`Categorical variable summary`$name))),
+        .data$`---` == '    2_Rows'                                            ~
+          i,
+        .data$`---` == '        2_Total number of observations'                ~
+      as.character(nrow(Overview_group[[i]])),
+        .data$`---` == '        2_Nb. distinct observations'                   ~
+        ifelse(is.null(col_id),as.character(nrow(Overview_group[[i]])),
+        as.character(nrow(distinct(Overview_group[[i]][col_id])))),
+        TRUE                                                                   ~
+          "EMPTY",
+      )) %>%
+      mutate(
+        `---` = str_remove_all(.data$`---`, "1_"),
+        `---` = str_remove_all(.data$`---`, "2_")) %>%
+      rename(
+        `Quality control of dataset` = .data$`---`,
+        !! as.symbol(i) := .data$`-----`) %>% slice(-1)}
+  
+  for(i in names(Overview_group)[-1]){
+    Overview_group[[i]][c(1:11),2] <- " " 
+    Overview_group[[i]][,1] <- NULL
+  }
+  
+  report$Overview <- bind_cols(Overview_group)
+  if(group_by == ''){report$Overview <- 
+    report$Overview %>% slice(-4) %>% select(-3)}
+  
   message("    Generate report\n")
 
   # create report structure
 
   report$`Data dictionary summary`       <- NULL
-
-  if(nrow(report$`Text variable summary`       ) == 0)
-    report$`Text variable summary`       <- NULL
-  if(nrow(report$`Date variable summary`       ) == 0)
-    report$`Date variable summary`       <- NULL
-  if(nrow(report$`Numerical variable summary`  ) == 0)
-    report$`Numerical variable summary`  <- NULL
-  if(nrow(report$`Categorical variable summary`) == 0)
-    report$`Categorical variable summary`<- NULL
-
+  report <- report[vapply(X = report,
+                          FUN = function(x) sum(nrow(x)) > 0,
+                          FUN.VALUE = logical(1))]
   report <- report[unique(c('Overview', names(report)))]
 
   return(report)
 }
 
 #' @title
-#' Generate an Excel spreadsheet report of a study-specific datasets list
+#' Generate a report and summary of a dossier (list of datasets)
 #'
 #' @description
-#' Generates an Excel spreadsheet report for a study-specific dataset
-#' list (or study) showing descriptive statistics for each variable to
-#' facilitate the assessment of input data. Statistics are generated according
-#' to their valueType.
-#' This report can be used to assist the user in the assessment of the data
-#' structure, fields investigation (mandatory or not), coherence across elements
-#' and taxonomy, or standard evaluation. The summary associated provides
-#' dataset composition, with observation distribution and descriptive statistics.
+#' Assesses and summarizes the content and structure of a dossier 
+#' (list of datasets)  and reports potential issues to facilitate the 
+#' assessment of input data. The report can be used to help assess data 
+#' structure, presence of fields, coherence across elements, and taxonomy or 
+#' data dictionary formats. The summary provides additional information about 
+#' variable distributions and descriptive statistics. This report is compatible
+#' with Excel and can be exported as an Excel spreadsheet.
 #'
 #' @details
-#' A study must be a named list containing at least one data frame or
+#' A dossier must be a named list containing at least one data frame or
 #' data frame extension (e.g. a tibble), each of them being datasets.
-#' The name of each tibble will be use as the reference name of the dataset.
+#' The name of each tibble will be use as the reference name of the dataset. 
+#' This report is compatible with Excel and can be exported as an Excel 
+#' spreadsheet.
+#' 
+#' A taxonomy is classification scheme that can be defined for variable 
+#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
+#' be compatible with (and is generally extracted from) an Opal environment. To 
+#' work with certain functions, a valid taxonomy must contain at least the 
+#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+#' may follow Maelstrom research taxonomy, and its content can be evaluated
+#' accordingly, such as naming convention restriction, tagging elements,
+#' or scales, which are specific to Maelstrom Research. In this particular
+#' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
+#' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
+#' [madshapR::valueType_list].
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param study List of tibble, each of them being study specific datasets.
-#' @param taxonomy A data frame or data frame extension (e.g. a tibble),
-#' identifying the scheme used for variables classification as a tibble.
+#' @param dossier List of tibble, each of them being datasets.
+#' @param taxonomy A tibble identifying the scheme used for variables 
+#' classification.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
 #'
 #' @return
-#' A list of tibbles of report for each study-specific dataset.
+#' A list of tibbles of report for each listed dataset.
 #'
 #' @examples
 #' {
+#' 
 #' # use DEMO_files provided by the package
-#' library(stringr)
 #' library(dplyr)
+#' library(stringr)
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
-#' study <- 
-#'   DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")] %>%
+#' dossier <- 
+#'   DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")] %>%
 #'   lapply(valueType_self_adjust)
 #' 
-#' study_summarize(study)
+#' dossier_summary <- dossier_summarize(dossier)
+#' glimpse(dossier_summary)
 #' 
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' study_summarize(list(iris = iris, mtcars = mtcars))
 #' }
 #'
 #' @import dplyr stringr tidyr
@@ -553,32 +714,33 @@ dataset_summarize <- function(
 #' @importFrom rlang .data
 #'
 #' @export
-study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
+dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
   
   # amelioration :rajouter taxonomy
   
   # check on arguments
-  as_study(study)
+  as_dossier(dossier)
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
-         '`as_mlstr_data_dict` must be TRUE or FALSE (TRUE by default)')
+         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
   report_list <-
-    vector(mode = "list", length = length(names(study)))
-  names(report_list) <- names(study)
+    vector(mode = "list", length = length(names(dossier)))
+  names(report_list) <- names(dossier)
   
   message(crayon::bold(
-    "- STUDY SUMMARY: -------------------------------------------------------"))
+    "- DOSSIER SUMMARY: -----------------------------------------------------"))
   
-  for(i in seq_len(length(study))){
+  for(i in seq_len(length(dossier))){
     # stop()}
     report_list[[i]] <-
       dataset_summarize(
-        dataset = study[[i]],
+        dataset = dossier[[i]],
         taxonomy = taxonomy,
-        .dataset_name = names(study[i]),
+        .dataset_name = names(dossier[i]),
         valueType_guess = valueType_guess)
+    
   }
   
   return(report_list)
@@ -586,45 +748,48 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 
 
 #' @title
-#' Generate a tibble resuming all variables present in a dataset
+#' Generate an evaluation of all variable values in a dataset
 #'
 #' @description
-#' Generates a tibble that aggregates all columns
+#' 
+#' Analyses the content of a dataset and its data dictionary (if any), 
+#' identifies variable(s) data type and values accordingly and preprocess the
+#' variables. The elements of the tibble generated are evaluation of 
+#' valid/non valid/missing values (based on the data dictionary information if 
+#' provided). This function can be used to personalize report parameters and is 
+#' internally used in the function [dataset_summarize()].
+#' 
+#' Generates a tibble that evaluates and aggregates all columns
 #' in a dataset with (if any) its data dictionary. The data dictionary (if
-#' present separates observations between open values, missing values,
+#' present) separates observations between open values, missing values,
 #' categorical values , and categorical missing values (which corresponds to the
 #' 'missing' column in the 'Categories' sheet).
-#' This internal function is used inside summary functions.
+#' This internal function is mainly used inside summary functions.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
-#'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
 #' @seealso
-#' [madshapR::summary_variables()]
+#' [summary_variables()]
 #'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #'
@@ -634,21 +799,9 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #'
 #' @examples
 #' {
-#' 
-#' # use DEMO_files provided by the package
-#' library(dplyr)
-#'
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict)
-#'   
-#' resume_variables(dataset)
 #'  
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' resume_variables(iris)
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
+#' dataset_preprocess(iris)
 #'
 #' }
 #'
@@ -656,7 +809,7 @@ study_summarize <- function(study, taxonomy = NULL, valueType_guess = TRUE){
 #' @importFrom rlang .data
 #'
 #' @export
-resume_variables <- function(data, data_dict = NULL){
+dataset_preprocess <- function(dataset, data_dict = NULL){
   
   # handle atomics
   summary_tbl <-
@@ -672,18 +825,18 @@ resume_variables <- function(data, data_dict = NULL){
       `cat_label` = as.character())
   
   # handle atomics
-  if(is.atomic(data) & length(data) == 0){return(summary_tbl)}
-  if(is.atomic(data))
-    return(resume_variables(data = tibble(name = data), data_dict))
+  if(is.atomic(dataset) & length(dataset) == 0){return(summary_tbl)}
+  if(is.atomic(dataset))
+    return(dataset_preprocess(dataset = tibble(name = dataset), data_dict))
   
   # tests
-  as_dataset(data)
+  as_dataset(dataset)
   
-  # if no data dict
+  # if no data_dict
   if(is.null(data_dict)){
-    data_dict <- data_dict_extract(data,as_mlstr_data_dict = TRUE)
+    data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
   }else{
-    data_dict <- as_mlstr_data_dict(data_dict)}
+    data_dict <- as_data_dict_mlstr(data_dict)}
   
   data_dict_var  <-
     data_dict[['Variables']] %>%
@@ -718,12 +871,13 @@ resume_variables <- function(data, data_dict = NULL){
   data_dict_var  <-
     data_dict_var %>%
     full_join(data_dict_cat,by = "name",multiple = "all") %>%
-    mutate(`Categorical variable` = ifelse(is.na(.data$`valid_class`),"no","yes"))
+    mutate(`Categorical variable` = 
+             ifelse(is.na(.data$`valid_class`),"no","yes"))
   
   summary <- tibble(name = as.character())
   
-  if(nrow(data) > 0){
-    for(i in names(data)){
+  if(nrow(dataset) > 0){
+    for(i in names(dataset)){
       # stop()}
       
       tbl_var <- tibble()
@@ -732,14 +886,15 @@ resume_variables <- function(data, data_dict = NULL){
       
       # count the different observations in the columm
       tbl_var <-
-        data %>% select(value_var = any_of(i)) %>%
+        dataset %>% select(value_var = any_of(i)) %>%
         mutate(value_var_occur = 1) %>%
         mutate(value_var = as.character(.data$`value_var`)) %>%
-        mutate(name = i)
+        mutate(name = i) %>%
+        add_index('index_in_dataset')
       
-      # count observations in the data, including no-observation of
+      # count observations in the dataset, including no-observation of
       # categorical outcomes
-      # classification of observations not in the data dict(3) and 'true'
+      # classification of observations not in the data_dict(3) and 'true'
       # NA as na values(4)
       # arrange (1),(2),(3),(4), by original index
       summary   <-
@@ -772,19 +927,13 @@ resume_variables <- function(data, data_dict = NULL){
               summary$`valid_class` %in%
                 c('1_Valid values','2_Missing values'),])>= 1,
           "mix",
-          unique(summary[!is.na(summary$`Categorical variable`),][['Categorical variable']]))
+          unique(
+            summary[!is.na(summary$`Categorical variable`),
+                    ][['Categorical variable']]))
       
       summary_tbl <- bind_rows(summary_tbl, summary)
     }
   }
-  
-  # data_dict_var <-
-  #   data_dict_var %>%
-  #   anti_join(summary_tbl['name'], by = "name")
-  
-  # summary_tbl <-
-  #   summary_tbl %>%
-  #   add_row(data_dict_var)
   
   final_resume <-
     summary_tbl %>%
@@ -802,48 +951,39 @@ resume_variables <- function(data, data_dict = NULL){
 }
 
 #' @title
-#' Provide statistical description of variables present in a dataset
+#' Provide descriptive statistics for variables in a dataset
 #'
 #' @description
-#' Generates a tibble that summarises all columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if
-#' present separates observations between open values, missing values,
-#' categorical values, and categorical missing values (which corresponds to the
-#' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueType. This summary can be used to assist the user in
-#' the assessment of the dataset composition, with observation distribution and
-#' descriptive statistics.
+#' Summarises (in a tibble) the columns in a dataset and its data dictionary 
+#' (if any). The summary provides information about quality, type, composition, 
+#' and descriptive statistics of variables. Statistics are generated by 
+#' valueType.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .resume_var A tibble which provides summary of the variables (for
-#' development purpose only)
+#' @param .dataset_preprocess A tibble which provides summary of the variables 
+#' (used for internal processes and programming).
 #'
 #' @return
 #' A tibble providing statistical description of variables present in
@@ -852,22 +992,9 @@ resume_variables <- function(data, data_dict = NULL){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
-#' library(dplyr)
-#'
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict)
-#'   
-#' .resume_var <- resume_variables(dataset)
-#' summary_variables(.resume_var = .resume_var)
-#'   
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' .resume_var <- resume_variables(iris)
-#' summary_variables(.resume_var = .resume_var)
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
+#' .dataset_preprocess <- dataset_preprocess(iris)
+#' summary_variables(.dataset_preprocess = .dataset_preprocess)
 #'
 #' }
 #'
@@ -876,13 +1003,14 @@ resume_variables <- function(data, data_dict = NULL){
 #'
 #' @export
 summary_variables <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
-    .resume_var = NULL){
+    .dataset_preprocess = NULL){
   
-  # for dev purpose
-  if(is.null(.resume_var)) .resume_var <- resume_variables(data, data_dict)
-  summary <- .resume_var
+  #  (for internal processes and programming).
+  if(is.null(.dataset_preprocess)) .dataset_preprocess <- 
+      dataset_preprocess(dataset, data_dict)
+  summary <- .dataset_preprocess
   
   # init
   summary_tbl <- tibble(name = as.character())
@@ -945,20 +1073,20 @@ summary_variables <- function(
       `Quality assessment comment` = case_when(
         
         .data$`Total number of observations` == .data$`Nb. distinct values`    ~
-          "[INFO] - All observations are unique" ,
+"[INFO] - All observations are unique" ,
         
         .data$`Nb. distinct values` == 0                                       ~
-          "[INFO] - The column is empty" ,
+"[INFO] - The column is empty" ,
         
         .data$`Nb. distinct values` == 1                                       ~
-          "[INFO] - The column has a constant value",
+"[INFO] - The column has a constant value",
         
         .data$`Nb. distinct values` > 0 & .data$`% total Valid values` == 0    ~
-          "[INFO] - All the categorical values present in the dataset are 'missing'",
+"[INFO] - All the categorical values present in the dataset are 'missing'",
         
         .data$`% total Valid values` > 0 &
-          .data$`% Valid categorical values (if applicable)` == 0                      ~
-          "[INFO] - All the categorical values found in the dataset are non categorical" ,
+          .data$`% Valid categorical values (if applicable)` == 0              ~
+"[INFO] - All the categorical values found in the dataset are non categorical" ,
         
         TRUE                                                                   ~
           NA_character_
@@ -970,49 +1098,39 @@ summary_variables <- function(
 }
 
 #' @title
-#' Provide statistical description of 'text' variables of a dataset
+#' Provide descriptive statistics for variables of type 'text' in a dataset
 #'
 #' @description
-#' Generates a tibble that summarises all 'text' columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if
-#' present separates observations between open values, missing values,
-#' categorical values, and categorical missing values (which corresponds to the
-#' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueType which can be 'text', 'datetime', linestring',
-#' 'point', 'locale', or 'polygon'. This summary can be used to assist the user
-#' in the assessment of the dataset composition, with observation distribution
-#' and descriptive statistics.
+#' Summarises (in a tibble) the columns of type 'text' in a dataset and its 
+#' data dictionary (if any). The summary provides information about quality, 
+#' type, composition, and descriptive statistics of variables. Statistics are 
+#' generated by valueType.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
-#'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .resume_var A tibble which provides summary of the variables (for
-#' development purpose only)
+#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' (for internal processes and programming).
 #'
 #' @return
 #' A tibble providing statistical description of 'text' variables present
@@ -1020,26 +1138,12 @@ summary_variables <- function(
 #'
 #' @examples
 #' {
-#' 
-#' # use DEMO_files provided by the package
+#'    
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
 #' library(dplyr)
-#'
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict) %>%
-#'   select(where(is.character))
-#'   
-#' .resume_var <- resume_variables(dataset)
-#' summary_variables_text(.resume_var = .resume_var)
-#'   
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' .resume_var <- 
-#'   resume_variables(
-#'     mutate(iris['Species'],Species = as.character(Species)))
-#' summary_variables_text(.resume_var = .resume_var)
+#' 
+#' .dataset_preprocess <- dataset_preprocess(starwars['homeworld'])
+#' summary_variables_text(.dataset_preprocess = .dataset_preprocess)
 #'
 #' }
 #'
@@ -1048,17 +1152,17 @@ summary_variables <- function(
 #'
 #' @export
 summary_variables_text <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
-    .resume_var = NULL){
+    .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.resume_var)) return(summary_tbl)
-  if(!nrow(.resume_var)) return(summary_tbl)
+  if(is.null(.dataset_preprocess)) return(summary_tbl)
+  if(!nrow(.dataset_preprocess)) return(summary_tbl)
   
   summary <-
-    .resume_var %>%
+    .dataset_preprocess %>%
     filter(.data$`value_var_occur` == 1 ) %>%
     filter(.data$`valid_class`  == "3_Valid other values")
   
@@ -1083,7 +1187,8 @@ summary_variables_text <- function(
             summary_i %>%
             count(.data$`value_var`) %>%
             filter(if_any(.data$`n`, ~ . == max(.))) %>%
-            slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',.data$`value_var`)) %>%
+            slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',
+                                                     .data$`value_var`)) %>%
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
             str_replace('; \\[\\.\\.\\.\\]$','[...]'),
           
@@ -1091,7 +1196,8 @@ summary_variables_text <- function(
             summary_i %>%
             count(.data$`value_var`) %>%
             filter(if_any(.data$`n`, ~ . == min(.))) %>%
-            slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',.data$`value_var`)) %>%
+            slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',
+                                                     .data$`value_var`)) %>%
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
             str_replace('; \\[\\.\\.\\.\\]$','[...]'),
         )
@@ -1103,7 +1209,7 @@ summary_variables_text <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1111,48 +1217,39 @@ summary_variables_text <- function(
 }
 
 #' @title
-#' Provide statistical description of 'date' variables of a dataset
+#' Provide descriptive statistics for variables of type 'date' in a dataset
 #'
 #' @description
-#' Generates a tibble that summarises all 'date' columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if
-#' present separates observations between open values, missing values,
-#' categorical values, and categorical missing values (which corresponds to the
-#' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueType which can be 'date'.
-#' This summary can be used to assist the user in the assessment of the dataset
-#' composition, with observation distribution and descriptive statistics.
+#' Summarises (in a tibble) the columns of type 'date' in a dataset and its 
+#' data dictionary (if any). The summary provides information about quality, 
+#' type, composition, and descriptive statistics of variables. Statistics are 
+#' generated by valueType.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .resume_var A tibble which provides summary of the variables (for
-#' development purpose only)
+#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' (for internal processes and programming).
 #'
 #' @return
 #' A tibble providing statistical description of 'date' variables present
@@ -1160,32 +1257,19 @@ summary_variables_text <- function(
 #'
 #' @examples
 #' {
-#' 
-#' # use DEMO_files provided by the package
+#'    
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
 #' library(dplyr)
 #' library(fabR)
-#' library(lubridate)
-#'
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict) %>%
-#'   select(where(is.Date))
-#'   
-#' .resume_var <- resume_variables(dataset)
-#' summary_variables_date(.resume_var = .resume_var)
-#'   
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' .resume_var <- 
+#' 
+#' .dataset_preprocess <- 
 #'   storms %>%
-#'     slice(1:500) %>%
+#'     sample_n(50) %>%
 #'     mutate(date_storm = as_any_date(paste(year, month, day,"-"),"ymd")) %>%
 #'     select(date_storm) %>%
-#'     resume_variables
+#'     dataset_preprocess
 #'
-#' summary_variables_date(.resume_var = .resume_var)
+#' summary_variables_date(.dataset_preprocess = .dataset_preprocess)
 #'
 #' }
 #'
@@ -1194,31 +1278,32 @@ summary_variables_text <- function(
 #'
 #' @export
 summary_variables_date <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
-    .resume_var = NULL){
+    .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.resume_var)) return(summary_tbl)
-  if(!nrow(.resume_var)) return(summary_tbl)
+  if(is.null(.dataset_preprocess)) return(summary_tbl)
+  if(!nrow(.dataset_preprocess)) return(summary_tbl)
   
   date_format <-
-    fabR::guess_date_format(distinct(.resume_var['value_var']))
+    fabR::guess_date_format(distinct(.dataset_preprocess['value_var']))
   
   if(date_format$`% values formated` < 100){
     warning(
       "Problem while computing date type variables due to ambiguous format.\n",
       "They will be analysed as text variables\n",
       crayon::bold("Useful tip:"),
-      "Use dataset_evaluate(data) to get an assessment of your data.")
+      "Use dataset_evaluate(dataset) to get an assessment of your dataset.")
     
-    final_summary <- summary_variables_text(.resume_var = .resume_var)
+    final_summary <- 
+      summary_variables_text(.dataset_preprocess = .dataset_preprocess)
     return(final_summary)
   }
   
   summary <-
-    .resume_var %>%
+    .dataset_preprocess %>%
     mutate(
       value_var =
         fabR::as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
@@ -1267,7 +1352,7 @@ summary_variables_date <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1275,49 +1360,40 @@ summary_variables_date <- function(
 }
 
 #' @title
-#' Provide statistical description of 'numerical' variables of a dataset
+#' Provide descriptive statistics for variables of type 'numeric' in a dataset
 #'
 #' @description
-#' Generates a tibble that summarises all 'numerical' columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if
-#' present separates observations between open values, missing values,
-#' categorical values, and categorical missing values (which corresponds to the
-#' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueType which can be 'integer', 'decimal', 'boolean' or
-#' 'binary'. This summary can be used to assist the user in the assessment of
-#' the dataset composition, with observation distribution and descriptive
-#' statistics.
+#' Summarises (in a tibble) the columns of type 'numeric' in a dataset and its 
+#' data dictionary (if any). The summary provides information about quality, 
+#' type, composition, and descriptive statistics of variables. Statistics are 
+#' generated by valueType.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .resume_var A tibble which provides summary of the variables (for
-#' development purpose only)
+#' @param .dataset_preprocess A tibble which provides summary of the variables 
+#' (for internal processes and programming).
+#' 
 #' @return
 #' A tibble providing statistical description of 'numerical' variables
 #' present in a dataset.
@@ -1325,23 +1401,9 @@ summary_variables_date <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
-#' library(dplyr)
-#'
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict) %>% 
-#'   select(where(is.numeric))
-#'   
-#' .resume_var <- resume_variables(dataset)
-#' summary_variables_numerical(.resume_var = .resume_var)
-#'   
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' .resume_var <- resume_variables(starwars %>% select(where(is.numeric)))
-#' summary_variables_numerical(.resume_var = .resume_var)
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
+#' .dataset_preprocess <- dataset_preprocess(iris)
+#' summary_variables_numeric(.dataset_preprocess = .dataset_preprocess)
 #'
 #' }
 #'
@@ -1350,18 +1412,18 @@ summary_variables_date <- function(
 #' @importFrom stats sd
 #'
 #' @export
-summary_variables_numerical <- function(
-    data = NULL,
+summary_variables_numeric <- function(
+    dataset = NULL,
     data_dict = NULL,
-    .resume_var = NULL){
+    .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.resume_var)) return(summary_tbl)
-  if(!nrow(.resume_var)) return(summary_tbl)
+  if(is.null(.dataset_preprocess)) return(summary_tbl)
+  if(!nrow(.dataset_preprocess)) return(summary_tbl)
   
   summary <-
-    .resume_var %>%
+    .dataset_preprocess %>%
     filter(.data$`value_var_occur` == 1 ) %>%
     filter(.data$`valid_class`  == "3_Valid other values")
   
@@ -1399,7 +1461,7 @@ summary_variables_numerical <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
   #   filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1407,48 +1469,48 @@ summary_variables_numerical <- function(
 }
 
 #' @title
-#' Provide statistical description of 'categorical' variables of a dataset
+#' Provide descriptive statistics for variables of categorical in a dataset
 #'
 #' @description
-#' Generates a tibble that summarises all categorical columns
-#' in a dataset with (if any) its data dictionary. The data dictionary (if
-#' present separates observations between open values, missing values,
-#' categorical values, and categorical missing values (which corresponds to the
-#' 'missing' column in the Categories' sheet). Statistics are generated
-#' according to their valueType. This summary can be used to assist the user in
-#' the assessment of the dataset composition, with observation distribution and
-#' descriptive statistics.
+#' Summarises (in a tibble) the columns of type 'categorical' in a dataset and 
+#' its data dictionary (if any). The summary provides information about 
+#' quality, type, composition, and descriptive statistics of variables. 
+#' Statistics are generated by valueType.
 #'
 #' @details
-#' A data dictionary-like structure must be a list of at least one or two
-#' data frame or data frame extension (e.g. a tibble) named 'Variables'
-#' and 'Categories' (if any), representing meta data of an associated dataset.
-#' The 'Variables' component must contain at least 'name' column and the
-#' 'Categories' component must at least contain 'variable' and 'name'
-#' columns to be usable in any function of the package.
-#' To be considered as a minimum (workable) data dictionary, it must also
-#' have unique and non-null entries in 'name' column and the combination
-#' 'name'/'variable' must also be unique in 'Categories'.
-#' In addition, the data dictionary may follow Maelstrom research standards,
-#' and its content can be evaluated accordingly, such as naming convention
-#' restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-#' and/or any taxonomy provided.
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
+#' [madshapR::valueType_list].
 #'
-#' A dataset must be a data frame or data frame extension (e.g. a tibble) and
-#' can be associated to a data dictionary. If not, a minimum workable data
-#' dictionary can always be generated, when any column will be reported, and
-#' any factor column will be analysed as categorical variable (the column
-#' 'levels' will be created for that. In addition, the dataset may follow
-#' Maelstrom research standards, and its content can be evaluated accordingly,
-#' such as naming convention restriction, or id columns declaration (which
-#' full completeness is mandatory.
-#'
-#' @param data A tibble identifying the input data observations associated to
-#' its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .resume_var A tibble which provides summary of the variables (for
-#' development purpose only)
+#' @param .dataset_preprocess A tibble which provides summary of the variables 
+#' (for internal processes and programming).
 #'
 #' @return
 #' A tibble providing statistical description of 'categorical' variables
@@ -1460,20 +1522,9 @@ summary_variables_numerical <- function(
 #' # use DEMO_files provided by the package
 #' library(dplyr)
 #' 
-#' ###### Example 1: Combine functions and summarise datasets.
-#' data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict) %>% 
-#'   select(gndr)
-#'   
-#' .resume_var <- resume_variables(dataset)
-#' summary_variables_categorical(.resume_var = .resume_var)
-#'   
-#' ###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-#' .resume_var <- resume_variables(iris %>% select(Species))
-#' summary_variables_categorical(.resume_var = .resume_var)
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
+#' .dataset_preprocess <- dataset_preprocess(storms['status'])
+#' summary_variables_categorical(.dataset_preprocess = .dataset_preprocess)
 #' 
 #' }
 #'
@@ -1482,17 +1533,17 @@ summary_variables_numerical <- function(
 #'
 #' @export
 summary_variables_categorical <- function(
-    data = NULL,
+    dataset = NULL,
     data_dict = NULL,
-    .resume_var = NULL){
+    .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.resume_var)) return(summary_tbl)
-  if(!nrow(.resume_var)) return(summary_tbl)
+  if(is.null(.dataset_preprocess)) return(summary_tbl)
+  if(!nrow(.dataset_preprocess)) return(summary_tbl)
   
   summary <-
-    .resume_var %>%
+    .dataset_preprocess %>%
     group_by(across(c(-.data$`value_var_occur`,-.data$`index_value`))) %>%
     summarise(
       n = sum(as.integer(.data$`value_var_occur`)),
@@ -1650,7 +1701,7 @@ summary_variables_categorical <- function(
   }
   
   # final_summary <-
-  #   summary_variables(data, data_dict, .resume_var) %>%
+  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
   #   filter(.data$`categorical` == 'yes' | .data$`categorical` == 'mix') %>%
   #   full_join(summary_tbl, by = 'name')
   

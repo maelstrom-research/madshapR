@@ -6,7 +6,7 @@
 \usage{
 opal_tables_push(
   opal,
-  study = NULL,
+  dossier = NULL,
   data_dict = NULL,
   dataset = NULL,
   table_name = NULL,
@@ -18,13 +18,13 @@ opal_tables_push(
 \arguments{
 \item{opal}{Opal login attributes.}
 
-\item{study}{List of tibble, each of them being study specific datasets.}
+\item{dossier}{List of tibble, each of them being datasets.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{dataset}{A tibble identifying the input data observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{table_name}{A character string specifying an Opal table name.}
 
@@ -39,30 +39,33 @@ imported). Otherwise the table will be updated (data dictionaries merge may
 conflict). Default is FALSE.}
 }
 \value{
-A table in Opal.
+A table or table(s) in Opal.
 }
 \description{
-Uploads a study or dataset(s) from local environment to Opal
-environment. It is a wrapper of \code{\link[opalr:opal.table_create]{opalr::opal.table_create()}},
+Uploads a dossier or dataset from the local environment to an Opal
+environment. This is a wrapper function for \code{\link[opalr:opal.table_create]{opalr::opal.table_create()}},
 \code{\link[opalr:opal.table_save]{opalr::opal.table_save()}} and \code{\link[opalr:opal.table_dictionary_update]{opalr::opal.table_dictionary_update()}}.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
-{
+\dontrun{
 
 #' # use DEMO_files provided by the package
 library(opalr)
 library(stringr)
 
-study <- DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+dossier <- DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
-  opal.login('administrator','password', url ='https://opal-demo.obiba.org/')
+  opal.login('administrator','password', 
+    url ='https://opal-demo.maelstrom-research.org')
+    
 tempdir <- basename(tempdir())
 try(opal_project_create(opal, tempdir))
 
@@ -70,16 +73,16 @@ try(opal_project_create(opal, tempdir))
 try( 
   opal_tables_push(
   opal,
-  dataset = study$dataset_MELBOURNE_1,
+  dataset = dossier$dataset_MELBOURNE_1,
   table_name = 'dataset_MELBOURNE_1',
   project_name = tempdir,
   .force = TRUE,
   .overwrite = TRUE))
   
-###### Example 2: push a study in a project.
+###### Example 2: push a dossier in a project.
 try(
   opal_tables_push(
-  opal, study, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  opal, dossier, project_name = tempdir, .force = TRUE, .overwrite = TRUE))
 
 }
 

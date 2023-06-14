@@ -2,32 +2,31 @@
 % Please edit documentation in R/03-catalogue_functions.R
 \name{as_valueType}
 \alias{as_valueType}
-\title{Validate and coerce any object according to a given valueType}
+\title{Validate and coerce an object according to a given valueType}
 \usage{
 as_valueType(x, valueType = "text")
 }
 \arguments{
-\item{x}{R object to be coerced. Can be a vector.}
+\item{x}{Object to be coerced. Can be a vector.}
 
 \item{valueType}{A character string of the valueType used to coerce x.}
 }
 \value{
-The object coerced accordingly to the given valueType.
+The object coerced accordingly to the input valueType.
 }
 \description{
-Uses a data dictionary in the Maelstrom Research formats (with 'Variables'
-and 'Categories' in separate tibbles and standard columns in each) to apply
-their valueType to a dataset in tibble format. If no data dictionary is
-provided, the function will automatically evaluate the most restrictive
-valueType for each variable in the dataset and apply it.
+Attributes a valueType to an object, that can be a vector, or in a tibble
+using \link[dplyr:mutate]{dplyr::mutate}.
 }
 \details{
-valueType is one of the property of a variable entity. It refers to
-the (Obiba internal) type of any variable. The valueType can be 'text',
-'integer', 'decimal', 'boolean', 'locale', 'datetime', 'date', 'binary',
-'point', 'linestring', 'polygon'
-The valueType list is available using \link{valueType_list}, and their
-corresponding with typeof which is the (R internal) type of any object.
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {

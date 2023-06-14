@@ -4,49 +4,48 @@
 # madshapR
 
 <!-- badges: start -->
-<!-- [![R-CMD-check](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml) -->
+
+[![R-CMD-check](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of madshapR is to …
+The goal of madshapR is to provide functions to support rigorous
+processes in data cleaning, evaluation, and documentation across
+datasets from different studies based on Maelstrom Research guidelines.
+The package includes the core functions to evaluate and format the main
+inputs that define the process, diagnose errors, and summarize and
+evaluate datasets and their associated data dictionaries. The main
+outputs are clean datasets and associated metadata, and tabular and
+visual summary reports.
 
-## Installation
+# Get started
 
-You can install the development version of madshapR from
-[GitHub](https://github.com/) with:
+## Install the package
+
+To download the package, you need to have an account on
+<a href="https://github.com/" target="_blank">GitHub</a> and create a
+<a href="https://github.com/settings/tokens" target="_blank">personal
+access token</a> (in the format “ghp_xxx”). To use the package, you will
+need to be added to the list of authorized users. To request access,
+contact us and send us your Github username.
+
+You can send us your Github name using the
+<a href="https://www.maelstrom-research.org/contact" target="_blank">following
+link</a> so we can add you to our authorized list of users.
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("maelstrom-research/madshapR")
+# To update the R package in your R environment you may first need to remove it, 
+# and use the exit command quit() to terminate the current R session.
+
+# To install the R package:
+devtools::install_github(
+  repo = "https://github.com/maelstrom-research/madshapR@testing",
+  auth_token = "ghp_YouNeedaValidGithubTOKEN!!!",
+  force = TRUE)
 ```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
 
 ``` r
-library(madshapR)
-## basic example code
+library(madshapR) 
+
+#if you need help with the package, please use:
+madshapR_help()
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.

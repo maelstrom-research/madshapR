@@ -2,14 +2,14 @@
 % Please edit documentation in R/09-opal_functions.R
 \name{opal_tables_pull}
 \alias{opal_tables_pull}
-\title{Download tables from an Opal project as a study}
+\title{Download tables from an Opal project as a dossier}
 \usage{
 opal_tables_pull(
   opal,
   project,
   table_list = NULL,
   content = c("dataset", "data_dict"),
-  keep_as_study = TRUE,
+  keep_as_dossier = TRUE,
   .remove_id = FALSE
 )
 }
@@ -23,54 +23,55 @@ opal_tables_pull(
 \item{content}{A vector of character string which indicates if the
 function returns a dataset, or data dictionary. Default is 'dataset'.}
 
-\item{keep_as_study}{whether to return a study or a dataset if there is only
-one table. TRUE by default, if FALSE returns dataset.}
+\item{keep_as_dossier}{whether to return a dossier or a dataset if there is
+only one table. TRUE by default, if FALSE returns dataset.}
 
 \item{.remove_id}{whether to return the id column created in Opal or not.
 TRUE by default.}
 }
 \value{
-R objects (tibbles and list of tibbles) representing tables and their
+Objects (tibbles and list of tibbles) representing tables and their
 respective data dictionary.
 }
 \description{
-Downloads a study or dataset(s) from Opal project to local
-environment. It is a wrapper of \code{\link[opalr:opal.table_get]{opalr::opal.table_get()}} and
+Downloads a dossier or dataset from an Opal environment to the local
+environment. This is a wrapper function for\code{\link[opalr:opal.table_get]{opalr::opal.table_get()}} and
 \code{\link[opalr:opal.table_dictionary_get]{opalr::opal.table_dictionary_get()}}.
 }
 \details{
-The user must be allowed to interact with their Opal. The errors
-provided may be associated to the handler or the read/write
-permissions to Opal. The user must have adequate credentials
-to interact with their Opal environment.
+Opal is the OBiBa application for data management, and Opal environments can
+be integrated with RStudio environments using the package \code{opalr}.
+The user must have adequate credentials to interact with a specific Opal
+environment. Some function errors produced may be associated with the
+handler or Opal read/write permissions.
 }
 \examples{
-{
+\dontrun{
 
 #' # use DEMO_files provided by the package
 library(opalr)
 library(stringr)
 
-study <- 
-  DEMO_files[stringr::str_detect(names(DEMO_files),"dataset_MELBOURNE")]
+dossier <- 
+  DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")]
 
 opal <- 
   opal.login('administrator','password', 
-  url ='https://opal-demo.obiba.org/')
+    url ='https://opal-demo.maelstrom-research.org')
   
 tempdir <- basename(tempdir())
 try(opal_project_create(opal, tempdir))
 
 try(
   opal_tables_push(
-  opal, study,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
+  opal, dossier,project_name = tempdir, .force = TRUE, .overwrite = TRUE))
   
 ###### Example 1: pull a table from a project.
 try(
   opal_tables_pull(
   opal,project = tempdir,table_list = 'dataset_MELBOURNE_1'))
 
-###### Example 2: pull a study from a project.
+###### Example 2: pull a dossier from a project.
 try(
   opal_tables_pull(
   opal, project = tempdir))

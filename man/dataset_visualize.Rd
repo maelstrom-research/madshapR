@@ -2,20 +2,22 @@
 % Please edit documentation in R/08-data_visualize.R
 \name{dataset_visualize}
 \alias{dataset_visualize}
-\title{Generate a web application (bookdown) report of list of a datasets}
+\title{Generate a web-based bookdown visual report of a dataset}
 \usage{
 dataset_visualize(
-  dataset = NULL,
-  data_dict = NULL,
+  dataset = tibble(id = as.character()),
+  data_dict = data_dict_extract(dataset),
   group_by = NULL,
   to,
-  out = "ggplot2",
+  taxonomy = NULL,
+  .summary_var = NULL,
+  .dataset_name = NULL,
   .keep_files = TRUE
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input data observations associated to
-its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
@@ -27,76 +29,89 @@ by this column.}
 \item{to}{A character string identifying the folder path where the bookdown
 report will be saved.}
 
-\item{out}{parameter that specifies the graphical outputs expected in the
-report. Can be 'ggplot2'.}
+\item{taxonomy}{A tibble identifying the scheme used for variables
+classification.}
+
+\item{.summary_var}{A list which is the summary of the variables.}
+
+\item{.dataset_name}{A character string specifying the name of the dataset
+(used for internal processes and programming).}
 
 \item{.keep_files}{whether to keep the R-markdown files.
-FALSE by default.}
+TRUE by default. (used for internal processes and programming)}
 }
 \value{
 A bookdown folder containing files in the specified output folder. To
-open the file in browser, open 'index.html'. Or use
+open the file in browser, open 'docs/index.html'. Or use
 \code{\link[=open_visual_report]{open_visual_report()}}
 }
 \description{
-Generates a visual report for a study-specific dataset in an HTML
-bookdown document, showing descriptive statistics for each study-specific
-variable to facilitate the assessment of input data. Statistics and figures
-are generated according to their valueType.
-This report can be used to assist the user in the assessment of the data
-structure, fields investigation (mandatory or not), coherence across elements
-and taxonomy or standard evaluation. The summaries and figures associated
-provide dataset composition, with observation distribution and descriptive
-statistics.
+Generates a visual report for a dataset in an HTML bookdown document. The
+report provides figures and descriptive statistics for each variable to
+facilitate the assessment of input data. Statistics and figures are
+generated according to variable data type. The report can be used to help
+assess data structure, coherence across elements, and taxonomy or
+data dictionary formats. The summaries and figures provide additional
+information about variable distributions and descriptive statistics.
+The charts and tables are produced based on their data type. The variable
+can be grouped using \code{group_by} parameter, which is a (categorical) column
+in the dataset. The user may need to use \code{\link[=as.factor]{as.factor()}} in this context. To
+fasten the process (and allow recycling object in a workflow) the user can
+feed the function with a \code{.summary_var}, which is the output of the function
+\code{\link[=dataset_summarize]{dataset_summarize()}} of the column(s) \code{col} and  \code{group_by}. The summary
+must have the same parameters to operate.
 }
 \details{
-A study must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
-The name of each tibble will be use as the reference name of the dataset.
-A data dictionary-like structure must be a list of at least one or two
-data frame or data frame extension (e.g. a tibble) named 'Variables'
-and 'Categories' (if any), representing meta data of an associated dataset.
-The 'Variables' component must contain at least 'name' column and the
-'Categories' component must at least contain 'variable' and 'name'
-columns to be usable in any function of the package.
-To be considered as a minimum (workable) data dictionary, it must also
-have unique and non-null entries in 'name' column and the combination
-'name'/'variable' must also be unique in 'Categories'.
-In addition, the data dictionary may follow Maelstrom research standards,
-and its content can be evaluated accordingly, such as naming convention
-restriction, columns like 'valueType', 'missing' and 'label(:xx)',
-and/or any taxonomy provided.
+A dataset must be a data frame-like object and can be associated with a
+data dictionary. If no data dictionary is provided, a minimum workable
+data dictionary will be generated as needed by relevant functions.
+An identifier \code{id} column for sorting can be specified by the user. If
+specified, the \code{id} values must be non-missing and will be used in functions
+that require it. If no identifier column is specified, indexing is handled
+automatically by the function.
 
-A dataset must be a data frame or data frame extension (e.g. a tibble) and
-can be associated to a data dictionary. If not, a minimum workable data
-dictionary can always be generated, when any column will be reported, and
-any factor column will be analysed as categorical variable (the column
-'levels' will be created for that. In addition, the dataset may follow
-Maelstrom research standards, and its content can be evaluated accordingly,
-such as naming convention restriction, or id columns declaration (which
-full completeness is mandatory.
+A data dictionary contains metadata about variables and can be associated
+with a dataset. It must be a list of data frame-like objects with elements
+named 'Variables' (required) and 'Categories' (if any). To be usable in any
+function, the 'Variables' element must contain at least the 'name' column,
+and the 'Categories' element must contain at least the 'variable' and 'name'
+columns. To be considered as a minimum workable data dictionary, in
+'Variables' the 'name' column must also have unique and non-null entries,
+and in 'Categories' the combination of 'variable' and 'name' columns must
+also be unique'.
+
+A taxonomy is classification scheme that can be defined for variable
+attributes. If defined, a taxonomy must be a data frame-like object. It must
+be compatible with (and is generally extracted from) an Opal environment. To
+work with certain functions, a valid taxonomy must contain at least the
+columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
+may follow Maelstrom research taxonomy, and its content can be evaluated
+accordingly, such as naming convention restriction, tagging elements,
+or scales, which are specific to Maelstrom Research. In this particular
+case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
+'vocabulary_scale' and 'term_scale' to work with some specific functions.
 }
 \examples{
-\dontrun{
+{
 
 # use DEMO_files provided by the package
 library(dplyr)
+library(fabR)  # silently_run
 
-###### Example 1: Combine functions and visualize datasets.
-data_dict <- as_mlstr_data_dict(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+###### Example : Combine functions and summarise datasets.
+data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
 dataset <-
   DEMO_files$dataset_TOKYO \%>\%
   valueType_adjust(from = data_dict) \%>\%
-  data_dict_apply(data_dict) 
-  
-tempdir <- tempdir()
-dataset_visualize(dataset,to = tempdir)
-open_visual_report(tempdir)
+  data_dict_apply(data_dict)
 
-###### Example 2: any data-frame (or tibble) can be a dataset by definition.
-tempdir <- tempdir()
-dataset_visualize(iris,group_by = 'Species', to = tempdir)
-open_visual_report(tempdir)
+# Silencing the process, remove silently_run() to see the full process in 
+# the console. 
+to <- tempdir()
+silently_run(dataset_visualize(dataset,group_by = gndr,to = to))
+  
+# To open the file in browser, open 'to/docs/index.html'. 
+# Or use [open_visual_report(to)]
 
 }
 
