@@ -26,7 +26,7 @@
 # library(tidyverse)
 # library(opalr)
 # library(madshapR)
-# opal <- opal.login('gfabre','gfabre1234',
+# opal <- opal.login('xxxx','xxxx',
 #                    url='https://opal.maelstrom-research.org/')
 # DEMO_files$taxonomy_opal <- opal_taxonomy_get(opal) 
 # DEMO_files$taxonomy_opal_mlstr <- opal_mlstr_taxonomy_get(opal)
