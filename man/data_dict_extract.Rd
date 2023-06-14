@@ -20,12 +20,12 @@ A list of tibble(s) identifying a data dictionary.
 }
 \description{
 Creates a data dictionary in a format compliant with formats used in
-Maelstrom Research ecosystem, including Opal (with Variables' and Categories'
-in separate tibbles and standard columns in each) from any dataset in tibble
-format. If the input dataset has no associated metadata, a data dictionary
-with minimal required information is created from the column (variable) names
-to create the data dictionary structure required for 'madshapR'. All columns
-except variable names will be blank.
+Maelstrom Research ecosystem, including Opal (with 'Variables' and
+'Categories' in separate tibbles and standard columns in each) from any
+dataset in tibble format. If the input dataset has no associated metadata, a
+data dictionary with minimal required information is created from the column
+(variable) names to create the data dictionary structure required for
+'madshapR'. All columns except variable names will be blank.
 }
 \details{
 A dataset must be a data frame-like object and can be associated with a

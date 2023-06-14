@@ -23,8 +23,8 @@ opal_tables_push(
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{table_name}{A character string specifying an Opal table name.}
 

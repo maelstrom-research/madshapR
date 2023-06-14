@@ -16,7 +16,7 @@ A list of tibble(s) identifying a workable data dictionary structure.
 \description{
 Ungroups the data dictionary element(s). This function ungroups both the
 'Variables' and 'Categories' elements (if both are grouped tibbles).
-This function is analagous to running \code{\link[dplyr:group_by]{dplyr::ungroup()}}.
+This function is analogous to running \code{\link[dplyr:group_by]{dplyr::ungroup()}}.
 \code{\link[=data_dict_group_by]{data_dict_group_by()}} allows to group a data dictionary and this function
 reverses the effect.
 }
@@ -37,8 +37,8 @@ also be unique'.
 # use DEMO_files provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
-# data dictionary per say, but can be used as a structure which can be shaped 
-# into a data dictionary.
+# data dictionary per say, but can be used as a structure which can be 
+# shaped into a data dictionary.
 
 library(dplyr)
 

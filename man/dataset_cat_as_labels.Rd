@@ -7,8 +7,8 @@
 dataset_cat_as_labels(dataset, data_dict = NULL, col_names = names(dataset))
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset (to be generated).}

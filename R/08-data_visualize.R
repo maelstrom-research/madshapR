@@ -42,8 +42,8 @@
 #' and in 'Categories' the combination of 'variable' and 'name' columns must 
 #' also be unique'.
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param col A character string specifying the name of the column.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
@@ -100,7 +100,7 @@ variable_visualize <- function(
     warning(call. = FALSE,'Your column has no observation.')
     return(ggplot())}
   
-  if(toString(substitute(group_by)) == '') group_by = NULL
+  if(toString(substitute(group_by)) == '') group_by <- NULL
   # attempt to catch group_by from the group_vars if the dataset is grouped
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
@@ -131,8 +131,8 @@ variable_visualize <- function(
   } else {
     colset <- bind_cols(colset_temp_1,colset_temp_2)}
   
-  if(ncol(colset)== 1){col = names(colset)[1] ; group_by <- ''}
-  if(ncol(colset)== 2){col = names(colset)[1] ; group_by = names(colset)[2]}
+  if(ncol(colset)== 1){col <- names(colset)[1] ; group_by <- ''}
+  if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
   
   if(!is.null(data_dict)){
     col_dict <- 
@@ -184,7 +184,7 @@ variable_visualize <- function(
   
   if(group_by != ''){
     
-    cat_lab = 
+    cat_lab <- 
       col_dict[['Categories']] %>% 
       filter(if_any('variable') == group_by) %>%
       select(
@@ -680,13 +680,13 @@ variable_visualize <- function(
             x = !! as.symbol(col),
             fill = !! as.symbol(group_by))}
       
-      max_span = 
+      max_span <- 
         max(ungroup(colset_span) %>%
               pull(!! as.symbol(col))) -
         min(ungroup(colset_span) %>%
               pull(!! as.symbol(col))) + 1
       
-      bins = ceiling(as.integer(max_span) / 365 / 5)
+      bins <- ceiling(as.integer(max_span) / 365 / 5)
       
       plot_2 <- 
         ggplot(colset_values) + aes +
@@ -714,7 +714,7 @@ variable_visualize <- function(
     
     n_obs <- nrow(colset_cat_values)
     
-    cat_lab_var = 
+    cat_lab_var <- 
       col_dict[['Categories']] %>% 
       filter(if_any('variable') == col) %>%
       select(
@@ -780,7 +780,7 @@ variable_visualize <- function(
     
     if(sum(nrow(col_dict[['Categories']])) > 0){
       
-      cat_lab_miss_var = 
+      cat_lab_miss_var <- 
         col_dict[['Categories']] %>% 
         filter(if_any('variable') == col) %>%
         select(
@@ -790,7 +790,7 @@ variable_visualize <- function(
         mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
         add_index('___category_level___')      
       
-    } else { cat_lab_miss_var = 
+    } else { cat_lab_miss_var <- 
       tibble(
         col = as.character(),
         `___labels___` = as.character(),
@@ -888,10 +888,11 @@ variable_visualize <- function(
     
     colset_valid <-
       colset_valid %>% 
-      mutate(prop = round((`___n___`/sum(`___n___`)),2),
-             csum = cumsum(prop), 
-             pos = prop/2 + lag(csum, 1),
-             pos = if_else(is.na(pos), prop/2, pos)) %>%
+      mutate(
+        prop = round((.data$`___n___`/sum(.data$`___n___`)),2),
+        csum = cumsum(.data$`prop`), 
+        pos = .data$`prop`/2 + lag(.data$`csum`, 1),
+        pos = if_else(is.na(.data$`pos`), .data$`prop`/2, .data$`pos`)) %>%
       group_by(across(any_of(group_by))) %>%
       mutate(
         label = paste0(as.character(round((
@@ -902,7 +903,7 @@ variable_visualize <- function(
       geom_bar(stat='identity',width = 1,position = position_fill()) +
       geom_text(
         size = 2.5,
-        aes(x = 1.8,label = label),
+        aes(x = 1.8,label = !! as.symbol('label')),
         position = position_fill(vjust = 0.5)) +
       coord_polar('y', start = 0) +
       theme_void() + 
@@ -912,7 +913,10 @@ variable_visualize <- function(
       ggtitle(paste0('Pie chart', title)) +
       scale_fill_manual(values = palette_pie) +
       geom_segment(
-        aes(x = 1.500, y = pos, xend = 1.450, yend = pos), 
+        aes(x = 1.500, 
+            y = !! as.symbol('pos'), 
+            xend = 1.450, 
+            yend = !! as.symbol('pos')), 
         color = "black", linewidth = 1) 
     
     if(group_by != '') {
@@ -1016,16 +1020,16 @@ variable_visualize <- function(
 #' @description
 #' Generates a visual report for a dataset in an HTML bookdown document. The 
 #' report provides figures and descriptive statistics for each variable to 
-#' facilitate the assessment of input data. Statistics and figures are generated 
-#' according to variable data type. The report can be used to help assess 
-#' data structure, coherence across elements, and taxonomy or 
+#' facilitate the assessment of input data. Statistics and figures are 
+#' generated according to variable data type. The report can be used to help 
+#' assess data structure, coherence across elements, and taxonomy or 
 #' data dictionary formats. The summaries and figures provide additional 
 #' information about variable distributions and descriptive statistics. 
-#' The charts and tables are produced based on their data type. The variable can 
-#' be grouped using `group_by` parameter, which is a (categorical) column in the 
-#' dataset. The user may need to use [as.factor()] in this context. To fasten 
-#' the process (and allow recycling object in a workflow) the user can feed the 
-#' function with a `.summary_var`, which is the output of the function 
+#' The charts and tables are produced based on their data type. The variable 
+#' can be grouped using `group_by` parameter, which is a (categorical) column 
+#' in the dataset. The user may need to use [as.factor()] in this context. To 
+#' fasten the process (and allow recycling object in a workflow) the user can 
+#' feed the function with a `.summary_var`, which is the output of the function 
 #' [dataset_summarize()] of the column(s) `col` and  `group_by`. The summary 
 #' must have the same parameters to operate. 
 #'
@@ -1062,8 +1066,8 @@ variable_visualize <- function(
 #' @seealso
 #' [open_visual_report()]
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
@@ -1146,7 +1150,7 @@ dataset_visualize <- function(
   dataset <- as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   col_id <- attributes(dataset)$`madshapR::col_id`
   
-  if(toString(substitute(group_by)) == '') group_by = NULL
+  if(toString(substitute(group_by)) == '') group_by <- NULL
   # attempt to catch group_by from the group_vars if the dataset is grouped
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
@@ -1171,7 +1175,7 @@ dataset_visualize <- function(
     group_by <- tryCatch(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})    
-  }else{ group_by = ''}
+  }else{ group_by <- ''}
   
   dataset <-
     data_dict_match_dataset(
@@ -1200,10 +1204,10 @@ dataset_visualize <- function(
   data_dict$Variables <- data_dict$Variables %>% add_index(.force = TRUE)
   
   data_dict_flat <- data_dict
-  data_dict_flat[['Variables']] = data_dict$Variables
+  data_dict_flat[['Variables']] <- data_dict$Variables
   
   if(sum(nrow(data_dict_flat[['Categories']])) > 0){
-    data_dict_flat[['Categories']] = 
+    data_dict_flat[['Categories']] <- 
       data_dict[['Categories']] %>% 
       add_index("madshapR::index_original",.force = TRUE) %>%
       group_by(.data$`variable`) %>%

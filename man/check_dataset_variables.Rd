@@ -16,8 +16,8 @@ A tibble providing undeclared variables across a data dictionary.
 }
 \description{
 Generates a tibble report of any variable that is present in a dataset but
-not in the associated data dictionary or present in a data dictionary but not
-in the associated dataset.
+not in the associated data dictionary or present in a data dictionary but
+not in the associated dataset.
 This report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats.
 }

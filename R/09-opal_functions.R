@@ -230,8 +230,8 @@ opal_files_pull <- function(opal, from, to = paste0(getwd(),"/opal_files")){
 #'
 #' @param opal Opal login attributes.
 #' @param dossier List of tibble, each of them being datasets.
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param project_name A character string specifying the Opal project name.
@@ -549,10 +549,11 @@ opal_tables_pull <- function(
         if(!data_dict_temp$name %in% data_dict_i[['Variables']]$`name`){
           
           data_dict_i[['Variables']] <-
-            full_join(data_dict_temp,
-                      data_dict_i[['Variables']],
-                      by = intersect(
-                        names(data_dict_temp),names(data_dict_i[['Variables']])))          
+            full_join(
+              data_dict_temp,
+              data_dict_i[['Variables']],
+              by = intersect(
+                names(data_dict_temp),names(data_dict_i[['Variables']])))
         }
     }
     

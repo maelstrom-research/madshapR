@@ -116,8 +116,8 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @seealso
 #' [haven::zap_labels()].
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #'
 #' @return
 #' A tibble identifying a dataset.
@@ -183,8 +183,8 @@ dataset_zap_data_dict <- function(dataset){
 #' and in 'Categories' the combination of 'variable' and 'name' columns must 
 #' also be unique'.
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset (to be generated).
 #' @param col_names A character string specifying the name(s) of the column(s)

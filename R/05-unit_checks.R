@@ -81,7 +81,7 @@ check_data_dict_variables <- function(data_dict){
 #'
 #' @description
 #' Generates a tibble report of any categorical variable name present in the
-#' 'Categories' element but not present in 'Variables'. The tibble also reports  
+#' 'Categories' element but not present in 'Variables'. The tibble also reports 
 #' any non-unique combinations of 'variable' and 'name' in the 'Categories'
 #' element.
 #' This report can be used to help assess data structure, presence of fields, 
@@ -197,7 +197,7 @@ check_data_dict_categories <- function(data_dict){
 #'
 #' @description
 #' Generates a tibble report of any categorical variables with non-Boolean (or
-#' coercible to boolean) values in the 'missing' column of the 'Categories'
+#' compatible with boolean) values in the 'missing' column of the 'Categories'
 #' element.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
@@ -550,12 +550,12 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' also be unique'.
 #' 
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
 #' [madshapR::valueType_list].
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
@@ -664,8 +664,8 @@ check_data_dict_valueType <- function(data_dict){
 #'
 #' @description
 #' Generates a tibble report of any variable that is present in a dataset but
-#' not in the associated data dictionary or present in a data dictionary but not 
-#' in the associated dataset.
+#' not in the associated data dictionary or present in a data dictionary but 
+#' not in the associated dataset.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
@@ -943,12 +943,12 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #' automatically by the function.
 #' 
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
 #' [madshapR::valueType_list].
 #'
 #' @param dataset A tibble identifying the input dataset observations.

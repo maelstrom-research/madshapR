@@ -25,7 +25,7 @@ Assesses the content and structure of a data dictionary and reports potential
 issues to facilitate the assessment of input data.
 The report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats. This
-report is compatible with Excel and can be exported as an Excel spredsheet.
+report is compatible with Excel and can be exported as an Excel spreadsheet.
 }
 \details{
 A data dictionary contains metadata about variables and can be associated

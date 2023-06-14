@@ -17,11 +17,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Guillaume Fabre \email{gfabre@maelstrom-research.org} (\href{https://orcid.org/0000-0002-0124-9970}{ORCID})
+\strong{Maintainer}: Guillaume Fabre \email{guijoseph.fabre@gmail.com} (\href{https://orcid.org/0000-0002-0124-9970}{ORCID})
 
 Other contributors:
 \itemize{
   \item Maelstrom-research group \email{info@maelstrom-research.org} [copyright holder, funder]
+  \item Samuel  El Bouzaïdi Tiali \email{info@maelstrom-research.org} [contributor]
 }
 
 }

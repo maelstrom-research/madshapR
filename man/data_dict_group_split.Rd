@@ -21,7 +21,7 @@ Divides data dictionary element(s) into the groups defined by the query.
 This function divides both the 'Variables' and 'Categories' elements (if
 the group exists under the same definition in in both) into a list of
 data dictionaries, each with the rows of the associated group and all the
-original columns, including grouping variables. This function is analagous
+original columns, including grouping variables. This function is analogous
 to running \code{\link[dplyr:group_by]{dplyr::group_by()}} and \code{\link[dplyr:group_split]{dplyr::group_split()}}. Each element is
 named using the group values. \code{\link[=data_dict_list_nest]{data_dict_list_nest()}} reverses the effect.
 }
@@ -44,8 +44,8 @@ library(dplyr)
 
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
-# data dictionary per say, but can be used as a structure which can be shaped 
-# into a data dictionary.
+# data dictionary per say, but can be used as a structure which can be 
+# shaped into a data dictionary.
 
 data_dict_list <- DEMO_files[
     c('dd_MELBOURNE_1_format_maelstrom',

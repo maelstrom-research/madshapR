@@ -6,7 +6,7 @@
 #' in the dataset and data dictionary to facilitate assessment of input data. 
 #' The report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats. This 
-#' report is compatible with Excel and can be exported as an Excel spredsheet.
+#' report is compatible with Excel and can be exported as an Excel spreadsheet.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 
@@ -38,8 +38,8 @@
 #' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param taxonomy A tibble identifying the scheme used for variables 
@@ -318,7 +318,7 @@ dataset_evaluate <- function(
 #' to facilitate assessment of input data. 
 #' The report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.This 
-#' report is compatible with Excel and can be exported as an Excel spredsheet.
+#' report is compatible with Excel and can be exported as an Excel spreadsheet.
 #'
 #' @details
 #' A dossier must be a named list containing at least one data frame or
@@ -407,7 +407,7 @@ dossier_evaluate <- function(
 #' issues to facilitate the assessment of input data. 
 #' The report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats. This 
-#' report is compatible with Excel and can be exported as an Excel spredsheet.
+#' report is compatible with Excel and can be exported as an Excel spreadsheet.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 

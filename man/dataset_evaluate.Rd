@@ -13,8 +13,8 @@ dataset_evaluate(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
@@ -38,7 +38,7 @@ Assesses the content and structure of a dataset and reports possible issues
 in the dataset and data dictionary to facilitate assessment of input data.
 The report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats. This
-report is compatible with Excel and can be exported as an Excel spredsheet.
+report is compatible with Excel and can be exported as an Excel spreadsheet.
 }
 \details{
 A data dictionary contains metadata about variables and can be associated

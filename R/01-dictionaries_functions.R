@@ -1,5 +1,5 @@
 #' @title
-#' Transform single-row category information to multiple rows and add as element 
+#' Transform single-row category information to multiple rows as element 
 #'
 #' @description
 #' Expands data dictionary column(s) in a element (the parameter 'from'),
@@ -603,9 +603,9 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' Transforms column(s) of a data dictionary from wide format to long format. 
 #' If a taxonomy is provided, the corresponding columns in the data
 #' dictionary will be converted to a standardized format with fewer columns.
-#' This operation is equivalent to performing a [tidyr::pivot_longer()] on these 
-#' columns following the taxonomy structure provided. Variable names in the  
-#' data dictionary must be unique.
+#' This operation is equivalent to performing a [tidyr::pivot_longer()] on 
+#' these columns following the taxonomy structure provided. Variable names in 
+#' the data dictionary must be unique.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 
@@ -991,7 +991,7 @@ data_dict_filter <- function(
 #' This function divides both the 'Variables' and 'Categories' elements (if 
 #' the group exists under the same definition in in both) into a list of 
 #' data dictionaries, each with the rows of the associated group and all the 
-#' original columns, including grouping variables. This function is analagous 
+#' original columns, including grouping variables. This function is analogous 
 #' to running [dplyr::group_by()] and [dplyr::group_split()]. Each element is 
 #' named using the group values. [data_dict_list_nest()] reverses the effect.
 #'
@@ -1026,8 +1026,8 @@ data_dict_filter <- function(
 #'
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
-#' # data dictionary per say, but can be used as a structure which can be shaped 
-#' # into a data dictionary.
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- DEMO_files[
 #'     c('dd_MELBOURNE_1_format_maelstrom',
@@ -1151,8 +1151,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #' # use DEMO_files provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
-#' # data dictionary per say, but can be used as a structure which can be shaped 
-#' # into a data dictionary.
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- DEMO_files[
 #'     c('dd_MELBOURNE_1_format_maelstrom',
@@ -1244,7 +1244,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' Groups the data dictionary element(s) by the groups defined by the query.
 #' This function groups both the 'Variables' and 'Categories' elements (if 
 #' the group exists under the same definition in in both). This function is 
-#' analagous to running [dplyr::group_by()]. Each element is named using the 
+#' analogous to running [dplyr::group_by()]. Each element is named using the 
 #' group values. [data_dict_ungroup()] reverses the effect.
 #'
 #' @details
@@ -1274,8 +1274,8 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' # use DEMO_files provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
-#' # data dictionary per say, but can be used as a structure which can be shaped 
-#' # into a data dictionary.
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data dictionary.
 #' 
 #' library(dplyr)
 #' 
@@ -1347,7 +1347,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @description
 #' Ungroups the data dictionary element(s). This function ungroups both the
 #' 'Variables' and 'Categories' elements (if both are grouped tibbles). 
-#' This function is analagous to running [dplyr::ungroup()].
+#' This function is analogous to running [dplyr::ungroup()].
 #' [data_dict_group_by()] allows to group a data dictionary and this function 
 #' reverses the effect.
 #'
@@ -1378,8 +1378,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #' # use DEMO_files provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
-#' # data dictionary per say, but can be used as a structure which can be shaped 
-#' # into a data dictionary.
+#' # data dictionary per say, but can be used as a structure which can be 
+#' # shaped into a data dictionary.
 #' 
 #' library(dplyr)
 #' 
@@ -1444,8 +1444,8 @@ data_dict_ungroup <- function(data_dict){
 #' @seealso
 #' [base::attributes()]
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset.
 #' Automatically generated if not provided.
@@ -1605,12 +1605,12 @@ your dataset")}
 #'
 #' @description
 #' Creates a data dictionary in a format compliant with formats used in 
-#' Maelstrom Research ecosystem, including Opal (with Variables' and Categories' 
-#' in separate tibbles and standard columns in each) from any dataset in tibble 
-#' format. If the input dataset has no associated metadata, a data dictionary 
-#' with minimal required information is created from the column (variable) names 
-#' to create the data dictionary structure required for 'madshapR'. All columns 
-#' except variable names will be blank.
+#' Maelstrom Research ecosystem, including Opal (with 'Variables' and 
+#' 'Categories' in separate tibbles and standard columns in each) from any 
+#' dataset in tibble format. If the input dataset has no associated metadata, a 
+#' data dictionary with minimal required information is created from the column 
+#' (variable) names to create the data dictionary structure required for 
+#' 'madshapR'. All columns except variable names will be blank.
 #'
 #' @details
 #' A dataset must be a data frame-like object and can be associated with a 
@@ -1911,10 +1911,10 @@ Please refer to documentation.")
 #' Validate and coerce any object as data dictionary
 #'
 #' @description
-#' Validates the input object as a valid data dictionary and coerces it with the 
-#' appropriate madshapR::class attribute. This function mainly helps validate 
-#' input within other functions of the package but could be used to check if an 
-#' object is valid for use in a function.
+#' Validates the input object as a valid data dictionary and coerces it with 
+#' the appropriate madshapR::class attribute. This function mainly helps 
+#' validate input within other functions of the package but could be used to 
+#' check if an object is valid for use in a function.
 #' 
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 
@@ -2195,10 +2195,10 @@ data dictionary")}}
 #'
 #' @description
 #' Validates the input object as a valid data dictionary compliant with formats 
-#' used in Maelstrom Research ecosystem, including Opal, and returns it with the 
-#' appropriate madshapR::class attribute. This function mainly helps validate 
-#' input within other functions of the package but could be used to check if an 
-#' object is valid for use in a function.
+#' used in Maelstrom Research ecosystem, including Opal, and returns it with 
+#' the appropriate madshapR::class attribute. This function mainly helps 
+#' validate input within other functions of the package but could be used to 
+#' check if an object is valid for use in a function.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 
@@ -2518,8 +2518,8 @@ New name: ",new_name)
 #' @description
 #' Tests if the input object has adequate structure to work with functions 
 #' involving data dictionary shaping. This function mainly helps validate input 
-#' within other functions of the package but could be used to check if an object 
-#' is valid for use in a function.
+#' within other functions of the package but could be used to check if an 
+#' object is valid for use in a function.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 

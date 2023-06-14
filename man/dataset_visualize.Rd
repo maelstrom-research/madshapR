@@ -16,8 +16,8 @@ dataset_visualize(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
@@ -48,16 +48,16 @@ open the file in browser, open 'docs/index.html'. Or use
 \description{
 Generates a visual report for a dataset in an HTML bookdown document. The
 report provides figures and descriptive statistics for each variable to
-facilitate the assessment of input data. Statistics and figures are generated
-according to variable data type. The report can be used to help assess
-data structure, coherence across elements, and taxonomy or
+facilitate the assessment of input data. Statistics and figures are
+generated according to variable data type. The report can be used to help
+assess data structure, coherence across elements, and taxonomy or
 data dictionary formats. The summaries and figures provide additional
 information about variable distributions and descriptive statistics.
-The charts and tables are produced based on their data type. The variable can
-be grouped using \code{group_by} parameter, which is a (categorical) column in the
-dataset. The user may need to use \code{\link[=as.factor]{as.factor()}} in this context. To fasten
-the process (and allow recycling object in a workflow) the user can feed the
-function with a \code{.summary_var}, which is the output of the function
+The charts and tables are produced based on their data type. The variable
+can be grouped using \code{group_by} parameter, which is a (categorical) column
+in the dataset. The user may need to use \code{\link[=as.factor]{as.factor()}} in this context. To
+fasten the process (and allow recycling object in a workflow) the user can
+feed the function with a \code{.summary_var}, which is the output of the function
 \code{\link[=dataset_summarize]{dataset_summarize()}} of the column(s) \code{col} and  \code{group_by}. The summary
 must have the same parameters to operate.
 }

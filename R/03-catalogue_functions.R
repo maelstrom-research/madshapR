@@ -8,12 +8,12 @@
 #'
 #' @details
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
 #' [madshapR::valueType_list].
 #' 
 #' @seealso
@@ -117,12 +117,12 @@ valueType_of <- function(x){
 #' automatically by the function.
 #' 
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
 #' [madshapR::valueType_list].
 #'
 #' @seealso
@@ -331,12 +331,12 @@ valueType will remain as it is.")
 #' automatically by the function.
 #' 
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
 #' [madshapR::valueType_list].
 #'
 #' @seealso
@@ -512,12 +512,12 @@ crayon::bold("\n\nUseful tip:"),
 #' automatically by the function.
 #' 
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
 #' [madshapR::valueType_list].
 #'
 #' @seealso
@@ -603,12 +603,12 @@ valueType_guess <- function(x){
 #'
 #' @details
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
 #' [madshapR::valueType_list].
 #'
 #' @seealso
@@ -742,9 +742,9 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #'
 #' @description
 #' Confirms that the input object is a valid taxonomy and returns it as a
-#' taxonomy with the appropriate madshapR::class attribute. This function mainly 
-#' helps validate input within other functions of the package but could be used
-#' to check if a taxonomy is valid.
+#' taxonomy with the appropriate madshapR::class attribute. This function 
+#' mainly helps validate input within other functions of the package but could 
+#' be used to check if a taxonomy is valid.
 #'
 #' @details
 #' A taxonomy is classification scheme that can be defined for variable 
@@ -796,7 +796,8 @@ as_taxonomy <- function(object){
   # check if names in object exist
   if(sum(names(object) %in% c("taxonomy","vocabulary" ,"term")) != 3){
     stop(call. = FALSE,
-"\n\nThis object is not a taxonomy as defined by Maelstrom standards, which must 
+"\n
+This object is not a taxonomy as defined by Maelstrom standards, which must 
 be a data frame (or tibble) containing at least 'taxonomy', 'vocabulary' and 
 'term' columns. 
 Please refer to documentation.",
@@ -829,12 +830,12 @@ the taxonomy present in your Opal environment.")}
 #'
 #' @details
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using 
 #' [madshapR::valueType_list].
 #'
 #' @seealso
@@ -874,8 +875,8 @@ is_valueType <- function(object){
 #'
 #' @description
 #' Confirms whether the input object is a valid taxonomy. This function mainly
-#' helps validate input within other functions of the  package but could be used 
-#' to check if a taxonomy is valid.
+#' helps validate input within other functions of the  package but could be 
+#' used to check if a taxonomy is valid.
 #'
 #' @details
 #' A taxonomy is classification scheme that can be defined for variable 

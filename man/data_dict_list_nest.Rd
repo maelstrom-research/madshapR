@@ -37,8 +37,8 @@ also be unique'.
 # use DEMO_files provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
-# data dictionary per say, but can be used as a structure which can be shaped 
-# into a data dictionary.
+# data dictionary per say, but can be used as a structure which can be 
+# shaped into a data dictionary.
 
 data_dict_list <- DEMO_files[
     c('dd_MELBOURNE_1_format_maelstrom',

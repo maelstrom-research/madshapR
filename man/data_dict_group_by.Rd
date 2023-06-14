@@ -19,7 +19,7 @@ A list of tibble(s) identifying a workable data dictionary structure.
 Groups the data dictionary element(s) by the groups defined by the query.
 This function groups both the 'Variables' and 'Categories' elements (if
 the group exists under the same definition in in both). This function is
-analagous to running \code{\link[dplyr:group_by]{dplyr::group_by()}}. Each element is named using the
+analogous to running \code{\link[dplyr:group_by]{dplyr::group_by()}}. Each element is named using the
 group values. \code{\link[=data_dict_ungroup]{data_dict_ungroup()}} reverses the effect.
 }
 \details{
@@ -39,8 +39,8 @@ also be unique'.
 # use DEMO_files provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
-# data dictionary per say, but can be used as a structure which can be shaped 
-# into a data dictionary.
+# data dictionary per say, but can be used as a structure which can be 
+# shaped into a data dictionary.
 
 library(dplyr)
 

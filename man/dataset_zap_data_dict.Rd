@@ -7,8 +7,8 @@
 dataset_zap_data_dict(dataset)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 }
 \value{
 A tibble identifying a dataset.

@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/maelstrom-research/harmonizR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/maelstrom-research/harmonizR/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of madshapR is to provide functions to support rigorous

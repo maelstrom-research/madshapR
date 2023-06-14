@@ -15,7 +15,7 @@ boolean.
 }
 \description{
 Generates a tibble report of any categorical variables with non-Boolean (or
-coercible to boolean) values in the 'missing' column of the 'Categories'
+compatible with boolean) values in the 'missing' column of the 'Categories'
 element.
 This report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats.

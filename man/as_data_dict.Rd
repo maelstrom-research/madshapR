@@ -13,10 +13,10 @@ as_data_dict(object)
 A list of tibble(s) identifying a data dictionary.
 }
 \description{
-Validates the input object as a valid data dictionary and coerces it with the
-appropriate madshapR::class attribute. This function mainly helps validate
-input within other functions of the package but could be used to check if an
-object is valid for use in a function.
+Validates the input object as a valid data dictionary and coerces it with
+the appropriate madshapR::class attribute. This function mainly helps
+validate input within other functions of the package but could be used to
+check if an object is valid for use in a function.
 }
 \details{
 A data dictionary contains metadata about variables and can be associated

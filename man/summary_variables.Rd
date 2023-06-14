@@ -7,8 +7,8 @@
 summary_variables(dataset = NULL, data_dict = NULL, .dataset_preprocess = NULL)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}

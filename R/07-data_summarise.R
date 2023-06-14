@@ -8,7 +8,7 @@
 #' fields, coherence across elements, and taxonomy or data dictionary formats. 
 #' The summary provides additional information about variable distributions and
 #' descriptive statistics. This report is compatible with Excel and can be 
-#' exported as an Excel spredsheet.
+#' exported as an Excel spreadsheet.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 
@@ -41,16 +41,16 @@
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
 #' [madshapR::valueType_list].
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
@@ -121,7 +121,7 @@ dataset_summarize <- function(
   # check on argument : taxonomy
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   
-  if(toString(substitute(group_by)) == '') group_by = NULL
+  if(toString(substitute(group_by)) == '') group_by <- NULL
   # attempt to catch group_by from the group_vars if the dataset is grouped
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
@@ -148,7 +148,7 @@ dataset_summarize <- function(
     group_by <- tryCatch(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})    
-  }else{ group_by = ''}
+  }else{ group_by <- ''}
 
   if(group_by != ''){
     
@@ -160,7 +160,7 @@ dataset_summarize <- function(
       stop(call. = FALSE,
            'Your grouping variable must be a categorical variable.')
     
-    cat_lab = 
+    cat_lab <-  
       data_dict[['Categories']] %>% 
       filter(if_any('variable') == group_by) %>%
       select(
@@ -590,7 +590,7 @@ dataset_summarize <- function(
           " ",
         .data$`---` == '        1_Total number of variables (incl. identifier)'~
           as.character(length(unique(report$`Data dictionary summary`$name))),
-        .data$`---` == '        1_Total number of empty columns'                 ~
+        .data$`---` == '        1_Total number of empty columns'               ~
           as.character(
             ncol(Overview_group[[i]][vapply(X = Overview_group[[i]],
                           FUN = function(x) all(is.na(x)),
@@ -649,19 +649,19 @@ dataset_summarize <- function(
 #'
 #' @description
 #' Assesses and summarizes the content and structure of a dossier 
-#' (list of datasets)  and reports potential issues to facilitate the assessment 
-#' of input data. The report can be used to help assess data structure, presence 
-#' of fields, coherence across elements, and taxonomy or data dictionary 
-#' formats. The summary provides additional information about variable 
-#' distributions and descriptive statistics. This report is compatible with
-#' Excel and can be exported as an Excel spredsheet.
+#' (list of datasets)  and reports potential issues to facilitate the 
+#' assessment of input data. The report can be used to help assess data 
+#' structure, presence of fields, coherence across elements, and taxonomy or 
+#' data dictionary formats. The summary provides additional information about 
+#' variable distributions and descriptive statistics. This report is compatible
+#' with Excel and can be exported as an Excel spreadsheet.
 #'
 #' @details
 #' A dossier must be a named list containing at least one data frame or
 #' data frame extension (e.g. a tibble), each of them being datasets.
 #' The name of each tibble will be use as the reference name of the dataset. 
 #' This report is compatible with Excel and can be exported as an Excel 
-#' spredsheet.
+#' spreadsheet.
 #' 
 #' A taxonomy is classification scheme that can be defined for variable 
 #' attributes. If defined, a taxonomy must be a data frame-like object. It must 
@@ -675,12 +675,12 @@ dataset_summarize <- function(
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers to 
-#' the OBiBa-internal type of a variable. It is specified in a data dictionary 
-#' in a column `valueType` and can be associated with variables as attributes. 
-#' Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean', 
-#' 'datetime', 'date'). The full list of OBiBa valueType possibilities and their 
-#' correspondance with R data types are available using 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
 #' [madshapR::valueType_list].
 #'
 #' @param dossier List of tibble, each of them being datasets.
@@ -788,8 +788,8 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #' @seealso
 #' [summary_variables()]
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #'
@@ -978,8 +978,8 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' that require it. If no identifier column is specified, indexing is handled 
 #' automatically by the function.
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param .dataset_preprocess A tibble which provides summary of the variables 
@@ -1125,8 +1125,8 @@ summary_variables <- function(
 #' that require it. If no identifier column is specified, indexing is handled 
 #' automatically by the function.
 #' 
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param .dataset_preprocess A tibble which provides summary of the variables
@@ -1244,8 +1244,8 @@ summary_variables_text <- function(
 #' that require it. If no identifier column is specified, indexing is handled 
 #' automatically by the function.
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param .dataset_preprocess A tibble which provides summary of the variables
@@ -1387,8 +1387,8 @@ summary_variables_date <- function(
 #' that require it. If no identifier column is specified, indexing is handled 
 #' automatically by the function.
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param .dataset_preprocess A tibble which provides summary of the variables 
@@ -1473,9 +1473,9 @@ summary_variables_numeric <- function(
 #'
 #' @description
 #' Summarises (in a tibble) the columns of type 'categorical' in a dataset and 
-#' its data dictionary (if any). The summary provides information about quality, 
-#' type, composition, and descriptive statistics of variables. Statistics are 
-#' generated by valueType.
+#' its data dictionary (if any). The summary provides information about 
+#' quality, type, composition, and descriptive statistics of variables. 
+#' Statistics are generated by valueType.
 #'
 #' @details
 #' A data dictionary contains metadata about variables and can be associated 
@@ -1495,9 +1495,18 @@ summary_variables_numeric <- function(
 #' specified, the `id` values must be non-missing and will be used in functions 
 #' that require it. If no identifier column is specified, indexing is handled 
 #' automatically by the function.
+#' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
+#' [madshapR::valueType_list].
 #'
-#' @param dataset A tibble identifying the input dataset observations associated 
-#' to its data dictionary.
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param .dataset_preprocess A tibble which provides summary of the variables 

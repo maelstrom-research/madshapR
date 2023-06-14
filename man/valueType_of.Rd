@@ -19,12 +19,12 @@ Determines the valueType of an object based on \code{\link[base:typeof]{base::ty
 }
 \details{
 The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers to
-the OBiBa-internal type of a variable. It is specified in a data dictionary
-in a column \code{valueType} and can be associated with variables as attributes.
-Acceptable valueTypes include 'text', 'integer', 'decimal', 'boolean',
-'datetime', 'date'). The full list of OBiBa valueType possibilities and their
-correspondance with R data types are available using
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
 \link{valueType_list}.
 }
 \examples{

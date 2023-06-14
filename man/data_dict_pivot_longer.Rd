@@ -20,9 +20,9 @@ A list of tibble(s) identifying a data dictionary.
 Transforms column(s) of a data dictionary from wide format to long format.
 If a taxonomy is provided, the corresponding columns in the data
 dictionary will be converted to a standardized format with fewer columns.
-This operation is equivalent to performing a \code{\link[tidyr:pivot_longer]{tidyr::pivot_longer()}} on these
-columns following the taxonomy structure provided. Variable names in the
-data dictionary must be unique.
+This operation is equivalent to performing a \code{\link[tidyr:pivot_longer]{tidyr::pivot_longer()}} on
+these columns following the taxonomy structure provided. Variable names in
+the data dictionary must be unique.
 }
 \details{
 A data dictionary contains metadata about variables and can be associated

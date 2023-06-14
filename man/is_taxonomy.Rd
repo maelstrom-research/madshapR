@@ -14,8 +14,8 @@ A logical.
 }
 \description{
 Confirms whether the input object is a valid taxonomy. This function mainly
-helps validate input within other functions of the  package but could be used
-to check if a taxonomy is valid.
+helps validate input within other functions of the  package but could be
+used to check if a taxonomy is valid.
 }
 \details{
 A taxonomy is classification scheme that can be defined for variable

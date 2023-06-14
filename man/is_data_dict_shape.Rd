@@ -15,8 +15,8 @@ A logical.
 \description{
 Tests if the input object has adequate structure to work with functions
 involving data dictionary shaping. This function mainly helps validate input
-within other functions of the package but could be used to check if an object
-is valid for use in a function.
+within other functions of the package but could be used to check if an
+object is valid for use in a function.
 }
 \details{
 A data dictionary contains metadata about variables and can be associated

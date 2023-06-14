@@ -26,7 +26,7 @@ datasets) and reports possible issues in the datasets and data dictionaries
 to facilitate assessment of input data.
 The report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats.This
-report is compatible with Excel and can be exported as an Excel spredsheet.
+report is compatible with Excel and can be exported as an Excel spreadsheet.
 }
 \details{
 A dossier must be a named list containing at least one data frame or

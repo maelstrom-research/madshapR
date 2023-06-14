@@ -14,9 +14,9 @@ A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 }
 \description{
 Confirms that the input object is a valid taxonomy and returns it as a
-taxonomy with the appropriate madshapR::class attribute. This function mainly
-helps validate input within other functions of the package but could be used
-to check if a taxonomy is valid.
+taxonomy with the appropriate madshapR::class attribute. This function
+mainly helps validate input within other functions of the package but could
+be used to check if a taxonomy is valid.
 }
 \details{
 A taxonomy is classification scheme that can be defined for variable

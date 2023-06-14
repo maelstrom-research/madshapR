@@ -13,8 +13,8 @@ variable_visualize(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations associated
-to its data dictionary.}
+\item{dataset}{A tibble identifying the input dataset observations
+associated to its data dictionary.}
 
 \item{col}{A character string specifying the name of the column.}
 
@@ -41,7 +41,7 @@ variable). This function can be used to personalize report parameters and is
 internally used in the function \code{\link[=dataset_visualize]{dataset_visualize()}}. Up to seven objects
 are generated which include : One datatable of the key elements of the
 data dictionary, one datatable summarizing statistics (such as mean,
-quartiles, most seen value, most recent date, ... , depending on the
+quartile, most seen value, most recent date, ... , depending on the
 data type of the variable), two graphs showing the distribution of the
 variable, One bar chart for categorical values (if any), One bar chart for
 missing values (if any), One pie chart for the proportion of valid and

@@ -2,7 +2,7 @@
 % Please edit documentation in R/01-dictionaries_functions.R
 \name{data_dict_expand}
 \alias{data_dict_expand}
-\title{Transform single-row category information to multiple rows and add as element}
+\title{Transform single-row category information to multiple rows as element}
 \usage{
 data_dict_expand(
   data_dict,
