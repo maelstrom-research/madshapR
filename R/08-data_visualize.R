@@ -11,7 +11,7 @@
 #' internally used in the function [dataset_visualize()]. Up to seven objects 
 #' are generated which include : One datatable of the key elements of the 
 #' data dictionary, one datatable summarizing statistics (such as mean, 
-#' quartiles, most seen value, most recent date, ... , depending on the 
+#' quartile, most seen value, most recent date, ... , depending on the 
 #' data type of the variable), two graphs showing the distribution of the 
 #' variable, One bar chart for categorical values (if any), One bar chart for 
 #' missing values (if any), One pie chart for the proportion of valid and 
@@ -886,18 +886,38 @@ variable_visualize <- function(
     group_n <- "___n___"
     aes <- aes(x = '',y = !! as.symbol(group_n), fill = !! as.symbol(col))
     
+    colset_valid <-
+      colset_valid %>% 
+      mutate(prop = round((`___n___`/sum(`___n___`)),2),
+             csum = cumsum(prop), 
+             pos = prop/2 + lag(csum, 1),
+             pos = if_else(is.na(pos), prop/2, pos)) %>%
+      group_by(across(any_of(group_by))) %>%
+      mutate(
+        label = paste0(as.character(round((
+          .data$`___n___`/sum(.data$`___n___`))*100,2)),"%")) 
+    
     plot_5 <-
       ggplot(colset_valid) + aes +
       geom_bar(stat='identity',width = 1,position = position_fill()) +
-      coord_polar('y', start = 0) + 
+      geom_text(
+        size = 2.5,
+        aes(x = 1.8,label = label),
+        position = position_fill(vjust = 0.5)) +
+      coord_polar('y', start = 0) +
       theme_void() + 
-      theme(legend.position="none",plot.title = element_text(size=8)) +
+      theme(
+        legend.position = "right",
+        plot.title = element_text(size = 8,face = "bold")) +
       ggtitle(paste0('Pie chart', title)) +
-      theme(legend.position = 'right') +
-      scale_fill_manual(values = palette_pie)
+      scale_fill_manual(values = palette_pie) +
+      geom_segment(
+        aes(x = 1.500, y = pos, xend = 1.450, yend = pos), 
+        color = "black", linewidth = 1) 
     
     if(group_by != '') {
       plot_5 <- plot_5 + facet_wrap(group_by)}
+
   }
   
   if(is.null(plot_1)){plot_1 <- plot_3 ; plot_3 <- NULL} 
