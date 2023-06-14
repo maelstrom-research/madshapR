@@ -1484,7 +1484,7 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   # names must exist both in dataset and data dictionary
   # data dictionary is not applied to dataset, since it may come from an
   # automated datadict (text by default).
-  if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% nrow > 0){
+  if(suppressWarnings(nrow(check_dataset_variables(dataset, data_dict))) > 0){
     stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
          crayon::bold("\n\nUseful tip:"),
