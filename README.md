@@ -21,31 +21,14 @@ visual summary reports.
 
 ## Install the package
 
-To download the package, you need to have an account on
-<a href="https://github.com/" target="_blank">GitHub</a> and create a
-<a href="https://github.com/settings/tokens" target="_blank">personal
-access token</a> (in the format “ghp_xxx”). To use the package, you will
-need to be added to the list of authorized users. To request access,
-contact us and send us your Github username.
-
-You can send us your Github name using the
-<a href="https://www.maelstrom-research.org/contact" target="_blank">following
-link</a> so we can add you to our authorized list of users.
-
 ``` r
 # To update the R package in your R environment you may first need to remove it, 
 # and use the exit command quit() to terminate the current R session.
 
 # To install the R package:
-devtools::install_github(
-  repo = "https://github.com/maelstrom-research/madshapR@testing",
-  auth_token = "ghp_YouNeedaValidGithubTOKEN!!!",
-  force = TRUE)
-```
-
-``` r
+install.packages('madshapR')
 library(madshapR) 
 
-#if you need help with the package, please use:
+# If you need help with the package, please use:
 madshapR_help()
 ```
