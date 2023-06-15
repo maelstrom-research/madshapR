@@ -9,6 +9,7 @@ variable_visualize(
   col,
   data_dict = NULL,
   group_by = NULL,
+  valueType_guess = FALSE,
   .summary_var = NULL
 )
 }
@@ -24,6 +25,9 @@ associated dataset. Automatically generated if not provided.}
 \item{group_by}{A character string of one column in the dataset that can be
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
+
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 
 \item{.summary_var}{A summary list which is the summary of the variables.}
 }
@@ -71,17 +75,26 @@ columns. To be considered as a minimum workable data dictionary, in
 'Variables' the 'name' column must also have unique and non-null entries,
 and in 'Categories' the combination of 'variable' and 'name' columns must
 also be unique'.
+
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
+\link{valueType_list}.
 }
 \examples{
 {
 
- summary_variable <-
-   dataset_summarize(dataset = iris, group_by = Species)
+ dataset <- iris['Sepal.Width']
+ summary_variable <- dataset_summarize(dataset)
   
  variable_viz <-
-   variable_visualize(
-   dataset = iris, col = Petal.Length, group_by = Species,
-   .summary_var =  summary_variable)
+    variable_visualize(
+    dataset, col = 'Sepal.Width',
+    .summary_var =  summary_variable)
  
  variable_viz$summary_table
  variable_viz$main_values_1

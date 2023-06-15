@@ -41,6 +41,15 @@
 #' 'Variables' the 'name' column must also have unique and non-null entries, 
 #' and in 'Categories' the combination of 'variable' and 'name' columns must 
 #' also be unique'.
+#' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
+#' [madshapR::valueType_list].
 #'
 #' @param dataset A tibble identifying the input dataset observations 
 #' associated to its data dictionary.
@@ -50,6 +59,8 @@
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
+#' @param valueType_guess Whether the output should include a more accurate
+#' valueType that could be applied to the dataset. FALSE by default.
 #' @param .summary_var A summary list which is the summary of the variables.
 #'
 #' @seealso
@@ -64,13 +75,13 @@
 #' @examples
 #' {
 #' 
-#'  summary_variable <-
-#'    dataset_summarize(dataset = iris, group_by = Species)
+#'  dataset <- iris['Sepal.Width']
+#'  summary_variable <- dataset_summarize(dataset)
 #'   
 #'  variable_viz <-
-#'    variable_visualize(
-#'    dataset = iris, col = Petal.Length, group_by = Species,
-#'    .summary_var =  summary_variable)
+#'     variable_visualize(
+#'     dataset, col = 'Sepal.Width',
+#'     .summary_var =  summary_variable)
 #'  
 #'  variable_viz$summary_table
 #'  variable_viz$main_values_1
@@ -91,7 +102,8 @@ variable_visualize <- function(
     dataset = tibble(id = as.character()),
     col,
     data_dict = NULL, 
-    group_by = NULL,
+    group_by = NULL, 
+    valueType_guess = FALSE,
     .summary_var = NULL){
   
   dataset <- as_dataset(dataset)
@@ -180,7 +192,7 @@ variable_visualize <- function(
       data_dict = col_dict,
       group_by = temp_group, 
       .dataset_name = 'dataset_viz',
-      valueType_guess = TRUE)}
+      valueType_guess = valueType_guess)}
   
   if(group_by != ''){
     
@@ -1052,6 +1064,15 @@ variable_visualize <- function(
 #' and in 'Categories' the combination of 'variable' and 'name' columns must 
 #' also be unique'.
 #' 
+#' The valueType is a property of a variable and is required in certain 
+#' functions to determine the handling of the variables. The valueType refers 
+#' to the OBiBa-internal type of a variable. It is specified in a data 
+#' dictionary in a column `valueType` and can be associated with variables as 
+#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
+#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
+#' possibilities and their correspondence with R data types are available using
+#' [madshapR::valueType_list].
+#' 
 #' A taxonomy is classification scheme that can be defined for variable 
 #' attributes. If defined, a taxonomy must be a data frame-like object. It must 
 #' be compatible with (and is generally extracted from) an Opal environment. To 
@@ -1077,6 +1098,8 @@ variable_visualize <- function(
 #' report will be saved.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
+#' @param valueType_guess Whether the output should include a more accurate
+#' valueType that could be applied to the dataset. FALSE by default.
 #' @param .summary_var A list which is the summary of the variables.
 #' @param .keep_files whether to keep the R-markdown files.
 #' TRUE by default. (used for internal processes and programming)
@@ -1091,25 +1114,20 @@ variable_visualize <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
-#' library(dplyr)
-#' library(fabR)  # silently_run
-#'
-#' ###### Example : Combine functions and summarise datasets.
-#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict)
-#' 
-#' # Silencing the process, remove silently_run() to see the full process in 
-#' # the console. 
+#' dataset <- DEMO_files$dataset_TOKYO['height']
+#' data_dict <- 
+#'   data_dict_filter(
+#'     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+#'     filter_var = "name == 'height'")
+#'       
+#' .summary_var <- DEMO_files$summary_var
+#'   
 #' to <- tempdir()
-#' silently_run(dataset_visualize(dataset,group_by = gndr,to = to))
+#' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
 #'   
 #' # To open the file in browser, open 'to/docs/index.html'. 
-#' # Or use [open_visual_report(to)]
-#'
+#' # Or use open_visual_report(to)
+#' 
 #' }
 #'
 #' @import dplyr knitr fabR 
@@ -1124,7 +1142,8 @@ dataset_visualize <- function(
     group_by = NULL,
     to,
     taxonomy = NULL,
-    .summary_var = NULL,
+    valueType_guess = FALSE,
+    .summary_var = NULL, 
     .dataset_name = NULL,
     .keep_files = TRUE){
   
@@ -1199,7 +1218,7 @@ dataset_visualize <- function(
       group_by = temp_group,
       taxonomy = taxonomy,
       .dataset_name = dataset_name,
-      valueType_guess = TRUE)}
+      valueType_guess = valueType_guess)}
 
   data_dict$Variables <- data_dict$Variables %>% add_index(.force = TRUE)
   
@@ -1696,17 +1715,20 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #' {
 #' 
 #' # use DEMO_files provided by the package
-#' library(dplyr)
-#' library(fabR)  # silently_run
-#'
-#' ###### Example any data frame (or tibble) can be a dataset by definition.
 #' 
+#' dataset <- DEMO_files$dataset_TOKYO['height']
+#' data_dict <- 
+#'   data_dict_filter(
+#'     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+#'     filter_var = "name == 'height'")
+#'       
+#' .summary_var <- DEMO_files$summary_var
+#'   
 #' to <- tempdir()
-#' # Silencing the process, remove silently_run() to see the full process in 
-#' # the console. 
-#' silently_run(dataset_visualize(iris, to = to))
-#' 
-#' open_visual_report(to)
+#' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
+#'       
+#' # To open the file in browser, you can also open 'to/docs/index.html'. 
+#' # open_visual_report(to)
 #' 
 #' }
 #'

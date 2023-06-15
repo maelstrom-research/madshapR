@@ -137,23 +137,11 @@ valueType_of <- function(x){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
-#'
-#' data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
-#' data_dict$Variables$valueType <- "text"
-#' dataset <- DEMO_files$dataset_TOKYO
-#' 
-#' ###### Example 1: The valueType of a dataset can be adjusted. each column is
+#' ###### Example : The valueType of a dataset can be adjusted. each column is
 #' # evaluated as whole, and the best valueType match found is applied. If 
 #' # there is no better match found, the column is left as it is.
-#' valueType_self_adjust(dataset)
 #' 
-#' #' ###### Example 2: The valueType present in a data dictionary can be 
-#' # adjusted (only for categorical variables). Each categorical variable is
-#' # evaluated as whole (with the values present in the 'name' column in the 
-#' # 'Categories' element), and the best valueType match found is applied. If 
-#' # there is no better match found, the valueType is left as it is.
-#' valueType_self_adjust(data_dict)
+#' valueType_self_adjust(mtcars['cyl'])
 #'
 #' }
 #'
@@ -355,24 +343,15 @@ valueType will remain as it is.")
 #' {
 #' 
 #' # use DEMO_files provided by the package
-#'
-#' data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
-#' dataset <- DEMO_files$dataset_TOKYO
+#' library(dplyr)
 #' 
-#' ###### Example 1: The valueType of a dataset can be adjusted using 
-#' # the valueType present in the data dictionary.
-#' valueType_adjust(from = data_dict,to = dataset)
-#' 
-#' ###### Example 2: The valueType of a dataset can be adjusted using 
-#' # the valueType present in the data dictionary. Here the valueType is 'text'
-#' data_dict[['Variables']]$valueType <- 'text'
-#' valueType_adjust(from = data_dict,to = dataset)
-#' 
-#' ###### Example 1: The valueType of a data dictionary can be adjusted using 
-#' # the valueType of each column of the dataset.
-#' data_dict[['Variables']]$valueType <- 'text'
-#' dataset <- valueType_self_adjust(dataset)
+#' dataset <- DEMO_files$dataset_TOKYO[c(1:4),'prg_ever']
+#' data_dict <-
+#'   DEMO_files$dd_TOKYO_format_maelstrom_tagged %>%
+#'   data_dict_filter(filter_var = 'name == "prg_ever"') %>%
+#'   as_data_dict_mlstr()
 #' valueType_adjust(from = dataset,to = data_dict)
+#' 
 #' }
 #'
 #' @import dplyr tidyr
@@ -773,16 +752,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' 
 #' # use DEMO_files provided by the package
 #'
-#' ###### Example 1: this function is compatible with taxonomy_opal_get()
-#' library(opalr)
-#' opal <- 
-#'   opal.login('administrator','password',
-#'     url = 'https://opal-demo.maelstrom-research.org/')
-#' opal_taxo <- taxonomy_opal_mlstr_get(opal)
-#' as_taxonomy(opal_taxo)
-#' 
-#' ###### Example 2: you can create your own taxonomy
-#' print(DEMO_files$taxonomy_PARIS)
+#' ###### Example
 #' as_taxonomy(DEMO_files$taxonomy_PARIS)
 #' 
 #'}

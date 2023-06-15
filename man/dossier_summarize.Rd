@@ -59,12 +59,10 @@ possibilities and their correspondence with R data types are available using
 
 # use DEMO_files provided by the package
 library(dplyr)
-library(stringr)
+library(stringr) # glimpse
 
 ###### Example 1: Combine functions and summarise datasets.
-dossier <- 
-  DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")] \%>\%
-  lapply(valueType_self_adjust)
+dossier <- list(iris = iris[1])
 
 dossier_summary <- dossier_summarize(dossier)
 glimpse(dossier_summary)
