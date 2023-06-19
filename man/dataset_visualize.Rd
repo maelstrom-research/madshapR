@@ -119,7 +119,7 @@ to <- tempdir()
 dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
   
 # To open the file in browser, open 'to/docs/index.html'. 
-# Or use open_visual_report(to)
+# Or use open_visual_report function
 
 }
 

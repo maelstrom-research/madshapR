@@ -43,5 +43,4 @@ as_taxonomy(DEMO_files$taxonomy_PARIS)
 }
 \seealso{
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
-\code{\link[=taxonomy_opal_get]{taxonomy_opal_get()}}
 }

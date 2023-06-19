@@ -38,7 +38,7 @@
 #' This prefix will be used to select columns, and to rename them in the 'to'
 #' element. Default is 'Categories::'.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -219,7 +219,7 @@ Example:
 #' This prefix will be used to select columns, and to rename them in the 'to'
 #' element. Default is 'Categories::'.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -347,7 +347,7 @@ data_dict_collapse <- function(
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -637,7 +637,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -901,7 +901,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' @param filter_all Expressions that are defined both in the 'Categories' and
 #' 'Variables' in the data dictionary.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
@@ -1015,7 +1015,7 @@ data_dict_filter <- function(
 #' @param ... Column in the data dictionary to split it by. If not provided, the
 #' splitting will be done on the grouping element of a grouped data dictionary.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a list of workable data dictionary structure.
 #'
 #' @examples
@@ -1142,7 +1142,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @param name_group A character string of one column in the dataset that can be
 #' taken as a grouping column.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
@@ -1265,7 +1265,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' transformed.
 #' @param col variable to group by.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
@@ -1369,7 +1369,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @param data_dict A list of tibble(s) representing meta data to be
 #' transformed.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a workable data dictionary structure.
 #'
 #' @examples
@@ -1450,7 +1450,7 @@ data_dict_ungroup <- function(data_dict){
 #' associated dataset.
 #' Automatically generated if not provided.
 #'
-#' @return
+#' @returns
 #' A tibble identifying the dataset with the data dictionary applied to each
 #' variable as attributes.
 #'
@@ -1523,7 +1523,8 @@ your dataset")}
     
     vT_list <- madshapR::valueType_list
     vT <- valueType_of(x = dataset[[i]])
-    dataset[[i]] <- as_valueType(x = as.character(dataset[[i]]),valueType = vT)
+    dataset[[i]] <- as_valueType(x = as.character.default(dataset[[i]]),
+                                 valueType = vT)
     
     attrs_init <- attributes(dataset[[i]])
     
@@ -1638,7 +1639,7 @@ your dataset")}
 #' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' TRUE by default.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -1768,7 +1769,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' returns a dataset ('dataset'), data dictionary ('data_dict') of both.
 #' Default is c('dataset','data_dict').
 #'
-#' @return
+#' @returns
 #' Either a tibble, identifying the dataset, or a list of tibble(s)
 #' identifying a data dictionary. Returns both in a list by default.
 #'
@@ -1852,7 +1853,7 @@ Leave blank to get both in a list.")
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -1932,7 +1933,7 @@ Please refer to documentation.")
 #'
 #' @param object A potential valid data dictionary to be coerced.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -2220,7 +2221,7 @@ data dictionary")}}
 #' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' FALSE by default.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s) identifying a data dictionary.
 #'
 #' @examples
@@ -2537,7 +2538,7 @@ New name: ",new_name)
 #'
 #' @param object A potential data dictionary structure to be evaluated.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples
@@ -2587,7 +2588,7 @@ is_data_dict_shape <- function(object){
 #'
 #' @param object A potential data dictionary to be coerced.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples
@@ -2641,7 +2642,7 @@ is_data_dict <- function(object){
 #' @param object A potential Maelstrom formatted data dictionary to be
 #' evaluated.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples

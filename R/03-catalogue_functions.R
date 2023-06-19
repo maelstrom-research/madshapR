@@ -24,7 +24,7 @@
 #'
 #' @param x Object. Can be a vector.
 #'
-#' @return
+#' @returns
 #' A character string which is the valueType of the input object.
 #'
 #' @examples
@@ -130,7 +130,7 @@ valueType_of <- function(x){
 #'
 #' @param ... Object that can be either a dataset or a data dictionary.
 #'
-#' @return
+#' @returns
 #' Either a tibble, identifying the dataset, or a list of tibble(s)
 #' identifying a data dictionary, depending which the input refers to.
 #'
@@ -335,7 +335,7 @@ valueType will remain as it is.")
 #' @param to Object to be adjusted. Can be either a dataset or a data 
 #' dictionary. NULL by default.
 #'
-#' @return
+#' @returns
 #' Either a tibble, identifying the dataset, or a list of tibble(s)
 #' identifying a data dictionary, depending which is 'to'.
 #'
@@ -504,7 +504,7 @@ crayon::bold("\n\nUseful tip:"),
 #'
 #' @param x Object. Can be a vector.
 #'
-#' @return
+#' @returns
 #' A character string which is the first possible valueType of the input object.
 #'
 #' @examples
@@ -540,11 +540,16 @@ valueType_guess <- function(x){
 
   vT_list <- madshapR::valueType_list
 
-  test_vT_boolean <- fabR::silently_run(as_valueType(as.character(x),"boolean"))
-  test_vT_integer <- fabR::silently_run(as_valueType(as.character(x),"integer"))
-  test_vT_decimal <- fabR::silently_run(as_valueType(as.character(x),"decimal"))
-  test_vT_date    <- fabR::silently_run(as_valueType(             x ,"date"   ))
-  test_vT_text    <-                    as_valueType(x, "text"   )
+  test_vT_boolean <- 
+    fabR::silently_run(as_valueType(as.character.default(x),"boolean"))
+  test_vT_integer <- 
+    fabR::silently_run(as_valueType(as.character.default(x),"integer"))
+  test_vT_decimal <- 
+    fabR::silently_run(as_valueType(as.character.default(x),"decimal"))
+  test_vT_date    <- 
+    fabR::silently_run(as_valueType(             x ,"date"   ))
+  test_vT_text    <-                    
+    as_valueType(x, "text"   )
 
   test_vT <-
     tribble(
@@ -596,7 +601,7 @@ valueType_guess <- function(x){
 #' @param x Object to be coerced. Can be a vector.
 #' @param valueType A character string of the valueType used to coerce x.
 #'
-#' @return
+#' @returns
 #' The object coerced accordingly to the input valueType.
 #'
 #' @examples
@@ -633,7 +638,8 @@ as_valueType <- function(x, valueType = 'text'){
   if(is.integer(x)            & valueType == "integer") return(x)
   if(class(x)[1] == "numeric" & valueType == "decimal") return(x)
   if(is.logical(x)            & valueType == "boolean") return(x)
-  if(is.na(valueType)         | valueType == "text")    return(as.character(x))
+  if(is.na(valueType)         | valueType == "text")    return(
+    as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -646,17 +652,21 @@ data dictionary")}
 
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
-  if(dataType     == "as_any_date")     x <- as.character(x)
-  if(dataType     == "as_any_boolean")  x <- as_any_boolean(x)
-  if(class(x)[1]  == "factor")          x <- as.character(x)
+  if(dataType     == "as_any_date")     x <- 
+    as.character.default(x)
+  if(dataType     == "as_any_boolean")  x <- 
+    as_any_boolean(as.character.default(x))
+  if(class(x)[1]  == "factor")          x <- 
+    as.character.default(x)
 
   if(dataType     == "as_any_date"){
     date_format <-
-      fabR::guess_date_format(
-        tibble(sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20))))
+      guess_date_format(
+        tibble(as.character.default(
+          sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20)))))
 
     if(date_format$`% values formated` == 100){
-      x_temp <- fabR::as_any_date(x, date_format$`Date format`)
+      x_temp <- as_any_date(as.character.default(x), date_format$`Date format`)
       }else{x_temp <- NA}
 
   }else{
@@ -680,13 +690,14 @@ data dictionary")}
 
     if(valueType %in% c("integer","decimal")){
       test_condition <- test_condition %>%
-        mutate(across(everything(), ~ as.numeric(.))) %>%
+        mutate(across(everything(), ~ as.numeric(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
 
     if(valueType %in% c("boolean")){
       test_condition <- test_condition %>%
-        mutate(across(everything(), ~ fabR::as_any_boolean(.))) %>%
+        mutate(
+          across(everything(), ~ as_any_boolean(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
 
@@ -694,8 +705,8 @@ data dictionary")}
       test_condition <-
         test_condition %>%
         mutate(across(
-          .data$`original`,
-          ~ fabR::as_any_date(.,date_format$`Date format`))) %>%
+          "original",
+          ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
         mutate(
           test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
         pull(.data$`test`) %>% all}
@@ -739,12 +750,10 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' 
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
-#' [taxonomy_opal_get()]
-#'
 #'
 #' @param object A potential taxonomy to be coerced.
 #'
-#' @return
+#' @returns
 #' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
 #'
 #' @examples
@@ -772,9 +781,10 @@ be a data frame (or tibble) containing at least 'taxonomy', 'vocabulary' and
 'term' columns. 
 Please refer to documentation.",
 
-      crayon::bold("\n\nUseful tip:"),
-" Use taxonomy_opal_get(opal) or taxonomy_opal_mlstr_get(opal) to get 
-the taxonomy present in your Opal environment.")}
+#       crayon::bold("\n\nUseful tip:"),
+# " Use taxonomy_opal_get(opal) or taxonomy_opal_mlstr_get(opal) to get 
+# the taxonomy present in your Opal environment."
+)}
 
   # check if names in taxonomy exist
   if(sum(names(object) %in%
@@ -813,7 +823,7 @@ the taxonomy present in your Opal environment.")}
 #'
 #' @param object A potential valueType name to be evaluated.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples
@@ -862,7 +872,7 @@ is_valueType <- function(object){
 #'
 #' @param object A potential taxonomy to be evaluated.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples
