@@ -18,17 +18,20 @@ function to access an existing visual report.
 {
 
 # use DEMO_files provided by the package
-library(dplyr)
-library(fabR)  # silently_run
 
-###### Example any data frame (or tibble) can be a dataset by definition.
-
+dataset <- DEMO_files$dataset_TOKYO['height']
+data_dict <- 
+  data_dict_filter(
+    DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+    filter_var = "name == 'height'")
+      
+.summary_var <- DEMO_files$summary_var
+  
 to <- tempdir()
-# Silencing the process, remove silently_run() to see the full process in 
-# the console. 
-silently_run(dataset_visualize(iris, to = to))
-
-open_visual_report(to)
+dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
+      
+# To open the file in browser, you can also open 'to/docs/index.html'. 
+# open_visual_report(to)
 
 }
 

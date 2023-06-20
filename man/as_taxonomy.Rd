@@ -35,16 +35,7 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use DEMO_files provided by the package
 
-###### Example 1: this function is compatible with taxonomy_opal_get()
-library(opalr)
-opal <- 
-  opal.login('administrator','password',
-    url = 'https://opal-demo.maelstrom-research.org/')
-opal_taxo <- taxonomy_opal_mlstr_get(opal)
-as_taxonomy(opal_taxo)
-
-###### Example 2: you can create your own taxonomy
-print(DEMO_files$taxonomy_PARIS)
+###### Example
 as_taxonomy(DEMO_files$taxonomy_PARIS)
 
 }

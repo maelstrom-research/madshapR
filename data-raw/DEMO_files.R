@@ -30,6 +30,28 @@
 #                    url='https://opal.maelstrom-research.org/')
 # DEMO_files$taxonomy_opal <- opal_taxonomy_get(opal) 
 # DEMO_files$taxonomy_opal_mlstr <- opal_mlstr_taxonomy_get(opal)
+# dataset <-
+#   DEMO_files$dataset_TOKYO %>%
+#   select(height)
+# 
+# data_dict <-
+#   DEMO_files$dd_TOKYO_format_maelstrom_tagged %>%
+#   as_data_dict_mlstr() %>%
+#   data_dict_filter('name == "height"')
+# 
+# .summary_var <- dataset_summarize(
+#   dataset = dataset,
+#   data_dict = data_dict,
+#   valueType_guess = TRUE)
+# 
+# DEMO_files$summary_var <- .summary_var
+# 
 # usethis::use_data(DEMO_files, overwrite = TRUE)
+
+
+
+
+
+
 
 

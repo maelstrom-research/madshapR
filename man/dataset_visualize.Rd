@@ -10,6 +10,7 @@ dataset_visualize(
   group_by = NULL,
   to,
   taxonomy = NULL,
+  valueType_guess = FALSE,
   .summary_var = NULL,
   .dataset_name = NULL,
   .keep_files = TRUE
@@ -31,6 +32,9 @@ report will be saved.}
 
 \item{taxonomy}{A tibble identifying the scheme used for variables
 classification.}
+
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 
 \item{.summary_var}{A list which is the summary of the variables.}
 
@@ -80,6 +84,15 @@ columns. To be considered as a minimum workable data dictionary, in
 and in 'Categories' the combination of 'variable' and 'name' columns must
 also be unique'.
 
+The valueType is a property of a variable and is required in certain
+functions to determine the handling of the variables. The valueType refers
+to the OBiBa-internal type of a variable. It is specified in a data
+dictionary in a column \code{valueType} and can be associated with variables as
+attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
+'boolean', datetime', 'date'). The full list of OBiBa valueType
+possibilities and their correspondence with R data types are available using
+\link{valueType_list}.
+
 A taxonomy is classification scheme that can be defined for variable
 attributes. If defined, a taxonomy must be a data frame-like object. It must
 be compatible with (and is generally extracted from) an Opal environment. To
@@ -94,24 +107,19 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-# use DEMO_files provided by the package
-library(dplyr)
-library(fabR)  # silently_run
-
-###### Example : Combine functions and summarise datasets.
-data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-dataset <-
-  DEMO_files$dataset_TOKYO \%>\%
-  valueType_adjust(from = data_dict) \%>\%
-  data_dict_apply(data_dict)
-
-# Silencing the process, remove silently_run() to see the full process in 
-# the console. 
+dataset <- DEMO_files$dataset_TOKYO['height']
+data_dict <- 
+  data_dict_filter(
+    DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+    filter_var = "name == 'height'")
+      
+.summary_var <- DEMO_files$summary_var
+  
 to <- tempdir()
-silently_run(dataset_visualize(dataset,group_by = gndr,to = to))
+dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
   
 # To open the file in browser, open 'to/docs/index.html'. 
-# Or use [open_visual_report(to)]
+# Or use open_visual_report(to)
 
 }
 

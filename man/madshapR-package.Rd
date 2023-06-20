@@ -11,7 +11,7 @@ Functions to support rigorous processes in data cleaning, evaluation, and docume
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/maelstrom-research/madshapR/ https://www.maelstrom-research.org}
+  \item \url{https://github.com/maelstrom-research/madshapR/}
   \item Report bugs at \url{https://github.com/maelstrom-research/madshapR/issues}
 }
 
@@ -22,7 +22,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Maelstrom-research group \email{info@maelstrom-research.org} [copyright holder, funder]
-  \item Samuel  El Bouzaïdi Tiali \email{info@maelstrom-research.org} [contributor]
+  \item Samuel El Bouzaïdi Tiali \email{info@maelstrom-research.org} [contributor]
 }
 
 }

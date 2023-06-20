@@ -75,17 +75,9 @@
 #' # use DEMO_files provided by the package
 #' library(dplyr)
 #' 
-#' ###### Example 1 : Combine functions and summarise datasets.
-#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <-
-#'   DEMO_files$dataset_TOKYO %>%
-#'   valueType_adjust(from = data_dict) %>%
-#'   data_dict_apply(data_dict)
-#' 
-#' dataset_summarize(dataset,data_dict,valueType_guess = FALSE)
-#' 
-#' #' ###### Example 2 : any data frame (or tibble) can be summarized
-#' dataset_summarize(iris)
+#' #' ###### Example : any data frame (or tibble) can be summarized
+#' dataset <- iris['Sepal.Width']
+#' dataset_summarize(dataset)
 #'  
 #' }
 #'
@@ -216,8 +208,6 @@ dataset_summarize <- function(
     crayon::bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
     " --------------------------")
 
-
-  
   # 
   # if(is.null(col_id) | ncol(dataset) == 1){
   #   dataset <- dataset %>% add_index("___mlstr_index___")
@@ -697,12 +687,10 @@ dataset_summarize <- function(
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' library(stringr)
+#' library(stringr) # glimpse
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
-#' dossier <- 
-#'   DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")] %>%
-#'   lapply(valueType_self_adjust)
+#' dossier <- list(iris = iris[1])
 #' 
 #' dossier_summary <- dossier_summarize(dossier)
 #' glimpse(dossier_summary)

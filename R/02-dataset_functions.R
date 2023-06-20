@@ -196,13 +196,8 @@ dataset_zap_data_dict <- function(dataset){
 #'
 #' @examples
 #' {
-#' 
-#' # use DEMO_files provided by the package
 #'
-#' dataset <- DEMO_files$dataset_TOKYO
-#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
-#' dataset <- data_dict_apply(dataset,data_dict)
-#' dataset_cat_as_labels(dataset)
+#' dataset_cat_as_labels(iris['Sepal.Length'])
 #'
 #' }
 #'
