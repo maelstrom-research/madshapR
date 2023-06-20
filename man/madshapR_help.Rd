@@ -6,6 +6,9 @@
 \usage{
 madshapR_help()
 }
+\value{
+Nothing to be returned. The function opens a web page.
+}
 \description{
 This function is a direct call to the documentation in the repository hosting
 the package. The user can access the description of the latest version of the

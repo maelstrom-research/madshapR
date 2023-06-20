@@ -66,7 +66,7 @@
 #' @seealso
 #' [dossier_evaluate()]
 #'
-#' @return
+#' @returns
 #' A list of tibbles of report for one data dictionary.
 #'
 #' @examples
@@ -432,20 +432,20 @@ dataset_summarize <- function(
       select(
         "index in data dict." ,
         "name",
-        "Quality assessment comment",
+        matches("Quality assessment comment"),
         starts_with("label")[1],
         "Data Dictionary valueType",
         "Estimated dataset valueType",
         "Actual dataset valueType",
-        'Categorical variable',
-        "Categories in data dictionary",
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
         starts_with('Grouping variable: '),
-        "Total number of observations",
-        "Nb. distinct values",
-        "% total Valid values",
-        "% NA",
-        "% Valid categorical values (if applicable)",
-        "% Missing categorical values (if applicable)")
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"))
     
     report$`Text variable summary` <-
       suppressMessages(report$`Text variable summary` %>%
@@ -454,20 +454,20 @@ dataset_summarize <- function(
       select(
         "index in data dict." ,
         "name",
-        "Quality assessment comment",
+        matches("Quality assessment comment"),
         starts_with("label")[1],
         "Data Dictionary valueType",
         "Estimated dataset valueType",
         "Actual dataset valueType",
-        'Categorical variable',
-        "Categories in data dictionary",
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
         starts_with('Grouping variable: '),
-        "Total number of observations",
-        "Nb. distinct values",
-        "% total Valid values",
-        "% NA",
-        "% Valid categorical values (if applicable)",
-        "% Missing categorical values (if applicable)",everything())
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"),everything())
 
     report$`Date variable summary` <-
       suppressMessages(report$`Date variable summary` %>%
@@ -476,20 +476,20 @@ dataset_summarize <- function(
       select(
         "index in data dict." ,
         "name",
-        "Quality assessment comment",
+        matches("Quality assessment comment"),
         starts_with("label")[1],
         "Data Dictionary valueType",
         "Estimated dataset valueType",
         "Actual dataset valueType",
-        'Categorical variable',
-        "Categories in data dictionary",
-        starts_with('Grouping variable: '),   
-        "Total number of observations",
-        "Nb. distinct values",
-        "% total Valid values",
-        "% NA",
-        "% Valid categorical values (if applicable)",
-        "% Missing categorical values (if applicable)",everything())
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
+        starts_with('Grouping variable: '),
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"),everything())
 
     report$`Numerical variable summary` <-
       suppressMessages(report$`Numerical variable summary` %>%
@@ -498,20 +498,20 @@ dataset_summarize <- function(
       select(
         "index in data dict." ,
         "name",
-        "Quality assessment comment",
+        matches("Quality assessment comment"),
         starts_with("label")[1],
         "Data Dictionary valueType",
         "Estimated dataset valueType",
         "Actual dataset valueType",
-        'Categorical variable',
-        "Categories in data dictionary",
-        starts_with('Grouping variable: '),   
-        "Total number of observations",
-        "Nb. distinct values",
-        "% total Valid values",
-        "% NA",
-        "% Valid categorical values (if applicable)",
-        "% Missing categorical values (if applicable)",everything())
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
+        starts_with('Grouping variable: '),
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"),everything())
 
     report$`Categorical variable summary` <-
       suppressMessages(report$`Categorical variable summary` %>%
@@ -520,21 +520,20 @@ dataset_summarize <- function(
       select(
         "index in data dict." ,
         "name",
-        "Quality assessment comment",
+        matches("Quality assessment comment"),
         starts_with("label")[1],
         "Data Dictionary valueType",
         "Estimated dataset valueType",
         "Actual dataset valueType",
-        'Categorical variable',
-        "Categories in data dictionary",
-        starts_with('Grouping variable: '),   
-        "Total number of observations",
-        "Nb. distinct values",
-        "% total Valid values",
-        "% NA",
-        "% Valid categorical values (if applicable)",
-        "% Missing categorical values (if applicable)",
-        everything())
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
+        starts_with('Grouping variable: '),
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"),everything())
     }
     
   message("    Summarise global information (Overview)")
@@ -679,7 +678,7 @@ dataset_summarize <- function(
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
 #'
-#' @return
+#' @returns
 #' A list of tibbles of report for each listed dataset.
 #'
 #' @examples
@@ -702,7 +701,10 @@ dataset_summarize <- function(
 #' @importFrom rlang .data
 #'
 #' @export
-dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
+dossier_summarize <- function(
+    dossier, 
+    taxonomy = NULL, 
+    valueType_guess = TRUE){
   
   # amelioration :rajouter taxonomy
   
@@ -781,7 +783,7 @@ dossier_summarize <- function(dossier, taxonomy = NULL, valueType_guess = TRUE){
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #'
-#' @return
+#' @returns
 #' A tibble providing summary elements of a dataset, including its values and
 #' data dictionary elements.
 #'
@@ -973,7 +975,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' @param .dataset_preprocess A tibble which provides summary of the variables 
 #' (used for internal processes and programming).
 #'
-#' @return
+#' @returns
 #' A tibble providing statistical description of variables present in
 #' a dataset.
 #'
@@ -1120,7 +1122,7 @@ summary_variables <- function(
 #' @param .dataset_preprocess A tibble which provides summary of the variables
 #' (for internal processes and programming).
 #'
-#' @return
+#' @returns
 #' A tibble providing statistical description of 'text' variables present
 #' in a dataset.
 #'
@@ -1239,7 +1241,7 @@ summary_variables_text <- function(
 #' @param .dataset_preprocess A tibble which provides summary of the variables
 #' (for internal processes and programming).
 #'
-#' @return
+#' @returns
 #' A tibble providing statistical description of 'date' variables present
 #' in a dataset.
 #'
@@ -1382,7 +1384,7 @@ summary_variables_date <- function(
 #' @param .dataset_preprocess A tibble which provides summary of the variables 
 #' (for internal processes and programming).
 #' 
-#' @return
+#' @returns
 #' A tibble providing statistical description of 'numerical' variables
 #' present in a dataset.
 #'
@@ -1500,7 +1502,7 @@ summary_variables_numeric <- function(
 #' @param .dataset_preprocess A tibble which provides summary of the variables 
 #' (for internal processes and programming).
 #'
-#' @return
+#' @returns
 #' A tibble providing statistical description of 'categorical' variables
 #' present in a dataset.
 #'

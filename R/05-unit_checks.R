@@ -20,7 +20,7 @@
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #'
-#' @return
+#' @returns
 #' A tibble providing non unique variables across a data dictionary.
 #'
 #' @examples
@@ -100,7 +100,7 @@ check_data_dict_variables <- function(data_dict){
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #'
-#' @return 
+#' @returns 
 #' A tibble providing categorical variables that has issues within a 
 #' data dictionary.
 #'
@@ -215,7 +215,7 @@ check_data_dict_categories <- function(data_dict){
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #'
-#' @return 
+#' @returns 
 #' A tibble providing categorical values which 'missing' column is not a 
 #' boolean.
 #'
@@ -307,7 +307,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
 #'
-#' @return
+#' @returns
 #' A tibble providing non-standard taxonomy declared in a data dictionary.
 #'
 #' @examples
@@ -560,7 +560,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #'
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #'
-#' @return 
+#' @returns 
 #' A tibble providing non-standard valueType declared in a data dictionary.
 #'
 #' @examples
@@ -691,7 +691,7 @@ check_data_dict_valueType <- function(data_dict){
 #' @param dataset A tibble identifying the input dataset observations.
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #'
-#' @return
+#' @returns
 #' A tibble providing undeclared variables across a data dictionary.
 #'
 #' @examples
@@ -776,7 +776,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' @param dataset A tibble identifying the input dataset observations.
 #' @param data_dict A list of tibble(s) representing meta data to be evaluated.
 #'
-#' @return
+#' @returns
 #' A tibble providing categorical values which differ between dataset and
 #' their data dictionary.
 #'
@@ -956,7 +956,7 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
 #'
-#' @return
+#' @returns
 #' A tibble providing values which valueType differs between dataset and
 #' their data dictionary.
 #'
@@ -1092,7 +1092,7 @@ check_dataset_valueType <- function(
 #'
 #' @param var_names A character vector of names.
 #'
-#' @return
+#' @returns
 #' A tibble providing non-standard names across a vector.
 #'
 #' @examples

@@ -54,7 +54,7 @@
 #' @seealso
 #' [dossier_evaluate()]
 #'
-#' @return
+#' @returns
 #' A list of tibbles of report for one data dictionary.
 #'
 #' @examples
@@ -344,7 +344,7 @@ dataset_evaluate <- function(
 #' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' TRUE by default.
 #'
-#' @return
+#' @returns
 #' A list of tibbles of report for each dataset.
 #'
 #' @examples
@@ -439,7 +439,7 @@ dossier_evaluate <- function(
 #' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' TRUE by default.
 #'
-#' @return
+#' @returns
 #' A list of tibbles of report for one data dictionary.
 #'
 #' @examples

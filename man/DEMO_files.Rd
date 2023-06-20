@@ -7,17 +7,9 @@
 \format{
 \subsection{\code{list}}{
 
-A list with 22 elements used for testing the package (data frames and lists):
+A list with 19 elements used for testing the package (data frames and lists):
 
 \describe{
-\item{DEMO_data_processing_elements - final}{Data processing element
-without error}
-\item{DEMO_data_processing_elements - with error}{Data processing element
-containing errors}
-\item{DEMO_data_processing_elements - work in progress}{Data processing
-element in construction}
-\item{DEMO_dataschema}{DataSchema used, combined with data processing
-elements and study-specific material}
 \item{dd_MELBOURNE_1_format_maelstrom}{Data dictionary (1) of Melbourne
 dataset}
 \item{dd_MELBOURNE_2_format_maelstrom}{Data dictionary (2) of Melbourne
@@ -44,6 +36,7 @@ format}
 \item{PARIS_taxonomy}{Taxonomy specific to Paris dataset}
 \item{taxonomy_mlstr}{Maelstrom Taxonomy}
 \item{taxonomy_opal}{Opal Taxonomy}
+\item{summary_var}{Variables summary for testing purpose}
 ...
 }
 }

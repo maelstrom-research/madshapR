@@ -21,7 +21,9 @@ Description: Functions to support rigorous processes in data cleaning,
      to evaluate and format the main inputs that define the process, diagnose 
      errors, and summarize and evaluate datasets and their associated 
      data dictionaries. The main outputs are clean datasets and associated 
-     metadata, and tabular and visual summary reports.
+     metadata, and tabular and visual summary reports. As described in 
+     Maelstrom Research guidelines for rigorous retrospective data 
+     harmonization (Fortier I and al. (2017) <doi:10.1093/ije/dyw075>).
 License: GPL-3
 LazyData: true
 Depends: R (>= 3.4)
@@ -37,7 +39,6 @@ Imports: dplyr,
     janitor,
     forcats,
     knitr,
-    opalr,
     bookdown,
     stats,
     DT,

@@ -24,7 +24,7 @@
 #' The resulting tibble will have for each column its associated meta data as
 #' attributes. The factors will be preserved. FALSE by default.
 #'
-#' @return
+#' @returns
 #' A tibble identifying the dataset created from the variable names list in
 #' 'Variables' element of the data dictionary.
 #'
@@ -119,7 +119,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @param dataset A tibble identifying the input dataset observations 
 #' associated to its data dictionary.
 #'
-#' @return
+#' @returns
 #' A tibble identifying a dataset.
 #'
 #' @examples
@@ -191,7 +191,7 @@ dataset_zap_data_dict <- function(dataset){
 #' which refer to existing column(s) in the dataset. The column(s) can be named
 #' or indicated by position.
 #'
-#' @return
+#' @returns
 #' A tibble identifying a dataset.
 #'
 #' @examples
@@ -310,7 +310,7 @@ dataset_cat_as_labels <- function(
 #' The resulting tibble will have for each column its associated meta data as
 #' attributes. The factors will be preserved. FALSE by default.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s), each of them identifying datasets in a dossier.
 #'
 #' @examples
@@ -379,7 +379,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' which refer to key identifier of the dataset. The column(s) can be named
 #' or indicated by position.
 #'
-#' @return
+#' @returns
 #' A tibble identifying a dataset.
 #'
 #' @examples
@@ -456,7 +456,7 @@ Please refer to documentation.")
 #'
 #' @param object A potential dossier to be coerced.
 #'
-#' @return
+#' @returns
 #' A list of tibble(s), each of them identifying datasets in a dossier.
 #'
 #' @examples
@@ -535,7 +535,7 @@ Please refer to documentation."))
 #'
 #' @param object A potential dataset to be evaluated.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples
@@ -584,7 +584,7 @@ is_dataset <- function(object){
 #'
 #' @param object A potential dossier to be evaluated.
 #'
-#' @return
+#' @returns
 #' A logical.
 #'
 #' @examples

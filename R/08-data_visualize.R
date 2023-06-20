@@ -68,7 +68,7 @@
 #' [DT::datatable()], [ggplot2::ggplot()]
 #' [dataset_summarize()], [dataset_visualize()]
 #'
-#' @return
+#' @returns
 #' A list of up to seven elements (charts and figures and datatables) which can 
 #' be used to summarize visualize data.
 #' 
@@ -1106,7 +1106,7 @@ variable_visualize <- function(
 #' @param .dataset_name A character string specifying the name of the dataset
 #' (used for internal processes and programming).
 #'
-#' @return
+#' @returns
 #' A bookdown folder containing files in the specified output folder. To
 #' open the file in browser, open 'docs/index.html'. Or use 
 #' [open_visual_report()]
@@ -1126,7 +1126,7 @@ variable_visualize <- function(
 #' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
 #'   
 #' # To open the file in browser, open 'to/docs/index.html'. 
-#' # Or use open_visual_report(to)
+#' # Or use open_visual_report function
 #' 
 #' }
 #'
@@ -1710,6 +1710,9 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #'
 #' @param report_path A character string specifying the path of the report to 
 #' be opened.
+#' 
+#' @returns
+#' Nothing to be returned. The function opens a web page.
 #'
 #' @examples
 #' {
@@ -1728,7 +1731,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
 #'       
 #' # To open the file in browser, you can also open 'to/docs/index.html'. 
-#' # open_visual_report(to)
+#' open_visual_report(to)
 #' 
 #' }
 #'

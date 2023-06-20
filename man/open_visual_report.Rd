@@ -10,6 +10,9 @@ open_visual_report(report_path)
 \item{report_path}{A character string specifying the path of the report to
 be opened.}
 }
+\value{
+Nothing to be returned. The function opens a web page.
+}
 \description{
 Opens a previously generated HTML bookdown document. This is a shortcut
 function to access an existing visual report.
@@ -31,7 +34,7 @@ to <- tempdir()
 dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
       
 # To open the file in browser, you can also open 'to/docs/index.html'. 
-# open_visual_report(to)
+open_visual_report(to)
 
 }
 
