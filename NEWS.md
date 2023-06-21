@@ -1,5 +1,6 @@
-# madshapR 1.0.0
+# madshapR (development version)
 
-# madshapR R 1.1.1.
+# madshapR 1.0.0
+first submission to CRAN
 
 * Added a `NEWS.md` file to track changes to the package.
