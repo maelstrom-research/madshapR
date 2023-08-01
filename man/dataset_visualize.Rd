@@ -108,7 +108,7 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 {
 
 dataset <- DEMO_files$dataset_TOKYO['height']
-data_dict <- 
+data_dict <-
   data_dict_filter(
     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
     filter_var = "name == 'height'")

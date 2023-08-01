@@ -1646,12 +1646,6 @@ your dataset")}
 #' {
 #' 
 #' # use DEMO_files provided by the package
-#'
-#' ###### Example 2: extract data dictionary from a labelled dataset.
-#' dataset <- DEMO_files$dataset_MELBOURNE_1
-#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
-#' dataset <- data_dict_apply(dataset,data_dict)
-#' data_dict_extract(dataset)
 #' 
 #' ###### Example 2: extract data dictionary from any dataset (the 
 #' # data dictionary will be created upon attributes of the dataset. Factors 
