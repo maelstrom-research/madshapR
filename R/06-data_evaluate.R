@@ -727,8 +727,10 @@ data_dict_evaluate <- function(
     bind_rows(test_cat_label) %>%
     bind_rows(test_missing_category) %>%
     
-    select(.data$`sheet`,.data$`name_col`,.data$`name_var`,
-           `Quality assessment comment` = .data$`condition`) %>%
+    select(
+      "sheet","name_col","name_var",
+      "Quality assessment comment" = "condition",
+      matches("suggestion")) %>%
     arrange(desc(.data$`sheet`),.data$`name_col`,.data$`name_var`) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble
