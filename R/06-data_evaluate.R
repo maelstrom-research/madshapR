@@ -730,7 +730,7 @@ data_dict_evaluate <- function(
     select(
       "sheet","name_col","name_var",
       "Quality assessment comment" = "condition",
-      matches("suggestion")) %>%
+      matches("value"), matches("suggestion")) %>%
     arrange(desc(.data$`sheet`),.data$`name_col`,.data$`name_var`) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble
