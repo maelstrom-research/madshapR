@@ -573,8 +573,9 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr 
 #' @importFrom rlang .data
+#' @importFrom stats na.omit
 #'
 #' @export
 check_data_dict_valueType <- function(data_dict){
@@ -582,7 +583,10 @@ check_data_dict_valueType <- function(data_dict){
   # test if enough data_dict
   as_data_dict_shape(data_dict)
 
-  test <- test_valueType_names <- test_valueType_cat <-
+  test <- 
+    test_valueType_names <- 
+    test_valueType_cat <- 
+    test_valueType_refined <- 
     tibble(
       name_var = as.character(),
       value = as.character(),
@@ -596,7 +600,7 @@ check_data_dict_valueType <- function(data_dict){
   test_valueType_names <-
     data_dict[['Variables']] %>%
     filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
-    select(name_var = .data$`name`,value = .data$`valueType`) %>%
+    select(name_var = "name",value = "valueType") %>%
     mutate(
       condition = "[ERR] - Incompatible valueType names with Opal standards")%>%
     mutate(across(everything(), ~as.character(.))) %>%
@@ -615,12 +619,12 @@ check_data_dict_valueType <- function(data_dict){
 
     vT_names <-
       data_dict[['Categories']] %>%
-      select(name_var = .data$`variable`,.data$`name`) %>%
+      select(name_var = "variable", "name") %>%
       inner_join(data_dict_vt,by = "name_var")
 
     test_valueType_cat <-
       vT_names %>%
-      select(-.data$`name_var`) %>%
+      select(-"name_var") %>%
       distinct() %>%
       rowwise() %>%
       mutate(
@@ -629,19 +633,19 @@ check_data_dict_valueType <- function(data_dict){
         ) %>%
       filter(.data$`test` == "try-error") %>%
       inner_join(vT_names,by = c("name", "valueType")) %>%
-      select(.data$`name_var`, .data$`valueType`) %>%
+      select("name_var", "valueType") %>%
       distinct
-
 
     test_valueType_cat <-
       test_valueType_cat %>%
       full_join(
         fabR::silently_run(
-        valueType_self_adjust(data_dict_filter(
+        valueType_self_adjust(
+          data_dict_filter(
             data_dict,paste0("name %in% c('",
                            paste0(unique(test_valueType_cat$name_var),
                                   collapse = "','"),"')")))[['Variables']]) %>%
-          select(name_var = .data$`name`, suggestion = .data$`valueType`),
+          select(name_var = "name", suggestion = "valueType"),
         by = "name_var")
 
     test_valueType_cat <-
@@ -652,9 +656,40 @@ check_data_dict_valueType <- function(data_dict){
              .data$`suggestion`) %>%
       mutate(across(everything(), ~as.character(.))) %>%
       distinct
+    
+    vT_cat <- 
+      na.omit(intersect(
+      unique(data_dict[['Variables']][['name']]),
+      unique(data_dict[['Categories']][['variable']])))
+      
+    vT_cat <- vT_cat[!vT_cat %in% (test_valueType_cat %>% pull(.data$`name_var`))]
+    
+    for(i in vT_cat){
+      # stop()}
+      
+      data_dict_i <- 
+        data_dict %>%
+        data_dict_filter(paste0('name == "',i,'"'))
+      
+      vT_data_dict <- data_dict_i['Variables']
+      vT_dataset <- 
+        data_dict_i[['Categories']]['name'] %>%
+        rename_with(.cols = "name", .fn = ~ i)
+      
+      test_valueType_refined <- 
+        test_valueType_refined %>%
+        bind_rows(
+          check_dataset_valueType(
+            vT_dataset,vT_data_dict,valueType_guess = TRUE)) %>%
+        mutate(
+          condition = str_replace(.data$`condition`,"dataset","'Categories'"))
+    }
   }
 
-  test <- bind_rows(test_valueType_names, test_valueType_cat)
+  test <- bind_rows(
+    test_valueType_names, 
+    test_valueType_cat,
+    test_valueType_refined)
 
   return(test)
 }

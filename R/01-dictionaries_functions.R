@@ -1726,8 +1726,9 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   
   if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
   
-  data_dict <-
+  object <- tp <- data_dict <-
     valueType_adjust(from = dataset, to = data_dict) %>%
+    valueType_self_adjust() %>%
     as_data_dict_mlstr(as_data_dict = !as_data_dict_mlstr)
   
   return(data_dict)
