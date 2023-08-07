@@ -1465,7 +1465,7 @@ data_dict_ungroup <- function(data_dict){
 #' 
 #' }
 #'
-#' @import dplyr tidyr stringr
+#' @import dplyr tidyr stringr haven
 #' @importFrom rlang .data
 #'
 #' @export
