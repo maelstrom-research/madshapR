@@ -6,6 +6,7 @@
 ^pkgdown$
 ^\.github$
 ^README\.Rmd$
+^NEWS\.Rmd$
 ^cran-comments\.md$
 ^doc$
 ^Meta$
