@@ -51,7 +51,8 @@
 #' 
 #' }
 #'
-#' @import dplyr tidyr stringr
+#' @import dplyr tidyr stringr fabR 
+#' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
 #' @export
@@ -128,7 +129,7 @@ data_dict_expand <- function(
       warning=function(w) {
         # Choose a return value in case of warning
         error_vars <-
-          fabR::silently_run({(
+          silently_run({(
             data_dict[[from]] %>%
               select(variable = "name", col_to = !! i ) %>%
               filter(!is.na(.data$`col_to`)) %>%
@@ -162,12 +163,12 @@ data_dict_expand <- function(
           "\nVariables affected:\n",
           error_vars,"\n",
           "Column affected:  ",i,"\n",
-          crayon::bold("\n\nUseful tip:"),
+          bold("\n\nUseful tip:"),
 " If your colums contains ',' or '=' in
 its labels, replace the separators by '_;' and '_=' and reprocess.
 Example:
   > wrong: '0 = No alcohol  ; 1 = Alcohol(red ; white)'
-  > good : '0 = No alcohol ",crayon::bold("_;")," 1 = Alcohol(red ; white)'\n")
+  > good : '0 = No alcohol ",bold("_;")," 1 = Alcohol(red ; white)'\n")
       })
 
   }
@@ -313,7 +314,7 @@ data_dict_collapse <- function(
 #' Transforms column(s) of a data dictionary from long format to wide format. 
 #' If a taxonomy is provided, the corresponding columns in the data
 #' dictionary will be converted to a format with the taxonomy expanded.
-#' This operation is equivalent to performing a 'tidyr::pivot_wider()' on these 
+#' This operation is equivalent to performing a [tidyr::pivot_wider()] on these 
 #' columns following the taxonomy structure provided. Variable names in the  
 #' data dictionary must be unique.
 #'
@@ -361,7 +362,7 @@ data_dict_collapse <- function(
 #'
 #' }
 #'
-#' @import dplyr tidyr stringr
+#' @import dplyr tidyr stringr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -532,7 +533,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
           stop(call. = FALSE,
 "Column name '___area_scale_id___' already exists in your data dictionary")}
 
-        fabR::silently_run({
+        silently_run({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>%
             left_join(
@@ -651,7 +652,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -738,7 +739,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 
       try({
 
-        fabR::silently_run({
+        silently_run({
           data_dict_temp <-
             data_dict_temp %>%
             summarise(
@@ -760,7 +761,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
               any_of(arrange_taxonomy))
         })
         
-        fabR::silently_run({
+        silently_run({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>%
             select(-matches(paste0("^",i,"::",taxonomy_i$`vocabulary`,"$"))) %>%
@@ -797,7 +798,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
       if(is.null(data_dict[['Variables']][['___Mlstr_temp___']]) |
          is.null(data_dict[['Variables']][['___Mlstr_temp___vocabulary']])){
         
-        fabR::silently_run({
+        silently_run({
           data_dict[['Variables']] <-
             data_dict[['Variables']] %>% left_join(key) %>%
             rename_with(
@@ -1442,7 +1443,7 @@ data_dict_ungroup <- function(data_dict){
 #' also be unique'.
 #'
 #' @seealso
-#' [base::attributes()]
+#' [attributes()]
 #'
 #' @param dataset A tibble identifying the input dataset observations 
 #' associated to its data dictionary.
@@ -1466,6 +1467,7 @@ data_dict_ungroup <- function(data_dict){
 #' }
 #'
 #' @import dplyr tidyr stringr haven
+#' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1484,10 +1486,11 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   # names must exist both in dataset and data dictionary
   # data dictionary is not applied to dataset, since it may come from an
   # automated datadict (text by default).
-  if(suppressWarnings(nrow(check_dataset_variables(dataset, data_dict))) > 0){
+  if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
+     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
-         crayon::bold("\n\nUseful tip:"),
+         bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) to get a full assessment of
 your dataset")}
   
@@ -1576,7 +1579,7 @@ your dataset")}
             attrs_cat[[names(cat_i[j])]] <- vec_attr
           }}
         
-        # labelled::val_labels(dataset[[i]]) <- vec_data
+        # val_labels(dataset[[i]]) <- vec_data
         attributes(dataset[[i]])$`labels` <- vec_data
         attributes(dataset[[i]])$`class` <-
           c("haven_labelled","vctrs_vctr",
@@ -1719,11 +1722,13 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
   
   if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
-  
-  object <- tp <- data_dict <-
-    valueType_adjust(from = dataset, to = data_dict) %>%
-    valueType_self_adjust() %>%
-    as_data_dict_mlstr(as_data_dict = !as_data_dict_mlstr)
+
+  data_dict <-  
+    silently_run({
+      valueType_adjust(from = dataset, to = data_dict) %>%
+        valueType_self_adjust() %>%
+        as_data_dict_mlstr(as_data_dict = !as_data_dict_mlstr) 
+    })
   
   return(data_dict)
 }
@@ -1828,7 +1833,7 @@ Leave blank to get both in a list.")
 #'
 #' @description
 #' Validates the input object as a workable data dictionary structure and 
-#' returns it with the appropriate madshapR::class attribute. This function 
+#' returns it with the appropriate 'madshapR::class' attribute. This function 
 #' mainly helps validate input within other functions of the package but could 
 #' be used to check if a data dictionary is valid for use in a function.
 #'
@@ -1908,7 +1913,7 @@ Please refer to documentation.")
 #'
 #' @description
 #' Validates the input object as a valid data dictionary and coerces it with 
-#' the appropriate madshapR::class attribute. This function mainly helps 
+#' the appropriate 'madshapR::class' attribute. This function mainly helps 
 #' validate input within other functions of the package but could be used to 
 #' check if an object is valid for use in a function.
 #' 
@@ -1942,6 +1947,7 @@ Please refer to documentation.")
 #'}
 #'
 #' @import dplyr tidyr stringr fabR
+#' @importFrom crayon bold
 #' @importFrom rlang .data
 #' 
 #' @export
@@ -1950,19 +1956,21 @@ as_data_dict <- function(object){
   data_dict <- as_data_dict_shape(object)
   
   # variable names must be unique and non-null
-  if(check_data_dict_variables(data_dict) %>% nrow > 0){
+  if(check_data_dict_variables(data_dict) %>% 
+     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
 "Variable names must exist and be unique in your data dictionary.",
-         crayon::bold("\n\nUseful tip:"),
+         bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   
   # variable names must be unique and non-null
   if(sum(nrow(data_dict[['Categories']])) > 0){
-    if(check_data_dict_categories(data_dict) %>% nrow > 0){
+    if(check_data_dict_categories(data_dict) %>% 
+       filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Variable names in categories must exist and be unique in the data dictionary.",
-           crayon::bold("\n\nUseful tip:"),
+           bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}}
   
@@ -2062,7 +2070,7 @@ data dictionary")}}
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      select('variable','name') %>% fabR::add_index(.force = TRUE) %>%
+      select('variable','name') %>% add_index(.force = TRUE) %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
@@ -2074,7 +2082,7 @@ data dictionary")}}
       }) %>% bind_rows() %>%
       select(-'typeof') %>%
       left_join(
-        data_dict[['Categories']] %>% fabR::add_index() %>%
+        data_dict[['Categories']] %>% add_index() %>%
           select(-'name'),by = c("index", "variable"))
     
     data_dict[['Categories']][['index']] <- index
@@ -2192,7 +2200,7 @@ data dictionary")}}
 #' @description
 #' Validates the input object as a valid data dictionary compliant with formats 
 #' used in Maelstrom Research ecosystem, including Opal, and returns it with 
-#' the appropriate madshapR::class attribute. This function mainly helps 
+#' the appropriate 'madshapR::class' attribute. This function mainly helps 
 #' validate input within other functions of the package but could be used to 
 #' check if an object is valid for use in a function.
 #'
@@ -2230,6 +2238,7 @@ data dictionary")}}
 #' }
 #'
 #' @import dplyr tidyr fabR
+#' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
 #' @export
@@ -2243,32 +2252,33 @@ as_data_dict_mlstr <- function(object, as_data_dict = FALSE){
          '`as_data_dict` must be TRUE of FALSE (FALSE by default)')
   
   # if valueType exists, vT must be valid
-  if(suppressWarnings(check_data_dict_valueType(data_dict)) %>% nrow > 0){
+  if(suppressWarnings(check_data_dict_valueType(data_dict))  %>% 
+     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
          "valueType are incompatible with Maelstrom standards.",
-         crayon::bold("\n\nUseful tip:"),
+         bold("\n\nUseful tip:"),
          " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   
   
   # check missing validity
-  miss_val <- suppressWarnings(check_data_dict_missing_categories(data_dict))
-  if(nrow(miss_val) != 0){
+  if(suppressWarnings(check_data_dict_missing_categories(data_dict)) %>% 
+     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
          "\n
 Incompatible missing value in the missing columns with Maelstrom standards",
-         crayon::bold(
-           "\n\nUseful tip:"),
-         " Use data_dict_evaluate(data_dict) to get a full assessment of your
+         bold(
+"\n\nUseful tip:"),
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   
   # Check standard for names
   if(as_data_dict == FALSE){
     if(nrow(check_name_standards(data_dict[['Variables']][['name']])) > 0){
       stop(call. = FALSE,
-           "names are incompatible with Maelstrom standards.",
-           crayon::bold("\n\nUseful tip:"),
-           " Use data_dict_evaluate(data_dict) to get a full assessment of your
+"names are incompatible with Maelstrom standards.",
+bold("\n\nUseful tip:"),
+" Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   }
   
@@ -2365,7 +2375,7 @@ investigations.",
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       mutate(
-        missing = fabR::as_any_boolean(.data$`missing`),
+        missing = as_any_boolean(.data$`missing`),
         missing = ifelse(is.na(.data$`missing`),FALSE,.data$`missing`)) %>%
       mutate(
         missing =
@@ -2547,14 +2557,14 @@ New name: ",new_name)
 #'
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
 is_data_dict_shape <- function(object){
   
   # if only the data dictionary shape is given in parameter
-  test <- fabR::silently_run(try(as_data_dict_shape(object),silent = TRUE))
+  test <- silently_run(try(as_data_dict_shape(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 }
@@ -2597,7 +2607,7 @@ is_data_dict_shape <- function(object){
 #'
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -2605,7 +2615,7 @@ is_data_dict <- function(object){
   
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(try(as_data_dict(object),silent = TRUE))
+  test <- silently_run(try(as_data_dict(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
   
@@ -2651,7 +2661,7 @@ is_data_dict <- function(object){
 #'
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -2659,7 +2669,7 @@ is_data_dict_mlstr <- function(object){
   
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(try(as_data_dict_mlstr(object),silent = TRUE))
+  test <- silently_run(try(as_data_dict_mlstr(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 }

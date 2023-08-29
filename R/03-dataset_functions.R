@@ -329,7 +329,7 @@ dataset_cat_as_labels <- function(
 #'    
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -349,7 +349,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
   fargs <- as.list(match.call(expand.dots = TRUE))
   if(is.null(names(dataset_list))){
     names(dossier) <-
-      fabR::make_name_list(as.character(fargs['dataset_list']), dossier)}
+      make_name_list(as.character(fargs['dataset_list']), dossier)}
 
   dossier <- as_dossier(dossier)
 
@@ -361,7 +361,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #'
 #' @description
 #' Confirms that the input object is a valid dataset and returns it as a dataset
-#' with the appropriate madshapR::class attribute. This function mainly helps 
+#' with the appropriate 'madshapR::class' attribute. This function mainly helps 
 #' validate inputs within other functions of the package but could be used to 
 #' check if a dataset is valid.
 #'
@@ -442,7 +442,7 @@ Please refer to documentation.")
 #'
 #' @description
 #' Confirms that the input object is a valid dossier and returns it as a dossier
-#' with the appropriate madshapR::class attribute. This function mainly helps 
+#' with the appropriate 'madshapR::class' attribute. This function mainly helps 
 #' validate input within other functions of the package but could be used to
 #' check if a dossier is valid.
 #'
@@ -550,7 +550,7 @@ Please refer to documentation."))
 #' 
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -558,7 +558,7 @@ is_dataset <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(
+  test <- silently_run(
     try(
       as_dataset(
         object,
@@ -600,7 +600,7 @@ is_dataset <- function(object){
 #' 
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -608,7 +608,7 @@ is_dossier <- function(object){
 
   object <- object
   # if only the dossier is given in parameter
-  test <- fabR::silently_run(try(as_dossier(object),silent = TRUE))
+  test <- silently_run(try(as_dossier(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 

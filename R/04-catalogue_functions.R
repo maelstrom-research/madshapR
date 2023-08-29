@@ -2,8 +2,8 @@
 #' Return the valueType of an object
 #'
 #' @description
-#' Determines the valueType of an object based on [base::typeof()] and 
-#' [base::class()]. The possible values returned are 'date', 'boolean', 
+#' Determines the valueType of an object based on [typeof()] and 
+#' [class()]. The possible values returned are 'date', 'boolean', 
 #' 'integer', 'decimal', and 'text'.
 #'
 #' @details
@@ -17,7 +17,7 @@
 #' [madshapR::valueType_list].
 #' 
 #' @seealso
-#' [base::typeof()], [base::class()]
+#' [typeof()], [class()]
 #' [madshapR::valueType_list] for insights about possible valueType and
 #' translation into type and class in R.
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -38,7 +38,7 @@
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -64,7 +64,7 @@ valueType_of <- function(x){
 
   if(type == "double" & class == "Date") valueType <- "date"
 
-  fabR::silently_run({
+  silently_run({
     if(class == "factor"){
       lvls <- attributes(x)$`levels` %>% as.character()
       valueType <-
@@ -92,8 +92,8 @@ valueType_of <- function(x){
 #' Guess and attribute the valueType of a data dictionary or dataset variable
 #'
 #' @description
-#' Determines the valueType of an object based on `base::typeof()` and 
-#' `base::class().
+#' Determines the valueType of an object based on [base::typeof()] and 
+#' [base::class()].
 #' The possible values returned are 'date', 'boolean', 'integer', 'decimal', and
 #' 'text'.
 #'
@@ -347,7 +347,7 @@ valueType will remain as it is.")
 #' 
 #' dataset <- DEMO_files$dataset_TOKYO[c(1:4),'prg_ever']
 #' data_dict <-
-#'   DEMO_files$dd_TOKYO_format_maelstrom_tagged %>%
+#'   DEMO_files$dd_TOKYO_format_maelstrom %>%
 #'   data_dict_filter(filter_var = 'name == "prg_ever"') %>%
 #'   as_data_dict_mlstr()
 #' valueType_adjust(from = dataset,to = data_dict)
@@ -355,6 +355,7 @@ valueType will remain as it is.")
 #' }
 #'
 #' @import dplyr tidyr
+#' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
 #' @export
@@ -372,10 +373,11 @@ valueType_adjust <- function(from, to = NULL){
     data_dict <- to
 
     # dataset must match
-    if(nrow(suppressWarnings(check_dataset_variables(dataset, data_dict))) > 0){
+    if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
+            filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
-crayon::bold("\n\nUseful tip:"),
+bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
 )}
 
@@ -384,23 +386,23 @@ crayon::bold("\n\nUseful tip:"),
       dataset %>%
       summarise(across(everything(), valueType_of)) %>%
       pivot_longer(cols = everything()) %>%
-      rename(valueType = .data$`value`) %>%
+      rename(valueType = "value") %>%
       left_join(vT_list, by = "valueType") %>%
-      select(.data$`name`, .data$`valueType`,.data$`typeof`)
+      select("name", "valueType","typeof")
 
     data_dict[['Variables']]['typeof'] <-
       data_dict[['Variables']]['name'] %>%
       left_join(vT_tables %>%
-                  select(.data$`name`, .data$`typeof`), by = "name") %>%
-      select( .data$`typeof`)
+                  select("name", "typeof"), by = "name") %>%
+      select("typeof")
     # }
 
     # if(length(data_dict[['Variables']][['valueType']]) > 0){
     data_dict[['Variables']]['valueType'] <-
       data_dict[['Variables']]['name'] %>%
       left_join(vT_tables %>%
-                  select(.data$`name`, .data$`valueType`), by = "name") %>%
-      select( .data$`valueType`)
+                  select("name", "valueType"), by = "name") %>%
+      select("valueType")
     # }
 
     return(data_dict)
@@ -420,10 +422,11 @@ crayon::bold("\n\nUseful tip:"),
     preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
     # dataset must match
-    if(nrow(suppressWarnings(check_dataset_variables(dataset, data_dict))) > 0){
+    if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
+       filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
-crayon::bold("\n\nUseful tip:"),
+bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
 )}
 
@@ -521,7 +524,7 @@ crayon::bold("\n\nUseful tip:"),
 #' 
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -541,13 +544,13 @@ valueType_guess <- function(x){
   vT_list <- madshapR::valueType_list
 
   test_vT_boolean <- 
-    fabR::silently_run(as_valueType(as.character.default(x),"boolean"))
+    silently_run(as_valueType(as.character.default(x),"boolean"))
   test_vT_integer <- 
-    fabR::silently_run(as_valueType(as.character.default(x),"integer"))
+    silently_run(as_valueType(as.character.default(x),"integer"))
   test_vT_decimal <- 
-    fabR::silently_run(as_valueType(as.character.default(x),"decimal"))
+    silently_run(as_valueType(as.character.default(x),"decimal"))
   test_vT_date    <- 
-    fabR::silently_run(as_valueType(             x ,"date"   ))
+    silently_run(as_valueType(             x ,"date"   ))
   test_vT_text    <-                    
     as_valueType(x, "text"   )
 
@@ -621,6 +624,7 @@ valueType_guess <- function(x){
 #'}
 #'
 #' @import dplyr tidyr fabR
+#' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
 #' @export
@@ -646,7 +650,7 @@ as_valueType <- function(x, valueType = 'text'){
   if(!valueType %in% vT_list$`valueType`) {
     stop(call. = FALSE,
 "\nThe valueType provided does not exists. Please refer to documentation.",
-crayon::bold("\n\nUseful tip:"),
+bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
 
@@ -719,7 +723,7 @@ data dictionary")}
 "\n
 The valueType conflicts with the data type. Object cannot be coerced to
 valueType",
-crayon::bold("\n\nUseful tip:"),
+bold("\n\nUseful tip:"),
 " Use valueType_guess(x) to evaluate the first potential valueType.
 For further investigation, you can use dataset_evaluate(dataset, data_dict).")
   }
@@ -732,7 +736,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #'
 #' @description
 #' Confirms that the input object is a valid taxonomy and returns it as a
-#' taxonomy with the appropriate madshapR::class attribute. This function 
+#' taxonomy with the appropriate 'madshapR::class' attribute. This function 
 #' mainly helps validate input within other functions of the package but could 
 #' be used to check if a taxonomy is valid.
 #'
@@ -781,7 +785,7 @@ be a data frame (or tibble) containing at least 'taxonomy', 'vocabulary' and
 'term' columns. 
 Please refer to documentation.",
 
-#       crayon::bold("\n\nUseful tip:"),
+#       bold("\n\nUseful tip:"),
 # " Use taxonomy_opal_get(opal) or taxonomy_opal_mlstr_get(opal) to get 
 # the taxonomy present in your Opal environment."
 )}
@@ -886,7 +890,7 @@ is_valueType <- function(object){
 #'
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -894,7 +898,7 @@ is_taxonomy <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(try(as_taxonomy(object),silent = TRUE))
+  test <- silently_run(try(as_taxonomy(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
