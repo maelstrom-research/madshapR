@@ -107,7 +107,7 @@ dataset_summarize <- function(
     ifelse(
       !is.null(.dataset_name),
       .dataset_name,
-      fabR::make_name_list(
+      make_name_list(
         as.character(fargs[['dataset']]),list_elem = list(NULL)))
   
   # check on argument : taxonomy
@@ -205,7 +205,7 @@ dataset_summarize <- function(
 
   message(
     "- DATASET SUMMARIZE: ",
-    crayon::bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
+    bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
     " --------------------------")
 
   # 
@@ -251,7 +251,7 @@ dataset_summarize <- function(
     select(-matches("^___name_var___$")) %>%
     rename(`___name_var___` = "name") %>%
     mutate(across(everything(),as.character)) %>%
-    fabR::add_index("index in data dict.", .force = TRUE) %>%
+    add_index("index in data dict.", .force = TRUE) %>%
     select("index in data dict.", "___name_var___",
            matches(c("^label$","^label:[[:alnum:]]"))[1],
            `Data Dictionary valueType` = "valueType") %>%
@@ -719,7 +719,7 @@ dossier_summarize <- function(
     vector(mode = "list", length = length(names(dossier)))
   names(report_list) <- names(dossier)
   
-  message(crayon::bold(
+  message(bold(
     "- DOSSIER SUMMARY: -----------------------------------------------------"))
   
   for(i in seq_len(length(dossier))){
@@ -795,7 +795,7 @@ dossier_summarize <- function(
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -832,7 +832,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     data_dict[['Variables']] %>%
     select('name') %>%
     mutate(`Categorical variable` = NA_character_) %>%
-    fabR::add_index()
+    add_index()
   
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict_cat <-
@@ -843,7 +843,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
         cat_label = matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1],
         valid_class = .data$`missing`) %>%
       group_by(.data$`name`, .data$`valid_class`) %>%
-      fabR::add_index('cat_index') %>%
+      add_index('cat_index') %>%
       ungroup() %>%
       mutate(
         valid_class =
@@ -904,7 +904,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
                 "3_Valid other values",.data$`valid_class`))) %>%
         arrange(.data$`valid_class`) %>%
         group_by(.data$`valid_class`) %>%
-        fabR::add_index('index_value', .force = TRUE) %>%
+        add_index('index_value', .force = TRUE) %>%
         ungroup
       
       # handle categories which are non-categorical, categorical and mixed
@@ -1177,8 +1177,11 @@ summary_variables_text <- function(
             summary_i %>%
             count(.data$`value_var`) %>%
             filter(if_any(.data$`n`, ~ . == max(.))) %>%
-            slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',
-                                                     .data$`value_var`)) %>%
+            slice(1:6) %>% 
+            mutate(value_var = ifelse(
+                row_number() == 6,
+                '[...]', 
+                .data$`value_var`)) %>%
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
             str_replace('; \\[\\.\\.\\.\\]$','[...]'),
           
@@ -1278,13 +1281,13 @@ summary_variables_date <- function(
   if(!nrow(.dataset_preprocess)) return(summary_tbl)
   
   date_format <-
-    fabR::guess_date_format(distinct(.dataset_preprocess['value_var']))
+    guess_date_format(distinct(.dataset_preprocess['value_var']))
   
   if(date_format$`% values formated` < 100){
     warning(
       "Problem while computing date type variables due to ambiguous format.\n",
       "They will be analysed as text variables\n",
-      crayon::bold("Useful tip:"),
+      bold("Useful tip:"),
       "Use dataset_evaluate(dataset) to get an assessment of your dataset.")
     
     final_summary <- 
@@ -1296,7 +1299,7 @@ summary_variables_date <- function(
     .dataset_preprocess %>%
     mutate(
       value_var =
-        fabR::as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
+        as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
     filter(.data$`value_var_occur` == 1 ) %>%
     filter(.data$`valid_class`  == "3_Valid other values")
   

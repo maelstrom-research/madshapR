@@ -46,18 +46,19 @@ check_data_dict_variables <- function(data_dict){
     data_dict[['Variables']] %>%
     add_count(.data$`name`) %>%
     filter(.data$`n` > 1) %>%
-    select(.data$`name`)
+    select("name")
 
   test <-
     var_names %>%
     mutate(
       condition = "[ERR] - duplicated variable name") %>%
-    select(name_var = .data$`name`, .data$`condition`) %>%
-    mutate(across(everything(), ~as.character(.)))
+    select(name_var = "name", "condition") %>%
+    mutate(across(everything(), ~as.character(.))) %>%
+    distinct
 
   var_NA <-
     data_dict[['Variables']] %>%
-    fabR::add_index(.force = TRUE) %>%
+    add_index(.force = TRUE) %>%
     filter(is.na(.data$`name`) | .data$`name` == "") %>%
     mutate(name = paste0("row number: ",.data$`index`)) %>%
     select(.data$`name`)
@@ -143,8 +144,8 @@ check_data_dict_categories <- function(data_dict){
     data_dict[['Categories']] %>%
     mutate(across(everything(), as.character)) %>%
     mutate(name_var = as.character(.data$`variable`)) %>%
-    fabR::add_index(.force = TRUE) %>%
-    mutate(index = paste0("At line: ",.data$`index`)) %>%
+    add_index(.force = TRUE) %>%
+    mutate(index = paste0("row number: ",.data$`index`)) %>%
     select(value = .data$`name`,.data$`name_var`,.data$`index`) %>%
     arrange(.data$`name_var`) %>%
     distinct
@@ -238,7 +239,10 @@ check_data_dict_missing_categories <- function(data_dict){
   # test if enough data_dict
   as_data_dict_shape(data_dict)
 
-  test <- tibble(name_var = as.character(), value = as.character())
+  test <- tibble(
+    name_var = as.character(), 
+    value = as.character(), 
+    condition = as.character())
 
   if(is.null(data_dict[['Categories']][['missing']])){
     warning(
@@ -256,7 +260,7 @@ check_data_dict_missing_categories <- function(data_dict){
     rowwise() %>%
     mutate(
       value =
-        class(fabR::silently_run(fabR::as_any_boolean(.data$`missing`)))[1]) %>%
+        class(silently_run(as_any_boolean(.data$`missing`)))[1]) %>%
     filter(.data$`value` == "try-error") %>%
     inner_join(missing_val,by = "missing")
 
@@ -381,7 +385,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #               'Mlstr_area::1', 'Mlstr_area::1.term','Mlstr_area::1.scale',
   #               'Mlstr_area::2', 'Mlstr_area::2.term',
   #               'Mlstr_area::3', 'Mlstr_area::3.term')) %>%
-  #   fabR::add_index(.force = TRUE) %>%
+  #   add_index(.force = TRUE) %>%
   #   mutate(name = ifelse(is.na(.data$`name`),paste0("line:",.data$`index`),
   #   .data$`name`)) %>%
   #   select(-.data$`index`) %>%
@@ -573,7 +577,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #'
 #' }
 #'
-#' @import dplyr tidyr 
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #' @importFrom stats na.omit
 #'
@@ -629,7 +633,7 @@ check_data_dict_valueType <- function(data_dict){
       rowwise() %>%
       mutate(
         test = class(
-          fabR::silently_run(as_valueType(.data$`name`,.data$`valueType`)))[1]
+          silently_run(as_valueType(.data$`name`,.data$`valueType`)))[1]
         ) %>%
       filter(.data$`test` == "try-error") %>%
       inner_join(vT_names,by = c("name", "valueType")) %>%
@@ -639,7 +643,7 @@ check_data_dict_valueType <- function(data_dict){
     test_valueType_cat <-
       test_valueType_cat %>%
       full_join(
-        fabR::silently_run(
+        silently_run(
         valueType_self_adjust(
           data_dict_filter(
             data_dict,paste0("name %in% c('",
@@ -826,7 +830,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' 
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -862,7 +866,7 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 
   # categorical content extracted from dataset
   data_dict_cat_from_data <- 
-    data_dict_extract(dataset,as_data_dict_mlstr = FALSE)
+    silently_run(data_dict_extract(dataset,as_data_dict_mlstr = FALSE))
   data_dict_cat_from_data[['Variables']] <-
     data_dict_cat_from_data[['Variables']] %>%
     filter(.data$`name` %in% data_dict_cat_from_data[['Categories']]$`variable`)
@@ -1007,7 +1011,7 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1064,9 +1068,9 @@ check_dataset_valueType <- function(
 
     # test valueType
     # test_vT   <-
-    #   class(fabR::silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
+    #   class(silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
     condition <-
-      class(fabR::silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
+      class(silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
     guess   <- valueType_guess(dataset[[i]])
     actual  <- valueType_of(dataset[[i]])
 

@@ -11,7 +11,7 @@ Functions to support rigorous processes in data cleaning, evaluation, and docume
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/maelstrom-research/madshapR/}
+  \item \url{https://github.com/maelstrom-research/madshapR}
   \item Report bugs at \url{https://github.com/maelstrom-research/madshapR/issues}
 }
 

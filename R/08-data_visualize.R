@@ -1085,7 +1085,7 @@ variable_visualize <- function(
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [open_visual_report()]
+#' [bookdown_open()]
 #'
 #' @param dataset A tibble identifying the input dataset observations 
 #' associated to its data dictionary.
@@ -1094,22 +1094,23 @@ variable_visualize <- function(
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
-#' @param to A character string identifying the folder path where the bookdown
-#' report will be saved.
+#' @param bookdown_path A character string identifying the folder path where the 
+#' bookdown report will be saved.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
+#' @param overwrite whether to overwrite existing files. FALSE by default.
+#' @param render Output format of the visual report. To date, the format can 
+#' only be 'html', but will be expand to other formats in the future.
 #' @param .summary_var A list which is the summary of the variables.
-#' @param .keep_files whether to keep the R-markdown files.
-#' TRUE by default. (used for internal processes and programming)
 #' @param .dataset_name A character string specifying the name of the dataset
 #' (used for internal processes and programming).
 #'
 #' @returns
 #' A bookdown folder containing files in the specified output folder. To
 #' open the file in browser, open 'docs/index.html'. Or use 
-#' [open_visual_report()]
+#' [bookdown_open()]
 #'
 #' @examples
 #' {
@@ -1117,22 +1118,25 @@ variable_visualize <- function(
 #' dataset <- DEMO_files$dataset_TOKYO['height']
 #' data_dict <-
 #'   data_dict_filter(
-#'     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+#'     DEMO_files$dd_TOKYO_format_maelstrom,
 #'     filter_var = "name == 'height'")
 #'       
 #' .summary_var <- DEMO_files$summary_var
 #'   
-#' to <- tempdir()
-#' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
+#' bookdown_path <- tempdir()
+#' dataset_visualize(
+#'   dataset, data_dict,
+#'   .summary_var =.summary_var, 
+#'   bookdown_path = bookdown_path,
+#'   overwrite = TRUE)
 #'   
-#' # To open the file in browser, open 'to/docs/index.html'. 
-#' # Or use open_visual_report function
+#' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
+#' # Or use bookdown_open(bookdown_path) function
 #' 
 #' }
 #'
-#' @import dplyr knitr fabR 
+#' @import dplyr knitr fabR
 #' @import bookdown utils readr stringr fs DT ggplot2 
-#' @importFrom xfun in_dir
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1140,12 +1144,13 @@ dataset_visualize <- function(
     dataset = tibble(id = as.character()),
     data_dict = data_dict_extract(dataset),
     group_by = NULL,
-    to,
+    bookdown_path,
     taxonomy = NULL,
     valueType_guess = FALSE,
+    overwrite = FALSE,
+    render = 'html',
     .summary_var = NULL, 
-    .dataset_name = NULL,
-    .keep_files = TRUE){
+    .dataset_name = NULL){
   
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -1155,8 +1160,20 @@ dataset_visualize <- function(
   # toc <- 'variables'
   
   # check input
-  if(!is.logical(.keep_files))
-    stop(call. = FALSE,'`.keep_files` must be TRUE or FALSE (TRUE by default)')
+  render <- 'html'
+  
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,'`valueType_guess` must be TRUE or FALSE (TRUE by default)')
+  
+  if(!is.logical(overwrite))
+    stop(call. = FALSE,'`overwrite` must be TRUE or FALSE (TRUE by default)')
+  
+  if(!is.character(bookdown_path))
+    stop(call. = FALSE,'`bookdown_path` must be a character string.')
+  
+  if(!is.character(render))
+    stop(call. = FALSE,'`render` must be a character string.')
+  
   
   # if(!toc %in% c('variables','group_by'))
   #   stop(call. = FALSE,'`toc` must be "variables" or "group_by". 
@@ -1165,7 +1182,7 @@ dataset_visualize <- function(
   # if(!toc == c('group_by') & toString(substitute(group_by))=='')
   #   stop(call. = FALSE,'If `toc` == "group_by", `group_by` must be provided.')
   
-  to <- str_squish(to)
+  bookdown_path <- str_squish(bookdown_path)
   dataset <- as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   col_id <- attributes(dataset)$`madshapR::col_id`
   
@@ -1183,7 +1200,7 @@ dataset_visualize <- function(
     ifelse(
       !is.null(.dataset_name),
       .dataset_name,
-      fabR::make_name_list(as.character(fargs[['dataset']]),
+      make_name_list(as.character(fargs[['dataset']]),
                            list_elem = list(NULL))))
   
   # check on argument : taxonomy
@@ -1255,14 +1272,18 @@ dataset_visualize <- function(
     mutate(Categories = str_replace_all(
       .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
     
-  path_to <- fs::path_abs(to)
-  fabR::template_visual_report(path_to)
-  save(path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
-       # toc,
-       file = paste0(path_to,"/temp_bookdown_report/bookdown_report.RData"))
+  path_to <- path_abs(bookdown_path)
+  bookdown_template(path_to, overwrite = overwrite)
+  dir.create(paste0(path_to,"/src"))
+  save(
+    path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
+    file = paste0(path_to,"/src/r_env.RData"))
   
   ## markdown writing elements
   ##### HEADER index ##########
+  
+  if(render == 'html'){
+  
   paste0(
     '---
 title: ',dataset_name,'
@@ -1270,10 +1291,7 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
 
-') %>% write_lines(
-  file = paste0(path_to,
-         "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
-  append = FALSE)
+') %>% write_lines(file = paste0(path_to,"/index.Rmd"),append = FALSE)
   
   
   ##### _bookdown.yml ##########
@@ -1285,10 +1303,7 @@ language:
   ui:
     chapter_name: ""
 
-') %>% write_lines(
-  file = paste0(path_to,
-     "/temp_bookdown_report/file/bookdown-template-master/_bookdown.yml"),
-  append = FALSE)
+') %>% write_lines(file = paste0(path_to,"/_bookdown.yml"),append = FALSE)
   
   ##### _output.yml ##########
   paste0(
@@ -1301,10 +1316,7 @@ language:
       after: |
         <li><a href="https://maelstrom-research.org" target="blank">Generated by Maelstrom</a></li>
 
-') %>% write_lines(
-  file = paste0(path_to,
-          "/temp_bookdown_report/file/bookdown-template-master/_output.yml"),
-  append = FALSE)
+') %>% write_lines(file = paste0(path_to,"/_output.yml"),append = FALSE)
   
   paste0(
     '# About the dataset {.unnumbered #about}
@@ -1318,7 +1330,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 
-load(file = paste0("', path_to,'/temp_bookdown_report/bookdown_report.RData"))
+load(file = paste0("', path_to,'/src/r_env.RData"))
 
 ```
 --------------------------------------------------------------------------------
@@ -1365,11 +1377,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
 
 --------------------------------------------------------------------------------
 
-') %>% write_lines(
-  file =
-    paste0(path_to,
-           "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
-  append = TRUE)
+') %>% write_lines(file = paste0(path_to,"/index.Rmd"),append = TRUE)
   
   # if(toc == 'variables'){
   
@@ -1382,7 +1390,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
     # stop()}
     
     rmd_file_name <-
-      paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/",
+      paste0(path_to,"/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
              data_dict$Variables$name[i],".Rmd")
     file.create(rmd_file_name)
@@ -1491,20 +1499,16 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
       write_lines(file = rmd_file_name, append = FALSE)
   }
   
-  fabR::silently_run(
+  silently_run(
     
-    xfun::in_dir(
-      dir = paste0(
-        path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
-      exp = file.remove(
-        list.files(
-          paste0(
-            path_to,"/temp_bookdown_report/file/bookdown-template-master/")) %>%
-          str_subset(paste0(
-            "^[[:digit:]]+-",
-            toString(as.character(attributes(dataset)$`madshapR::col_id`)),
-            ".Rmd$"))))
-  )
+    file.remove(
+      str_subset(
+        string = list.files(path_to,full.names = TRUE),
+        pattern = paste0(
+          path_to,"/[[:digit:]]+-",
+          toString(as.character(attributes(dataset)$`madshapR::col_id`)),
+          ".Rmd$")
+      )))
   
   # }
   
@@ -1669,79 +1673,16 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #   }
     
 # invisible(dev.set(dev.next()))
-# invisible(grDevices::graphics.off())
-  
-  suppressMessages({
-  in_dir(
-    dir = paste0(
-      path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
-    expr = render_book(
-      input = paste0(
-        path_to,
-        "/temp_bookdown_report/file/bookdown-template-master/index.Rmd")))
-  })
-  
-  if(file.exists(paste0(path_to,"/docs"))){
-    try(dir_delete(paste0(path_to,"/docs")))}
-  
-  dir_copy(
-    paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/docs"),
-    paste0(path_to,"/docs"),
-    overwrite = TRUE)
-  
-  if(.keep_files == FALSE){
-    try(dir_delete(paste0(path_to,"/temp_bookdown_report/")))}
+# invisible(graphics.off())
+
+  bookdown_render(path_to,overwrite = overwrite)
   
   return(message(
-"\n\nTo edit your file, You can use the function `open_visual_report('",to,"')`
-(Compatibility tested on Chrome and Mozilla)\n\n"))
+"\n\nTo edit your file, You can use the function `bookdown_open('",bookdown_path,"')`
+(Compatibility tested on Chrome, Edge and Mozilla)\n\n"))
+  
+  }
+  
   
 }
 
-#' @title
-#' Open a visual report in a browser
-#'
-#' @description
-#' Opens a previously generated HTML bookdown document. This is a shortcut 
-#' function to access an existing visual report.
-#'
-#' @seealso
-#' [dataset_visualize()]
-#'
-#' @param report_path A character string specifying the path of the report to 
-#' be opened.
-#' 
-#' @returns
-#' Nothing to be returned. The function opens a web page.
-#'
-#' @examples
-#' {
-#' 
-#' # use DEMO_files provided by the package
-#' 
-#' dataset <- DEMO_files$dataset_TOKYO['height']
-#' data_dict <- 
-#'   data_dict_filter(
-#'     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
-#'     filter_var = "name == 'height'")
-#'       
-#' .summary_var <- DEMO_files$summary_var
-#'   
-#' to <- tempdir()
-#' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
-#'       
-#' # To open the file in browser, you can also open 'to/docs/index.html'. 
-#' open_visual_report(to)
-#' 
-#' }
-#'
-#' @import stringr
-#' @importFrom utils browseURL
-#'
-#' @export
-open_visual_report <- function(report_path){
-
-  report_path <- str_remove(paste0(report_path,"/docs/index.html"), '^/')
-  utils::browseURL(report_path)
-
-}
