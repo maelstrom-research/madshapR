@@ -59,8 +59,13 @@ imported from fabR package.
 This package is a collection of wrapper functions used in data
 pipelines.
 
-This is still a work in progress, so please let me know if you used a
+This is still a work in progress, so please let us know if you used a
 function before and is not working any longer.
+
+## Helper functions
+
+- `madshapR_help()` Call the help center for full documentation
+
 
 ## functions to generate, shape and format meta data.
 
