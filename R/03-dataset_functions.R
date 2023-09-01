@@ -38,7 +38,7 @@
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr haven
 #' @importFrom rlang .data
 #'
 #' @export
