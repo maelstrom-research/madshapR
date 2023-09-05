@@ -1721,6 +1721,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   names(data_dict[['Categories']]) <-
     make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
   
+  
   if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
 
   data_dict <-  
@@ -2391,7 +2392,7 @@ investigations.",
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       select(
-        .data$`variable`,.data$`name`,
+        'variable','name',
         matches(c("^label$","^label:[[:alnum:]]")),matches("^missing$"),
         everything())
   }
@@ -2419,7 +2420,7 @@ investigations.",
               typeof = .data$`toTypeof`) %>%
             distinct,
           by = "valueType") %>%
-        select(-.data$`valueType`)}
+        select(-"valueType")}
     
     if(sum(nrow(data_dict[['Categories']])) > 0){
       
@@ -2467,22 +2468,22 @@ New name: ",new_name)
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
         select(
-          .data$`variable`,
-          .data$`name`,
-          .data$`labels`,
-          .data$`na_values`,
+          'variable',
+          'name',
+          'labels',
+          'na_values',
           everything())
     }
     
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
-      select(.data$`name`,.data$`typeof`,everything())
+      select('name','typeof',everything())
     
   }
   
   # reorder things
   data_dict[['Variables']] <-
-    bind_rows(
+    suppressMessages({left_join(
       data_dict[['Variables']] %>%
         select(
           'name',
@@ -2491,10 +2492,10 @@ New name: ",new_name)
       data_dict[['Variables']][vapply(
         X = data_dict[['Variables']],
         FUN = function(x) !all(is.na(x)),
-        FUN.VALUE = logical(1))]) %>%
-    distinct
+        FUN.VALUE = logical(1))])})
     
   if(sum(nrow(data_dict[['Categories']])) > 0){
+    
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       left_join(data_dict[['Variables']] %>%
@@ -2504,19 +2505,16 @@ New name: ",new_name)
       select(-'madshapR::index')
       
     data_dict[['Categories']] <-
-      
-      bind_rows(
+      suppressMessages({left_join(
         data_dict[['Categories']] %>%
           select(
             'variable','name',
-            matches(c("^label$","^label:[[:alnum:]]")),
-            everything()),
-        
+            matches(c("^label$","^label:[[:alnum:]]"))),
         data_dict[['Categories']][vapply(
           X = data_dict[['Categories']],
           FUN = function(x) !all(is.na(x)),
-          FUN.VALUE = logical(1))]) %>% 
-      distinct
+          FUN.VALUE = logical(1))])})
+    
   }
   
   if(as_data_dict == TRUE) {
