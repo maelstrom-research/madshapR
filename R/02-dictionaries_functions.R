@@ -2312,7 +2312,7 @@ investigations.",
     # sinon on rajoute vT au dd
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
-      left_join(test_vT %>% select(.data$`name`,.data$`valueType`), by = 'name')
+      left_join(test_vT %>% select('name','valueType'), by = 'name')
   } # else do nothing
   
   # add label(:xx) if not present
@@ -2482,21 +2482,21 @@ New name: ",new_name)
   
   # reorder things
   data_dict[['Variables']] <-
-    data_dict[['Variables']] %>%
-    select(.data$`name`,matches(c("^label$","^label:[[:alnum:]]")),
-           matches('^valueType$'),everything())
-  data_dict[['Variables']] <-
-    data_dict[['Variables']][vapply(
-      X = data_dict[['Variables']],
-      FUN = function(x) !all(is.na(x)),
-      FUN.VALUE = logical(1))]
-  
+    bind_rows(
+      data_dict[['Variables']] %>%
+        select(
+          'name',
+          matches(c("^label$","^label:[[:alnum:]]")),
+          matches('^valueType$')),
+      data_dict[['Variables']][vapply(
+        X = data_dict[['Variables']],
+        FUN = function(x) !all(is.na(x)),
+        FUN.VALUE = logical(1))]) %>%
+    distinct
+    
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      select(.data$`variable`,.data$`name`,
-             matches(c("^label$","^label:[[:alnum:]]")),
-             everything()) %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable =  'name') %>%
                   add_index('madshapR::index'),by = join_by('variable')) %>%
@@ -2504,10 +2504,19 @@ New name: ",new_name)
       select(-'madshapR::index')
       
     data_dict[['Categories']] <-
-      data_dict[['Categories']][vapply(
-        X = data_dict[['Categories']],
-        FUN = function(x) !all(is.na(x)),
-        FUN.VALUE = logical(1))]
+      
+      bind_rows(
+        data_dict[['Categories']] %>%
+          select(
+            'variable','name',
+            matches(c("^label$","^label:[[:alnum:]]")),
+            everything()),
+        
+        data_dict[['Categories']][vapply(
+          X = data_dict[['Categories']],
+          FUN = function(x) !all(is.na(x)),
+          FUN.VALUE = logical(1))]) %>% 
+      distinct
   }
   
   if(as_data_dict == TRUE) {
