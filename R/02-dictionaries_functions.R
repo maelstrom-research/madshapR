@@ -2238,7 +2238,7 @@ data dictionary")}}
 #'
 #' }
 #'
-#' @import dplyr tidyr fabR madshapR
+#' @import dplyr tidyr fabR
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
