@@ -371,7 +371,7 @@ valueType_adjust <- function(from, to = NULL){
 
     dataset <- from
     data_dict <- to
-
+    
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
             filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
@@ -381,6 +381,8 @@ bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
 )}
 
+    if(ncol(dataset) == 0) return(data_dict)
+    
     vT_list<- madshapR::valueType_list
     vT_tables <-
       dataset %>%
@@ -411,6 +413,7 @@ bold("\n\nUseful tip:"),
 
   if(is_data_dict(from) & is_dataset(to)){
 
+  
     # test data_dict
     tryCatch({data_dict <-
       as_data_dict_mlstr(from)},
@@ -430,6 +433,8 @@ bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
 )}
 
+    if(ncol(dataset) == 0) return(dataset)
+    
     data_dict_data <-
       data_dict_extract(dataset) %>%
       as_data_dict_mlstr()
