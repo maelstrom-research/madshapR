@@ -154,10 +154,10 @@ valueType_self_adjust <- function(...){
   # test dataset
 
   if(is_dataset(...) & !is_data_dict(...)){
-    dataset <- as_dataset(...,col_id = attributes(...)$`madshapR::col_id`)
     
     if(ncol(dataset) == 0) return(dataset)
-    
+  
+    dataset <- as_dataset(...,col_id = attributes(...)$`madshapR::col_id`)
     preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
     is_factor <-
@@ -194,16 +194,16 @@ valueType_self_adjust <- function(...){
   }
 
   if(!is_dataset(...) & is_data_dict(...)){
+    
     data_dict <- as_data_dict_shape(...)
+    attributes(data_dict)$`madshapR::class` <- attributes(...)$`madshapR::class`
     
     if(nrow(data_dict[['Variables']]) == 0) return(data_dict)
-  
-    attributes(data_dict)$`madshapR::class` <- attributes(...)$`madshapR::class`
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
       warning(
-        "Your data dictionary contains no categorical variables.
-valueType will remain as it is.")
+"Your data dictionary contains no categorical variables.
+The valueType will remain as it is.")
       return(data_dict)
 
     }else{
