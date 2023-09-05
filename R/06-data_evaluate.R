@@ -153,7 +153,8 @@ dataset_evaluate <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
 
   # creation of the structure of the report
-  report <- data_dict_evaluate(data_dict,as_data_dict_mlstr= as_data_dict_mlstr)
+  report <- 
+    data_dict_evaluate(data_dict,as_data_dict_mlstr = as_data_dict_mlstr)
   
   message(
     "- DATASET ASSESSMENT: ",
@@ -574,7 +575,7 @@ data_dict_evaluate <- function(
   report$`Data dictionary summary` <-
     tibble(report$`Data dictionary summary`[['Variables']] %>%
              select(
-               .data$`index`,.data$`name`,
+               'index','name',
                matches(c("^label$","^label:[[:alnum:]]"))[1],
                matches('^valueType$'),starts_with("Categories::"),
                everything())) %>%
