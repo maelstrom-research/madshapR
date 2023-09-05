@@ -1657,7 +1657,7 @@ your dataset")}
 #' 
 #' }
 #'
-#' @import dplyr tidyr stringr
+#' @import dplyr tidyr stringr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1727,7 +1727,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   data_dict <-  
     silently_run({
       valueType_adjust(from = dataset, to = data_dict) %>%
-        valueType_self_adjust() %>%
+        valueType_adjust() %>%
         as_data_dict_mlstr(as_data_dict = !as_data_dict_mlstr) 
     })
   
@@ -2238,7 +2238,7 @@ data dictionary")}}
 #'
 #' }
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR madshapR
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -2492,7 +2492,8 @@ New name: ",new_name)
       data_dict[['Variables']][vapply(
         X = data_dict[['Variables']],
         FUN = function(x) !all(is.na(x)),
-        FUN.VALUE = logical(1))])})
+        FUN.VALUE = logical(1))] %>% 
+        bind_rows(tibble(name = as.character())))})
     
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
@@ -2513,7 +2514,8 @@ New name: ",new_name)
         data_dict[['Categories']][vapply(
           X = data_dict[['Categories']],
           FUN = function(x) !all(is.na(x)),
-          FUN.VALUE = logical(1))])})
+          FUN.VALUE = logical(1))] %>% 
+          bind_rows(tibble(variable = as.character())))})
     
   }
   
