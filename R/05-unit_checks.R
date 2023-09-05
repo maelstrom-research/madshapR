@@ -1045,7 +1045,8 @@ check_dataset_valueType <- function(
     tibble(
       name_var = as.character(),
       value = as.character(),
-      condition = as.character())
+      condition = as.character(),
+      suggestion = as.character())
 
   # check if `valueType` column exists
   if(is.null(data_dict[['Variables']][['valueType']])){
@@ -1056,8 +1057,11 @@ check_dataset_valueType <- function(
   #   dataset[vapply(
   #     X = dataset, FUN = function(x) !all(is.na(x)), FUN.VALUE = logical(1))]
 
-  dataset <-   data_dict_match_dataset(dataset, data_dict, output = "dataset")
-  data_dict <- data_dict_match_dataset(dataset, data_dict, output = "data_dict")
+  dataset <- suppressWarnings(
+    data_dict_match_dataset(dataset, data_dict, output = "dataset"))
+  
+  data_dict <- suppressWarnings(
+    data_dict_match_dataset(dataset, data_dict, output = "data_dict"))
 
   for(i in names(dataset)){
     # stop()}
