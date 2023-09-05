@@ -148,9 +148,10 @@ variable_visualize <- function(
   
   if(!is.null(data_dict)){
     col_dict <- 
-      data_dict %>%
-      data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
-      as_data_dict_mlstr()
+      suppressWarnings({
+        data_dict %>%
+          data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
+          as_data_dict_mlstr()})
   }else{
     col_dict <- 
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
@@ -1214,16 +1215,18 @@ dataset_visualize <- function(
   }else{ group_by <- ''}
   
   dataset <-
-    data_dict_match_dataset(
-      dataset,data_dict,
-      output = 'dataset') %>%
-    as_dataset(attributes(dataset)$`madshapR::col_id`)
+    suppressWarnings({
+      data_dict_match_dataset(
+        dataset,data_dict,
+        output = 'dataset') %>%
+        as_dataset(attributes(dataset)$`madshapR::col_id`)})
   
   data_dict <- 
-    data_dict_match_dataset(
-      dataset,data_dict,
-      output = 'data_dict') %>%
-    as_data_dict_mlstr()
+    suppressWarnings({
+      data_dict_match_dataset(
+        dataset,data_dict,
+        output = 'data_dict') %>%
+        as_data_dict_mlstr()})
   
   # summarize initial information
   
@@ -1274,7 +1277,7 @@ dataset_visualize <- function(
     
   path_to <- path_abs(bookdown_path)
   bookdown_template(path_to, overwrite = overwrite)
-  dir.create(paste0(path_to,"/src"))
+  if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(
     path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
     file = paste0(path_to,"/src/r_env.RData"))

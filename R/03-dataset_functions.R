@@ -222,7 +222,10 @@ dataset_cat_as_labels <- function(
   } else {
     # preserve_data_dict <- FALSE  
     data_dict <- 
-      data_dict_match_dataset(dataset[col_names],data_dict)$data_dict}
+      suppressWarnings({
+        data_dict_match_dataset(dataset[col_names],data_dict)$data_dict
+      })
+    }
 
   if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
   
@@ -231,7 +234,8 @@ dataset_cat_as_labels <- function(
     
     message(paste0('Processing of : ',i))
     col <- dataset_zap_data_dict(as_dataset(dataset[i]))
-    data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
+    data_dict_temp <- suppressWarnings({
+      data_dict_match_dataset(col,data_dict)$data_dict})
     
     if(sum(nrow(data_dict_temp[['Categories']])) > 0){
       names(col) <- '___values___'

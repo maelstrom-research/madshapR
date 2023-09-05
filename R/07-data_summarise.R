@@ -123,17 +123,19 @@ dataset_summarize <- function(
     as_dataset(ungroup(dataset),col_id = attributes(dataset)$`madshapR::col_id`)
     
   dataset <-
+    suppressWarnings({
     data_dict_match_dataset(
       dataset,
       data_dict,
       output = 'dataset') %>%
-    as_dataset(attributes(dataset)$`madshapR::col_id`)
+    as_dataset(attributes(dataset)$`madshapR::col_id`)})
   
   data_dict <- 
+    suppressWarnings({
     data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict') %>%
-    as_data_dict_mlstr()
+    as_data_dict_mlstr()})
   
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
@@ -200,7 +202,7 @@ dataset_summarize <- function(
       dataset,
       data_dict,
       taxonomy = taxonomy,
-      .dataset_name = .dataset_name,
+      .dataset_name = dataset_name,
       as_data_dict_mlstr = TRUE)
 
   message(
@@ -216,16 +218,25 @@ dataset_summarize <- function(
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
 
   # exclude id col if is the index
-  dataset_valueType <-
-    dataset %>%
-    # select(-matches("^___mlstr_index___$")) %>%
-    summarise(across(
-      everything(),
-      ~ valueType_of(.))) %>%
-    pivot_longer(cols = everything()) %>%
-    rename(
-      `___name_var___` = "name",
-      `Actual dataset valueType` = "value")
+  dataset_valueType <- tibble(
+      `___name_var___` = as.character(),
+      `Actual dataset valueType` = as.character())
+  
+  estimated_valueType <- tibble(
+    `___name_var___` = as.character(),
+    `Estimated dataset valueType` = as.character())
+  
+  if(ncol(dataset) > 0){
+    dataset_valueType <-
+      dataset %>%
+      # select(-matches("^___mlstr_index___$")) %>%
+      summarise(across(
+        everything(),
+        ~ valueType_of(.))) %>%
+      pivot_longer(cols = everything()) %>%
+      rename(
+        `___name_var___` = "name",
+        `Actual dataset valueType` = "value")
 
   if(valueType_guess == TRUE){
     estimated_valueType <-
@@ -245,6 +256,7 @@ dataset_summarize <- function(
         "___name_var___",
         `Estimated dataset valueType` = "Actual dataset valueType")}
 
+  }
   ## variables
   data_dict_var <-
     data_dict[['Variables']] %>%

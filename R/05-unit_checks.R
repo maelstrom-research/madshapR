@@ -1011,7 +1011,7 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #'
 #' }
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr stringr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1075,8 +1075,8 @@ check_dataset_valueType <- function(
     #   class(silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
     condition <-
       class(silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
-    guess   <- valueType_guess(dataset[[i]])
-    actual  <- valueType_of(dataset[[i]])
+    guess   <- as.character(valueType_guess(dataset[[i]]))
+    actual  <- as.character(valueType_of(dataset[[i]]))
 
     # test_vT_compatible <-
     #   tibble(
@@ -1104,7 +1104,8 @@ check_dataset_valueType <- function(
       condition = ifelse(
         is.na(.data$`condition`) &
           .data$`value` %in% c("text","decimal", "integer","date"),
-        "[INFO] - refined valueType proposed",.data$`condition`)) %>%
+        "[INFO] - refined valueType proposed",.data$`condition`),
+      condition = as.character(.data$`condition`)) %>%
     filter(.data$`value` != .data$`suggestion`) %>%
     filter(!is.na(.data$`condition`)) %>%
     distinct()
