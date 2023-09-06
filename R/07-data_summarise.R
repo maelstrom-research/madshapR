@@ -687,6 +687,9 @@ dataset_summarize <- function(
 #' @param dossier List of tibble, each of them being datasets.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
+#' @param group_by A character string of one column in the dataset that can be
+#' taken as a grouping column. The visual element will be grouped and displayed
+#' by this column.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
 #'
@@ -698,10 +701,9 @@ dataset_summarize <- function(
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' library(stringr) # glimpse
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
-#' dossier <- list(iris = iris[1])
+#' dossier <- list(iris = tibble())
 #' 
 #' dossier_summary <- dossier_summarize(dossier)
 #' glimpse(dossier_summary)
@@ -715,8 +717,9 @@ dataset_summarize <- function(
 #' @export
 dossier_summarize <- function(
     dossier, 
+    group_by = NULL,
     taxonomy = NULL, 
-    valueType_guess = TRUE){
+    valueType_guess = FALSE){
   
   # amelioration :rajouter taxonomy
   
@@ -739,6 +742,7 @@ dossier_summarize <- function(
     report_list[[i]] <-
       dataset_summarize(
         dataset = dossier[[i]],
+        group_by = group_by,
         taxonomy = taxonomy,
         .dataset_name = names(dossier[i]),
         valueType_guess = valueType_guess)

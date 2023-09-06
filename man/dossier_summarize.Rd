@@ -4,10 +4,19 @@
 \alias{dossier_summarize}
 \title{Generate a report and summary of a dossier (list of datasets)}
 \usage{
-dossier_summarize(dossier, taxonomy = NULL, valueType_guess = TRUE)
+dossier_summarize(
+  dossier,
+  group_by = NULL,
+  taxonomy = NULL,
+  valueType_guess = FALSE
+)
 }
 \arguments{
 \item{dossier}{List of tibble, each of them being datasets.}
+
+\item{group_by}{A character string of one column in the dataset that can be
+taken as a grouping column. The visual element will be grouped and displayed
+by this column.}
 
 \item{taxonomy}{A tibble identifying the scheme used for variables
 classification.}
@@ -59,10 +68,9 @@ possibilities and their correspondence with R data types are available using
 
 # use DEMO_files provided by the package
 library(dplyr)
-library(stringr) # glimpse
 
 ###### Example 1: Combine functions and summarise datasets.
-dossier <- list(iris = iris[1])
+dossier <- list(iris = tibble())
 
 dossier_summary <- dossier_summarize(dossier)
 glimpse(dossier_summary)
