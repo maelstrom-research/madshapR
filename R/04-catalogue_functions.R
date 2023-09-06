@@ -165,7 +165,7 @@ valueType_self_adjust <- function(...){
       dataset %>%
       summarise(across(everything(), ~ toString(class(.)))) %>%
       pivot_longer(everything()) %>%
-      filter(.data$`value` %in% c("factor"))
+      dplyr::filter(.data$`value` %in% c("factor"))
 
     data_dict <- data_dict_extract(dataset)
     data_dict[['Categories']] <-
@@ -381,7 +381,7 @@ valueType_adjust <- function(from, to = NULL){
     
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-            filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 bold("\n\nUseful tip:"),
@@ -433,7 +433,7 @@ bold("\n\nUseful tip:"),
 
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-       filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 bold("\n\nUseful tip:"),
@@ -450,7 +450,7 @@ bold("\n\nUseful tip:"),
       dataset %>%
       summarise(across(everything(), ~ class(.))) %>%
       pivot_longer(everything()) %>%
-      filter(.data$`value` == "factor")
+      dplyr::filter(.data$`value` == "factor")
 
     data_dict_data[['Variables']] <-
       data_dict_data[['Variables']] %>%
@@ -573,7 +573,7 @@ valueType_guess <- function(x){
       "integer"    ,  class(test_vT_integer )[1],
       "decimal"    ,  class(test_vT_decimal )[1],
       "date"       ,  class(test_vT_date    )[1]) %>%
-    filter(.data$`class` != "try-error") %>%
+    dplyr::filter(.data$`class` != "try-error") %>%
     summarise(
       valueType = paste0(.data$`valueType`,collapse = "|"),
       class = paste0(.data$`class`,collapse = "|")) %>%

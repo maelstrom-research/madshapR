@@ -102,7 +102,7 @@ data_dict_expand <- function(
       {to_temp <-
         data_dict[[from]] %>%
         select(variable = "name", col_to = !! i ) %>%
-        filter(!is.na(.data$`col_to`)) %>%
+        dplyr::filter(!is.na(.data$`col_to`)) %>%
         mutate(
           col_to = ifelse(str_detect(.data$`col_to`, "_="),
                           str_replace_all(.data$`col_to`, "_=", "__SEP_IN__"),
@@ -132,7 +132,7 @@ data_dict_expand <- function(
           silently_run({(
             data_dict[[from]] %>%
               select(variable = "name", col_to = !! i ) %>%
-              filter(!is.na(.data$`col_to`)) %>%
+              dplyr::filter(!is.na(.data$`col_to`)) %>%
               mutate(
                 col_to = ifelse(str_detect(.data$`col_to`, "_="),
                                 str_replace_all(
@@ -154,7 +154,8 @@ data_dict_expand <- function(
               separate(.data$`col_to`,
                        into = c("name", i),
                        sep = "__SEP_IN__") %>%
-              filter(is.na(!! i)) %>% pull(.data$`variable`) %>% toString)
+              dplyr::filter(is.na(!! i)) %>% 
+              pull(.data$`variable`) %>% toString)
 
             })
 
@@ -582,7 +583,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
           unite(col = "area_scale_id", 
                 c("taxonomy_scale", "vocabulary_scale"),
                 na.rm = TRUE, sep = "::", remove = FALSE) %>%
-          filter(.data$`area_scale_id` != "") %>%
+          dplyr::filter(.data$`area_scale_id` != "") %>%
           pull(.data$`area_scale_id`))
   }
   
@@ -697,7 +698,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 
     taxonomy_i <-
       taxonomy_id[[i]] %>%
-      filter(.data$`taxonomy_id` %in% (names(data_dict[['Variables']]))) %>%
+      dplyr::filter(.data$`taxonomy_id` %in% 
+                      (names(data_dict[['Variables']]))) %>%
       select('voc_term','taxonomy_id','index_vocabulary', 
              'index_term','vocabulary') %>%
       distinct
@@ -777,7 +779,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
     keys <-
       taxonomy %>%
       select(.data$`vocabulary`, .data$`vocabulary_short`) %>%
-      filter(!is.na(.data$`vocabulary_short`)) %>% distinct
+      dplyr::filter(!is.na(.data$`vocabulary_short`)) %>% distinct
     
     col_area <-
       data_dict[['Variables']] %>%
@@ -823,9 +825,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
       taxonomy %>%
       unite("area_scale_id", .data$`taxonomy_scale`, .data$`vocabulary_scale`,
             na.rm = TRUE, sep = "::", remove = FALSE) %>%
-      select(.data$`area_scale_id`,.data$`term_scale`) %>%
       select(.data$`area_scale_id`) %>%
-      filter(!is.na(.data$`area_scale_id`)) %>% distinct %>%
+      dplyr::filter(!is.na(.data$`area_scale_id`)) %>% distinct %>%
       pull(.data$`area_scale_id`) %>%
       intersect(names(data_dict[['Variables']]))
     
@@ -964,17 +965,19 @@ data_dict_filter <- function(
   
   data_dict[['Variables']] <-
     eval(parse(
-      text = paste("data_dict[['Variables']] %>% filter(",filter_var,")")))
+      text = paste(
+        "data_dict[['Variables']] %>% dplyr::filter(",filter_var,")")))
   
   if(!is.null(data_dict[['Categories']])){
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      filter(.data$`variable` %in% data_dict[['Variables']]$`name`)
+      dplyr::filter(.data$`variable` %in% data_dict[['Variables']]$`name`)
     
     if(!is.null(filter_cat)){
       data_dict[['Categories']] <-
         eval(parse(
-          text=paste("data_dict[['Categories']] %>% filter(",filter_cat,")")))}
+          text=paste(
+            "data_dict[['Categories']] %>% dplyr::filter(",filter_cat,")")))}
   }
   
   if(sum(nrow(data_dict[['Categories']])) == 0)
@@ -1487,7 +1490,7 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   # data dictionary is not applied to dataset, since it may come from an
   # automated datadict (text by default).
   if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
          bold("\n\nUseful tip:"),
@@ -1958,7 +1961,7 @@ as_data_dict <- function(object){
   
   # variable names must be unique and non-null
   if(check_data_dict_variables(data_dict) %>% 
-     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
 "Variable names must exist and be unique in your data dictionary.",
          bold("\n\nUseful tip:"),
@@ -1968,7 +1971,7 @@ data dictionary")}
   # variable names must be unique and non-null
   if(sum(nrow(data_dict[['Categories']])) > 0){
     if(check_data_dict_categories(data_dict) %>% 
-       filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Variable names in categories must exist and be unique in the data dictionary.",
            bold("\n\nUseful tip:"),
@@ -2254,7 +2257,7 @@ as_data_dict_mlstr <- function(object, as_data_dict = FALSE){
   
   # if valueType exists, vT must be valid
   if(suppressWarnings(check_data_dict_valueType(data_dict))  %>% 
-     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
          "valueType are incompatible with Maelstrom standards.",
          bold("\n\nUseful tip:"),
@@ -2264,7 +2267,7 @@ data dictionary")}
   
   # check missing validity
   if(suppressWarnings(check_data_dict_missing_categories(data_dict)) %>% 
-     filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
          "\n
 Incompatible missing value in the missing columns with Maelstrom standards",

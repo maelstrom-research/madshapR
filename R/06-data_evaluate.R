@@ -181,8 +181,8 @@ dataset_evaluate <- function(
 "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
     check_dataset_variables(dataset, data_dict) %>%
-    filter(.data$`name_var` != '___mlstr_index___') %>% 
-    filter(
+    dplyr::filter(.data$`name_var` != '___mlstr_index___') %>% 
+    dplyr::filter(
       str_detect(
         .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
   
@@ -294,7 +294,7 @@ dataset_evaluate <- function(
         summarise(
           `value` = paste0(.data$`value`, collapse = " ; "),.groups = 'keep')
       }) %>%
-    filter(!is.na(.data$`name_var`)) %>%
+    dplyr::filter(!is.na(.data$`name_var`)) %>%
     ungroup()
   
   if(as_data_dict_mlstr == TRUE){
@@ -640,7 +640,7 @@ data_dict_evaluate <- function(
   #   mutate(index = as.integer(.data$`condition`)) %>%
   #   full_join(data_dict[['Variables']] %>% add_index(.force = TRUE),
   #                                                            by = "index") %>%
-  #   filter(!is.na(.data$`condition`)) %>%
+  #   dplyr::filter(!is.na(.data$`condition`)) %>%
   #   select(col_name = .data$`name`) %>%
   #   summarise(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
   #   mutate(
@@ -704,12 +704,12 @@ data_dict_evaluate <- function(
       select(
         "name",
         label = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-      # filter(if_any(-.data$`label`, ~ is.na(.))) %>%
+      # dplyr::filter(if_any(-.data$`label`, ~ is.na(.))) %>%
       pivot_longer(
         cols = !.data$`name`,
         names_to = "col_name",
         values_to = "value") %>%
-      filter(is.na(.data$`value`)) %>%
+      dplyr::filter(is.na(.data$`value`)) %>%
       select(name_var = "name", "col_name") %>%
       mutate(
         col_name = names(
@@ -736,12 +736,12 @@ data_dict_evaluate <- function(
         select(
           .data$`name`,
           label = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-        # filter(if_any(-.data$`label`, ~ is.na(.))) %>%
+        # dplyr::filter(if_any(-.data$`label`, ~ is.na(.))) %>%
         pivot_longer(
           cols = !.data$`name`,
           names_to = "col_name",
           values_to = "value") %>%
-        filter(is.na(.data$`value`)) %>%
+        dplyr::filter(is.na(.data$`value`)) %>%
         select(name_var = "name", "col_name") %>%
         mutate(
           col_name =

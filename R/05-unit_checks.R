@@ -45,7 +45,7 @@ check_data_dict_variables <- function(data_dict){
   var_names <-
     data_dict[['Variables']] %>%
     add_count(.data$`name`) %>%
-    filter(.data$`n` > 1) %>%
+    dplyr::filter(.data$`n` > 1) %>%
     select("name")
 
   test <-
@@ -59,7 +59,7 @@ check_data_dict_variables <- function(data_dict){
   var_NA <-
     data_dict[['Variables']] %>%
     add_index(.force = TRUE) %>%
-    filter(is.na(.data$`name`) | .data$`name` == "") %>%
+    dplyr::filter(is.na(.data$`name`) | .data$`name` == "") %>%
     mutate(name = paste0("row number: ",.data$`index`)) %>%
     select(.data$`name`)
 
@@ -70,7 +70,7 @@ check_data_dict_variables <- function(data_dict){
           condition = "[ERR] - missing variable name") %>%
         select(name_var = .data$`name`, .data$`condition`) %>%
         mutate(across(everything(), ~as.character(.)))) %>%
-    filter(!is.na(.data$`name_var`)) %>%
+    dplyr::filter(!is.na(.data$`name_var`)) %>%
     distinct
 
   return(test)
@@ -138,7 +138,7 @@ check_data_dict_categories <- function(data_dict){
     data_dict[['Variables']] %>%
     mutate(name_var = as.character(.data$`name`)) %>%
     select(.data$`name_var`) %>% distinct %>%
-    filter(!is.na(.data$`name_var`))
+    dplyr::filter(!is.na(.data$`name_var`))
 
   cat_names <-
     data_dict[['Categories']] %>%
@@ -167,7 +167,7 @@ check_data_dict_categories <- function(data_dict){
       value = na_if(.data$`value`,"value"),
       value = ifelse(is.na(.data$`name_var`),.data$`index`,.data$`value`)) %>%
     ungroup() %>%
-    filter(!is.na(.data$`index`)) %>%
+    dplyr::filter(!is.na(.data$`index`)) %>%
     select(.data$`name_var`, .data$`condition`, .data$`value`) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
@@ -177,7 +177,7 @@ check_data_dict_categories <- function(data_dict){
     select(name_var = .data$`variable`,.data$`name`) %>%
     mutate(across(everything(), as.character)) %>%
     group_by(.data$`name_var`,.data$`name`) %>% add_count() %>% ungroup %>%
-    filter(.data$`n` > 1)
+    dplyr::filter(.data$`n` > 1)
 
   test_cat_unique <-
     cat_names_count %>%
@@ -261,7 +261,7 @@ check_data_dict_missing_categories <- function(data_dict){
     mutate(
       value =
         class(silently_run(as_any_boolean(.data$`missing`)))[1]) %>%
-    filter(.data$`value` == "try-error") %>%
+    dplyr::filter(.data$`value` == "try-error") %>%
     inner_join(missing_val,by = "missing")
 
   test <-
@@ -345,7 +345,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   taxo <-
   #     taxonomy %>% mutate(taxonomy = paste0(.data$`taxonomy`,"::",
   # .data$`vocabulary`)) %>%
-  #     filter(.data$`taxonomy` == !! value) %>%
+  #     dplyr::filter(.data$`taxonomy` == !! value) %>%
   #     select(value = .data$`term`)
   #
   #   test <-
@@ -465,7 +465,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   # vT_list <- madshapR::valueType_list
   # test_valueType_names <-
   #   data_dict[['Variables']] %>%
-  #   filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
+  #   dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
   #   select(name_var = .data$`name`,value = .data$`valueType`) %>%
   #   mutate(
   # condition = "[ERR] - Incompatible valueType names with Opal standards") %>%
@@ -476,12 +476,12 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #
   #   vT_text <-
   #     vT_list %>%
-  #     filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
+  #     dplyr::filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
   #
   #   data_dict_vt <-
   #     data_dict[['Variables']] %>%
   #     select(name_var = .data$`name`,.data$`valueType`) %>%
-  #     filter(! .data$`valueType` %in% vT_text)
+  #     dplyr::filter(! .data$`valueType` %in% vT_text)
   #
   #   vT_names <-
   #     data_dict[['Categories']] %>%
@@ -496,7 +496,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #     mutate(
   #       test =
   #       class(try((as_valueType(.data$`name`,.data$`valueType`))))[1]) %>%
-  #     filter(.data$`test` == "try-error") %>%
+  #     dplyr::filter(.data$`test` == "try-error") %>%
   #     inner_join(vT_names,by = c("name", "valueType")) %>%
   #     select(.data$`name_var`, .data$`valueType`) %>%
   #     distinct
@@ -603,7 +603,7 @@ check_data_dict_valueType <- function(data_dict){
   vT_list <- madshapR::valueType_list
   test_valueType_names <-
     data_dict[['Variables']] %>%
-    filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
+    dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
     select(name_var = "name",value = "valueType") %>%
     mutate(
       condition = "[ERR] - Incompatible valueType names with Opal standards")%>%
@@ -614,12 +614,12 @@ check_data_dict_valueType <- function(data_dict){
 
     vT_text <-
       vT_list %>%
-      filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
+      dplyr::filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
 
     data_dict_vt <-
       data_dict[['Variables']] %>%
       select(name_var = .data$`name`,.data$`valueType`) %>%
-      filter(! .data$`valueType` %in% vT_text)
+      dplyr::filter(! .data$`valueType` %in% vT_text)
 
     vT_names <-
       data_dict[['Categories']] %>%
@@ -635,7 +635,7 @@ check_data_dict_valueType <- function(data_dict){
         test = class(
           silently_run(as_valueType(.data$`name`,.data$`valueType`)))[1]
         ) %>%
-      filter(.data$`test` == "try-error") %>%
+      dplyr::filter(.data$`test` == "try-error") %>%
       inner_join(vT_names,by = c("name", "valueType")) %>%
       select("name_var", "valueType") %>%
       distinct
@@ -775,7 +775,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
       is.na(dataset)   ~ "[ERR] - Variable only present in the data dictionary",
       TRUE ~ NA_character_)) %>%
     mutate(across(everything(), ~as.character(.))) %>%
-    filter(!is.na(.data$`condition`)) %>%
+    dplyr::filter(!is.na(.data$`condition`)) %>%
     select(.data$`name_var`, .data$`condition`) %>%
     distinct()
 
@@ -869,13 +869,14 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
     silently_run(data_dict_extract(dataset,as_data_dict_mlstr = FALSE))
   data_dict_cat_from_data[['Variables']] <-
     data_dict_cat_from_data[['Variables']] %>%
-    filter(.data$`name` %in% data_dict_cat_from_data[['Categories']]$`variable`)
+    dplyr::filter(.data$`name` %in% 
+                    data_dict_cat_from_data[['Categories']]$`variable`)
 
   # categorical content extracted from data_dict
   data_dict_cat_from_data_dict <- data_dict
   data_dict_cat_from_data_dict[['Variables']] <-
     data_dict_cat_from_data_dict[['Variables']] %>%
-    filter(
+    dplyr::filter(
       .data$`name` %in% data_dict_cat_from_data_dict[['Categories']]$`variable`)
 
   # categorical variable in the data_dict, but not in the dataset
@@ -899,21 +900,22 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
   # remove already assessed
   data_dict_cat_from_data_dict[['Variables']] <-
     data_dict_cat_from_data_dict[['Variables']] %>%
-    filter(!.data$`name` %in% test_cat_in_data_dict_only$`name_var`)
+    dplyr::filter(!.data$`name` %in% test_cat_in_data_dict_only$`name_var`)
 
   if(sum(nrow(data_dict_cat_from_data_dict[['Categories']])) > 0){
     data_dict_cat_from_data_dict[['Categories']] <-
       data_dict_cat_from_data_dict[['Categories']] %>%
-      filter(!.data$`variable` %in% test_cat_in_data_dict_only$`name_var`)}
+      dplyr::filter(
+        !.data$`variable` %in% test_cat_in_data_dict_only$`name_var`)}
 
   data_dict_cat_from_data[['Variables']] <-
     data_dict_cat_from_data[['Variables']] %>%
-    filter(!.data$`name` %in% test_cat_in_dataset_only$`name_var`)
+    dplyr::filter(!.data$`name` %in% test_cat_in_dataset_only$`name_var`)
 
   if(sum(nrow(data_dict_cat_from_data[['Categories']])) > 0){
     data_dict_cat_from_data[['Categories']] <-
       data_dict_cat_from_data[['Categories']] %>%
-      filter(!.data$`variable` %in% test_cat_in_dataset_only$`name_var`)}
+      dplyr::filter(!.data$`variable` %in% test_cat_in_dataset_only$`name_var`)}
 
   if(sum(nrow(data_dict_cat_from_data[['Categories']])) > 0){
     # categorical values in the data_dict, but not in the dataset
@@ -946,8 +948,8 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
   test <-
     bind_rows(test, test_cat_in_data_dict_only, test_cat_in_dataset_only,
               test_values_in_data_dict_only, test_values_in_dataset_only) %>%
-    filter(!is.na(.data$`name_var`)) %>%
-    filter(!is.na(.data$`value`)) %>%
+    dplyr::filter(!is.na(.data$`name_var`)) %>%
+    dplyr::filter(!is.na(.data$`value`)) %>%
     distinct()
 
   return(test)
@@ -1106,12 +1108,13 @@ check_dataset_valueType <- function(
           .data$`value` %in% c("text","decimal", "integer","date"),
         "[INFO] - refined valueType proposed",.data$`condition`),
       condition = as.character(.data$`condition`)) %>%
-    filter(.data$`value` != .data$`suggestion`) %>%
-    filter(!is.na(.data$`condition`)) %>%
+    dplyr::filter(.data$`value` != .data$`suggestion`) %>%
+    dplyr::filter(!is.na(.data$`condition`)) %>%
     distinct()
 
   if(valueType_guess == FALSE){
-    test <- test %>% filter(!str_detect(.data$`condition`,"^\\[INFO\\]"))}
+    test <- test %>% 
+      dplyr::filter(!str_detect(.data$`condition`,"^\\[INFO\\]"))}
 
   return(test)
 }

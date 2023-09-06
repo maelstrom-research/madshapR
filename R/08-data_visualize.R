@@ -199,7 +199,7 @@ variable_visualize <- function(
     
     cat_lab <- 
       col_dict[['Categories']] %>% 
-      filter(if_any('variable') == group_by) %>%
+      dplyr::filter(if_any('variable') == group_by) %>%
       select(
         !! group_by := 'name', 
         `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
@@ -234,15 +234,18 @@ variable_visualize <- function(
   
   colset_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% preprocess_var_values$value_var)
+    dplyr::filter(!! as.symbol(col) %in% 
+                    preprocess_var_values$value_var)
   
   colset_cat_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% preprocess_var_cat_values$value_var) 
+    dplyr::filter(!! as.symbol(col) %in% 
+                    preprocess_var_cat_values$value_var) 
   
   colset_cat_miss_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% preprocess_var_cat_miss_values$value_var) 
+    dplyr::filter(!! as.symbol(col) %in% 
+                    preprocess_var_cat_miss_values$value_var) 
   
   # guess the generic valueType of the variable (excluding categories):
   vT_col <- 
@@ -256,7 +259,7 @@ variable_visualize <- function(
     as.data.frame(t(
       
       .summary_var$`Variables summary (all)` %>%
-        filter(.data$`name` %in% col) %>%
+        dplyr::filter(.data$`name` %in% col) %>%
         select(c("Total number of observations":last_col()))
       
     ))
@@ -266,7 +269,7 @@ variable_visualize <- function(
       
       unique(pull(
         .summary_var$`Variables summary (all)` %>%
-          filter(.data$`name` %in% col) %>%
+          dplyr::filter(.data$`name` %in% col) %>%
           select(starts_with('Grouping variable:'))
       ))
     
@@ -372,7 +375,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           .summary_var$`Numerical variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
           ))
@@ -382,7 +385,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Numerical variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
             
@@ -474,7 +477,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           .summary_var$`Text variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -484,7 +487,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Text variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -613,7 +616,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           .summary_var$`Date variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -623,7 +626,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Date variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -647,7 +650,7 @@ variable_visualize <- function(
       # convert dataset to wide format
       colset_span <- 
         colset_values %>%
-        filter(if_any(col) == min(!! as.symbol(col)) | 
+        dplyr::filter(if_any(col) == min(!! as.symbol(col)) | 
                  if_any(col) == max(!! as.symbol(col))) 
       
       #### plot_1 date ####    
@@ -729,7 +732,7 @@ variable_visualize <- function(
     
     cat_lab_var <- 
       col_dict[['Categories']] %>% 
-      filter(if_any('variable') == col) %>%
+      dplyr::filter(if_any('variable') == col) %>%
       select(
         !!as.symbol(col) := 'name', 
         `___labels___` = 
@@ -752,7 +755,7 @@ variable_visualize <- function(
     cat_var_levels <- 
       colset_cat_values %>% 
       arrange(.data$`___category_level___`) %>%
-      filter(!is.na(!!as.symbol(col))) %>%
+      dplyr::filter(!is.na(!!as.symbol(col))) %>%
       pull(col) %>% unique 
     
     if(length(cat_var_levels) == 0) cat_var_levels <- 0
@@ -795,7 +798,7 @@ variable_visualize <- function(
       
       cat_lab_miss_var <- 
         col_dict[['Categories']] %>% 
-        filter(if_any('variable') == col) %>%
+        dplyr::filter(if_any('variable') == col) %>%
         select(
           !!as.symbol(col) := 'name', 
           `___labels___` = 
@@ -826,7 +829,7 @@ variable_visualize <- function(
     cat_var_levels <- 
       colset_cat_miss_values %>% 
       arrange(.data$`___category_level___`) %>%
-      filter(!is.na(!!as.symbol(col))) %>%
+      dplyr::filter(!is.na(!!as.symbol(col))) %>%
       pull(col) %>% unique 
     
     if(length(cat_var_levels) == 0) cat_var_levels <- 0
@@ -945,13 +948,13 @@ variable_visualize <- function(
   if(sum(nrow(.summary_var[['Categorical variable summary']])) > 0) {
 
     if(nrow(.summary_var$`Categorical variable summary` %>% 
-            filter(.data$`name` %in% col)) > 0){
+            dplyr::filter(.data$`name` %in% col)) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
           .summary_var$`Categorical variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -961,7 +964,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Categorical variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -1414,7 +1417,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
 
   datatable(t(
      data_dict$Variables %>%
-     filter(name == '",data_dict$Variables$name[i],"')),
+     dplyr::filter(name == '",data_dict$Variables$name[i],"')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
@@ -1433,7 +1436,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
                    
   datatable(
     data_dict$Categories %>% 
-      filter(variable == '",data_dict$Variables$name[i],"') %>%
+      dplyr::filter(variable == '",data_dict$Variables$name[i],"') %>%
     select(variable, name, 
     matches(c('^label$','^label:[[:alnum:]]'))[1], missing) %>%
     mutate(across(everything(), as.character)),
@@ -1521,7 +1524,8 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #     ##### CONTENT ##########
 #     
 #     names_group <- 
-#       data_dict[['Categories']] %>% filter(.data$`variable` == group_by) %>%
+#       data_dict[['Categories']] %>% 
+#       dplyr::filter(.data$`variable` == group_by) %>%
 #       mutate(across(everything(),as.character)) %>%
 #       select(
 #         name,
@@ -1566,7 +1570,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #   datatable(
 # 
 #     .summary_var$`Variables summary (all)` %>%
-#       filter(if_any(
+#       dplyr::filter(if_any(
 #         str_subset(names(
 #           .summary_var$`Variables summary (all)`),'Grouping variable:'),
 #         ~ . == '",names_group$`___labels___`[i],"')) %>%
@@ -1619,13 +1623,13 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #     lapply(function(x){
 #       if(length(str_subset(names(x), 'Grouping variable:')) > 0){
 #        x <- x %>% 
-#          filter(if_any(starts_with('Grouping variable:'), 
+#          dplyr::filter(if_any(starts_with('Grouping variable:'), 
 #                        ~ . == '", names_group$`___labels___`[i],"' ))}
 #       return(x)}) 
 # 
 #   plots <- variable_visualize(
 #     dataset = dataset %>% 
-#       filter(",group_by," %in% c('", names_group$`name`[i],"')),
+#       dplyr::filter(",group_by," %in% c('", names_group$`name`[i],"')),
 #     col = '", names_var[j],"',
 #     group_by = ",group_by,",
 #     data_dict = data_dict,
