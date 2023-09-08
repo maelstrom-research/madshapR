@@ -2069,12 +2069,11 @@ data dictionary")}}
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
     # addition of valueType for sorting elements
-    # if index, preserve it.
-    index <- data_dict[['Categories']][['index']]
-    
+
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      select('variable','name') %>% add_index(.force = TRUE) %>%
+      select('variable','name') %>% 
+      add_index('madshapR::index', .force = TRUE) %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
@@ -2086,10 +2085,10 @@ data dictionary")}}
       }) %>% bind_rows() %>%
       select(-'typeof') %>%
       left_join(
-        data_dict[['Categories']] %>% add_index() %>%
-          select(-'name'),by = c("index", "variable"))
-    
-    data_dict[['Categories']][['index']] <- index
+        data_dict[['Categories']] %>%
+          add_index('madshapR::index',.force = TRUE) %>%
+          select(-'name'),by = c('madshapR::index', 'variable')) %>%
+      select(-'madshapR::index')
     
     # add labels if not exists
     if(length(data_dict[['Categories']][['labels']]) == 0){
