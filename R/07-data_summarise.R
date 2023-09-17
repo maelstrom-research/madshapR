@@ -1553,7 +1553,7 @@ summary_variables_categorical <- function(
   
   summary <-
     .dataset_preprocess %>%
-    group_by(across(c(-.data$`value_var_occur`,-.data$`index_value`))) %>%
+    group_by(across(c(-"value_var_occur",-"index_value"))) %>%
     summarise(
       n = sum(as.integer(.data$`value_var_occur`)),
       .groups = 'drop') %>%
@@ -1584,9 +1584,16 @@ summary_variables_categorical <- function(
           ifelse(
             str_detect(.data$`cat_index`,'\\] - NA$'),NA,.data$`cat_index`)) %>%
     
-      group_by(.data$`valid_class`,.data$`cat_index`,.data$`cat_order`) %>%
+      select("valid_class","cat_index","cat_order","value_var","n") %>%
+      group_by(.data$`valid_class`,.data$`cat_index`, .data$`cat_order`) %>%
       summarise(
         n = sum(.data$`n`),
+        value_var = paste0(.data$`value_var`, collapse = "{semicolon}"),
+        .groups = "drop") %>%
+      separate_rows("value_var",sep = "{semicolon}") %>%
+      distinct() %>%
+      group_by(.data$`valid_class`,.data$`cat_index`,.data$`cat_order`,.data$`n`) %>%
+      summarise(
         name_var = paste0(.data$`value_var`, collapse = " ; "),
         .groups = "drop") %>%
       arrange(.data$`valid_class`,.data$`cat_order`) %>%
@@ -1674,7 +1681,7 @@ summary_variables_categorical <- function(
                  "",.data$`other_val_presence`)) %>%
       ungroup() %>%
       select(-.data$`categorical_index`, -.data$`n`) %>%
-      summarise(across(everything(), ~ paste0(.,collapse = ""))) 
+      summarise(across(everything(), ~ paste0(.,collapse = "")))
     
     if(nrow(dplyr::filter(
       summary_i,
