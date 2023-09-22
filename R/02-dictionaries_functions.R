@@ -668,6 +668,11 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 
   # make unique names for names in data dictionary 
   data_dict_init <- data_dict
+
+  data_dict[['Variables']] <- 
+    data_dict[['Variables']] %>%
+    add_index("madshapR::index", .force = TRUE)
+  
   data_dict[['Variables']]$`name` <-
     make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
 
@@ -868,6 +873,18 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
         -matches("^Mlstr_additional::1$"),-matches("^Mlstr_additional::2$"))
     
   }
+  
+  if(sum(data_dict[["Variables"]][['madshapR::index']]) != 
+     nrow(data_dict[["Variables"]]) * (nrow(data_dict[["Variables"]]) + 1)/2){
+    stop(call. = FALSE,
+         "An error occured in data_dict_pivot_longer(). Please contact us.")
+  }
+  
+  data_dict[["Variables"]] <- 
+    data_dict[["Variables"]] %>% arrange(.data$`madshapR::index`) %>%
+    select(-"madshapR::index")
+  
+  data_dict[["Variables"]]$`name` <- data_dict_init[["Variables"]]$`name`
   
   return(data_dict)
 }

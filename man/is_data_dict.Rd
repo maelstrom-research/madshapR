@@ -7,7 +7,7 @@
 is_data_dict(object)
 }
 \arguments{
-\item{object}{A potential data dictionary to be coerced.}
+\item{object}{A potential data dictionary to be evaluated.}
 }
 \value{
 A logical.
