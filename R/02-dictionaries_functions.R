@@ -2602,7 +2602,7 @@ is_data_dict_shape <- function(object){
 #' @seealso
 #' For a better assessment, please use [data_dict_evaluate()].
 #'
-#' @param object A potential data dictionary to be coerced.
+#' @param object A potential data dictionary to be evaluated.
 #'
 #' @returns
 #' A logical.
