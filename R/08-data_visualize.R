@@ -248,10 +248,18 @@ variable_visualize <- function(
                     preprocess_var_cat_miss_values$value_var) 
   
   # guess the generic valueType of the variable (excluding categories):
-  vT_col <- 
-    madshapR::valueType_list[
-      madshapR::valueType_list$valueType %in% 
-        valueType_guess(colset_values[[col]]),]
+
+  vT_col <-   
+  if(valueType_guess == TRUE){
+      madshapR::valueType_list[
+        madshapR::valueType_list$valueType %in% 
+          valueType_guess(colset_values[[col]]),]    
+  }else{
+
+      madshapR::valueType_list[
+        madshapR::valueType_list$valueType %in% 
+          valueType_of(colset_values[[col]]),] 
+  }
   
   n_part <- nrow(colset)
   
