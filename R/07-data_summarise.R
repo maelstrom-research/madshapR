@@ -276,6 +276,9 @@ dataset_summarize <- function(
       data_dict[['Categories']] %>% 
       select(-matches("^___name_var___$")) %>%
       rename("___name_var___" = "variable") %>%
+      select("___name_var___","name",
+             matches(c("^label$","^label:[[:alnum:]]"))[1], 
+             "missing") %>%
       mutate(
         missing =
           ifelse(

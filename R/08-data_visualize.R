@@ -266,7 +266,7 @@ variable_visualize <- function(
   summary_1 <- 
     as.data.frame(t(
       
-      .summary_var$`Variables summary (all)` %>%
+      .summary_var$`Variables summary (all)` %>% 
         dplyr::filter(.data$`name` %in% col) %>%
         select(c("Total number of observations":last_col()))
       
