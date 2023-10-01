@@ -4,7 +4,7 @@
 \alias{as_data_dict_mlstr}
 \title{Validate and coerce an object to an Opal data dictionary format}
 \usage{
-as_data_dict_mlstr(object, as_data_dict = FALSE)
+as_data_dict_mlstr(object, as_data_dict = FALSE, name_standard = TRUE)
 }
 \arguments{
 \item{object}{A potential valid data dictionary to be coerced.}
@@ -13,6 +13,10 @@ as_data_dict_mlstr(object, as_data_dict = FALSE)
 data dictionary structure or not (meaning has a Maelstrom data dictionary
 structure, compatible with Maelstrom Research ecosystem, including Opal).
 FALSE by default.}
+
+\item{name_standard}{Whether the input data dictionary has variable names
+compatible with Maelstrom Research ecosystem, including Opal)or not.
+TRUE by default.}
 }
 \value{
 A list of tibble(s) identifying a data dictionary.

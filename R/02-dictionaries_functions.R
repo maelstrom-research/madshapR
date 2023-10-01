@@ -1748,7 +1748,9 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     silently_run({
       valueType_adjust(from = dataset, to = data_dict) %>%
         valueType_adjust() %>%
-        as_data_dict_mlstr(as_data_dict = !as_data_dict_mlstr) 
+        as_data_dict_mlstr(
+          as_data_dict = !as_data_dict_mlstr,
+          name_standard = FALSE) 
     })
   
   return(data_dict)
@@ -2243,6 +2245,9 @@ data dictionary")}}
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
 #' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' FALSE by default.
+#' @param name_standard Whether the input data dictionary has variable names
+#' compatible with Maelstrom Research ecosystem, including Opal)or not. 
+#' TRUE by default.
 #'
 #' @returns
 #' A list of tibble(s) identifying a data dictionary.
@@ -2262,7 +2267,10 @@ data dictionary")}}
 #' @importFrom rlang .data
 #'
 #' @export
-as_data_dict_mlstr <- function(object, as_data_dict = FALSE){
+as_data_dict_mlstr <- function(
+    object, 
+    as_data_dict = FALSE, 
+    name_standard = TRUE){
   
   # test if data_dict is already data dictionary
   data_dict <- as_data_dict(object)
@@ -2280,7 +2288,6 @@ as_data_dict_mlstr <- function(object, as_data_dict = FALSE){
          " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   
-  
   # check missing validity
   if(suppressWarnings(check_data_dict_missing_categories(data_dict)) %>% 
      dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
@@ -2293,7 +2300,7 @@ Incompatible missing value in the missing columns with Maelstrom standards",
 data dictionary")}
   
   # Check standard for names
-  if(as_data_dict == FALSE){
+  if(name_standard == TRUE){
     if(nrow(check_name_standards(data_dict[['Variables']][['name']])) > 0){
       stop(call. = FALSE,
 "names are incompatible with Maelstrom standards.",

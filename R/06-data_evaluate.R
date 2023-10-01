@@ -172,10 +172,12 @@ dataset_evaluate <- function(
     test_valueType <-
     tibble(name_var = as.character())
 
-  message(
-"    Assess the standard adequacy of naming")
-  test_name_standards  <- 
-    check_name_standards(names(zap_dataset))
+  if(as_data_dict_mlstr == TRUE){
+    message(
+      "    Assess the standard adequacy of naming")
+    test_name_standards  <- 
+      check_name_standards(names(zap_dataset))
+  }
   
   message(
 "    Assess the presence of variable names both in dataset and data dictionary")
@@ -594,19 +596,22 @@ data_dict_evaluate <- function(
     test_missing_category <-
     tibble(name_var = as.character())
   
-  message("    Assess the standard adequacy of naming")
-  test_name_standards  <-
-    check_name_standards(data_dict[['Variables']][['name']]) %>%
-    mutate(
-      col_name = "name",
-      sheet    = "Variables") %>%
-    bind_rows(
-      if(sum(nrow(data_dict[['Categories']])) > 0 ){
-        check_name_standards(data_dict[['Categories']][['variable']]) %>%
-          mutate(
-            col_name = "name",
-            sheet    = "Categories")
-      }else{tibble(name_var = as.character())})
+  if(as_data_dict_mlstr == TRUE){
+    
+    message("    Assess the standard adequacy of naming")
+    test_name_standards  <-
+      check_name_standards(data_dict[['Variables']][['name']]) %>%
+      mutate(
+        col_name = "name",
+        sheet    = "Variables") %>%
+      bind_rows(
+        if(sum(nrow(data_dict[['Categories']])) > 0 ){
+          check_name_standards(data_dict[['Categories']][['variable']]) %>%
+            mutate(
+              col_name = "name",
+              sheet    = "Categories")
+        }else{tibble(name_var = as.character())})
+  }
   
   message("    Assess the uniqueness of variable names")
   test_unique_variable <-
