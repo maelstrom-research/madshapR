@@ -151,7 +151,7 @@ variable_visualize <- function(
       suppressWarnings({
         data_dict %>%
           data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
-          as_data_dict_mlstr()})
+          as_data_dict_mlstr(name_standard = FALSE)})
   }else{
     col_dict <- 
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
@@ -1101,13 +1101,13 @@ variable_visualize <- function(
 #'
 #' @param dataset A tibble identifying the input dataset observations 
 #' associated to its data dictionary.
+#' @param bookdown_path A character string identifying the folder path where the 
+#' bookdown report will be saved.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
-#' @param bookdown_path A character string identifying the folder path where the 
-#' bookdown report will be saved.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
 #' @param valueType_guess Whether the output should include a more accurate
@@ -1154,9 +1154,9 @@ variable_visualize <- function(
 #' @export
 dataset_visualize <- function(
     dataset = tibble(id = as.character()),
+    bookdown_path,
     data_dict = data_dict_extract(dataset),
     group_by = NULL,
-    bookdown_path,
     taxonomy = NULL,
     valueType_guess = FALSE,
     overwrite = FALSE,
@@ -1237,7 +1237,7 @@ dataset_visualize <- function(
       data_dict_match_dataset(
         dataset,data_dict,
         output = 'data_dict') %>%
-        as_data_dict_mlstr()})
+        as_data_dict_mlstr(name_standard = FALSE)})
   
   # summarize initial information
   
@@ -1406,7 +1406,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
     rmd_file_name <-
       paste0(path_to,"/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
-             data_dict$Variables$name[i],".Rmd")
+             make.names(data_dict$Variables$name[i]),".Rmd")
     file.create(rmd_file_name)
     
     paste0(

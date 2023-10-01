@@ -46,7 +46,9 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 
   # tests
   if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
-    data_dict <- as_data_dict_mlstr(data_dict, as_data_dict = TRUE)}else{
+    data_dict <- 
+      as_data_dict_mlstr(data_dict, as_data_dict = TRUE, name_standard = FALSE)
+    }else{
       data_dict <- as_data_dict(data_dict)}
 
   if(nrow(data_dict[['Variables']]) == 0){

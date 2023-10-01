@@ -423,7 +423,7 @@ bold("\n\nUseful tip:"),
   
     # test data_dict
     tryCatch({data_dict <-
-      as_data_dict_mlstr(from)},
+      as_data_dict_mlstr(from, name_standard = FALSE)},
       warning = function(cond){
         stop(call. = FALSE,cond)})
 
@@ -444,7 +444,7 @@ bold("\n\nUseful tip:"),
     
     data_dict_data <-
       data_dict_extract(dataset) %>%
-      as_data_dict_mlstr()
+      as_data_dict_mlstr(name_standard = FALSE)
 
     is_factor <-
       dataset %>%

@@ -135,7 +135,8 @@ dataset_summarize <- function(
     data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict') %>%
-    as_data_dict_mlstr()})
+    as_data_dict_mlstr(name_standard = FALSE)
+      })
   
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
@@ -845,7 +846,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   if(is.null(data_dict)){
     data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
   }else{
-    data_dict <- as_data_dict_mlstr(data_dict)}
+    data_dict <- as_data_dict_mlstr(data_dict,name_standard = FALSE)}
   
   data_dict_var  <-
     data_dict[['Variables']] %>%

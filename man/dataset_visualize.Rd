@@ -6,9 +6,9 @@
 \usage{
 dataset_visualize(
   dataset = tibble(id = as.character()),
+  bookdown_path,
   data_dict = data_dict_extract(dataset),
   group_by = NULL,
-  bookdown_path,
   taxonomy = NULL,
   valueType_guess = FALSE,
   overwrite = FALSE,
@@ -21,15 +21,15 @@ dataset_visualize(
 \item{dataset}{A tibble identifying the input dataset observations
 associated to its data dictionary.}
 
+\item{bookdown_path}{A character string identifying the folder path where the
+bookdown report will be saved.}
+
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
 \item{group_by}{A character string of one column in the dataset that can be
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
-
-\item{bookdown_path}{A character string identifying the folder path where the
-bookdown report will be saved.}
 
 \item{taxonomy}{A tibble identifying the scheme used for variables
 classification.}
