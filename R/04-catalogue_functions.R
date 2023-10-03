@@ -62,7 +62,8 @@ valueType_of <- function(x){
       which(vT_list[['typeof']] == type &
             vT_list[['class']]  == class),]$`toValueType`)
 
-  if(type == "double" & class == "Date") valueType <- "date"
+  if(type == "double" & class == "Date")    valueType <- "date"
+  if(type == "double" & class == "POSIXt")  valueType <- "datetime"
 
   silently_run({
     if(class == "factor"){
@@ -174,6 +175,7 @@ valueType_self_adjust <- function(...){
         data_dict[['Categories']])
 
     for(i in names(dataset)) {
+      # stop()}
       dataset[[i]] <-
         as_valueType(x = dataset[[i]], 
                      valueType = valueType_guess(x = dataset[[i]]))
@@ -555,24 +557,36 @@ valueType_guess <- function(x){
 
   vT_list <- madshapR::valueType_list
 
-  test_vT_boolean <- 
+  test_vT_boolean  <- 
     silently_run(as_valueType(as.character.default(x),"boolean"))
-  test_vT_integer <- 
+  test_vT_integer  <- 
     silently_run(as_valueType(as.character.default(x),"integer"))
-  test_vT_decimal <- 
+  test_vT_decimal  <- 
     silently_run(as_valueType(as.character.default(x),"decimal"))
-  test_vT_date    <- 
-    silently_run(as_valueType(             x ,"date"   ))
-  test_vT_text    <-                    
-    as_valueType(x, "text"   )
+  test_vT_date     <- 
+    silently_run(as_valueType(                     x ,"date"))
+  test_vT_datetime <- 
+    silently_run(as_valueType(                     x ,"datetime"))
+  test_vT_text     <-                    
+    as_valueType(                                  x , "text"   )
 
   test_vT <-
     tribble(
       ~`valueType` ,~`class`                  ,
-      "boolean"    ,  class(test_vT_boolean )[1],
-      "integer"    ,  class(test_vT_integer )[1],
-      "decimal"    ,  class(test_vT_decimal )[1],
-      "date"       ,  class(test_vT_date    )[1]) %>%
+      "boolean"    ,  
+      class(test_vT_boolean)[[max(length(class(test_vT_boolean)))]][1],
+      
+      "integer"    ,  
+      class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1],
+      
+      "decimal"    ,  
+      class(test_vT_decimal)[[max(length(class(test_vT_decimal)))]][1],
+      
+      "date"       ,  
+      class(test_vT_date)[[max(length(class(test_vT_date)))]][1],
+      
+      "datetime"   ,   
+      class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]) %>%
     dplyr::filter(.data$`class` != "try-error") %>%
     summarise(
       valueType = paste0(.data$`valueType`,collapse = "|"),
@@ -583,7 +597,9 @@ valueType_guess <- function(x){
           .data$`valueType` == "boolean|integer|decimal"      ~ "integer"      ,
           .data$`valueType` == "integer|decimal"              ~ "integer"      ,
           .data$`valueType` == "integer|decimal|date"         ~ "date"         ,
+          .data$`valueType` == "integer|decimal|datetime"     ~ "datetime"     ,
           .data$`valueType` == "decimal|date"                 ~ "date"         ,
+          .data$`valueType` == "date|datetime"                ~ "date"         ,
           .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
           TRUE                                              ~  .data$`valueType`
         )) %>% pull(.data$`valueType`)
@@ -650,12 +666,18 @@ as_valueType <- function(x, valueType = 'text'){
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
   # if x is already the output format, no need to go further
-  if(class(x)[1] == "Date"    & valueType == "date")    return(x)
-  if(is.integer(x)            & valueType == "integer") return(x)
-  if(class(x)[1] == "numeric" & valueType == "decimal") return(x)
-  if(is.logical(x)            & valueType == "boolean") return(x)
-  if(is.na(valueType)         | valueType == "text")    return(
-    as.character.default(x))
+  if(class(x)[[max(length(class(x)))]] == "Date"    & 
+     valueType == "date")     return(x)
+  if(class(x)[[max(length(class(x)))]] == "POSIXt" & 
+     valueType == "datetime") return(x)
+  if(is.integer(x)            & 
+     valueType == "integer")  return(x)
+  if(class(x)[[max(length(class(x)))]] == "numeric" & 
+     valueType == "decimal")  return(x)
+  if(is.logical(x)            & 
+     valueType == "boolean")  return(x)
+  if(is.na(valueType)         | 
+     valueType == "text")     return(as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -705,19 +727,21 @@ data dictionary")}
       distinct(condition[which(!is.na(condition['original'])),])
 
     if(valueType %in% c("integer","decimal")){
-      test_condition <- test_condition %>%
+      test_condition <- 
+        test_condition %>%
         mutate(across(everything(), ~ as.numeric(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
 
     if(valueType %in% c("boolean")){
-      test_condition <- test_condition %>%
+      test_condition <- 
+        test_condition %>%
         mutate(
           across(everything(), ~ as_any_boolean(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
 
-    if(valueType %in% c("date","datetime")){
+    if(valueType %in% c("date")){
       test_condition <-
         test_condition %>%
         mutate(across(
@@ -725,6 +749,14 @@ data dictionary")}
           ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
         mutate(
           test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
+        pull(.data$`test`) %>% all}
+    
+    if(valueType %in% c("datetime")){
+      test_condition <- 
+        test_condition %>%
+        mutate(
+          across(everything(), ~ as.POSIXct.default(.))) %>%
+        mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
     }
 

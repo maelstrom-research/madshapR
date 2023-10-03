@@ -147,15 +147,27 @@ dataset_zap_data_dict <- function(dataset){
   as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
-  for(i in seq_len(length(dataset))){
-  # stop()}
-    if(is.Date(dataset[[i]])) dataset[[i]] <- as.character(dataset[[i]])
-  }
+  dataset_init = dataset # = dataset_init
 
+  vec <- tibble(index = as.integer(), valueType = as.character())
+  for(i in seq_len(length(dataset))){
+    # stop()}
+    vT_init <- valueType_of(dataset_init[[i]])
+    if(vT_init %in% c('date','datetime')){
+      dataset[[i]] <- as.character(dataset[[i]])
+      vec <- vec %>% add_row(index = i, valueType = vT_init) }
+  }
+  
   dataset <- 
     dataset %>% lapply(as.vector) %>% as_tibble() %>%
     as_dataset(col_id = preserve_attributes)
-
+  
+  for(i in seq_len(nrow(vec))){
+    # stop()}
+    dataset[[vec$`index`[[i]]]] <- 
+      as_valueType(dataset[[vec$`index`[[i]]]],vec$`valueType`[[i]])
+  }
+  
   return(dataset)
 }
 

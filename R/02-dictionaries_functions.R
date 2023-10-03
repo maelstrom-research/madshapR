@@ -1547,8 +1547,7 @@ your dataset")}
     
     vT_list <- madshapR::valueType_list
     vT <- valueType_of(x = dataset[[i]])
-    dataset[[i]] <- as_valueType(x = as.character.default(dataset[[i]]),
-                                 valueType = vT)
+    dataset[[i]] <- as_valueType(x = (dataset[[i]]),valueType = vT)
     
     attrs_init <- attributes(dataset[[i]])
     
