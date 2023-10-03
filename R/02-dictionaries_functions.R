@@ -1700,6 +1700,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     # stop()}
     
     attrs_i <- attributes(dataset[[i]])
+    attrs_i$`tzone` <- NULL
     attrs_i$`class` <- NULL
     if(is.factor(dataset[[i]])){
       names(attrs_i$`levels`) <- make.unique(attrs_i$`levels`)

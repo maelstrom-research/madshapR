@@ -342,6 +342,12 @@ dataset_summarize <- function(
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Estimated dataset valueType` %in%
         vT_date,] %>% dplyr::filter(!.data$`name` %in% col_id)
+  
+  vT_datetime <- vT[vT$`genericType` == 'datetime',][['valueType']]
+  report$`Datetime variable summary` <-
+    report$`Variables summary (all)`[
+      report$`Variables summary (all)`$`Estimated dataset valueType` %in%
+        vT_datetime,] %>% dplyr::filter(!.data$`name` %in% col_id)
 
   report$`Categorical variable summary` <-
     report$`Variables summary (all)`[
@@ -394,6 +400,15 @@ dataset_summarize <- function(
       lapply(.dataset_preprocess_date,function(x){
         summary_variables_date(.dataset_preprocess = x)})
     
+    message("    Summarise information for datetime variables")
+    .dataset_preprocess_datetime <-
+      lapply(.dataset_preprocess,function(x){
+        x[x$`name` %in% report$`Datetime variable summary`$name,] %>%
+          dplyr::filter(.data$`Categorical variable` != 'yes')})
+    summary_datetime <-
+      lapply(.dataset_preprocess_datetime,function(x){
+        summary_variables_datetime(.dataset_preprocess = x)})
+    
     message("    Summarise information for categorical variables")
     .dataset_preprocess_cat <-
       lapply(.dataset_preprocess,function(x){
@@ -430,17 +445,22 @@ dataset_summarize <- function(
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
             ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
         
+        summary_datetime[[i]] <- summary_datetime[[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+        
         summary_cat [[i]] <- summary_cat [[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
             ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
       }}
     
     # binding information
-    summary_var  <- bind_rows(summary_var)  %>% distinct()
-    summary_num  <- bind_rows(summary_num)  %>% distinct()
-    summary_text <- bind_rows(summary_text) %>% distinct()
-    summary_date <- bind_rows(summary_date) %>% distinct()
-    summary_cat  <- bind_rows(summary_cat)  %>% distinct()
+    summary_var      <- bind_rows(summary_var)      %>% distinct()
+    summary_num      <- bind_rows(summary_num)      %>% distinct()
+    summary_text     <- bind_rows(summary_text)     %>% distinct()
+    summary_date     <- bind_rows(summary_date)     %>% distinct()
+    summary_datetime <- bind_rows(summary_datetime) %>% distinct()
+    summary_cat      <- bind_rows(summary_cat)      %>% distinct()
     
     report$`Variables summary (all)` <-
       report$`Variables summary (all)` %>%
@@ -507,6 +527,28 @@ dataset_summarize <- function(
         matches("% Valid categorical values (if applicable)"),
         matches("% Missing categorical values (if applicable)"),everything())
 
+    report$`Datetime variable summary` <-
+      suppressMessages(report$`Datetime variable summary` %>%
+      inner_join(summary_var , by = "name", multiple = "all") %>%
+      inner_join(summary_datetime, multiple = "all")) %>%
+      select(
+        "index in data dict." ,
+        "name",
+        matches("Quality assessment comment"),
+        starts_with("label")[1],
+        "Data Dictionary valueType",
+        "Estimated dataset valueType",
+        "Actual dataset valueType",
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
+        starts_with('Grouping variable: '),
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"),everything())
+    
     report$`Numerical variable summary` <-
       suppressMessages(report$`Numerical variable summary` %>%
       inner_join(summary_var, by = "name", multiple = "all") %>%
@@ -567,6 +609,7 @@ dataset_summarize <- function(
       '    1_Data type in dictionary (valueType)'                              ,
       '        1_Nb. text variables'                                           ,
       '        1_Nb. date variables'                                           ,
+      '        1_Nb. datetime variables'                                       ,
       '        1_Nb. numerical variables'                                      ,
       '        1_Nb. categorical variables'                                    ,
       '    2_Rows'                                                             ,
@@ -606,6 +649,8 @@ dataset_summarize <- function(
       as.character(length(unique(report$`Text variable summary`$name))),
         .data$`---` == '        1_Nb. date variables'                          ~
       as.character(length(unique(report$`Date variable summary`$name))),
+        .data$`---` == '        1_Nb. datetime variables'                      ~
+      as.character(length(unique(report$`Datetime variable summary`$name))),
         .data$`---` == '        1_Nb. numerical variables'                     ~
       as.character(length(unique(report$`Numerical variable summary`$name))),
         .data$`---` == '        1_Nb. categorical variables'                   ~
@@ -1371,6 +1416,87 @@ summary_variables_date <- function(
   
   return(summary_tbl)
 }
+
+
+#' @title
+#' Provide descriptive statistics for variables of type 'datetime' in a dataset
+#'
+#' @description
+#' Summarises (in a tibble) the columns of type 'datetime' in a dataset and its 
+#' data dictionary (if any). The summary provides information about quality, 
+#' type, composition, and descriptive statistics of variables. Statistics are 
+#' generated by valueType.
+#'
+#' @details
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#'
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
+#' @param data_dict A list of tibble(s) representing meta data of an
+#' associated dataset. Automatically generated if not provided.
+#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' (for internal processes and programming).
+#'
+#' @returns
+#' A tibble providing statistical description of 'datetime' variables present
+#' in a dataset.
+#'
+#' @examples
+#' {
+#'    
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
+#' library(dplyr)
+#' library(fabR)
+#' 
+#' .dataset_preprocess <- 
+#'   storms %>%
+#'     sample_n(50) %>%
+#'     mutate(date_storm = as_datetime(paste(year, month, day,"-"))) %>%
+#'     select(date_storm) %>%
+#'     dataset_preprocess
+#'
+#' summary_variables_datetime(.dataset_preprocess = .dataset_preprocess)
+#'
+#' }
+#'
+#' @import dplyr tidyr lubridate fabR
+#' @importFrom rlang .data
+#'
+#' @export
+summary_variables_datetime <- function(
+    dataset = NULL,
+    data_dict = NULL,
+    .dataset_preprocess = NULL){
+  
+  # init
+  summary_tbl <- tibble(name = as.character())
+  if(is.null(.dataset_preprocess)) return(summary_tbl)
+  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  
+  final_summary <- 
+    summary_variables_text(.dataset_preprocess = .dataset_preprocess)
+  return(final_summary)
+
+  }
+
+
+
 
 #' @title
 #' Provide descriptive statistics for variables of type 'numeric' in a dataset

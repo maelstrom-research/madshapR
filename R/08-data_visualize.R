@@ -234,18 +234,24 @@ variable_visualize <- function(
   
   colset_values <-
     colset %>% 
-    dplyr::filter(!! as.symbol(col) %in% 
-                    preprocess_var_values$value_var)
+    mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    dplyr::filter(.data$`temp_val` %in% 
+                    preprocess_var_values$value_var) %>%
+    select(-'temp_val')
   
   colset_cat_values <-
     colset %>% 
-    dplyr::filter(!! as.symbol(col) %in% 
-                    preprocess_var_cat_values$value_var) 
+    mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    dplyr::filter(.data$`temp_val` %in% 
+                    preprocess_var_cat_values$value_var) %>%
+    select(-'temp_val')
   
   colset_cat_miss_values <-
-    colset %>% 
-    dplyr::filter(!! as.symbol(col) %in% 
-                    preprocess_var_cat_miss_values$value_var) 
+    colset  %>% 
+    mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    dplyr::filter(.data$`temp_val` %in% 
+                    preprocess_var_cat_miss_values$value_var) %>%
+    select(-'temp_val') 
   
   # guess the generic valueType of the variable (excluding categories):
 
@@ -553,7 +559,7 @@ variable_visualize <- function(
       if(group_by != '') title <- paste0(title, ' - per ',group_by)
       
       group_n <- "___n___"
-
+      
       aes <- 
         if(group_by == ''){
           aes(
@@ -578,10 +584,149 @@ variable_visualize <- function(
         xlab("") +
         scale_fill_manual(values = rev(palette_values)) +
         coord_flip()
-
+      
       if(group_by != '') {plot_1 <- plot_1 + facet_wrap(group_by)}
       
       #### plot_2 character ####      
+      n_obs <- nrow(colset_values)
+      
+      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+      if(group_by != '') title <- paste0(title, ' - per ',group_by)
+      
+      group_n <- "___n___"
+      aes <- 
+        if(group_by == ''){
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n),
+            fill = '')
+        }else{
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n), 
+            fill = fct_rev(!! as.symbol(group_by)))}
+      
+      plot_2 <- 
+        ggplot(colset_values_all_word) + aes + 
+        geom_col() +
+        theme_bw() +
+        theme(legend.position="none",plot.title =
+                element_text(size=8,face = "bold"),
+              strip.background = element_rect(color = "white", fill="white")) +
+        ggtitle(paste0('Bar plot', title)) +
+        ylab("") +
+        xlab("") +
+        scale_fill_manual(values = rev(palette_values)) +
+        coord_flip()
+      
+      if(group_by != ''){plot_2 <- plot_2 + facet_wrap(group_by)}
+      
+    }
+    
+    if(vT_col$`genericType` == "datetime"){
+      
+      #### summary_2 datetime ####
+      summary_2 <- 
+        as.data.frame(t(
+          
+          .summary_var$`Datetime variable summary` %>%
+            dplyr::filter(.data$`name` %in% col) %>%
+            select(-c(1:"% Missing categorical values (if applicable)"))
+          
+        ))
+      
+      if(group_by != ''){
+        names(summary_2) <- 
+          
+          unique(pull(
+            .summary_var$`Datetime variable summary` %>%
+              dplyr::filter(.data$`name` %in% col) %>%
+              select(starts_with('Grouping variable:'))
+          ))
+        
+      } else { names(summary_2) <- col}
+      
+      summary_2 <-
+        summary_2 %>% 
+        mutate(col = row.names(summary_2)) %>%
+        mutate(across(-c("col"), 
+                      ~ str_trunc(.,width = 39,ellipsis = ' [...]'))) %>%
+        select(-'col') %>%
+        mutate(across(everything(),as.character))
+      
+      colset_values_main_word <- 
+        colset_values_all_word <- 
+        colset_values %>% 
+        mutate(across(
+          all_of(col), ~ as.character(.)))
+      
+      if(group_by != ''){
+        colset_values_main_word <- 
+          colset_values_main_word %>%
+          group_by(!! as.symbol(group_by))}
+      
+      colset_values_main_word <- 
+        colset_values_main_word %>%
+        unnest_tokens(output = word, input = !! as.symbol(col)) %>%
+        anti_join(tidytext::stop_words,by = 'word') %>%
+        count(word, sort = TRUE) %>%
+        rename(`___n___` = last_col()) %>%
+        rename(!! as.symbol(col) := word) %>%
+        arrange(desc(.data$`___n___`)) %>%
+        slice(1:10)
+      
+      if(group_by != ''){
+        colset_values_all_word <- 
+          colset_values_all_word %>%
+          group_by(!! as.symbol(group_by))}
+      
+      colset_values_all_word <- 
+        colset_values_all_word %>%
+        count(!! as.symbol(col), sort = TRUE) %>%
+        rename(`___n___` = last_col()) %>%
+        mutate(!! as.symbol(col) := 
+                 str_trunc(!! as.symbol(col),
+                           width = 50,
+                           ellipsis = '...')) %>%
+        arrange(desc(.data$`___n___`)) %>%
+        slice(1:10)
+      
+      #### plot_1 datetime ####      
+      n_obs <- nrow(colset_values)
+      
+      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+      if(group_by != '') title <- paste0(title, ' - per ',group_by)
+      
+      group_n <- "___n___"
+      
+      aes <- 
+        if(group_by == ''){
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n),
+            fill = '')
+        }else{
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n), 
+            fill = fct_rev(!! as.symbol(group_by)))}
+      
+      plot_1 <- 
+        ggplot(colset_values_main_word) + aes + 
+        geom_col() +
+        theme_bw() +
+        theme(legend.position="none",plot.title = 
+                element_text(size=8,face = "bold"),
+              strip.background = element_rect(color = "white", fill="white")) +
+        ggtitle(paste0('Most common entry', title)) +
+        ylab("") +
+        xlab("") +
+        scale_fill_manual(values = rev(palette_values)) +
+        coord_flip()
+      
+      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(group_by)}
+      
+      #### plot_2 datetime ####      
       n_obs <- nrow(colset_values)
       
       title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
@@ -1186,7 +1331,6 @@ dataset_visualize <- function(
   if(!is.character(render))
     stop(call. = FALSE,'`render` must be a character string.')
   
-  
   # if(!toc %in% c('variables','group_by'))
   #   stop(call. = FALSE,'`toc` must be "variables" or "group_by". 
   # ("variables" by default)')
@@ -1271,7 +1415,6 @@ dataset_visualize <- function(
       select(-"madshapR::index_group",-"madshapR::index_original")
   }
 
-    
   data_dict_flat <- 
     suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
     bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
