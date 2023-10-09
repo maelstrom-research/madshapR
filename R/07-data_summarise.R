@@ -1463,13 +1463,14 @@ summary_variables_date <- function(
 #' ###### Example : any data frame (or tibble) can be a dataset by definition.
 #' library(dplyr)
 #' library(fabR)
+#' library(lubridate)
 #' 
 #' .dataset_preprocess <- 
-#'   storms %>%
-#'     sample_n(50) %>%
-#'     mutate(date_storm = as_datetime(paste(year, month, day,"-"))) %>%
-#'     select(date_storm) %>%
-#'     dataset_preprocess
+#'  storms %>%
+#'    sample_n(50) %>%
+#'    mutate(date_storm = as_datetime(paste(year, month, day,"-"))) %>%
+#'    select(date_storm) %>%
+#'    dataset_preprocess
 #'
 #' summary_variables_datetime(.dataset_preprocess = .dataset_preprocess)
 #'

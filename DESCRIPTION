@@ -51,7 +51,7 @@ Imports: dplyr,
     tidyr,
     fs,
     utils,
-    fabR,
+    fabR (>= 2.0.0),
     lifecycle
 URL: https://github.com/maelstrom-research/madshapR
 BugReports: https://github.com/maelstrom-research/madshapR/issues

@@ -77,8 +77,9 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 library(dplyr)
 
 ###### Example : any data frame (or tibble) can be summarized
-dataset <- as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
-dataset_evaluate(dataset)
+dataset <- 
+ as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+ dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
 
 }
 

@@ -5,18 +5,22 @@
 
 # Latest submission : madshapR 1.0.2
 
-## Creation of NEWS feed !!
-
-Addition of `NEWS.md` for the development version use "(development version)".
-
 ## Bug fixes and improvements
 
 * Some improvements in the documentation of the package has been made.
 * internal call of libraries (using '::') has been replaced by proper import in
 the declaration function.
+* Addition of `NEWS.md` for the development version use "(development version)".
+
+* Another package fabR had many functions (starting with
+fabR::plot_xxx() and fabR::summary_xxx()) which are now gathered in one and only 
+function madshapR::variable_visualize(). fabR has been proposed and validated 
+to CRAN last week. These changes reflect the difference in the contributions 
+for both packages. Everyone involved in the package development has been well 
+informed of these changes.
 
 * get functions in [fabR](https://guifabre.github.io/fabR-documentation/) have
-been changed in its last release. the functions using them as dependancies (
+been changed in its last release. the functions using them as dependencies (
 'check_xxx()') have been updated accordingly.
 
 * DEMO files no longer include harmonization files that are now in the package
@@ -35,10 +39,8 @@ been changed in its last release. the functions using them as dependancies (
 These functions are imported from [fabR](https://guifabre.github.io/fabR-documentation/)
 
 * `bookdown_template()` replaces the deprecated function `bookdown_template()`.
-
 * `bookdown_render()` which renders a Rmd collection of files into a docs/index.html
 website.
-
 * `bookdown_open()` Which allows to open a docs/index.html document when the bookdown
 is rendered
 
