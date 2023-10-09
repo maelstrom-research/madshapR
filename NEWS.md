@@ -12,13 +12,13 @@ version)”.
 
 - Some improvements in the documentation of the package has been made.
 
-- internal call of libraries (using ‘::’) has been replaced by proper
+- internal call of libraries (using `::`) has been replaced by proper
   import in the declaration function.
 
 - get functions in
   [fabR](https://guifabre.github.io/fabR-documentation/) have been
-  changed in its last release. the functions using them as dependancies
-  ( ‘check_xxx()’) have been updated accordingly.
+  changed in its last release. the functions using them as dependencies
+  ( `check_xxx()`) have been updated accordingly.
 
 - DEMO files no longer include harmonization files that are now in the
   package
@@ -65,7 +65,6 @@ function before and is not working any longer.
 ## Helper functions
 
 - `madshapR_help()` Call the help center for full documentation
-
 
 ## functions to generate, shape and format meta data.
 
@@ -135,7 +134,7 @@ in a tibble that can be use to summary inputs.
 ## Write and read excel and csv
 
 - `read_csv_any_formats()` The csv file is read twice to detect the
-  number of lines to use in attributing the column type (‘guess_max’
+  number of lines to use in attributing the column type (`guess_max`
   parameter of read_csv). This avoids common errors when reading csv
   files.
 
