@@ -1,8 +1,5 @@
 # madshapR (development version)
 
-
-# madshapR (current development version 1.0.2.1000)
-
 # madshapR 1.0.2
 
 ## Creation of NEWS feed !!
