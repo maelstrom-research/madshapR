@@ -75,11 +75,11 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use DEMO_files provided by the package
 library(dplyr)
-library(fabR) # add_index
 
-#' ###### Example : any data frame (or tibble) can be summarized
-dataset <- iris['Sepal.Width']
-dataset_evaluate(dataset)
+###### Example : any data frame (or tibble) can be summarized
+dataset <- 
+ as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+ dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
 
 }
 

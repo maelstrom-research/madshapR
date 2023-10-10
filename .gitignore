@@ -9,5 +9,7 @@ _pkgdown.yml
 docs
 inst/doc
 roxy_madshapR.xlsx
+^README.Rmd$
+^NEWS.Rmd$
 /doc/
 /Meta/

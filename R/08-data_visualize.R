@@ -148,9 +148,10 @@ variable_visualize <- function(
   
   if(!is.null(data_dict)){
     col_dict <- 
-      data_dict %>%
-      data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
-      as_data_dict_mlstr()
+      suppressWarnings({
+        data_dict %>%
+          data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
+          as_data_dict_mlstr(name_standard = FALSE)})
   }else{
     col_dict <- 
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
@@ -198,7 +199,7 @@ variable_visualize <- function(
     
     cat_lab <- 
       col_dict[['Categories']] %>% 
-      filter(if_any('variable') == group_by) %>%
+      dplyr::filter(if_any('variable') == group_by) %>%
       select(
         !! group_by := 'name', 
         `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
@@ -233,29 +234,46 @@ variable_visualize <- function(
   
   colset_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% preprocess_var_values$value_var)
+    mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    dplyr::filter(.data$`temp_val` %in% 
+                    preprocess_var_values$value_var) %>%
+    select(-'temp_val')
   
   colset_cat_values <-
     colset %>% 
-    filter(!! as.symbol(col) %in% preprocess_var_cat_values$value_var) 
+    mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    dplyr::filter(.data$`temp_val` %in% 
+                    preprocess_var_cat_values$value_var) %>%
+    select(-'temp_val')
   
   colset_cat_miss_values <-
-    colset %>% 
-    filter(!! as.symbol(col) %in% preprocess_var_cat_miss_values$value_var) 
+    colset  %>% 
+    mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    dplyr::filter(.data$`temp_val` %in% 
+                    preprocess_var_cat_miss_values$value_var) %>%
+    select(-'temp_val') 
   
   # guess the generic valueType of the variable (excluding categories):
-  vT_col <- 
-    madshapR::valueType_list[
-      madshapR::valueType_list$valueType %in% 
-        valueType_guess(colset_values[[col]]),]
+
+  vT_col <-   
+  if(valueType_guess == TRUE){
+      madshapR::valueType_list[
+        madshapR::valueType_list$valueType %in% 
+          valueType_guess(colset_values[[col]]),]    
+  }else{
+
+      madshapR::valueType_list[
+        madshapR::valueType_list$valueType %in% 
+          valueType_of(colset_values[[col]]),] 
+  }
   
   n_part <- nrow(colset)
   
   summary_1 <- 
     as.data.frame(t(
       
-      .summary_var$`Variables summary (all)` %>%
-        filter(.data$`name` %in% col) %>%
+      .summary_var$`Variables summary (all)` %>% 
+        dplyr::filter(.data$`name` %in% col) %>%
         select(c("Total number of observations":last_col()))
       
     ))
@@ -265,7 +283,7 @@ variable_visualize <- function(
       
       unique(pull(
         .summary_var$`Variables summary (all)` %>%
-          filter(.data$`name` %in% col) %>%
+          dplyr::filter(.data$`name` %in% col) %>%
           select(starts_with('Grouping variable:'))
       ))
     
@@ -371,7 +389,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           .summary_var$`Numerical variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
           ))
@@ -381,7 +399,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Numerical variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
             
@@ -473,7 +491,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           .summary_var$`Text variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -483,7 +501,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Text variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -541,7 +559,7 @@ variable_visualize <- function(
       if(group_by != '') title <- paste0(title, ' - per ',group_by)
       
       group_n <- "___n___"
-
+      
       aes <- 
         if(group_by == ''){
           aes(
@@ -566,10 +584,149 @@ variable_visualize <- function(
         xlab("") +
         scale_fill_manual(values = rev(palette_values)) +
         coord_flip()
-
+      
       if(group_by != '') {plot_1 <- plot_1 + facet_wrap(group_by)}
       
       #### plot_2 character ####      
+      n_obs <- nrow(colset_values)
+      
+      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+      if(group_by != '') title <- paste0(title, ' - per ',group_by)
+      
+      group_n <- "___n___"
+      aes <- 
+        if(group_by == ''){
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n),
+            fill = '')
+        }else{
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n), 
+            fill = fct_rev(!! as.symbol(group_by)))}
+      
+      plot_2 <- 
+        ggplot(colset_values_all_word) + aes + 
+        geom_col() +
+        theme_bw() +
+        theme(legend.position="none",plot.title =
+                element_text(size=8,face = "bold"),
+              strip.background = element_rect(color = "white", fill="white")) +
+        ggtitle(paste0('Bar plot', title)) +
+        ylab("") +
+        xlab("") +
+        scale_fill_manual(values = rev(palette_values)) +
+        coord_flip()
+      
+      if(group_by != ''){plot_2 <- plot_2 + facet_wrap(group_by)}
+      
+    }
+    
+    if(vT_col$`genericType` == "datetime"){
+      
+      #### summary_2 datetime ####
+      summary_2 <- 
+        as.data.frame(t(
+          
+          .summary_var$`Datetime variable summary` %>%
+            dplyr::filter(.data$`name` %in% col) %>%
+            select(-c(1:"% Missing categorical values (if applicable)"))
+          
+        ))
+      
+      if(group_by != ''){
+        names(summary_2) <- 
+          
+          unique(pull(
+            .summary_var$`Datetime variable summary` %>%
+              dplyr::filter(.data$`name` %in% col) %>%
+              select(starts_with('Grouping variable:'))
+          ))
+        
+      } else { names(summary_2) <- col}
+      
+      summary_2 <-
+        summary_2 %>% 
+        mutate(col = row.names(summary_2)) %>%
+        mutate(across(-c("col"), 
+                      ~ str_trunc(.,width = 39,ellipsis = ' [...]'))) %>%
+        select(-'col') %>%
+        mutate(across(everything(),as.character))
+      
+      colset_values_main_word <- 
+        colset_values_all_word <- 
+        colset_values %>% 
+        mutate(across(
+          all_of(col), ~ as.character(.)))
+      
+      if(group_by != ''){
+        colset_values_main_word <- 
+          colset_values_main_word %>%
+          group_by(!! as.symbol(group_by))}
+      
+      colset_values_main_word <- 
+        colset_values_main_word %>%
+        unnest_tokens(output = word, input = !! as.symbol(col)) %>%
+        anti_join(tidytext::stop_words,by = 'word') %>%
+        count(word, sort = TRUE) %>%
+        rename(`___n___` = last_col()) %>%
+        rename(!! as.symbol(col) := word) %>%
+        arrange(desc(.data$`___n___`)) %>%
+        slice(1:10)
+      
+      if(group_by != ''){
+        colset_values_all_word <- 
+          colset_values_all_word %>%
+          group_by(!! as.symbol(group_by))}
+      
+      colset_values_all_word <- 
+        colset_values_all_word %>%
+        count(!! as.symbol(col), sort = TRUE) %>%
+        rename(`___n___` = last_col()) %>%
+        mutate(!! as.symbol(col) := 
+                 str_trunc(!! as.symbol(col),
+                           width = 50,
+                           ellipsis = '...')) %>%
+        arrange(desc(.data$`___n___`)) %>%
+        slice(1:10)
+      
+      #### plot_1 datetime ####      
+      n_obs <- nrow(colset_values)
+      
+      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+      if(group_by != '') title <- paste0(title, ' - per ',group_by)
+      
+      group_n <- "___n___"
+      
+      aes <- 
+        if(group_by == ''){
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n),
+            fill = '')
+        }else{
+          aes(
+            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+            y = !! as.symbol(group_n), 
+            fill = fct_rev(!! as.symbol(group_by)))}
+      
+      plot_1 <- 
+        ggplot(colset_values_main_word) + aes + 
+        geom_col() +
+        theme_bw() +
+        theme(legend.position="none",plot.title = 
+                element_text(size=8,face = "bold"),
+              strip.background = element_rect(color = "white", fill="white")) +
+        ggtitle(paste0('Most common entry', title)) +
+        ylab("") +
+        xlab("") +
+        scale_fill_manual(values = rev(palette_values)) +
+        coord_flip()
+      
+      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(group_by)}
+      
+      #### plot_2 datetime ####      
       n_obs <- nrow(colset_values)
       
       title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
@@ -612,7 +769,7 @@ variable_visualize <- function(
         as.data.frame(t(
           
           .summary_var$`Date variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -622,7 +779,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Date variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -646,7 +803,7 @@ variable_visualize <- function(
       # convert dataset to wide format
       colset_span <- 
         colset_values %>%
-        filter(if_any(col) == min(!! as.symbol(col)) | 
+        dplyr::filter(if_any(col) == min(!! as.symbol(col)) | 
                  if_any(col) == max(!! as.symbol(col))) 
       
       #### plot_1 date ####    
@@ -728,7 +885,7 @@ variable_visualize <- function(
     
     cat_lab_var <- 
       col_dict[['Categories']] %>% 
-      filter(if_any('variable') == col) %>%
+      dplyr::filter(if_any('variable') == col) %>%
       select(
         !!as.symbol(col) := 'name', 
         `___labels___` = 
@@ -751,7 +908,7 @@ variable_visualize <- function(
     cat_var_levels <- 
       colset_cat_values %>% 
       arrange(.data$`___category_level___`) %>%
-      filter(!is.na(!!as.symbol(col))) %>%
+      dplyr::filter(!is.na(!!as.symbol(col))) %>%
       pull(col) %>% unique 
     
     if(length(cat_var_levels) == 0) cat_var_levels <- 0
@@ -794,7 +951,7 @@ variable_visualize <- function(
       
       cat_lab_miss_var <- 
         col_dict[['Categories']] %>% 
-        filter(if_any('variable') == col) %>%
+        dplyr::filter(if_any('variable') == col) %>%
         select(
           !!as.symbol(col) := 'name', 
           `___labels___` = 
@@ -825,7 +982,7 @@ variable_visualize <- function(
     cat_var_levels <- 
       colset_cat_miss_values %>% 
       arrange(.data$`___category_level___`) %>%
-      filter(!is.na(!!as.symbol(col))) %>%
+      dplyr::filter(!is.na(!!as.symbol(col))) %>%
       pull(col) %>% unique 
     
     if(length(cat_var_levels) == 0) cat_var_levels <- 0
@@ -944,13 +1101,13 @@ variable_visualize <- function(
   if(sum(nrow(.summary_var[['Categorical variable summary']])) > 0) {
 
     if(nrow(.summary_var$`Categorical variable summary` %>% 
-            filter(.data$`name` %in% col)) > 0){
+            dplyr::filter(.data$`name` %in% col)) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
           .summary_var$`Categorical variable summary` %>%
-            filter(.data$`name` %in% col) %>%
+            dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -960,7 +1117,7 @@ variable_visualize <- function(
           
           unique(pull(
             .summary_var$`Categorical variable summary` %>%
-              filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -1085,67 +1242,72 @@ variable_visualize <- function(
 #' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 #'
 #' @seealso
-#' [open_visual_report()]
+#' [bookdown_open()]
 #'
 #' @param dataset A tibble identifying the input dataset observations 
 #' associated to its data dictionary.
+#' @param bookdown_path A character string identifying the folder path where the 
+#' bookdown report will be saved.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
 #' @param group_by A character string of one column in the dataset that can be
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
-#' @param to A character string identifying the folder path where the bookdown
-#' report will be saved.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
+#' @param overwrite whether to overwrite existing files. FALSE by default.
+#' @param render Output format of the visual report. To date, the format can 
+#' only be 'html', but will be expand to other formats in the future.
 #' @param .summary_var A list which is the summary of the variables.
-#' @param .keep_files whether to keep the R-markdown files.
-#' TRUE by default. (used for internal processes and programming)
 #' @param .dataset_name A character string specifying the name of the dataset
 #' (used for internal processes and programming).
 #'
 #' @returns
 #' A bookdown folder containing files in the specified output folder. To
 #' open the file in browser, open 'docs/index.html'. Or use 
-#' [open_visual_report()]
+#' [bookdown_open()]
 #'
 #' @examples
 #' {
 #' 
 #' dataset <- DEMO_files$dataset_TOKYO['height']
-#' data_dict <- 
+#' data_dict <-
 #'   data_dict_filter(
-#'     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+#'     DEMO_files$dd_TOKYO_format_maelstrom,
 #'     filter_var = "name == 'height'")
 #'       
 #' .summary_var <- DEMO_files$summary_var
 #'   
-#' to <- tempdir()
-#' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
+#' bookdown_path <- tempdir()
+#' dataset_visualize(
+#'   dataset, data_dict,
+#'   .summary_var =.summary_var, 
+#'   bookdown_path = bookdown_path,
+#'   overwrite = TRUE)
 #'   
-#' # To open the file in browser, open 'to/docs/index.html'. 
-#' # Or use open_visual_report function
+#' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
+#' # Or use bookdown_open(bookdown_path) function
 #' 
 #' }
 #'
-#' @import dplyr knitr fabR 
+#' @import dplyr knitr fabR
 #' @import bookdown utils readr stringr fs DT ggplot2 
-#' @importFrom xfun in_dir
 #' @importFrom rlang .data
 #'
 #' @export
 dataset_visualize <- function(
     dataset = tibble(id = as.character()),
+    bookdown_path,
     data_dict = data_dict_extract(dataset),
     group_by = NULL,
-    to,
     taxonomy = NULL,
     valueType_guess = FALSE,
+    overwrite = FALSE,
+    render = 'html',
     .summary_var = NULL, 
-    .dataset_name = NULL,
-    .keep_files = TRUE){
+    .dataset_name = NULL){
   
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -1155,8 +1317,19 @@ dataset_visualize <- function(
   # toc <- 'variables'
   
   # check input
-  if(!is.logical(.keep_files))
-    stop(call. = FALSE,'`.keep_files` must be TRUE or FALSE (TRUE by default)')
+  render <- 'html'
+  
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,'`valueType_guess` must be TRUE or FALSE (TRUE by default)')
+  
+  if(!is.logical(overwrite))
+    stop(call. = FALSE,'`overwrite` must be TRUE or FALSE (TRUE by default)')
+  
+  if(!is.character(bookdown_path))
+    stop(call. = FALSE,'`bookdown_path` must be a character string.')
+  
+  if(!is.character(render))
+    stop(call. = FALSE,'`render` must be a character string.')
   
   # if(!toc %in% c('variables','group_by'))
   #   stop(call. = FALSE,'`toc` must be "variables" or "group_by". 
@@ -1165,7 +1338,7 @@ dataset_visualize <- function(
   # if(!toc == c('group_by') & toString(substitute(group_by))=='')
   #   stop(call. = FALSE,'If `toc` == "group_by", `group_by` must be provided.')
   
-  to <- str_squish(to)
+  bookdown_path <- str_squish(bookdown_path)
   dataset <- as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   col_id <- attributes(dataset)$`madshapR::col_id`
   
@@ -1183,7 +1356,7 @@ dataset_visualize <- function(
     ifelse(
       !is.null(.dataset_name),
       .dataset_name,
-      fabR::make_name_list(as.character(fargs[['dataset']]),
+      make_name_list(as.character(fargs[['dataset']]),
                            list_elem = list(NULL))))
   
   # check on argument : taxonomy
@@ -1197,16 +1370,18 @@ dataset_visualize <- function(
   }else{ group_by <- ''}
   
   dataset <-
-    data_dict_match_dataset(
-      dataset,data_dict,
-      output = 'dataset') %>%
-    as_dataset(attributes(dataset)$`madshapR::col_id`)
+    suppressWarnings({
+      data_dict_match_dataset(
+        dataset,data_dict,
+        output = 'dataset') %>%
+        as_dataset(attributes(dataset)$`madshapR::col_id`)})
   
   data_dict <- 
-    data_dict_match_dataset(
-      dataset,data_dict,
-      output = 'data_dict') %>%
-    as_data_dict_mlstr()
+    suppressWarnings({
+      data_dict_match_dataset(
+        dataset,data_dict,
+        output = 'data_dict') %>%
+        as_data_dict_mlstr(name_standard = FALSE)})
   
   # summarize initial information
   
@@ -1240,7 +1415,6 @@ dataset_visualize <- function(
       select(-"madshapR::index_group",-"madshapR::index_original")
   }
 
-    
   data_dict_flat <- 
     suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
     bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
@@ -1255,14 +1429,18 @@ dataset_visualize <- function(
     mutate(Categories = str_replace_all(
       .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
     
-  path_to <- fs::path_abs(to)
-  fabR::template_visual_report(path_to)
-  save(path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
-       # toc,
-       file = paste0(path_to,"/temp_bookdown_report/bookdown_report.RData"))
+  path_to <- path_abs(bookdown_path)
+  bookdown_template(path_to, overwrite = overwrite)
+  if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
+  save(
+    path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
+    file = paste0(path_to,"/src/r_env.RData"))
   
   ## markdown writing elements
   ##### HEADER index ##########
+  
+  if(render == 'html'){
+  
   paste0(
     '---
 title: ',dataset_name,'
@@ -1270,10 +1448,7 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
 
-') %>% write_lines(
-  file = paste0(path_to,
-         "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
-  append = FALSE)
+') %>% write_lines(file = paste0(path_to,"/index.Rmd"),append = FALSE)
   
   
   ##### _bookdown.yml ##########
@@ -1285,10 +1460,7 @@ language:
   ui:
     chapter_name: ""
 
-') %>% write_lines(
-  file = paste0(path_to,
-     "/temp_bookdown_report/file/bookdown-template-master/_bookdown.yml"),
-  append = FALSE)
+') %>% write_lines(file = paste0(path_to,"/_bookdown.yml"),append = FALSE)
   
   ##### _output.yml ##########
   paste0(
@@ -1301,10 +1473,7 @@ language:
       after: |
         <li><a href="https://maelstrom-research.org" target="blank">Generated by Maelstrom</a></li>
 
-') %>% write_lines(
-  file = paste0(path_to,
-          "/temp_bookdown_report/file/bookdown-template-master/_output.yml"),
-  append = FALSE)
+') %>% write_lines(file = paste0(path_to,"/_output.yml"),append = FALSE)
   
   paste0(
     '# About the dataset {.unnumbered #about}
@@ -1318,7 +1487,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 
-load(file = paste0("', path_to,'/temp_bookdown_report/bookdown_report.RData"))
+load(file = paste0("', path_to,'/src/r_env.RData"))
 
 ```
 --------------------------------------------------------------------------------
@@ -1365,11 +1534,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
 
 --------------------------------------------------------------------------------
 
-') %>% write_lines(
-  file =
-    paste0(path_to,
-           "/temp_bookdown_report/file/bookdown-template-master/index.Rmd"),
-  append = TRUE)
+') %>% write_lines(file = paste0(path_to,"/index.Rmd"),append = TRUE)
   
   # if(toc == 'variables'){
   
@@ -1382,9 +1547,9 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
     # stop()}
     
     rmd_file_name <-
-      paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/",
+      paste0(path_to,"/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
-             data_dict$Variables$name[i],".Rmd")
+             make.names(data_dict$Variables$name[i]),".Rmd")
     file.create(rmd_file_name)
     
     paste0(
@@ -1403,7 +1568,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
 
   datatable(t(
      data_dict$Variables %>%
-     filter(name == '",data_dict$Variables$name[i],"')),
+     dplyr::filter(name == '",data_dict$Variables$name[i],"')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
@@ -1422,7 +1587,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
                    
   datatable(
     data_dict$Categories %>% 
-      filter(variable == '",data_dict$Variables$name[i],"') %>%
+      dplyr::filter(variable == '",data_dict$Variables$name[i],"') %>%
     select(variable, name, 
     matches(c('^label$','^label:[[:alnum:]]'))[1], missing) %>%
     mutate(across(everything(), as.character)),
@@ -1491,20 +1656,16 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
       write_lines(file = rmd_file_name, append = FALSE)
   }
   
-  fabR::silently_run(
+  silently_run(
     
-    xfun::in_dir(
-      dir = paste0(
-        path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
-      exp = file.remove(
-        list.files(
-          paste0(
-            path_to,"/temp_bookdown_report/file/bookdown-template-master/")) %>%
-          str_subset(paste0(
-            "^[[:digit:]]+-",
-            toString(as.character(attributes(dataset)$`madshapR::col_id`)),
-            ".Rmd$"))))
-  )
+    file.remove(
+      str_subset(
+        string = list.files(path_to,full.names = TRUE),
+        pattern = paste0(
+          path_to,"/[[:digit:]]+-",
+          toString(as.character(attributes(dataset)$`madshapR::col_id`)),
+          ".Rmd$")
+      )))
   
   # }
   
@@ -1514,7 +1675,8 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #     ##### CONTENT ##########
 #     
 #     names_group <- 
-#       data_dict[['Categories']] %>% filter(.data$`variable` == group_by) %>%
+#       data_dict[['Categories']] %>% 
+#       dplyr::filter(.data$`variable` == group_by) %>%
 #       mutate(across(everything(),as.character)) %>%
 #       select(
 #         name,
@@ -1559,7 +1721,7 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #   datatable(
 # 
 #     .summary_var$`Variables summary (all)` %>%
-#       filter(if_any(
+#       dplyr::filter(if_any(
 #         str_subset(names(
 #           .summary_var$`Variables summary (all)`),'Grouping variable:'),
 #         ~ . == '",names_group$`___labels___`[i],"')) %>%
@@ -1612,13 +1774,13 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #     lapply(function(x){
 #       if(length(str_subset(names(x), 'Grouping variable:')) > 0){
 #        x <- x %>% 
-#          filter(if_any(starts_with('Grouping variable:'), 
+#          dplyr::filter(if_any(starts_with('Grouping variable:'), 
 #                        ~ . == '", names_group$`___labels___`[i],"' ))}
 #       return(x)}) 
 # 
 #   plots <- variable_visualize(
 #     dataset = dataset %>% 
-#       filter(",group_by," %in% c('", names_group$`name`[i],"')),
+#       dplyr::filter(",group_by," %in% c('", names_group$`name`[i],"')),
 #     col = '", names_var[j],"',
 #     group_by = ",group_by,",
 #     data_dict = data_dict,
@@ -1669,79 +1831,16 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 #   }
     
 # invisible(dev.set(dev.next()))
-# invisible(grDevices::graphics.off())
-  
-  suppressMessages({
-  in_dir(
-    dir = paste0(
-      path_to,"/temp_bookdown_report/file/bookdown-template-master/"),
-    expr = render_book(
-      input = paste0(
-        path_to,
-        "/temp_bookdown_report/file/bookdown-template-master/index.Rmd")))
-  })
-  
-  if(file.exists(paste0(path_to,"/docs"))){
-    try(dir_delete(paste0(path_to,"/docs")))}
-  
-  dir_copy(
-    paste0(path_to,"/temp_bookdown_report/file/bookdown-template-master/docs"),
-    paste0(path_to,"/docs"),
-    overwrite = TRUE)
-  
-  if(.keep_files == FALSE){
-    try(dir_delete(paste0(path_to,"/temp_bookdown_report/")))}
+# invisible(graphics.off())
+
+  bookdown_render(path_to,overwrite = overwrite)
   
   return(message(
-"\n\nTo edit your file, You can use the function `open_visual_report('",to,"')`
-(Compatibility tested on Chrome and Mozilla)\n\n"))
+"\n\nTo edit your file, You can use the function `bookdown_open('",bookdown_path,"')`
+(Compatibility tested on Chrome, Edge and Mozilla)\n\n"))
+  
+  }
+  
   
 }
 
-#' @title
-#' Open a visual report in a browser
-#'
-#' @description
-#' Opens a previously generated HTML bookdown document. This is a shortcut 
-#' function to access an existing visual report.
-#'
-#' @seealso
-#' [dataset_visualize()]
-#'
-#' @param report_path A character string specifying the path of the report to 
-#' be opened.
-#' 
-#' @returns
-#' Nothing to be returned. The function opens a web page.
-#'
-#' @examples
-#' {
-#' 
-#' # use DEMO_files provided by the package
-#' 
-#' dataset <- DEMO_files$dataset_TOKYO['height']
-#' data_dict <- 
-#'   data_dict_filter(
-#'     DEMO_files$dd_TOKYO_format_maelstrom_tagged,
-#'     filter_var = "name == 'height'")
-#'       
-#' .summary_var <- DEMO_files$summary_var
-#'   
-#' to <- tempdir()
-#' dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
-#'       
-#' # To open the file in browser, you can also open 'to/docs/index.html'. 
-#' open_visual_report(to)
-#' 
-#' }
-#'
-#' @import stringr
-#' @importFrom utils browseURL
-#'
-#' @export
-open_visual_report <- function(report_path){
-
-  report_path <- str_remove(paste0(report_path,"/docs/index.html"), '^/')
-  utils::browseURL(report_path)
-
-}

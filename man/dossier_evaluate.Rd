@@ -49,13 +49,13 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use DEMO_files provided by the package
 library(dplyr)
-library(stringr)
 
 ###### Example : a dataset list is a dossier by definition.
-dossier_evaluation <- dossier_evaluate(
-  DEMO_files[str_detect(names(DEMO_files),"dataset_MELBOURNE")])
-
-glimpse(dossier_evaluation)
+   
+dataset <-
+ as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+ 
+ dossier_evaluate(as_dossier(list(ds = dataset)),as_data_dict_mlstr = FALSE)
 
 }
 

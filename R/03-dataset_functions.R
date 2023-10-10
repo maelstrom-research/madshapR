@@ -38,7 +38,7 @@
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr haven
 #' @importFrom rlang .data
 #'
 #' @export
@@ -46,7 +46,9 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 
   # tests
   if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
-    data_dict <- as_data_dict_mlstr(data_dict, as_data_dict = TRUE)}else{
+    data_dict <- 
+      as_data_dict_mlstr(data_dict, as_data_dict = TRUE, name_standard = FALSE)
+    }else{
       data_dict <- as_data_dict(data_dict)}
 
   if(nrow(data_dict[['Variables']]) == 0){
@@ -145,15 +147,27 @@ dataset_zap_data_dict <- function(dataset){
   as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
-  for(i in seq_len(length(dataset))){
-  # stop()}
-    if(is.Date(dataset[[i]])) dataset[[i]] <- as.character(dataset[[i]])
-  }
+  dataset_init = dataset # = dataset_init
 
+  vec <- tibble(index = as.integer(), valueType = as.character())
+  for(i in seq_len(length(dataset))){
+    # stop()}
+    vT_init <- valueType_of(dataset_init[[i]])
+    if(vT_init %in% c('date','datetime')){
+      dataset[[i]] <- as.character(dataset[[i]])
+      vec <- vec %>% add_row(index = i, valueType = vT_init) }
+  }
+  
   dataset <- 
     dataset %>% lapply(as.vector) %>% as_tibble() %>%
     as_dataset(col_id = preserve_attributes)
-
+  
+  for(i in seq_len(nrow(vec))){
+    # stop()}
+    dataset[[vec$`index`[[i]]]] <- 
+      as_valueType(dataset[[vec$`index`[[i]]]],vec$`valueType`[[i]])
+  }
+  
   return(dataset)
 }
 
@@ -222,7 +236,10 @@ dataset_cat_as_labels <- function(
   } else {
     # preserve_data_dict <- FALSE  
     data_dict <- 
-      data_dict_match_dataset(dataset[col_names],data_dict)$data_dict}
+      suppressWarnings({
+        data_dict_match_dataset(dataset[col_names],data_dict)$data_dict
+      })
+    }
 
   if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
   
@@ -231,7 +248,8 @@ dataset_cat_as_labels <- function(
     
     message(paste0('Processing of : ',i))
     col <- dataset_zap_data_dict(as_dataset(dataset[i]))
-    data_dict_temp <- data_dict_match_dataset(col,data_dict)$data_dict
+    data_dict_temp <- suppressWarnings({
+      data_dict_match_dataset(col,data_dict)$data_dict})
     
     if(sum(nrow(data_dict_temp[['Categories']])) > 0){
       names(col) <- '___values___'
@@ -329,7 +347,7 @@ dataset_cat_as_labels <- function(
 #'    
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -349,7 +367,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
   fargs <- as.list(match.call(expand.dots = TRUE))
   if(is.null(names(dataset_list))){
     names(dossier) <-
-      fabR::make_name_list(as.character(fargs['dataset_list']), dossier)}
+      make_name_list(as.character(fargs['dataset_list']), dossier)}
 
   dossier <- as_dossier(dossier)
 
@@ -361,7 +379,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #'
 #' @description
 #' Confirms that the input object is a valid dataset and returns it as a dataset
-#' with the appropriate madshapR::class attribute. This function mainly helps 
+#' with the appropriate 'madshapR::class' attribute. This function mainly helps 
 #' validate inputs within other functions of the package but could be used to 
 #' check if a dataset is valid.
 #'
@@ -442,7 +460,7 @@ Please refer to documentation.")
 #'
 #' @description
 #' Confirms that the input object is a valid dossier and returns it as a dossier
-#' with the appropriate madshapR::class attribute. This function mainly helps 
+#' with the appropriate 'madshapR::class' attribute. This function mainly helps 
 #' validate input within other functions of the package but could be used to
 #' check if a dossier is valid.
 #'
@@ -550,7 +568,7 @@ Please refer to documentation."))
 #' 
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -558,7 +576,7 @@ is_dataset <- function(object){
 
   object <- object
   # if only the tibble is given in parameter
-  test <- fabR::silently_run(
+  test <- silently_run(
     try(
       as_dataset(
         object,
@@ -600,7 +618,7 @@ is_dataset <- function(object){
 #' 
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -608,7 +626,7 @@ is_dossier <- function(object){
 
   object <- object
   # if only the dossier is given in parameter
-  test <- fabR::silently_run(try(as_dossier(object),silent = TRUE))
+  test <- silently_run(try(as_dossier(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 

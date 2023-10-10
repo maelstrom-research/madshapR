@@ -107,7 +107,7 @@ dataset_summarize <- function(
     ifelse(
       !is.null(.dataset_name),
       .dataset_name,
-      fabR::make_name_list(
+      make_name_list(
         as.character(fargs[['dataset']]),list_elem = list(NULL)))
   
   # check on argument : taxonomy
@@ -123,17 +123,20 @@ dataset_summarize <- function(
     as_dataset(ungroup(dataset),col_id = attributes(dataset)$`madshapR::col_id`)
     
   dataset <-
+    suppressWarnings({
     data_dict_match_dataset(
       dataset,
       data_dict,
       output = 'dataset') %>%
-    as_dataset(attributes(dataset)$`madshapR::col_id`)
+    as_dataset(attributes(dataset)$`madshapR::col_id`)})
   
   data_dict <- 
+    suppressWarnings({
     data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict') %>%
-    as_data_dict_mlstr()
+    as_data_dict_mlstr(name_standard = FALSE)
+      })
   
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
@@ -154,7 +157,7 @@ dataset_summarize <- function(
     
     cat_lab <-  
       data_dict[['Categories']] %>% 
-      filter(if_any('variable') == group_by) %>%
+      dplyr::filter(if_any('variable') == group_by) %>%
       select(
         !! group_by := 'name', 
         `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
@@ -200,12 +203,12 @@ dataset_summarize <- function(
       dataset,
       data_dict,
       taxonomy = taxonomy,
-      .dataset_name = .dataset_name,
+      .dataset_name = dataset_name,
       as_data_dict_mlstr = TRUE)
 
   message(
     "- DATASET SUMMARIZE: ",
-    crayon::bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
+    bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
     " --------------------------")
 
   # 
@@ -216,16 +219,25 @@ dataset_summarize <- function(
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
 
   # exclude id col if is the index
-  dataset_valueType <-
-    dataset %>%
-    # select(-matches("^___mlstr_index___$")) %>%
-    summarise(across(
-      everything(),
-      ~ valueType_of(.))) %>%
-    pivot_longer(cols = everything()) %>%
-    rename(
-      `___name_var___` = "name",
-      `Actual dataset valueType` = "value")
+  dataset_valueType <- tibble(
+      `___name_var___` = as.character(),
+      `Actual dataset valueType` = as.character())
+  
+  estimated_valueType <- tibble(
+    `___name_var___` = as.character(),
+    `Estimated dataset valueType` = as.character())
+  
+  if(ncol(dataset) > 0){
+    dataset_valueType <-
+      dataset %>%
+      # select(-matches("^___mlstr_index___$")) %>%
+      summarise(across(
+        everything(),
+        ~ valueType_of(.))) %>%
+      pivot_longer(cols = everything()) %>%
+      rename(
+        `___name_var___` = "name",
+        `Actual dataset valueType` = "value")
 
   if(valueType_guess == TRUE){
     estimated_valueType <-
@@ -245,13 +257,14 @@ dataset_summarize <- function(
         "___name_var___",
         `Estimated dataset valueType` = "Actual dataset valueType")}
 
+  }
   ## variables
   data_dict_var <-
     data_dict[['Variables']] %>%
     select(-matches("^___name_var___$")) %>%
     rename(`___name_var___` = "name") %>%
     mutate(across(everything(),as.character)) %>%
-    fabR::add_index("index in data dict.", .force = TRUE) %>%
+    add_index("index in data dict.", .force = TRUE) %>%
     select("index in data dict.", "___name_var___",
            matches(c("^label$","^label:[[:alnum:]]"))[1],
            `Data Dictionary valueType` = "valueType") %>%
@@ -264,6 +277,9 @@ dataset_summarize <- function(
       data_dict[['Categories']] %>% 
       select(-matches("^___name_var___$")) %>%
       rename("___name_var___" = "variable") %>%
+      select("___name_var___","name",
+             matches(c("^label$","^label:[[:alnum:]]"))[1], 
+             "missing") %>%
       mutate(
         missing =
           ifelse(
@@ -313,24 +329,30 @@ dataset_summarize <- function(
   report$`Text variable summary` <-
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Estimated dataset valueType` %in%
-        vT_text,] %>% filter(!.data$`name` %in% col_id)
+        vT_text,] %>% dplyr::filter(!.data$`name` %in% col_id)
 
   vT_num  <- vT[vT$`genericType` == 'numeric',][['valueType']]
   report$`Numerical variable summary` <-
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Estimated dataset valueType` %in%
-        vT_num,] %>% filter(!.data$`name` %in% col_id)
+        vT_num,] %>% dplyr::filter(!.data$`name` %in% col_id)
 
   vT_date <- vT[vT$`genericType` == 'date',][['valueType']]
   report$`Date variable summary` <-
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Estimated dataset valueType` %in%
-        vT_date,] %>% filter(!.data$`name` %in% col_id)
+        vT_date,] %>% dplyr::filter(!.data$`name` %in% col_id)
+  
+  vT_datetime <- vT[vT$`genericType` == 'datetime',][['valueType']]
+  report$`Datetime variable summary` <-
+    report$`Variables summary (all)`[
+      report$`Variables summary (all)`$`Estimated dataset valueType` %in%
+        vT_datetime,] %>% dplyr::filter(!.data$`name` %in% col_id)
 
   report$`Categorical variable summary` <-
     report$`Variables summary (all)`[
       !is.na(report$`Variables summary (all)`$`Categories in data dictionary`),
-      ] %>% filter(!.data$`name` %in% col_id)
+      ] %>% dplyr::filter(!.data$`name` %in% col_id)
 
   if(nrow(dataset) > 0){
 
@@ -348,14 +370,14 @@ dataset_summarize <- function(
       summary_group <- summary_variables(.dataset_preprocess = preprocess_group)
       summary_var <- 
         lapply(summary_var,function(x){
-          x %>% filter(.data$`name` != group_by) %>%
+          x %>% dplyr::filter(.data$`name` != group_by) %>%
             bind_rows(summary_group)})}
 
     message("    Summarise information for numerical variables")
     .dataset_preprocess_num <-
       lapply(.dataset_preprocess,function(x){
       x[x$`name` %in% report$`Numerical variable summary`$name,] %>%
-      filter(.data$`Categorical variable` != 'yes')})
+          dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_num <-
       lapply(.dataset_preprocess_num,function(x){
         summary_variables_numeric(.dataset_preprocess = x)})
@@ -364,7 +386,7 @@ dataset_summarize <- function(
     .dataset_preprocess_text <-
       lapply(.dataset_preprocess,function(x){
         x[x$`name` %in% report$`Text variable summary`$name,] %>%
-          filter(.data$`Categorical variable` != 'yes')})
+          dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_text <-
       lapply(.dataset_preprocess_text,function(x){
         summary_variables_text(.dataset_preprocess = x)})
@@ -373,16 +395,25 @@ dataset_summarize <- function(
     .dataset_preprocess_date <-
       lapply(.dataset_preprocess,function(x){
         x[x$`name` %in% report$`Date variable summary`$name,] %>%
-          filter(.data$`Categorical variable` != 'yes')})
+          dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_date <-
       lapply(.dataset_preprocess_date,function(x){
         summary_variables_date(.dataset_preprocess = x)})
+    
+    message("    Summarise information for datetime variables")
+    .dataset_preprocess_datetime <-
+      lapply(.dataset_preprocess,function(x){
+        x[x$`name` %in% report$`Datetime variable summary`$name,] %>%
+          dplyr::filter(.data$`Categorical variable` != 'yes')})
+    summary_datetime <-
+      lapply(.dataset_preprocess_datetime,function(x){
+        summary_variables_datetime(.dataset_preprocess = x)})
     
     message("    Summarise information for categorical variables")
     .dataset_preprocess_cat <-
       lapply(.dataset_preprocess,function(x){
         x[x$`name` %in% report$`Categorical variable summary`$name,] %>%
-          filter(.data$`Categorical variable` != 'no')}) 
+          dplyr::filter(.data$`Categorical variable` != 'no')}) 
     summary_cat <-
       lapply(.dataset_preprocess_cat,function(x){
         summary_variables_categorical(.dataset_preprocess = x)})
@@ -392,7 +423,7 @@ dataset_summarize <- function(
         summary_variables_categorical(.dataset_preprocess = preprocess_group)
       summary_cat <- 
         lapply(summary_cat,function(x){
-          x %>% filter(.data$`name` != group_by) %>%
+          x %>% dplyr::filter(.data$`name` != group_by) %>%
             bind_rows(summary_group_cat)})}
     
     # add grouping variable to each group
@@ -414,17 +445,22 @@ dataset_summarize <- function(
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
             ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
         
+        summary_datetime[[i]] <- summary_datetime[[i]] %>% 
+          mutate(!! paste0('Grouping variable: ', group_by) := as.character(
+            ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
+        
         summary_cat [[i]] <- summary_cat [[i]] %>% 
           mutate(!! paste0('Grouping variable: ', group_by) := as.character(
             ifelse(.data$`name` == group_by, paste0(group_by,' (all)'),i)))
       }}
     
     # binding information
-    summary_var  <- bind_rows(summary_var)  %>% distinct()
-    summary_num  <- bind_rows(summary_num)  %>% distinct()
-    summary_text <- bind_rows(summary_text) %>% distinct()
-    summary_date <- bind_rows(summary_date) %>% distinct()
-    summary_cat  <- bind_rows(summary_cat)  %>% distinct()
+    summary_var      <- bind_rows(summary_var)      %>% distinct()
+    summary_num      <- bind_rows(summary_num)      %>% distinct()
+    summary_text     <- bind_rows(summary_text)     %>% distinct()
+    summary_date     <- bind_rows(summary_date)     %>% distinct()
+    summary_datetime <- bind_rows(summary_datetime) %>% distinct()
+    summary_cat      <- bind_rows(summary_cat)      %>% distinct()
     
     report$`Variables summary (all)` <-
       report$`Variables summary (all)` %>%
@@ -491,6 +527,28 @@ dataset_summarize <- function(
         matches("% Valid categorical values (if applicable)"),
         matches("% Missing categorical values (if applicable)"),everything())
 
+    report$`Datetime variable summary` <-
+      suppressMessages(report$`Datetime variable summary` %>%
+      inner_join(summary_var , by = "name", multiple = "all") %>%
+      inner_join(summary_datetime, multiple = "all")) %>%
+      select(
+        "index in data dict." ,
+        "name",
+        matches("Quality assessment comment"),
+        starts_with("label")[1],
+        "Data Dictionary valueType",
+        "Estimated dataset valueType",
+        "Actual dataset valueType",
+        matches("Categorical variable"),
+        matches("Categories in data dictionary"),
+        starts_with('Grouping variable: '),
+        matches("Total number of observations"),
+        matches("Nb. distinct values"),
+        matches("% total Valid values"),
+        matches("% NA"),
+        matches("% Valid categorical values (if applicable)"),
+        matches("% Missing categorical values (if applicable)"),everything())
+    
     report$`Numerical variable summary` <-
       suppressMessages(report$`Numerical variable summary` %>%
       inner_join(summary_var, by = "name", multiple = "all") %>%
@@ -551,6 +609,7 @@ dataset_summarize <- function(
       '    1_Data type in dictionary (valueType)'                              ,
       '        1_Nb. text variables'                                           ,
       '        1_Nb. date variables'                                           ,
+      '        1_Nb. datetime variables'                                       ,
       '        1_Nb. numerical variables'                                      ,
       '        1_Nb. categorical variables'                                    ,
       '    2_Rows'                                                             ,
@@ -590,6 +649,8 @@ dataset_summarize <- function(
       as.character(length(unique(report$`Text variable summary`$name))),
         .data$`---` == '        1_Nb. date variables'                          ~
       as.character(length(unique(report$`Date variable summary`$name))),
+        .data$`---` == '        1_Nb. datetime variables'                      ~
+      as.character(length(unique(report$`Datetime variable summary`$name))),
         .data$`---` == '        1_Nb. numerical variables'                     ~
       as.character(length(unique(report$`Numerical variable summary`$name))),
         .data$`---` == '        1_Nb. categorical variables'                   ~
@@ -675,6 +736,9 @@ dataset_summarize <- function(
 #' @param dossier List of tibble, each of them being datasets.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
+#' @param group_by A character string of one column in the dataset that can be
+#' taken as a grouping column. The visual element will be grouped and displayed
+#' by this column.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. TRUE by default.
 #'
@@ -686,10 +750,9 @@ dataset_summarize <- function(
 #' 
 #' # use DEMO_files provided by the package
 #' library(dplyr)
-#' library(stringr) # glimpse
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
-#' dossier <- list(iris = iris[1])
+#' dossier <- list(iris = tibble())
 #' 
 #' dossier_summary <- dossier_summarize(dossier)
 #' glimpse(dossier_summary)
@@ -703,8 +766,9 @@ dataset_summarize <- function(
 #' @export
 dossier_summarize <- function(
     dossier, 
+    group_by = NULL,
     taxonomy = NULL, 
-    valueType_guess = TRUE){
+    valueType_guess = FALSE){
   
   # amelioration :rajouter taxonomy
   
@@ -719,7 +783,7 @@ dossier_summarize <- function(
     vector(mode = "list", length = length(names(dossier)))
   names(report_list) <- names(dossier)
   
-  message(crayon::bold(
+  message(bold(
     "- DOSSIER SUMMARY: -----------------------------------------------------"))
   
   for(i in seq_len(length(dossier))){
@@ -727,6 +791,7 @@ dossier_summarize <- function(
     report_list[[i]] <-
       dataset_summarize(
         dataset = dossier[[i]],
+        group_by = group_by,
         taxonomy = taxonomy,
         .dataset_name = names(dossier[i]),
         valueType_guess = valueType_guess)
@@ -795,7 +860,7 @@ dossier_summarize <- function(
 #'
 #' }
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -826,13 +891,13 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   if(is.null(data_dict)){
     data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
   }else{
-    data_dict <- as_data_dict_mlstr(data_dict)}
+    data_dict <- as_data_dict_mlstr(data_dict,name_standard = FALSE)}
   
   data_dict_var  <-
     data_dict[['Variables']] %>%
     select('name') %>%
     mutate(`Categorical variable` = NA_character_) %>%
-    fabR::add_index()
+    add_index()
   
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict_cat <-
@@ -843,7 +908,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
         cat_label = matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1],
         valid_class = .data$`missing`) %>%
       group_by(.data$`name`, .data$`valid_class`) %>%
-      fabR::add_index('cat_index') %>%
+      add_index('cat_index') %>%
       ungroup() %>%
       mutate(
         valid_class =
@@ -904,7 +969,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
                 "3_Valid other values",.data$`valid_class`))) %>%
         arrange(.data$`valid_class`) %>%
         group_by(.data$`valid_class`) %>%
-        fabR::add_index('index_value', .force = TRUE) %>%
+        add_index('index_value', .force = TRUE) %>%
         ungroup
       
       # handle categories which are non-categorical, categorical and mixed
@@ -930,7 +995,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     mutate(value_var_occur = replace_na(.data$`value_var_occur`, 0)) %>%
     mutate(
       valid_class = replace_na(.data$`valid_class`, '3_Valid other values')) %>%
-    filter(
+    dplyr::filter(
       !(.data$`value_var_occur`== 0 & .data$`valid_class` == "4_NA values")) %>%
     select(.data$index,
            .data$`name`, everything()) %>%
@@ -1009,7 +1074,7 @@ summary_variables <- function(
   for(i in unique(summary$name)){
     # stop()}
     
-    summary_i <- summary %>% filter(.data$`name` == i)
+    summary_i <- summary %>% dplyr::filter(.data$`name` == i)
     
     # summary the output
     summary_i <-
@@ -1153,8 +1218,8 @@ summary_variables_text <- function(
   
   summary <-
     .dataset_preprocess %>%
-    filter(.data$`value_var_occur` == 1 ) %>%
-    filter(.data$`valid_class`  == "3_Valid other values")
+    dplyr::filter(.data$`value_var_occur` == 1 ) %>%
+    dplyr::filter(.data$`valid_class`  == "3_Valid other values")
   
   # init
   summary_tbl <- tibble(name = as.character())
@@ -1165,7 +1230,7 @@ summary_variables_text <- function(
     
     summary_i <-
       summary %>%
-      filter(.data$`name` == i)
+      dplyr::filter(.data$`name` == i)
     
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
@@ -1176,16 +1241,19 @@ summary_variables_text <- function(
           `Most seen value(s)` =
             summary_i %>%
             count(.data$`value_var`) %>%
-            filter(if_any(.data$`n`, ~ . == max(.))) %>%
-            slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',
-                                                     .data$`value_var`)) %>%
+            dplyr::filter(if_any(.data$`n`, ~ . == max(.))) %>%
+            slice(1:6) %>% 
+            mutate(value_var = ifelse(
+                row_number() == 6,
+                '[...]', 
+                .data$`value_var`)) %>%
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
             str_replace('; \\[\\.\\.\\.\\]$','[...]'),
           
           `Rarest value(s)` =
             summary_i %>%
             count(.data$`value_var`) %>%
-            filter(if_any(.data$`n`, ~ . == min(.))) %>%
+            dplyr::filter(if_any(.data$`n`, ~ . == min(.))) %>%
             slice(1:6) %>% mutate(value_var = ifelse(row_number() == 6,'[...]',
                                                      .data$`value_var`)) %>%
             pull(.data$`value_var`) %>% paste0(collapse = " ; ") %>%
@@ -1200,7 +1268,7 @@ summary_variables_text <- function(
   
   # final_summary <-
   #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
-  #   filter(.data$`categorical` != 'yes') %>%
+  #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
   return(summary_tbl)
@@ -1278,13 +1346,13 @@ summary_variables_date <- function(
   if(!nrow(.dataset_preprocess)) return(summary_tbl)
   
   date_format <-
-    fabR::guess_date_format(distinct(.dataset_preprocess['value_var']))
+    guess_date_format(distinct(.dataset_preprocess['value_var']))
   
   if(date_format$`% values formated` < 100){
     warning(
       "Problem while computing date type variables due to ambiguous format.\n",
       "They will be analysed as text variables\n",
-      crayon::bold("Useful tip:"),
+      bold("Useful tip:"),
       "Use dataset_evaluate(dataset) to get an assessment of your dataset.")
     
     final_summary <- 
@@ -1296,9 +1364,9 @@ summary_variables_date <- function(
     .dataset_preprocess %>%
     mutate(
       value_var =
-        fabR::as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
-    filter(.data$`value_var_occur` == 1 ) %>%
-    filter(.data$`valid_class`  == "3_Valid other values")
+        as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
+    dplyr::filter(.data$`value_var_occur` == 1 ) %>%
+    dplyr::filter(.data$`valid_class`  == "3_Valid other values")
   
   # init
   summary_tbl <- tibble(name = as.character())
@@ -1309,7 +1377,7 @@ summary_variables_date <- function(
     
     summary_i <-
       summary %>%
-      filter(.data$`name` == i)
+      dplyr::filter(.data$`name` == i)
     
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
@@ -1343,11 +1411,93 @@ summary_variables_date <- function(
   
   # final_summary <-
   #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
-  #   filter(.data$`categorical` != 'yes') %>%
+  #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
   return(summary_tbl)
 }
+
+
+#' @title
+#' Provide descriptive statistics for variables of type 'datetime' in a dataset
+#'
+#' @description
+#' Summarises (in a tibble) the columns of type 'datetime' in a dataset and its 
+#' data dictionary (if any). The summary provides information about quality, 
+#' type, composition, and descriptive statistics of variables. Statistics are 
+#' generated by valueType.
+#'
+#' @details
+#' A data dictionary contains metadata about variables and can be associated 
+#' with a dataset. It must be a list of data frame-like objects with elements 
+#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
+#' function, the 'Variables' element must contain at least the 'name' column, 
+#' and the 'Categories' element must contain at least the 'variable' and 'name' 
+#' columns. To be considered as a minimum workable data dictionary, in 
+#' 'Variables' the 'name' column must also have unique and non-null entries, 
+#' and in 'Categories' the combination of 'variable' and 'name' columns must 
+#' also be unique'.
+#' 
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#'
+#' @param dataset A tibble identifying the input dataset observations 
+#' associated to its data dictionary.
+#' @param data_dict A list of tibble(s) representing meta data of an
+#' associated dataset. Automatically generated if not provided.
+#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' (for internal processes and programming).
+#'
+#' @returns
+#' A tibble providing statistical description of 'datetime' variables present
+#' in a dataset.
+#'
+#' @examples
+#' {
+#'    
+#' ###### Example : any data frame (or tibble) can be a dataset by definition.
+#' library(dplyr)
+#' library(fabR)
+#' library(lubridate)
+#' 
+#' .dataset_preprocess <- 
+#'  storms %>%
+#'    sample_n(50) %>%
+#'    mutate(date_storm = as_datetime(paste(year, month, day,"-"))) %>%
+#'    select(date_storm) %>%
+#'    dataset_preprocess
+#'
+#' summary_variables_datetime(.dataset_preprocess = .dataset_preprocess)
+#'
+#' }
+#'
+#' @import dplyr tidyr lubridate fabR
+#' @importFrom rlang .data
+#'
+#' @export
+summary_variables_datetime <- function(
+    dataset = NULL,
+    data_dict = NULL,
+    .dataset_preprocess = NULL){
+  
+  # init
+  summary_tbl <- tibble(name = as.character())
+  if(is.null(.dataset_preprocess)) return(summary_tbl)
+  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  
+  final_summary <- 
+    summary_variables_text(.dataset_preprocess = .dataset_preprocess)
+  return(final_summary)
+
+  }
+
+
+
 
 #' @title
 #' Provide descriptive statistics for variables of type 'numeric' in a dataset
@@ -1414,8 +1564,8 @@ summary_variables_numeric <- function(
   
   summary <-
     .dataset_preprocess %>%
-    filter(.data$`value_var_occur` == 1 ) %>%
-    filter(.data$`valid_class`  == "3_Valid other values")
+    dplyr::filter(.data$`value_var_occur` == 1 ) %>%
+    dplyr::filter(.data$`valid_class`  == "3_Valid other values")
   
   # init
   summary_tbl <- tibble(name = as.character())
@@ -1426,7 +1576,7 @@ summary_variables_numeric <- function(
     
     summary_i <-
       summary %>%
-      filter(.data$`name` == i)
+      dplyr::filter(.data$`name` == i)
     
     summary_i$`value_var` <- as.numeric(summary_i$`value_var`)
     
@@ -1452,7 +1602,7 @@ summary_variables_numeric <- function(
   
   # final_summary <-
   #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
-  #   filter(.data$`categorical` != 'yes') %>%
+  #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
   return(summary_tbl)
@@ -1534,7 +1684,7 @@ summary_variables_categorical <- function(
   
   summary <-
     .dataset_preprocess %>%
-    group_by(across(c(-.data$`value_var_occur`,-.data$`index_value`))) %>%
+    group_by(across(c(-"value_var_occur",-"index_value"))) %>%
     summarise(
       n = sum(as.integer(.data$`value_var_occur`)),
       .groups = 'drop') %>%
@@ -1548,11 +1698,11 @@ summary_variables_categorical <- function(
     
     summary_i <-
       summary %>%
-      filter(.data$`name` == i)
+      dplyr::filter(.data$`name` == i)
     
     summary_category <-
       summary_i %>%
-      filter(.data$`name` == i) %>%
+      dplyr::filter(.data$`name` == i) %>%
       mutate(
         cat_order = .data$`cat_index`,
         cat_index = paste0('[',.data$`value_var`,'] - ',.data$`cat_label`),
@@ -1565,9 +1715,16 @@ summary_variables_categorical <- function(
           ifelse(
             str_detect(.data$`cat_index`,'\\] - NA$'),NA,.data$`cat_index`)) %>%
     
-      group_by(.data$`valid_class`,.data$`cat_index`,.data$`cat_order`) %>%
+      select("valid_class","cat_index","cat_order","value_var","n") %>%
+      group_by(.data$`valid_class`,.data$`cat_index`, .data$`cat_order`) %>%
       summarise(
         n = sum(.data$`n`),
+        value_var = paste0(.data$`value_var`, collapse = "{semicolon}"),
+        .groups = "drop") %>%
+      separate_rows("value_var",sep = "{semicolon}") %>%
+      distinct() %>%
+      group_by(.data$`valid_class`,.data$`cat_index`,.data$`cat_order`,.data$`n`) %>%
+      summarise(
         name_var = paste0(.data$`value_var`, collapse = " ; "),
         .groups = "drop") %>%
       arrange(.data$`valid_class`,.data$`cat_order`) %>%
@@ -1655,9 +1812,9 @@ summary_variables_categorical <- function(
                  "",.data$`other_val_presence`)) %>%
       ungroup() %>%
       select(-.data$`categorical_index`, -.data$`n`) %>%
-      summarise(across(everything(), ~ paste0(.,collapse = ""))) 
+      summarise(across(everything(), ~ paste0(.,collapse = "")))
     
-    if(nrow(filter(
+    if(nrow(dplyr::filter(
       summary_i,
       .data$`valid_class` %in% c("1_Valid values","2_Missing values"))) > 0){
       
@@ -1669,7 +1826,7 @@ summary_variables_categorical <- function(
           
           # `% Valid categorical values` =
           #   round(summary_i %>%
-          #           filter(.data$`valid_class` == "1_Valid values") %>%
+          #         dplyr::filter(.data$`valid_class` == "1_Valid values") %>%
           #           pull(.data$`n`) %>% sum /
           #           (summary_i %>% pull(.data$`n`) %>% sum),4),
           
@@ -1692,7 +1849,8 @@ summary_variables_categorical <- function(
   
   # final_summary <-
   #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
-  #   filter(.data$`categorical` == 'yes' | .data$`categorical` == 'mix') %>%
+  #   dplyr::filter(.data$`categorical` == 'yes' | 
+  #   .data$`categorical` == 'mix') %>%
   #   full_join(summary_tbl, by = 'name')
   
   return(summary_tbl)

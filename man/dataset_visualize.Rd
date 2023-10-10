@@ -6,19 +6,23 @@
 \usage{
 dataset_visualize(
   dataset = tibble(id = as.character()),
+  bookdown_path,
   data_dict = data_dict_extract(dataset),
   group_by = NULL,
-  to,
   taxonomy = NULL,
   valueType_guess = FALSE,
+  overwrite = FALSE,
+  render = "html",
   .summary_var = NULL,
-  .dataset_name = NULL,
-  .keep_files = TRUE
+  .dataset_name = NULL
 )
 }
 \arguments{
 \item{dataset}{A tibble identifying the input dataset observations
 associated to its data dictionary.}
+
+\item{bookdown_path}{A character string identifying the folder path where the
+bookdown report will be saved.}
 
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
@@ -27,27 +31,26 @@ associated dataset. Automatically generated if not provided.}
 taken as a grouping column. The visual element will be grouped and displayed
 by this column.}
 
-\item{to}{A character string identifying the folder path where the bookdown
-report will be saved.}
-
 \item{taxonomy}{A tibble identifying the scheme used for variables
 classification.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 
+\item{overwrite}{whether to overwrite existing files. FALSE by default.}
+
+\item{render}{Output format of the visual report. To date, the format can
+only be 'html', but will be expand to other formats in the future.}
+
 \item{.summary_var}{A list which is the summary of the variables.}
 
 \item{.dataset_name}{A character string specifying the name of the dataset
 (used for internal processes and programming).}
-
-\item{.keep_files}{whether to keep the R-markdown files.
-TRUE by default. (used for internal processes and programming)}
 }
 \value{
 A bookdown folder containing files in the specified output folder. To
 open the file in browser, open 'docs/index.html'. Or use
-\code{\link[=open_visual_report]{open_visual_report()}}
+\code{\link[=bookdown_open]{bookdown_open()}}
 }
 \description{
 Generates a visual report for a dataset in an HTML bookdown document. The
@@ -108,22 +111,26 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 {
 
 dataset <- DEMO_files$dataset_TOKYO['height']
-data_dict <- 
+data_dict <-
   data_dict_filter(
-    DEMO_files$dd_TOKYO_format_maelstrom_tagged,
+    DEMO_files$dd_TOKYO_format_maelstrom,
     filter_var = "name == 'height'")
       
 .summary_var <- DEMO_files$summary_var
   
-to <- tempdir()
-dataset_visualize(dataset, data_dict,.summary_var =.summary_var, to = to)
+bookdown_path <- tempdir()
+dataset_visualize(
+  dataset, data_dict,
+  .summary_var =.summary_var, 
+  bookdown_path = bookdown_path,
+  overwrite = TRUE)
   
-# To open the file in browser, open 'to/docs/index.html'. 
-# Or use open_visual_report function
+# To open the file in browser, open 'bookdown_path/docs/index.html'. 
+# Or use bookdown_open(bookdown_path) function
 
 }
 
 }
 \seealso{
-\code{\link[=open_visual_report]{open_visual_report()}}
+\code{\link[=bookdown_open]{bookdown_open()}}
 }
