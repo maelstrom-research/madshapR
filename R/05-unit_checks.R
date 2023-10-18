@@ -1018,7 +1018,8 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #'
 #' @export
 check_dataset_valueType <- function(
-    dataset, data_dict = NULL,
+    dataset, 
+    data_dict = NULL,
     valueType_guess = FALSE){
   
   if(is.null(data_dict)) data_dict <-
@@ -1097,7 +1098,14 @@ check_dataset_valueType <- function(
           condition = ifelse(
             condition == 'try-error',
             "[ERR] - valueType conflict in dataset",NA_character_),
-          suggestion = guess))
+          suggestion = guess) %>% 
+          mutate(
+          condition = ifelse(
+            data_dict_vT == 'date' & guess == 'datetime',
+            "[ERR] - date format not clear",.data$`condition`),
+          suggestion = ifelse(
+            data_dict_vT == 'date' & guess == 'datetime',
+            'text',.data$`suggestion`)))
   }
 
   test <-

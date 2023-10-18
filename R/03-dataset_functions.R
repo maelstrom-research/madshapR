@@ -164,8 +164,13 @@ dataset_zap_data_dict <- function(dataset){
   
   for(i in seq_len(nrow(vec))){
     # stop()}
-    dataset[[vec$`index`[[i]]]] <- 
-      as_valueType(dataset[[vec$`index`[[i]]]],vec$`valueType`[[i]])
+    tryCatch(
+      expr = {dataset[[vec$`index`[[i]]]] <- 
+      as_valueType(dataset[[vec$`index`[[i]]]],vec$`valueType`[[i]])},
+      error = function(cond){
+        warning('column : ',names(dataset[vec$`index`[[i]]]))
+        dataset[[vec$`index`[[i]]]] <- as_valueType(dataset[[vec$`index`[[i]]]],'text')
+      })
   }
   
   return(dataset)
