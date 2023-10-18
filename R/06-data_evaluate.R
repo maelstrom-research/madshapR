@@ -232,7 +232,7 @@ dataset_evaluate <- function(
                     add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
         rename('value' = !!as.symbol('col_id')) %>%
-        select(-all_of('madshapR::value')
+        select(-all_of('madshapR::value'))
     }
     
     test_duplicated_rows <- 
