@@ -216,11 +216,11 @@ dataset_evaluate <- function(
       #   value = str_remove(
       #     .data$`condition`,
       #     "\\[INFO\\] - Duplicated observations : ")) %>%
-      add_index('index') %>%
+      add_index('madshapR::index') %>%
       separate_rows("value",sep = " ; ") %>%
-      group_by(.data$`index`) %>%
-      add_index('index2') %>%
-      group_by(.data$`index`)
+      group_by(.data$`madshapR::index`) %>%
+      add_index('madshapR::index2') %>%
+      group_by(.data$`madshapR::index`)
     
     if(col_id != "___mlstr_index___"){
       
@@ -228,11 +228,11 @@ dataset_evaluate <- function(
         test_duplicated_rows %>%
         rename('madshapR::value' = 'value') %>%
         left_join(by = 'madshapR::value',
-                  dataset %>% select(all_of(col_id)) %>% 
+                  dataset %>% select(all_of(col_id)) %>%
                     add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
-        rename('value' = !!as.symbol(col_id)) %>%
-        select(-'madshapR::value')
+        rename('value' = !!as.symbol('col_id')) %>%
+        select(-all_of('madshapR::value')
     }
     
     test_duplicated_rows <- 
@@ -240,13 +240,13 @@ dataset_evaluate <- function(
       slice(1:6) %>%
       mutate(
         value = 
-          ifelse(.data$`index2` == 6 , "[...]",.data$`value`)) %>%
+          ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
       summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
       mutate(condition = "[INFO] - possible duplicated row values") %>%
       mutate(
         `name_var` = 
           ifelse(col_id == "___mlstr_index___",NA_character_, !! col_id)) %>%
-      select(-"index") 
+      select(-"madshapR::index") 
   }
   
   if(dataset %>% nrow > 0){
