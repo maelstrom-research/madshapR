@@ -106,6 +106,10 @@ variable_visualize <- function(
     valueType_guess = FALSE,
     .summary_var = NULL){
   
+  if(toString(attributes(dataset)$`madshapR::col_id`) == col) {
+    warning(call. = FALSE,'Your column is identifier. It will not be analysed.')
+    return(ggplot())}
+  
   dataset <- as_dataset(dataset)
   
   if(nrow(dataset) == 0) {
@@ -147,11 +151,17 @@ variable_visualize <- function(
   if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
   
   if(!is.null(data_dict)){
-    col_dict <- 
-      suppressWarnings({
-        data_dict %>%
-          data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
-          as_data_dict_mlstr(name_standard = FALSE)})
+      tryCatch(
+        expr = {
+          col_dict <- 
+            data_dict %>%
+            data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
+            as_data_dict_mlstr(name_standard = FALSE)          
+        },
+        warning = function(cond){
+          stop(cond)
+        })
+    
   }else{
     col_dict <- 
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
@@ -171,7 +181,7 @@ variable_visualize <- function(
   }
   
   colset <- as_dataset(dataset_zap_data_dict(colset))
-    
+
   if(group_by != ''){
     if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
        c('mix','no'))
@@ -268,7 +278,6 @@ variable_visualize <- function(
   }
   
   n_part <- nrow(colset)
-  
   summary_1 <- 
     as.data.frame(t(
       
@@ -302,7 +311,6 @@ variable_visualize <- function(
     select(-'col') %>%
     mutate(across(everything(),as.character))
     
-  
   #### palettes ####
   palette_mlstr <- c("#7ab51d","#e9b400","#cc071e","dodgerblue3")
   palette_mlstr_fct <- colorRampPalette(palette_mlstr, 1)
@@ -379,9 +387,8 @@ variable_visualize <- function(
   palette_pie["Valid other values"] <- "#e9b400" # yellow
   palette_pie["Missing values"]     <- "slategray3" # red
   palette_pie["NA values"]          <- palette_NA # grey
-  
   if(nrow(colset_values) > 0) {
-    
+
     if(vT_col$`genericType` == "numeric"){
       
       #### summary_2 numeric ####
@@ -882,7 +889,6 @@ variable_visualize <- function(
   if(nrow(colset_cat_values) > 0){
     
     n_obs <- nrow(colset_cat_values)
-    
     cat_lab_var <- 
       col_dict[['Categories']] %>% 
       dplyr::filter(if_any('variable') == col) %>%
