@@ -478,7 +478,7 @@ variable_visualize <- function(
           ggplot(colset_values) + aes +
           geom_viz +
           theme_bw() +
-          ggtitle(paste0('Histogram', title)) +
+          ggtitle(paste0(title)) +
           theme(legend.position="none",plot.title = 
                   element_text(size=8, face = "bold"),
                 strip.background = element_rect(color="white", fill="white")) +
@@ -948,8 +948,8 @@ variable_visualize <- function(
     if(group_by != '') {plot_3 <- plot_3 + facet_wrap(group_by)}}
 
   plot_4 <- NULL
-  if(nrow(colset_cat_miss_values) > 0 & 
-     nrow(unique(colset_cat_miss_values)) > 1){
+  if(nrow(colset_cat_miss_values[col]) > 0 & 
+     nrow(unique(colset_cat_miss_values[col])) > 1){
     
     n_obs <- nrow(colset_cat_miss_values)
     
