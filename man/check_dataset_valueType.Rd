@@ -55,12 +55,7 @@ possibilities and their correspondence with R data types are available using
 \examples{
 {
 
-# use DEMO_files provided by the package
-
-dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-dataset <- data_dict_apply(dataset, data_dict)
-check_dataset_valueType(dataset, data_dict,valueType_guess = TRUE)
+check_dataset_valueType(iris[1], valueType_guess = TRUE)
 
 }
 

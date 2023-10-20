@@ -75,17 +75,14 @@
 #' @examples
 #' {
 #' 
-#'  dataset <- iris['Sepal.Width']
+#'  library(dplyr)
+#'  dataset <- iris['Sepal.Width'] %>% slice(0)
 #'  summary_variable <- dataset_summarize(dataset)
 #'   
 #'  variable_viz <-
-#'     variable_visualize(
-#'     dataset, col = 'Sepal.Width',
-#'     .summary_var =  summary_variable)
-#'  
-#'  variable_viz$summary_table
-#'  variable_viz$main_values_1
-#'  variable_viz$main_values_2
+#'    variable_visualize(
+#'    dataset, col = 'Sepal.Width',
+#'    .summary_var =  summary_variable)
 #'  
 #' }
 #'
@@ -1278,7 +1275,8 @@ variable_visualize <- function(
 #' @examples
 #' {
 #' 
-#' dataset <- DEMO_files$dataset_TOKYO['height']
+#' library(dplyr)
+#' dataset <- DEMO_files$dataset_TOKYO['height'] %>% slice(0)
 #' data_dict <-
 #'   data_dict_filter(
 #'     DEMO_files$dd_TOKYO_format_maelstrom,
@@ -1289,7 +1287,7 @@ variable_visualize <- function(
 #' bookdown_path <- tempdir()
 #' dataset_visualize(
 #'   dataset, data_dict,
-#'   .summary_var =.summary_var, 
+#'   .summary_var =.summary_var,
 #'   bookdown_path = bookdown_path,
 #'   overwrite = TRUE)
 #'   

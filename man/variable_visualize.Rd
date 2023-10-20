@@ -88,17 +88,14 @@ possibilities and their correspondence with R data types are available using
 \examples{
 {
 
- dataset <- iris['Sepal.Width']
+ library(dplyr)
+ dataset <- iris['Sepal.Width'] \%>\% slice(0)
  summary_variable <- dataset_summarize(dataset)
   
  variable_viz <-
-    variable_visualize(
-    dataset, col = 'Sepal.Width',
-    .summary_var =  summary_variable)
- 
- variable_viz$summary_table
- variable_viz$main_values_1
- variable_viz$main_values_2
+   variable_visualize(
+   dataset, col = 'Sepal.Width',
+   .summary_var =  summary_variable)
  
 }
 

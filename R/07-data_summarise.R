@@ -1700,12 +1700,15 @@ summary_variables_categorical <- function(
       summary %>%
       dplyr::filter(.data$`name` == i)
     
-    summary_category <-
+    summary_category <- 
       summary_i %>%
-      dplyr::filter(.data$`name` == i) %>%
       mutate(
         cat_order = .data$`cat_index`,
-        cat_index = paste0('[',.data$`value_var`,'] - ',.data$`cat_label`),
+        cat_index = 
+          ifelse(
+            .data$`value_var` == .data$`cat_label`,
+            .data$`cat_label`,
+            paste0('[',.data$`value_var`,'] - ',.data$`cat_label`)),
         
         cat_index = 
           ifelse(nchar(.data$`cat_index`) > 40,
@@ -1713,8 +1716,9 @@ summary_variables_categorical <- function(
                  .data$`cat_index`),
         cat_index = 
           ifelse(
-            str_detect(.data$`cat_index`,'\\] - NA$'),NA,.data$`cat_index`)) %>%
-    
+            is.na(.data$`cat_label`),NA,.data$`cat_index`)) %>%
+      
+      ungroup %>%
       select("valid_class","cat_index","cat_order","value_var","n") %>%
       group_by(.data$`valid_class`,.data$`cat_index`, .data$`cat_order`) %>%
       summarise(
@@ -1725,27 +1729,35 @@ summary_variables_categorical <- function(
       distinct() %>%
       group_by(.data$`valid_class`,.data$`cat_index`,.data$`cat_order`,.data$`n`) %>%
       summarise(
-        name_var = paste0(.data$`value_var`, collapse = " ; "),
+        name_var = paste0(.data$`value_var`, collapse = "{semicolon}"),
         .groups = "drop") %>%
       arrange(.data$`valid_class`,.data$`cat_order`) %>%
       mutate(
-        cat_index = replace_na(.data$`cat_index`,'1'),
+        cat_index = replace_na(.data$`cat_index`,'{blank}'),
         name_var  = str_replace(.data$`name_var`, "^NA$","")) %>%
-      ungroup %>%
       
+      # ) %>% View
       # handle the round
       mutate(n_perc =
                paste0(round(100*(.data$`n` / sum(.data$`n`)),2),"%")) %>%
       rowwise() %>%
       mutate(
+        name_var2 = ifelse(
+          .data$`valid_class` == "3_Valid other values",
+          unlist(.data$`name_var` %>% str_split("\\{semicolon\\}"))[6],.data$`name_var`),
         name_var = ifelse(
           .data$`valid_class` == "3_Valid other values",
-          unlist(.data$`name_var` %>% str_split(" ; "))[1:5] %>%
-            paste0(collapse = " ; "),.data$`name_var`),
-        name_var =
-          ifelse(.data$`valid_class` == "3_Valid other values" & n > 5,
-                 paste0(.data$`name_var`," [...]"),
-                 .data$`name_var`)) %>%
+          unlist(.data$`name_var` %>% str_split("\\{semicolon\\}"))[1:5] %>%
+            paste0(collapse = "{semicolon}"),.data$`name_var`)
+      ) %>%
+      mutate(
+        name_var = str_replace_all(.data$`name_var`,'\\{semicolon\\}NA',''),
+        name_var = ifelse(.data$`valid_class` == "3_Valid other values" &
+                            !is.na(.data$`name_var2`),
+                          paste0(.data$`name_var`," [...]"),
+                          .data$`name_var`),
+        name_var = str_replace_all(.data$`name_var`,'\\{semicolon\\}',' ; '),
+      ) %>% select(-'name_var2') %>%
       ungroup %>%
       mutate(
         cat_var_absence    =
@@ -1756,7 +1768,7 @@ summary_variables_categorical <- function(
         list_values        =
           ifelse(.data$`valid_class` == "3_Valid other values", "",
                  .data$`cat_index`),
-        list_values        = na_if(.data$`list_values`,'1'),
+        list_values        = na_if(.data$`list_values`,'{blank}'),
         n_perc             =
           paste0(" : ", .data$`n_perc`)) %>%
       unite("list_values",.data$`list_values`,.data$`n_perc`,
@@ -1774,22 +1786,23 @@ summary_variables_categorical <- function(
           .data$`valid_class` == "4_NA values"          ~
             "\nNA values",
           TRUE                             ~ .data$`valid_class`)) %>%
-      select(-.data$`name_var`) %>%
+      select(-'name_var') %>%
+      
       mutate(across(c(
-        .data$`list_values`,.data$`cat_var_absence`,.data$`other_val_presence`),
+        'list_values','cat_var_absence','other_val_presence'),
         ~ ifelse(.data$`categorical_index` == 4 ,.,paste0(.,"\n")))) %>%
       mutate(
         valid_class =
-          ifelse(.data$`cat_index` == '1' ,.data$`valid_class`,"")) %>%
+          ifelse(.data$`cat_index` == '{blank}' | .data$`cat_order` %in% 1 ,.data$`valid_class`,"")) %>%
       mutate(
         category_space_prefix =
           ifelse(
-            .data$`cat_index` == '1' & .data$`categorical_index` %in% c(2,3,4),
+            .data$`cat_index` == '{blank}' & .data$`categorical_index` %in% c(2,3,4),
             "\n","")) %>%
       mutate(
         category_space_suffix =
           ifelse(
-            .data$`cat_index` == '1' & .data$`categorical_index` %in% c(1,2),
+            .data$`cat_index` == '{blank}' & .data$`categorical_index` %in% c(1,2),
             "\n","")) %>%
       unite(
         "list_values",.data$`valid_class`,.data$`list_values`,
@@ -1814,6 +1827,7 @@ summary_variables_categorical <- function(
       select(-.data$`categorical_index`, -.data$`n`) %>%
       summarise(across(everything(), ~ paste0(.,collapse = "")))
     
+    
     if(nrow(dplyr::filter(
       summary_i,
       .data$`valid_class` %in% c("1_Valid values","2_Missing values"))) > 0){
@@ -1823,12 +1837,6 @@ summary_variables_categorical <- function(
           
           `name`                   =
             unique(summary_i$name),
-          
-          # `% Valid categorical values` =
-          #   round(summary_i %>%
-          #         dplyr::filter(.data$`valid_class` == "1_Valid values") %>%
-          #           pull(.data$`n`) %>% sum /
-          #           (summary_i %>% pull(.data$`n`) %>% sum),4),
           
           `Values present in dataset`                           =
             summary_category$list_values,

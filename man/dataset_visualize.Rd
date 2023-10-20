@@ -110,7 +110,8 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-dataset <- DEMO_files$dataset_TOKYO['height']
+library(dplyr)
+dataset <- DEMO_files$dataset_TOKYO['height'] \%>\% slice(0)
 data_dict <-
   data_dict_filter(
     DEMO_files$dd_TOKYO_format_maelstrom,
@@ -121,7 +122,7 @@ data_dict <-
 bookdown_path <- tempdir()
 dataset_visualize(
   dataset, data_dict,
-  .summary_var =.summary_var, 
+  .summary_var =.summary_var,
   bookdown_path = bookdown_path,
   overwrite = TRUE)
   
