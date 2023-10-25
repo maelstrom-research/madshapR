@@ -10,12 +10,11 @@ col_id(dataset)
 \item{dataset}{A tibble identifying the input dataset observations.}
 }
 \value{
-Name(s) of indetifier column(s). NULL if not.
+Name(s) of identifier column(s). NULL if not.
 }
 \description{
-Tests if the input object is a valid dossier. This function mainly helps
-validate input within other functions of the package but could be used to
-check if a dossier is valid.
+Return the id column names(s) of a dataset if any. If not, the function
+returns a NULL object.
 }
 \details{
 A dataset must be a data frame-like object and can be associated with a
@@ -29,7 +28,6 @@ automatically by the function.
 \examples{
 {
 
-# use DEMO_files provided by the package
 col_id(iris)
 col_id(as_dataset(iris,'Species'))
 
