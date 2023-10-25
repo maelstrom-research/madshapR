@@ -11,7 +11,6 @@ dataset_visualize(
   group_by = NULL,
   taxonomy = NULL,
   valueType_guess = FALSE,
-  overwrite = FALSE,
   render = "html",
   .summary_var = NULL,
   .dataset_name = NULL
@@ -36,8 +35,6 @@ classification.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
-
-\item{overwrite}{whether to overwrite existing files. FALSE by default.}
 
 \item{render}{Output format of the visual report. To date, the format can
 only be 'html', but will be expand to other formats in the future.}
@@ -123,8 +120,7 @@ bookdown_path <- tempdir()
 dataset_visualize(
   dataset, data_dict,
   .summary_var =.summary_var,
-  bookdown_path = bookdown_path,
-  overwrite = TRUE)
+  bookdown_path = bookdown_path)
   
 # To open the file in browser, open 'bookdown_path/docs/index.html'. 
 # Or use bookdown_open(bookdown_path) function
