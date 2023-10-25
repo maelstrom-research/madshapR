@@ -589,7 +589,6 @@ check_data_dict_valueType <- function(data_dict){
 
   test <- 
     test_valueType_names <- 
-    test_valueType_cat <- 
     test_valueType_refined <- 
     tibble(
       name_var = as.character(),
@@ -612,87 +611,46 @@ check_data_dict_valueType <- function(data_dict){
 
   if(length(data_dict[['Categories']]) > 0){
 
-    vT_text <-
-      vT_list %>%
-      dplyr::filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
-
-    data_dict_vt <-
-      data_dict[['Variables']] %>%
-      select(name_var = .data$`name`,.data$`valueType`) %>%
-      dplyr::filter(! .data$`valueType` %in% vT_text)
-
-    vT_names <-
+    vT_categorical <-
       data_dict[['Categories']] %>%
       select(name_var = "variable", "name") %>%
-      inner_join(data_dict_vt,by = "name_var")
+      dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var`) %>%
+      inner_join(
+        data_dict[['Variables']] %>%
+          select(name_var = 'name','valueType'),by = "name_var")
 
-    test_valueType_cat <-
-      vT_names %>%
-      select(-"name_var") %>%
+    # for these, find the best match
+    test_valueType_refined <- 
+      vT_categorical %>%
+      group_by(across(any_of(c("name_var")))) %>%
+      reframe(
+        valueType = .data$`valueType`,
+        name = paste0(.data$`name`,collapse = '|')) %>%
       distinct() %>%
-      rowwise() %>%
+      group_by(across(any_of(c("valueType", 'name')))) %>%
+      reframe(
+        name_var = paste0(.data$`name_var`,collapse = '|')) %>%
+      distinct() %>%
+      separate_longer_delim(cols = 'name',delim = '|') %>%
+      group_by(across(any_of(c("name_var")))) %>%
+      reframe(
+        valueType = .data$`valueType`,
+        test = class(silently_run(as_valueType(.data$`name`,.data$`valueType`[[1]])))[1],
+        suggestion = valueType_guess(.data$`name`)) %>%
+      separate_longer_delim(cols = 'name_var',delim = '|') %>%
+      distinct %>%
+      filter(.data$`valueType` != .data$`suggestion`) %>%
       mutate(
-        test = class(
-          silently_run(as_valueType(.data$`name`,.data$`valueType`)))[1]
-        ) %>%
-      dplyr::filter(.data$`test` == "try-error") %>%
-      inner_join(vT_names,by = c("name", "valueType")) %>%
-      select("name_var", "valueType") %>%
-      distinct
+        condition = case_when(
+          .data$`test` == 'try-error'  ~ "[ERR]  - valueType conflict in 'Categories'",
+          TRUE                         ~ "[INFO] - refined valueType proposed")) %>%
+      select( 'name_var', 'value' = 'valueType', 'condition','suggestion') %>%
+      mutate(across(everything(), ~ as.character(.)))
 
-    test_valueType_cat <-
-      test_valueType_cat %>%
-      full_join(
-        silently_run(
-        valueType_self_adjust(
-          data_dict_filter(
-            data_dict,paste0("name %in% c('",
-                           paste0(unique(test_valueType_cat$name_var),
-                                  collapse = "','"),"')")))[['Variables']]) %>%
-          select(name_var = "name", suggestion = "valueType"),
-        by = "name_var")
-
-    test_valueType_cat <-
-      test_valueType_cat %>%
-      mutate(
-        condition = "[ERR] - valueType conflict in 'Categories'") %>%
-      select(.data$`name_var`, value = .data$`valueType`, .data$`condition`,
-             .data$`suggestion`) %>%
-      mutate(across(everything(), ~as.character(.))) %>%
-      distinct
-    
-    vT_cat <- 
-      na.omit(intersect(
-      unique(data_dict[['Variables']][['name']]),
-      unique(data_dict[['Categories']][['variable']])))
-      
-    vT_cat <- vT_cat[!vT_cat %in% (test_valueType_cat %>% pull(.data$`name_var`))]
-    
-    for(i in vT_cat){
-      # stop()}
-      
-      data_dict_i <- 
-        data_dict %>%
-        data_dict_filter(paste0('name == "',i,'"'))
-      
-      vT_data_dict <- data_dict_i['Variables']
-      vT_dataset <- 
-        data_dict_i[['Categories']]['name'] %>%
-        rename_with(.cols = "name", .fn = ~ i)
-      
-      test_valueType_refined <- 
-        test_valueType_refined %>%
-        bind_rows(
-          check_dataset_valueType(
-            vT_dataset,vT_data_dict,valueType_guess = TRUE)) %>%
-        mutate(
-          condition = str_replace(.data$`condition`,"dataset","'Categories'"))
     }
-  }
 
   test <- bind_rows(
     test_valueType_names, 
-    test_valueType_cat,
     test_valueType_refined)
 
   return(test)

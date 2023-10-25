@@ -2281,7 +2281,7 @@ as_data_dict_mlstr <- function(
          '`as_data_dict` must be TRUE of FALSE (FALSE by default)')
   
   # if valueType exists, vT must be valid
-  if(suppressWarnings(check_data_dict_valueType(data_dict))  %>% 
+  if(suppressWarnings(check_data_dict_valueType(data_dict))  %>%
      dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
          "valueType are incompatible with Maelstrom standards.",
