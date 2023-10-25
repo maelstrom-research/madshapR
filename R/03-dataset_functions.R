@@ -418,7 +418,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' as_dataset(iris, col_id = "Species")
 #'}
 #'
-#' @import dplyr tidyr
+#' @import dplyr tidyr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -435,19 +435,23 @@ as_dataset <- function(object, col_id = NULL){
 
     # if(is.null(col_id)) col_id <- names(object)[[1]]
     # if !is.null(col_id) column must be present and completely filled
-    if(length(intersect(names(object), col_id)) != length(unique(col_id)))
+    if(class(silently_run(
+      object %>% select(!! all_of(col_id))))[1] == 'try-error')
       stop(call. = FALSE,
            "All of your id column(s) must be present in your dataset.")
 
-    if(sum(is.na(object[col_id])) > 0)
+    if(sum(is.na(object %>% select(!! all_of(col_id)))) > 0)
       stop(call. = FALSE,
            "Your id column(s) must not contain any NA values.")
 
-    attributes(object)$`madshapR::class` <- "dataset"
-    attributes(object)$`madshapR::col_id` <- col_id
+    names_id <- names(object %>% select(!! all_of(col_id)))
+    if(length(names_id) == 0) names_id <- NULL
 
     object <-
-      object %>% select(all_of(col_id), everything())
+      object %>% select(all_of(names_id), everything())
+    
+    attributes(object)$`madshapR::class` <- "dataset"
+    attributes(object)$`madshapR::col_id` <- names_id
 
     return(object)
   }
@@ -524,10 +528,10 @@ as_dossier <- function(object){
       FUN = function(x) as_dataset(x, attributes(x)$`madshapR::col_id`)),
     error = function(x) stop(call. = FALSE,
 "\n
-This object is not a dossier as defined by Maelstrom standards, which must be 
-exclusively a list of (at least one) dataset(s). Each dataset may have column(s)
-which refer to key identifier of the dataset. If attributed, this(ese) columns 
-must be present in the dataset.
+This object is not a dossier as defined in madshapR, which must be exclusively a 
+list of (at least one) dataset(s). Each dataset may have column(s) which refer 
+to key identifier of the dataset. If attributed, this(ese) columns must be 
+present in the dataset.
 
 Please refer to documentation."))
 
@@ -636,3 +640,46 @@ is_dossier <- function(object){
   return(TRUE)
 
 }
+
+#' @title
+#' Return the id column names(s) of a dataset
+#'
+#' @description
+#' Return the id column names(s) of a dataset if any. If not, the function 
+#' returns a NULL object.
+#'
+#' @details
+#' A dataset must be a data frame-like object and can be associated with a 
+#' data dictionary. If no data dictionary is provided, a minimum workable 
+#' data dictionary will be generated as needed by relevant functions. 
+#' An identifier `id` column for sorting can be specified by the user. If 
+#' specified, the `id` values must be non-missing and will be used in functions 
+#' that require it. If no identifier column is specified, indexing is handled 
+#' automatically by the function.
+#' 
+#' @param dataset A tibble identifying the input dataset observations.
+#'
+#' @returns
+#' Name(s) of identifier column(s). NULL if not.
+#'
+#' @examples
+#' {
+#' 
+#' col_id(iris)
+#' col_id(as_dataset(iris,'Species'))
+#' 
+#'}
+#'
+#' @import dplyr tidyr
+#' @importFrom rlang .data
+#'
+#' @export
+col_id <- function(dataset){
+  
+  # test if enough dataset
+  as_dataset(dataset)
+
+  return(attributes(dataset)$`madshapR::col_id`)
+  
+}
+
