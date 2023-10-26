@@ -100,8 +100,8 @@ dataset_summarize <- function(
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
   
-  dataset <- as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
-  col_id <- attributes(dataset)$`madshapR::col_id`
+  dataset <- as_dataset(dataset, col_id(dataset))
+  col_id <- col_id(dataset)
   
   dataset_name <- 
     ifelse(
@@ -120,7 +120,7 @@ dataset_summarize <- function(
   }
 
   dataset <- 
-    as_dataset(ungroup(dataset),col_id = attributes(dataset)$`madshapR::col_id`)
+    as_dataset(ungroup(dataset),col_id)
     
   dataset <-
     suppressWarnings({
@@ -128,7 +128,7 @@ dataset_summarize <- function(
       dataset,
       data_dict,
       output = 'dataset') %>%
-    as_dataset(attributes(dataset)$`madshapR::col_id`)})
+    as_dataset(col_id)})
   
   data_dict <- 
     suppressWarnings({
@@ -1091,31 +1091,31 @@ summary_variables <- function(
               !is.na(summary_i$`value_var`),]$`value_var`)),
         
         `% total Valid values` =
-          sum(summary_i[
+          round(100*(sum(summary_i[
             summary_i$`valid_class` %in%
               c("1_Valid values","3_Valid other values"),]$value_var_occur)/
-          sum(summary_i$`value_var_occur`),
+          sum(summary_i$`value_var_occur`)),2),
         
         `% NA` =
-          sum(summary_i[
+          round(100*(sum(summary_i[
             summary_i$`valid_class` %in%
               c("4_NA values"),]$value_var_occur)/
-          sum(summary_i$`value_var_occur`),
+          sum(summary_i$`value_var_occur`)),2),
         
         `% Valid categorical values (if applicable)` =
           ifelse(all(summary_i$`Categorical variable` != 'no'),
-                 sum(summary_i[
+                 round(100*(sum(summary_i[
                    summary_i$`valid_class` %in%
                      c("1_Valid values"),]$value_var_occur)/
-                   sum(summary_i$`value_var_occur`),
+                   sum(summary_i$`value_var_occur`)),2),
                  NA_real_),
         
         `% Missing categorical values (if applicable)` =
           ifelse(all(summary_i$`Categorical variable` != 'no'),
-                 sum(summary_i[
+                 round(100*(sum(summary_i[
                    summary_i$`valid_class` %in%
                      c("2_Missing values"),]$value_var_occur)/
-                   sum(summary_i$`value_var_occur`),
+                   sum(summary_i$`value_var_occur`)),2),
                  NA_real_)
       )
     
