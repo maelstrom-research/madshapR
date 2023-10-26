@@ -118,7 +118,7 @@ variable_visualize <- function(
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
   }
-  
+
   dataset <- as_dataset(ungroup(dataset))
   
   ## future dev
@@ -384,10 +384,11 @@ variable_visualize <- function(
   palette_pie["Valid other values"] <- "#e9b400" # yellow
   palette_pie["Missing values"]     <- "slategray3" # red
   palette_pie["NA values"]          <- palette_NA # grey
+  
   if(nrow(colset_values) > 0) {
 
     if(vT_col$`genericType` == "numeric"){
-      
+
       #### summary_2 numeric ####
       summary_2 <- 
         as.data.frame(t(
@@ -397,7 +398,7 @@ variable_visualize <- function(
             select(-c(1:"% Missing categorical values (if applicable)"))
           
           ))
-      
+    
       if(group_by != ''){
         names(summary_2) <- 
           
@@ -1434,6 +1435,7 @@ Please provide another name folder or delete the existing one.")}
   if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(
     path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
+    valueType_guess,
     file = paste0(path_to,"/src/r_env.RData"))
   
   ## markdown writing elements
@@ -1613,6 +1615,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
   col = '", names(dataset[i]),"',
   data_dict = data_dict, 
   group_by = '", group_by, "',
+  valueType_guess = '", valueType_guess, "',
   .summary_var = .summary_var)       
         
   if(!is.null(plots$summary_table))      plots$summary_table                  ",
