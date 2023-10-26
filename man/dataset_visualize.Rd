@@ -108,22 +108,25 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 {
 
 library(dplyr)
+library(fs)
 dataset <- DEMO_files$dataset_TOKYO['height'] \%>\% slice(0)
 data_dict <-
   data_dict_filter(
     DEMO_files$dd_TOKYO_format_maelstrom,
     filter_var = "name == 'height'")
-      
+
 .summary_var <- DEMO_files$summary_var
-  
+
+if(dir_exists(tempdir())) dir_delete(tempdir())
 bookdown_path <- tempdir()
+  
 dataset_visualize(
   dataset, data_dict,
   .summary_var =.summary_var,
   bookdown_path = bookdown_path)
   
 # To open the file in browser, open 'bookdown_path/docs/index.html'. 
-# Or use bookdown_open(bookdown_path) function
+# Or use bookdown_open(bookdown_path) function.
 
 }
 
