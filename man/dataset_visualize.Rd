@@ -120,7 +120,6 @@ data_dict <-
 if(dir_exists(tempdir())) dir_delete(tempdir())
 bookdown_path <- tempdir()
   
-  
 dataset_visualize(
   dataset, data_dict,
   .summary_var =.summary_var,
