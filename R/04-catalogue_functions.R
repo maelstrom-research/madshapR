@@ -156,11 +156,12 @@ valueType_self_adjust <- function(...){
 
   if(is_dataset(...) & !is_data_dict(...)){
     
-    dataset <- as_dataset(...,col_id = attributes(...)$`madshapR::col_id`)
+    dataset <- as_dataset(...,col_id = col_id(...))
     
     if(ncol(dataset) == 0) return(dataset)
+    if(nrow(dataset) == 0) return(dataset)
     
-    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+    preserve_attributes <- col_id(dataset)
 
     is_factor <-
       dataset %>%
