@@ -2443,8 +2443,8 @@ investigations.",
         left_join(
           madshapR::valueType_list %>%
             select(
-              valueType = .data$`valueType`,
-              typeof = .data$`toTypeof`) %>%
+              valueType = "valueType",
+              typeof = "toTypeof") %>%
             distinct,
           by = "valueType") %>%
         select(-"valueType")}
@@ -2537,7 +2537,7 @@ New name: ",new_name)
         data_dict[['Categories']] %>%
           select(
             'variable','name',
-            matches(c("^label$","^label:[[:alnum:]]"))),
+            matches(c("^labels$","^label$","^label:[[:alnum:]]"))),
         data_dict[['Categories']][vapply(
           X = data_dict[['Categories']],
           FUN = function(x) !all(is.na(x)),

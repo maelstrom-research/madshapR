@@ -1423,7 +1423,7 @@ Please provide another name folder or delete the existing one.")}
       "name",
       matches(c("^label$","^label:[[:alnum:]]"))[1],
       matches('valueType'),
-      Categories = matches(c("^Categories::label$",
+      Categories = matches(c("^Categories::labels$","^Categories::label$",
                              "^Categories::label:[[:alnum:]]"))[1]) %>% 
     mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>")) %>%
     mutate(Categories = str_replace_all(
