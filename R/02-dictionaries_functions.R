@@ -2357,17 +2357,20 @@ investigations.",
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
     # addition of label(:xx) if not present
-    lab_name <-
-      names(data_dict[['Categories']] %>%
-              select(matches(c("^label$","^label:[[:alnum:]]"))))
     
-    if(length(lab_name) == 0){
+    lab_name_var <-
+      names(data_dict[['Variables']] %>%
+              select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    
+    lab_name_cat <-
+      intersect(lab_name_var,
+        names(data_dict[['Categories']] %>%
+                select(matches(c("^label$","^label:[[:alnum:]]")))))
+    
+    if(length(lab_name_cat) == 0){
       
       # check presence of labels, if identical to name, NULL, rename else
-      lab_name_var <-
-        names(data_dict[['Variables']] %>%
-                select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
-      
+
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
         rename_with(.cols = "labels", ~ lab_name_var)
@@ -2450,7 +2453,6 @@ investigations.",
         select(-"valueType")}
     
     if(sum(nrow(data_dict[['Categories']])) > 0){
-      
       
       # protection of labels if already exists
       if(length(data_dict[['Categories']][['labels']]) > 0){
