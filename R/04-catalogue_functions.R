@@ -545,17 +545,20 @@ bold("\n\nUseful tip:"),
 #' @export
 valueType_guess <- function(x){
 
-  # test
-  x <- unique(x)
-
   # check if the col is empty
   if(is.list(x) & sum(nrow(x)) <= 1)
-    return(as_valueType(x = x[[1]]))
-
+    return(valueType_guess(x = x[[1]]))
+  
   # check if the col is a vector
   if(is.list(x))
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
+  
+  # check if all is na
+  if(all(is.na(x))) return(valueType_of(x))
 
+  # else :
+  x <-   unique(x)
+  
   vT_list <- madshapR::valueType_list
 
   test_vT_boolean  <- 
