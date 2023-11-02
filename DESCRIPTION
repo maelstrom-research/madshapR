@@ -54,7 +54,7 @@ Imports: dplyr,
     fabR,
     lifecycle
 Remotes: 
-    github::maelstrom-research/fabR
+    github::GuiFabre/fabR
 URL: https://github.com/maelstrom-research/madshapR
 BugReports: https://github.com/maelstrom-research/madshapR/issues
 Roxygen: list(markdown = TRUE)
