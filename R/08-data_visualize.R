@@ -212,7 +212,7 @@ variable_visualize <- function(
         !! group_by := 'name', 
         `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
       mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
-      madshapR::add_index('___category_level___')
+      add_index('___category_level___')
     
     colset <-  
       colset %>%
@@ -892,7 +892,7 @@ variable_visualize <- function(
         `___labels___` = 
           matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
       mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-      madshapR::add_index('___category_level___')
+      add_index('___category_level___')
 
     colset_cat_values <-  
       colset_cat_values %>%
@@ -959,7 +959,7 @@ variable_visualize <- function(
           `___labels___` = 
             matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
         mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-        madshapR::add_index('___category_level___')      
+        add_index('___category_level___')      
       
     } else { cat_lab_miss_var <- 
       tibble(
@@ -1393,7 +1393,7 @@ Please provide another name folder or delete the existing one.")}
       valueType_guess = valueType_guess)}
 
   data_dict$Variables <- 
-    data_dict$Variables %>% madshapR::add_index(.force = TRUE)
+    data_dict$Variables %>% add_index(.force = TRUE)
   
   data_dict_flat <- data_dict
   data_dict_flat[['Variables']] <- data_dict$Variables
@@ -1401,10 +1401,10 @@ Please provide another name folder or delete the existing one.")}
   if(sum(nrow(data_dict_flat[['Categories']])) > 0){
     data_dict_flat[['Categories']] <- 
       data_dict[['Categories']] %>% 
-      madshapR::add_index("madshapR::index_original",.force = TRUE) %>%
+      add_index("madshapR::index_original",.force = TRUE) %>%
       group_by(.data$`variable`) %>%
       slice(1:6) %>%
-      madshapR::add_index("madshapR::index_group",.force = TRUE) %>%
+      add_index("madshapR::index_group",.force = TRUE) %>%
       mutate(across(
         -c("variable","madshapR::index_group","madshapR::index_original"), ~ 
         ifelse(.data$`madshapR::index_group` == 6,'[...]',.) )) %>%

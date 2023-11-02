@@ -58,7 +58,7 @@ check_data_dict_variables <- function(data_dict){
 
   var_NA <-
     data_dict[['Variables']] %>%
-    madshapR::add_index(.force = TRUE) %>%
+    add_index(.force = TRUE) %>%
     dplyr::filter(is.na(.data$`name`) | .data$`name` == "") %>%
     mutate(name = paste0("row number: ",.data$`index`)) %>%
     select(.data$`name`)
@@ -144,7 +144,7 @@ check_data_dict_categories <- function(data_dict){
     data_dict[['Categories']] %>%
     mutate(across(everything(), as.character)) %>%
     mutate(name_var = as.character(.data$`variable`)) %>%
-    madshapR::add_index(.force = TRUE) %>%
+    add_index(.force = TRUE) %>%
     mutate(index = paste0("row number: ",.data$`index`)) %>%
     select(value = .data$`name`,.data$`name_var`,.data$`index`) %>%
     arrange(.data$`name_var`) %>%
@@ -385,7 +385,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #               'Mlstr_area::1', 'Mlstr_area::1.term','Mlstr_area::1.scale',
   #               'Mlstr_area::2', 'Mlstr_area::2.term',
   #               'Mlstr_area::3', 'Mlstr_area::3.term')) %>%
-  #   madshapR::add_index(.force = TRUE) %>%
+  #   add_index(.force = TRUE) %>%
   #   mutate(name = ifelse(is.na(.data$`name`),paste0("line:",.data$`index`),
   #   .data$`name`)) %>%
   #   select(-.data$`index`) %>%

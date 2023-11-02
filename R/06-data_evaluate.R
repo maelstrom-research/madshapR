@@ -112,7 +112,7 @@ dataset_evaluate <- function(
   
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
-    madshapR::add_index(.force = TRUE)
+    add_index(.force = TRUE)
 
   data_dict <- data_dict[c('Variables','Categories')]
   data_dict <-
@@ -135,7 +135,7 @@ dataset_evaluate <- function(
     col_id <- attributes(dataset)$`madshapR::col_id`
   
   if(is.null(col_id) | ncol(dataset) == 1){
-    dataset <- dataset %>% madshapR::add_index("___mlstr_index___")
+    dataset <- dataset %>% add_index("___mlstr_index___")
     dataset <- as_dataset(dataset, names(dataset)[1])}
   
   col_id <- attributes(dataset)$`madshapR::col_id`
@@ -216,10 +216,10 @@ dataset_evaluate <- function(
       #   value = str_remove(
       #     .data$`condition`,
       #     "\\[INFO\\] - Duplicated observations : ")) %>%
-      madshapR::add_index('madshapR::index') %>%
+      add_index('madshapR::index') %>%
       separate_rows("value",sep = " ; ") %>%
       group_by(.data$`madshapR::index`) %>%
-      madshapR::add_index('madshapR::index2') %>%
+      add_index('madshapR::index2') %>%
       group_by(.data$`madshapR::index`)
     
     if(col_id != "___mlstr_index___"){
@@ -229,7 +229,7 @@ dataset_evaluate <- function(
         rename('madshapR::value' = 'value') %>%
         left_join(by = 'madshapR::value',
                   dataset %>% select(all_of(col_id)) %>%
-                    madshapR::add_index('madshapR::value') %>%
+                    add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
         rename('value' = !!as.symbol('col_id')) %>%
         select(-all_of('madshapR::value'))
@@ -273,7 +273,7 @@ dataset_evaluate <- function(
       rename('madshapR::value' = 'value') %>%
       left_join(by = 'madshapR::value',
                 dataset %>% select(all_of(col_id)) %>% 
-                  madshapR::add_index('madshapR::value') %>%
+                  add_index('madshapR::value') %>%
                   mutate(across(everything(), as.character))) %>%
       rename('value' = !!as.symbol(col_id)) %>%
       select(-'madshapR::value')
@@ -524,7 +524,7 @@ data_dict_evaluate <- function(
   as_data_dict_shape(data_dict)
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
-    madshapR::add_index(.force = TRUE)
+    add_index(.force = TRUE)
   
   data_dict <- data_dict[c('Variables','Categories')]
   data_dict <-
@@ -644,7 +644,7 @@ data_dict_evaluate <- function(
   #                 "\\[INFO\\] - Possible duplicated observations: ")) %>%
   #   separate_rows(.data$`condition`,sep = " ; ") %>%
   #   mutate(index = as.integer(.data$`condition`)) %>%
-  #   full_join(data_dict[['Variables']] %>% madshapR::add_index(.force = TRUE),
+  #   full_join(data_dict[['Variables']] %>% add_index(.force = TRUE),
   #                                                            by = "index") %>%
   #   dplyr::filter(!is.na(.data$`condition`)) %>%
   #   select(col_name = .data$`name`) %>%
