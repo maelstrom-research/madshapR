@@ -302,9 +302,6 @@ variable_visualize <- function(
     mutate(col = row.names(summary_1)) %>%
     mutate(across(-c("col"), 
                   ~ ifelse(. == 0,NA_real_,.))) %>%
-    mutate(across(-c("col"), 
-                  ~ ifelse(str_detect(.data$`col`,'% '),round(.*100,2),
-                           round(.)))) %>%
     select(-'col') %>%
     mutate(across(everything(),as.character))
     
@@ -477,8 +474,8 @@ variable_visualize <- function(
           geom_viz +
           theme_bw() +
           ggtitle(paste0(title)) +
-          theme(legend.position="none",plot.title = 
-                  element_text(size=8, face = "bold"),
+          theme(legend.position = "none",plot.title = 
+                  element_text(size = 8, face = "bold"),
                 strip.background = element_rect(color="white", fill="white")) +
           ylab("") +
           xlab("") +
@@ -581,8 +578,8 @@ variable_visualize <- function(
         ggplot(colset_values_main_word) + aes + 
         geom_col() +
         theme_bw() +
-        theme(legend.position="none",plot.title = 
-                element_text(size=8,face = "bold"),
+        theme(legend.position = "none",plot.title = 
+                element_text(size = 8,face = "bold"),
               strip.background = element_rect(color = "white", fill="white")) +
         ggtitle(paste0('Most common entry', title)) +
         ylab("") +
@@ -615,8 +612,8 @@ variable_visualize <- function(
         ggplot(colset_values_all_word) + aes + 
         geom_col() +
         theme_bw() +
-        theme(legend.position="none",plot.title =
-                element_text(size=8,face = "bold"),
+        theme(legend.position = "none",plot.title =
+                element_text(size = 8,face = "bold"),
               strip.background = element_rect(color = "white", fill="white")) +
         ggtitle(paste0('Bar plot', title)) +
         ylab("") +
@@ -935,7 +932,7 @@ variable_visualize <- function(
       geom_bar() +
       theme_bw() + 
       theme(legend.position="none",plot.title = 
-              element_text(size=8, face = "bold"),
+              element_text(size = 8, face = "bold"),
             strip.background = element_rect(color = "white", fill="white")) +
       ggtitle(paste0('Bar plot', title)) +
       ylab("") +
@@ -1012,9 +1009,9 @@ variable_visualize <- function(
       ggplot(colset_cat_miss_values) + aes +
       geom_bar() +
       theme_bw() +
-      theme(legend.position="none",plot.title = 
-              element_text(size=8, face = "bold"),
-            strip.background = element_rect(color = "white", fill="white")) +
+      theme(legend.position = "none",plot.title = 
+              element_text(size = 8, face = "bold"),
+            strip.background = element_rect(color = "white", fill = "white")) +
       ggtitle(paste0('Bar plot', title)) +
       ylab("") +
       xlab("") +
@@ -1070,7 +1067,7 @@ variable_visualize <- function(
       group_by(across(any_of(group_by))) %>%
       mutate(
         label = paste0(as.character(round((
-          .data$`___n___`/sum(.data$`___n___`))*100,2)),"%")) 
+          .data$`___n___`/sum(.data$`___n___`))*100,2)),"%"))
     
     plot_5 <-
       ggplot(colset_valid) + aes +
