@@ -121,7 +121,75 @@ madshapR_help <- function(){
 "DEMO_files"
 
 
-
-
-
-
+#' @title
+#' Add an index column at the first place of a tibble
+#'
+#' @description
+#' Add an index, possibly by group, at the first place of a data frame or a
+#' tibble The name by default is 'index' but can be named. If 'index' already
+#' exists, or the given name, the column can be forced to be created, and
+#' replace the other one.
+#'
+#' @param tbl tibble or data frame
+#' @param name_index A character string of the name of the column.
+#' @param start integer indicating first index number. 1 by default.
+#' @param .force TRUE or FALSE, that parameter indicates whether or not the
+#' column is created if already exists. FALSE by default.
+#'
+#' @return
+#' A tibble or a data frame containing one extra first column 'index' or
+#' any given name.
+#'
+#' @examples
+#' {
+#'
+#' ##### Example 1 -------------------------------------------------------------
+#' # add an index for the tibble
+#' add_index(iris, "my_index")
+#'
+#' ##### Example 2 -------------------------------------------------------------
+#' # add an index for the grouped tibble
+#' library(tidyr)
+#' library(dplyr)
+#'
+#' my_tbl <- tibble(iris) %>% group_by(Species) %>% slice(1:3)
+#' add_index(my_tbl, "my_index")
+#'
+#' }
+#'
+#' @import dplyr stringr
+#' @importFrom rlang .data
+#'
+#' @export
+add_index <- function(tbl, name_index = "index", start = 1, .force = FALSE){
+  
+  class_tbl <- toString(class(tbl))
+  group_name <- group_vars(tbl)
+  `madshapR::start` <- start
+  
+  tbl_index <-
+    data.frame(index = NA_integer_) %>%
+    rename_with(.cols = 'index', ~ name_index)
+  
+  if(.force == FALSE){
+    
+    if(name_index %in% (tbl %>% names)){
+      stop(paste0("\n\nThe column ",name_index," already exists.\n",
+                  "Please specifie another name or use .force = TRUE\n"))}
+    
+    tbl <- suppressMessages(bind_cols(tbl_index,tbl))
+  }else{
+    tbl <- suppressMessages(bind_cols(tbl_index,tbl %>%
+                                        select(-any_of(name_index))))}
+  
+  
+  if(length(group_name)) tbl <- group_by_at(tbl, group_name)
+  
+  tbl <- tbl %>% mutate(across(all_of(name_index),
+                               ~ as.integer(row_number() + 
+                                              `madshapR::start` - 1)))
+  
+  if(str_detect(class_tbl,"tbl")) tbl <- tibble(tbl)
+  
+  return(tbl)
+}

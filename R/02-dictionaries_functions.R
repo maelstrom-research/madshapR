@@ -51,7 +51,7 @@
 #' 
 #' }
 #'
-#' @import dplyr tidyr stringr fabR 
+#' @import dplyr tidyr stringr fabR
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -671,7 +671,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 
   data_dict[['Variables']] <- 
     data_dict[['Variables']] %>%
-    add_index("madshapR::index", .force = TRUE)
+    madshapR::add_index("madshapR::index", .force = TRUE)
   
   data_dict[['Variables']]$`name` <-
     make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
@@ -2093,7 +2093,7 @@ data dictionary")}}
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       select('variable','name') %>% 
-      add_index('madshapR::index', .force = TRUE) %>%
+      madshapR::add_index('madshapR::index', .force = TRUE) %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
@@ -2106,7 +2106,7 @@ data dictionary")}}
       select(-'typeof') %>%
       left_join(
         data_dict[['Categories']] %>%
-          add_index('madshapR::index',.force = TRUE) %>%
+          madshapR::add_index('madshapR::index',.force = TRUE) %>%
           select(-'name'),by = c('madshapR::index', 'variable')) %>%
       select(-'madshapR::index')
     
@@ -2530,7 +2530,8 @@ New name: ",new_name)
       data_dict[['Categories']] %>%
       left_join(data_dict[['Variables']] %>%
                   select(variable =  'name') %>%
-                  add_index('madshapR::index'),by = join_by('variable')) %>%
+                  madshapR::add_index('madshapR::index'),
+                by = join_by('variable')) %>%
       arrange(.data$`madshapR::index`) %>%
       select(-'madshapR::index')
       

@@ -162,7 +162,7 @@ dataset_summarize <- function(
         !! group_by := 'name', 
         `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
       mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
-      add_index('___category_level___') %>%
+      madshapR::add_index('___category_level___') %>%
       mutate(
         `___labels___` = 
           ifelse(!! as.symbol(group_by) == .data$`___labels___`,'',
@@ -213,7 +213,7 @@ dataset_summarize <- function(
 
   # 
   # if(is.null(col_id) | ncol(dataset) == 1){
-  #   dataset <- dataset %>% add_index("___mlstr_index___")
+  #   dataset <- madshapR::dataset %>% add_index("___mlstr_index___")
   #   dataset <-   as_dataset(dataset, names(dataset)[1])}
   # 
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
@@ -264,7 +264,7 @@ dataset_summarize <- function(
     select(-matches("^___name_var___$")) %>%
     rename(`___name_var___` = "name") %>%
     mutate(across(everything(),as.character)) %>%
-    add_index("index in data dict.", .force = TRUE) %>%
+    madshapR::add_index("index in data dict.", .force = TRUE) %>%
     select("index in data dict.", "___name_var___",
            matches(c("^label$","^label:[[:alnum:]]"))[1],
            `Data Dictionary valueType` = "valueType") %>%
@@ -897,7 +897,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     data_dict[['Variables']] %>%
     select('name') %>%
     mutate(`Categorical variable` = NA_character_) %>%
-    add_index()
+    madshapR::add_index()
   
   if(sum(nrow(data_dict[['Categories']])) > 0){
     data_dict_cat <-
@@ -908,7 +908,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
         cat_label = matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1],
         valid_class = .data$`missing`) %>%
       group_by(.data$`name`, .data$`valid_class`) %>%
-      add_index('cat_index') %>%
+      madshapR::add_index('cat_index') %>%
       ungroup() %>%
       mutate(
         valid_class =
@@ -945,7 +945,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
         mutate(value_var_occur = 1) %>%
         mutate(value_var = as.character(.data$`value_var`)) %>%
         mutate(name = i) %>%
-        add_index('index_in_dataset')
+        madshapR::add_index('index_in_dataset')
       
       # count observations in the dataset, including no-observation of
       # categorical outcomes
@@ -969,7 +969,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
                 "3_Valid other values",.data$`valid_class`))) %>%
         arrange(.data$`valid_class`) %>%
         group_by(.data$`valid_class`) %>%
-        add_index('index_value', .force = TRUE) %>%
+        madshapR::add_index('index_value', .force = TRUE) %>%
         ungroup
       
       # handle categories which are non-categorical, categorical and mixed
@@ -977,10 +977,10 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
         ifelse(
           nrow(summary[
             summary$`valid_class` ==
-              '3_Valid other values',])                >0 &
+              '3_Valid other values',]) > 0 &
             nrow(summary[
               summary$`valid_class` %in%
-                c('1_Valid values','2_Missing values'),])>= 1,
+                c('1_Valid values','2_Missing values'),]) >= 1,
           "mix",
           unique(
             summary[!is.na(summary$`Categorical variable`),
