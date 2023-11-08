@@ -375,11 +375,12 @@ variable_visualize <- function(
   # a ameliorer
   # names(palette_missing) <- levels(colset_cat_miss_values[[col]])
   # palette_missing['NA'] <- palette_NA
-     
+  #FCDF5C
   palette_pie <- c()
-  palette_pie["Valid values"]       <- "#7ab51d" # green
-  palette_pie["Valid other values"] <- "#e9b400" # yellow
-  palette_pie["Missing values"]     <- "slategray3" # red
+  # palette_pie["Valid values"]       <- "#88C79A" # green
+  palette_pie["Valid values"]       <- "#FCDF5C" # yellow
+  palette_pie["Valid other values"] <- "#6581C0" # blue
+  palette_pie["Missing values"]     <- "#EE7765" # red
   palette_pie["NA values"]          <- palette_NA # grey
   
   if(nrow(colset_values) > 0) {
