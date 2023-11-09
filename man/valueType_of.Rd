@@ -30,9 +30,9 @@ possibilities and their correspondence with R data types are available using
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_MELBOURNE_1
+dataset <- madshapR_DEMO$dataset_MELBOURNE
 valueType_of(dataset$Gender)
 valueType_of(iris$Sepal.Length)
 

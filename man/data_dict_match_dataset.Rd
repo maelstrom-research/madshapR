@@ -55,10 +55,10 @@ also be unique'.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
-dataset <- DEMO_files$dataset_MELBOURNE_1 \%>\% select(-1)
-data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+dataset <- madshapR_DEMO$dataset_MELBOURNE \%>\% select(-1)
+data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 data_dict_match_dataset(dataset, data_dict)
 
 }

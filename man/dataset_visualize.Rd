@@ -109,13 +109,13 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 library(dplyr)
 library(fs)
-dataset <- DEMO_files$dataset_TOKYO['height'] \%>\% slice(0)
+dataset <- madshapR_DEMO$dataset_TOKYO['height'] \%>\% slice(0)
 data_dict <-
   data_dict_filter(
-    DEMO_files$dd_TOKYO_format_maelstrom,
+    madshapR_DEMO$data_dict_TOKYO,
     filter_var = "name == 'height'")
 
-.summary_var <- DEMO_files$summary_var
+.summary_var <- madshapR_DEMO$summary_var
 
 if(dir_exists(tempdir())) dir_delete(tempdir())
 bookdown_path <- tempdir()

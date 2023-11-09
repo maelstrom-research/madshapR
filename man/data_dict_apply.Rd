@@ -46,10 +46,10 @@ also be unique'.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_MELBOURNE_1
-data_dict <- as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+dataset <- madshapR_DEMO$dataset_MELBOURNE
+data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
 data_dict_apply(dataset, data_dict)
 
 }

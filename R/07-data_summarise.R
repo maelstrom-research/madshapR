@@ -72,7 +72,7 @@
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
 #' #' ###### Example : any data frame (or tibble) can be summarized
@@ -748,7 +748,7 @@ dataset_summarize <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
 #' ###### Example 1: Combine functions and summarise datasets.
@@ -1659,7 +1659,7 @@ summary_variables_numeric <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
 #' ###### Example : any data frame (or tibble) can be a dataset by definition.

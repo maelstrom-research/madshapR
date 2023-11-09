@@ -26,12 +26,12 @@ The name of each tibble will be use as the reference name of the dataset.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(stringr)
 
 ###### Example 1: a dataset list is a dossier by definition.
 dossier <- 
-  as_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
+  as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
    
 ###### Example 2: any list of data frame (or tibble) can be a dossier by 
 # definition.

@@ -57,12 +57,12 @@ possibilities and their correspondence with R data types are available using
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
-dataset <- DEMO_files$dataset_TOKYO[c(1:4),'prg_ever']
+dataset <- madshapR_DEMO$dataset_TOKYO[c(1:4),'prg_ever']
 data_dict <-
-  DEMO_files$dd_TOKYO_format_maelstrom \%>\%
+  madshapR_DEMO$data_dict_TOKYO \%>\%
   data_dict_filter(filter_var = 'name == "prg_ever"') \%>\%
   as_data_dict_mlstr()
 valueType_adjust(from = dataset,to = data_dict)

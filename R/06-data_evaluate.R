@@ -60,12 +60,12 @@
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
 #' ###### Example : any data frame (or tibble) can be summarized
 #' dataset <- 
-#'  as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
 #'  dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
 #' 
 #' }
@@ -398,13 +398,13 @@ dataset_evaluate <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
 #' dataset <-
-#'  as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
 #'  
 #'  dossier_evaluate(as_dossier(list(ds = dataset)),as_data_dict_mlstr = FALSE)
 #'
@@ -493,9 +493,9 @@ dossier_evaluate <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 #' data_dict_evaluate(data_dict)
 #'
 #' }

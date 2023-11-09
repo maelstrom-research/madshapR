@@ -73,12 +73,12 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
 ###### Example : any data frame (or tibble) can be summarized
 dataset <- 
- as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+ as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
  dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
 
 }

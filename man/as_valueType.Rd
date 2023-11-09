@@ -31,9 +31,9 @@ possibilities and their correspondence with R data types are available using
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_TOKYO
+dataset <- madshapR_DEMO$dataset_TOKYO
 valueType_of(dataset$dob)
 valueType_guess(dataset$dob)
 as_valueType(dataset$dob,'date') 

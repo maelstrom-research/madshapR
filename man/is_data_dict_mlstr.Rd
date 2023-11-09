@@ -33,9 +33,9 @@ also be unique'.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 is_data_dict_mlstr(data_dict)
 is_data_dict_mlstr(iris)
 

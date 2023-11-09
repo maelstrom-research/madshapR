@@ -49,10 +49,10 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-taxonomy <- DEMO_files$taxonomy_opal_mlstr
-data_dict <- DEMO_files$dd_TOKYO_format_opal_tagged
+data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+taxonomy <- madshapR_DEMO$taxonomy_PARIS
 data_dict_pivot_longer(data_dict,taxonomy)
 
 }

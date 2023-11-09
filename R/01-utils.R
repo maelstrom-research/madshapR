@@ -79,43 +79,28 @@ madshapR_help <- function(){
 #' (data frames and lists):
 #'
 #' \describe{
-#'   \item{dd_MELBOURNE_1_format_maelstrom}{Data dictionary (1) of Melbourne 
+#'   \item{data_dict_MELBOURNE}{Data dictionary of Melbourne 
 #'   dataset}
-#'   \item{dd_MELBOURNE_2_format_maelstrom}{Data dictionary (2) of Melbourne 
-#'   dataset}
-#'   \item{dd_PARIS_format_flatten - ERROR}{Data dictionary of Paris dataset 
-#'   containing errors for testing purpose}
-#'   \item{dd_PARIS_format_flatten}{Data dictionary of Paris in preprocessed 
+#'   \item{data_dict_PARIS}{Data dictionary of Paris dataset}
+#'   \item{data_dict_PARIS - flatten}{Data dictionary of Paris in preprocessed 
 #'   format}
-#'   \item{dd_PARIS_format_maelstrom}{Data dictionary of Paris dataset}
-#'   \item{dd_TOKYO_format_maelstrom}{Data dictionary of Tokyo dataset}
-#'   \item{dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA}{Tagged 
-#'   data dictionary of Tokyo dataset containing errors for testing purpose}
-#'   \item{dd_TOKYO_format_maelstrom_tagged - ERROR}{Tagged data dictionary of 
+#'   \item{data_dict_TOKYO}{Data dictionary of Tokyo dataset}
+#'   \item{data_dict_TOKYO - with errors}{Tagged data dictionary of 
 #'   Tokyo dataset containing errors for testing purpose}
-#'   \item{dd_TOKYO_format_maelstrom_tagged}{Tagged data dictionary of Tokyo 
-#'   dataset}
-#'   \item{dd_TOKYO_format_opal_tagged - ERROR WITH TAXO}{Tagged 
-#'   data dictionary of Tokyo dataset containing errors for testing purpose}
-#'   \item{dd_TOKYO_format_opal_tagged}{Tagged data dictionary of Tokyo dataset 
-#'   opal format}
-#'   \item{dataset_MELBOURNE_1}{Dataset of Melbourne (1)}
-#'   \item{dataset_MELBOURNE_2}{Dataset of Melbourne (2)}
+#'   \item{data_dictt_TOKYO - with errors in data}{data dictionary of Tokyo dataset 
+#'   containing errors with for testing purpose}
+#'   \item{dataset_MELBOURNE}{Dataset of Melbourne}
 #'   \item{dataset_PARIS}{Dataset of Paris}
-#'   \item{dataset_TOKYO - ERROR WITH DATA}{Dataset of Tokyo containing errors 
-#'   for testing purpose}
 #'   \item{dataset_TOKYO}{Dataset of Tokyo}
-#'   \item{taxonomy_PARIS}{Taxonomy specific to Paris dataset}
-#'   \item{taxonomy_opal}{Opal Taxonomy}
-#'   \item{taxonomy_opal_mlstr}{Maelstrom Taxonomy}
-#'   \item{summary_var}{Variables summary for testing purpose}
+#'   \item{data_dict_TOKYO - with errors in data}{Dataset of Tokyo containing errors 
+#'   for testing purpose}
 #'   ...
 #' }
 #'
 #' @examples
 #' {
 #'
-#'  print(DEMO_files$dataset_TOKYO)
+#'  print(madshapR_DEMO$dataset_TOKYO)
 #'
 #' }
-"DEMO_files"
+"madshapR_DEMO"

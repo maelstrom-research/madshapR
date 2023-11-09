@@ -34,14 +34,14 @@ automatically by the function.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 ###### Example 1: datasets can be gathered into a dossier which is a list.
 dossier <- dossier_create(
  dataset_list = list(
-   dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
-   dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
-   
+   dataset_MELBOURNE = madshapR_DEMO$dataset_MELBOURNE,
+   dataset_PARIS = madshapR_DEMO$dataset_PARIS ))
+    
 ###### Example 2: any data frame (or tibble) can be gathered into a dossier
 dossier_create(list(iris, mtcars))
    

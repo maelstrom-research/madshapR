@@ -87,7 +87,7 @@ possibilities and their correspondence with R data types are available using
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
 #' ###### Example : any data frame (or tibble) can be summarized

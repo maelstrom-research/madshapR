@@ -34,11 +34,11 @@ automatically by the function.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 ###### Example 1: a dataset can have an id column(s) which is specified as
 # an attribute. 
-dataset <- as_dataset(DEMO_files$dataset_MELBOURNE_1, col_id = "id")
+dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
 
 ###### Example 2: any data frame (or tibble) can be a dataset by definition.
 as_dataset(iris, col_id = "Species")

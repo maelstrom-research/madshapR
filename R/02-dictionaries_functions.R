@@ -44,9 +44,9 @@
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' 
-#' data_dict <- DEMO_files$`dd_PARIS_format_flatten`
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
 #' data_dict_expand(data_dict)
 #' 
 #' }
@@ -227,9 +227,9 @@ Example:
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 #' data_dict_collapse(data_dict)
 #'
 #' }
@@ -355,10 +355,10 @@ data_dict_collapse <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' taxonomy <- DEMO_files$taxonomy_opal_mlstr
-#' data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+#' taxonomy  <- madshapR_DEMO$taxonomy_PARIS
 #' data_dict_pivot_wider(data_dict, taxonomy)
 #'
 #' }
@@ -645,10 +645,10 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' taxonomy <- DEMO_files$taxonomy_opal_mlstr
-#' data_dict <- DEMO_files$dd_TOKYO_format_opal_tagged
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+#' taxonomy <- madshapR_DEMO$taxonomy_PARIS
 #' data_dict_pivot_longer(data_dict,taxonomy)
 #'
 #' }
@@ -926,7 +926,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' 
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
@@ -934,27 +934,23 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' # shaped into a data dictionary.
 #' library(dplyr)
 #' 
-#' data_dict_list <- list()
-#' data_dict_1 <-
-#'   DEMO_files$dd_MELBOURNE_1_format_maelstrom %>%
-#'   lapply(function(x){x %>% mutate(table = "MELBOURNE_1")})
-#' data_dict_2 <- DEMO_files$dd_MELBOURNE_2_format_maelstrom %>%
-#'   lapply(function(x){x %>% mutate(table = "MELBOURNE_2")})
+#' data_dict_list <- list(
+#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 #' 
-#' data_dict_list <-
-#'   list(Variables = bind_rows(data_dict_1$Variables,data_dict_2$Variables),
-#'        Categories = bind_rows(data_dict_1$Categories,data_dict_2$Categories))
+#' data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
 #' 
 #' ###### Example 1 search and filter through a column in 'Variables' element
-#' data_dict_filter(data_dict_list,filter_var = "valueType == 'integer'")
+#' data_dict_filter(data_dict_nest,filter_var = "valueType == 'integer'")
 #' 
 #' ###### Example 2 search and filter through a column in 'Categories' element
-#' data_dict_filter(data_dict_list,filter_cat = "missing == TRUE")
+#' data_dict_filter(data_dict_nest,filter_cat = "missing == TRUE")
 #' 
-#' ###### Example 3 search and filter through a column in 'Variables' element.
-#' # The column must exist in both 'Variables' and 'Categories' and have the 
+#' ###### Example 3 search and filter through* a column in 'Variables' element.
+#' # The column must exist in both 'Variables' and 'Categories' and have the
 #' # same meaning
-#' data_dict_filter(data_dict_list,filter_all = "table == 'MELBOURNE_1'")
+#' data_dict_filter(data_dict_nest,filter_all = "table == 'dataset_TOKYO'")
 #'
 #' }
 #'
@@ -1042,7 +1038,7 @@ data_dict_filter <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #'
 #' # Create a list of data dictionaries where the column 'table' is added to 
@@ -1050,12 +1046,16 @@ data_dict_filter <- function(
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
-#' data_dict_list <- DEMO_files[
-#'     c('dd_MELBOURNE_1_format_maelstrom',
-#'       'dd_MELBOURNE_2_format_maelstrom')] %>% 
-#'     data_dict_list_nest(name_group = 'table')
-#'  
-#'  data_dict_group_split(data_dict_list,col = "table")
+#' data_dict_list <- list(
+#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#' 
+#' data_dict_nest <- 
+#'   data_dict_list_nest(data_dict_list, name_group = 'table') %>%
+#'   data_dict_group_by(col = "table")
+#' 
+#'  data_dict_group_split(data_dict_nest,col = "table")
 #'  
 #' }
 #'
@@ -1169,17 +1169,18 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
-#' data_dict_list <- DEMO_files[
-#'     c('dd_MELBOURNE_1_format_maelstrom',
-#'       'dd_MELBOURNE_2_format_maelstrom')]
-#'  
-#' data_dict_list_nest(data_dict_list,name_group = "table")
+#' data_dict_list <- list(
+#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#' 
+#' data_dict_list_nest(data_dict_list, name_group = 'table')
 #' 
 #' }
 #'
@@ -1292,20 +1293,21 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
-#' library(dplyr)
+#' data_dict_list <- list(
+#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 #' 
-#' data_dict_list <- 
-#'   DEMO_files[c('dd_MELBOURNE_1_format_maelstrom',
-#'                'dd_MELBOURNE_2_format_maelstrom')] %>%
-#' data_dict_list_nest(name_group = 'table')
-#'  
-#' data_dict_group_by(data_dict_list,col = "table")
+#' data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
+#' 
+#' data_dict_group_by(data_dict_nest, col = "table")
+#' 
 #' }
 #'
 #' @import dplyr tidyr
@@ -1396,7 +1398,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
@@ -1404,13 +1406,16 @@ cannot be found accross the variables declared in 'Variables'.")
 #' 
 #' library(dplyr)
 #' 
-#' data_dict_list <- DEMO_files[
-#'     c('dd_MELBOURNE_1_format_maelstrom',
-#'       'dd_MELBOURNE_2_format_maelstrom')] %>%
-#'   data_dict_list_nest(name_group = 'table') %>%
+#' data_dict_list <- list(
+#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#' 
+#' data_dict_nest <-
+#'   data_dict_list_nest(data_dict_list, name_group = 'table') %>%
 #'   data_dict_group_by(col = "table")
-#'     
-#'  data_dict_ungroup(data_dict_list)
+#' 
+#'  data_dict_ungroup(data_dict_nest)
 #' }
 #'
 #' @import dplyr tidyr
@@ -1478,10 +1483,10 @@ data_dict_ungroup <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$dataset_MELBOURNE_1
-#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' dataset <- madshapR_DEMO$dataset_MELBOURNE
+#' data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
 #' data_dict_apply(dataset, data_dict)
 #' 
 #' }
@@ -1668,7 +1673,7 @@ your dataset")}
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' 
 #' ###### Example 2: extract data dictionary from any dataset (the 
 #' # data dictionary will be created upon attributes of the dataset. Factors 
@@ -1800,10 +1805,10 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
-#' dataset <- DEMO_files$dataset_MELBOURNE_1 %>% select(-1)
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' dataset <- madshapR_DEMO$dataset_MELBOURNE %>% select(-1)
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 #' data_dict_match_dataset(dataset, data_dict)
 #' 
 #' }
@@ -1883,9 +1888,9 @@ Leave blank to get both in a list.")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_PARIS_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_PARIS
 #' as_data_dict_shape(data_dict)
 #'
 #'}
@@ -1963,9 +1968,9 @@ Please refer to documentation.")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_PARIS_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_PARIS
 #' as_data_dict(data_dict)
 #'
 #'}
@@ -2256,10 +2261,10 @@ data dictionary")}}
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
-#' as_data_dict_mlstr(DEMO_files$dd_MELBOURNE_1_format_maelstrom)
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
+#' as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
 #'
 #' }
 #'
@@ -2588,9 +2593,9 @@ New name: ",new_name)
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 #' is_data_dict_shape(data_dict)
 #' is_data_dict_shape(iris)
 #'
@@ -2638,9 +2643,9 @@ is_data_dict_shape <- function(object){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 #' is_data_dict(data_dict)
 #' is_data_dict(iris)
 #'
@@ -2692,9 +2697,9 @@ is_data_dict <- function(object){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 #' is_data_dict_mlstr(data_dict)
 #' is_data_dict_mlstr(iris)
 #'

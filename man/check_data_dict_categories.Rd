@@ -35,9 +35,9 @@ also be unique'.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 check_data_dict_categories(data_dict)
 
 }

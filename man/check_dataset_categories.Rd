@@ -45,10 +45,10 @@ automatically by the function.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-dataset      <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors in data`
+dataset      <- madshapR_DEMO$`dataset_TOKYO - with errors in data`
 check_dataset_categories(dataset, data_dict)
 
 }

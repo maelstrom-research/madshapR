@@ -30,10 +30,10 @@ automatically by the function.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_TOKYO
-data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <- madshapR_DEMO$dataset_TOKYO
+data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_TOKYO)
 dataset <- data_dict_apply(dataset,data_dict)
 dataset_zap_data_dict(dataset)
 

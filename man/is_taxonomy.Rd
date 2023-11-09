@@ -32,11 +32,9 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-is_taxonomy(DEMO_files$taxonomy_PARIS)
-is_taxonomy(DEMO_files$taxonomy_opal_mlstr)
-is_taxonomy(iris)
+is_taxonomy(madshapR_DEMO$taxonomy_PARIS)
 
 }
 

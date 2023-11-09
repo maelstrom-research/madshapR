@@ -31,9 +31,9 @@
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$dd_MELBOURNE_1_format_maelstrom
+#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
 #' data_extract(data_dict)
 #'
 #' }
@@ -127,10 +127,10 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$dataset_TOKYO
-#' data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+#' dataset <- madshapR_DEMO$dataset_TOKYO
+#' data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_TOKYO)
 #' dataset <- data_dict_apply(dataset,data_dict)
 #' dataset_zap_data_dict(dataset)
 #'
@@ -339,14 +339,14 @@ dataset_cat_as_labels <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
 #' ###### Example 1: datasets can be gathered into a dossier which is a list.
 #' dossier <- dossier_create(
 #'  dataset_list = list(
-#'    dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
-#'    dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
-#'    
+#'    dataset_MELBOURNE = madshapR_DEMO$dataset_MELBOURNE,
+#'    dataset_PARIS = madshapR_DEMO$dataset_PARIS ))
+#'     
 #' ###### Example 2: any data frame (or tibble) can be gathered into a dossier
 #' dossier_create(list(iris, mtcars))
 #'    
@@ -408,11 +408,11 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
 #' ###### Example 1: a dataset can have an id column(s) which is specified as
 #' # an attribute. 
-#' dataset <- as_dataset(DEMO_files$dataset_MELBOURNE_1, col_id = "id")
+#' dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
 #' 
 #' ###### Example 2: any data frame (or tibble) can be a dataset by definition.
 #' as_dataset(iris, col_id = "Species")
@@ -489,12 +489,12 @@ Please refer to documentation.")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(stringr)
 #'
 #' ###### Example 1: a dataset list is a dossier by definition.
 #' dossier <- 
-#'   as_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
+#'   as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
 #'    
 #' ###### Example 2: any list of data frame (or tibble) can be a dossier by 
 #' # definition.
@@ -568,10 +568,10 @@ Please refer to documentation."))
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' # any data frame (or tibble) can be a dataset by definition.
 #' 
-#' is_dataset(DEMO_files$dataset_MELBOURNE_1)
+#' is_dataset(madshapR_DEMO$dataset_MELBOURNE)
 #' is_dataset(iris)
 #' is_dataset(AirPassengers)
 #' 
@@ -617,11 +617,11 @@ is_dataset <- function(object){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' # Any list of data frame (or tibble) can be a dossier by definition.
 #' library(stringr)
 #' 
-#' is_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
+#' is_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
 #' is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 #' is_dossier(iris)
 #' 

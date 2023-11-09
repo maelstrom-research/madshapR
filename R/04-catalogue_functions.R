@@ -30,9 +30,9 @@
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$dataset_MELBOURNE_1
+#' dataset <- madshapR_DEMO$dataset_MELBOURNE
 #' valueType_of(dataset$Gender)
 #' valueType_of(iris$Sepal.Length)
 #'
@@ -352,12 +352,12 @@ The valueType will remain as it is.")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
-#' dataset <- DEMO_files$dataset_TOKYO[c(1:4),'prg_ever']
+#' dataset <- madshapR_DEMO$dataset_TOKYO[c(1:4),'prg_ever']
 #' data_dict <-
-#'   DEMO_files$dd_TOKYO_format_maelstrom %>%
+#'   madshapR_DEMO$data_dict_TOKYO %>%
 #'   data_dict_filter(filter_var = 'name == "prg_ever"') %>%
 #'   as_data_dict_mlstr()
 #' valueType_adjust(from = dataset,to = data_dict)
@@ -528,9 +528,9 @@ bold("\n\nUseful tip:"),
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$dataset_TOKYO
+#' dataset <- madshapR_DEMO$dataset_TOKYO
 #' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
 #' 
@@ -642,9 +642,9 @@ valueType_guess <- function(x){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$dataset_TOKYO
+#' dataset <- madshapR_DEMO$dataset_TOKYO
 #' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
 #' as_valueType(dataset$dob,'date') 
@@ -811,10 +811,10 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
 #' ###### Example
-#' as_taxonomy(DEMO_files$taxonomy_PARIS)
+#' as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
 #' 
 #'}
 #'
@@ -842,7 +842,9 @@ Please refer to documentation.",
   if(sum(names(object) %in%
      c("vocabulary_short","taxonomy_scale",
        "vocabulary_scale","term_scale")) == 4){
-
+    
+    ## create index if not exists
+    
     attributes(object)$`madshapR::class` <- "taxonomy_mlstr"
   }else{
     attributes(object)$`madshapR::class` <- "taxonomy_opal"}
@@ -930,11 +932,9 @@ is_valueType <- function(object){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' is_taxonomy(DEMO_files$taxonomy_PARIS)
-#' is_taxonomy(DEMO_files$taxonomy_opal_mlstr)
-#' is_taxonomy(iris)
+#' is_taxonomy(madshapR_DEMO$taxonomy_PARIS)
 #'
 #'}
 #'

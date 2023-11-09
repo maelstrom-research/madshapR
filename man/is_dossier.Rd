@@ -25,11 +25,11 @@ The name of each tibble will be use as the reference name of the dataset.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 # Any list of data frame (or tibble) can be a dossier by definition.
 library(stringr)
 
-is_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
+is_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
 is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 is_dossier(iris)
 

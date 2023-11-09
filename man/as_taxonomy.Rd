@@ -33,10 +33,10 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 ###### Example
-as_taxonomy(DEMO_files$taxonomy_PARIS)
+as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
 
 }
 

@@ -26,9 +26,9 @@
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 #' check_data_dict_variables(data_dict)
 #'
 #' }
@@ -108,9 +108,9 @@ check_data_dict_variables <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 #' check_data_dict_categories(data_dict)
 #'
 #' }
@@ -223,9 +223,9 @@ check_data_dict_categories <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 #' check_data_dict_missing_categories(data_dict)
 #'
 #' }
@@ -317,10 +317,10 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' taxonomy <- DEMO_files$taxonomy_opal
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' taxonomy <- madshapR_DEMO$taxonomy_PARIS
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
 #' check_data_dict_taxonomy(data_dict, taxonomy)
 #'
 #' }
@@ -357,7 +357,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   return(test)
   # }
 
-  # data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+  # data_dict <- data_dict_list$`data_dict_TOKYO - with errors`
 
   # only works for mlstr_taxo
 
@@ -570,9 +570,9 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 #' check_data_dict_valueType(data_dict)
 #'
 #' }
@@ -694,10 +694,10 @@ check_data_dict_valueType <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' dataset <- madshapR_DEMO$`dataset_TOKYO - with errors in data`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
 #' check_dataset_variables(dataset,data_dict)
 #'
 #' }
@@ -780,10 +780,10 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-#' dataset      <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors in data`
+#' dataset      <- madshapR_DEMO$`dataset_TOKYO - with errors in data`
 #' check_dataset_categories(dataset, data_dict)
 #' 
 #' }
@@ -1106,11 +1106,11 @@ check_dataset_valueType <- function(
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
 #' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 #' check_name_standards(
-#'  DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`$Variables$name)
+#'  madshapR_DEMO$`data_dict_TOKYO - with errors`$Variables$name)
 #'
 #' }
 #'

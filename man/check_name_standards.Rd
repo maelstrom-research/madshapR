@@ -29,11 +29,11 @@ and 'label(:xx)' and/or any taxonomy provided.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 check_name_standards(
- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`$Variables$name)
+ madshapR_DEMO$`data_dict_TOKYO - with errors`$Variables$name)
 
 }
 

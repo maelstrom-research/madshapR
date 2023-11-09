@@ -49,7 +49,7 @@ also be unique'.
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 ###### Example 2: extract data dictionary from any dataset (the 
 # data dictionary will be created upon attributes of the dataset. Factors 
