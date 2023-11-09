@@ -809,8 +809,9 @@ variable_visualize <- function(
         dplyr::filter(if_any(col) == min(!! as.symbol(col)) | 
                  if_any(col) == max(!! as.symbol(col))) 
       
-      #### plot_1 date ####    
       n_obs <- nrow(colset_values)
+      
+      #### plot_1 date ####    
       
       title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
       if(group_by != '') title <- paste0(title, ' - per ',group_by)
@@ -838,42 +839,69 @@ variable_visualize <- function(
         scale_color_manual(values = palette_values) 
       
       #### plot_2 date ####    
-      n_obs <- nrow(colset_values)
       
       title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
       if(group_by != '') title <- paste0(title, ' - per ',group_by)
       
       aes <-
         if(group_by == ''){
-          aes(x = !! as.symbol(col),
-              fill = '')
-        }else{
-          aes(
-            x = !! as.symbol(col),
-            fill = !! as.symbol(group_by))}
+          aes(x = '',
+              y = !! as.symbol(col),
+              fill = '')}else{ 
+                
+                aes(x = fct_rev(!! as.symbol(group_by)),
+                    y = !! as.symbol(col),
+                    fill =  !! as.symbol(group_by))}
       
-      max_span <- 
-        max(ungroup(colset_span) %>%
-              pull(!! as.symbol(col))) -
-        min(ungroup(colset_span) %>%
-              pull(!! as.symbol(col))) + 1
-      
-      bins <- ceiling(as.integer(max_span) / 365 / 5)
-      
-      plot_2 <- 
+      plot_2 <-
         ggplot(colset_values) + aes +
-        geom_histogram(bins = bins) +
+        geom_boxplot(outlier.color = 'red') +
         theme_bw() +
-        ggtitle(paste0('Histogram', title)) +
+        coord_flip() + 
         theme(legend.position="none",plot.title = 
-                element_text(size=8,face = "bold"),
-              strip.background = element_rect(color = "white", fill="white")) +
+                element_text(size=8, face = "bold")) +
+        ggtitle(paste0('Box plot', title)) +
         ylab("") +
         xlab("") +
-        scale_fill_manual(values = palette_values)
-      # no coord flip
+        scale_fill_manual(values = (palette_values))
       
-      if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
+      
+      # n_obs <- nrow(colset_values)
+      # 
+      # title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+      # if(group_by != '') title <- paste0(title, ' - per ',group_by)
+      # 
+      # aes <-
+      #   if(group_by == ''){
+      #     aes(x = !! as.symbol(col),
+      #         fill = '')
+      #   }else{
+      #     aes(
+      #       x = !! as.symbol(col),
+      #       fill = !! as.symbol(group_by))}
+      # 
+      # max_span <- 
+      #   max(ungroup(colset_span) %>%
+      #         pull(!! as.symbol(col))) -
+      #   min(ungroup(colset_span) %>%
+      #         pull(!! as.symbol(col))) + 1
+      # 
+      # bins <- ceiling(as.integer(max_span) / 365 / 5)
+      # 
+      # plot_2 <- 
+      #   ggplot(colset_values) + aes +
+      #   geom_histogram(bins = bins) +
+      #   theme_bw() +
+      #   ggtitle(paste0('Histogram', title)) +
+      #   theme(legend.position="none",plot.title = 
+      #           element_text(size=8,face = "bold"),
+      #         strip.background = element_rect(color = "white", fill="white")) +
+      #   ylab("") +
+      #   xlab("") +
+      #   scale_fill_manual(values = palette_values)
+      # # no coord flip
+      # 
+      # if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
       
     }
     
