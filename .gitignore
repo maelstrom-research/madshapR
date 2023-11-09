@@ -13,4 +13,4 @@ roxy_madshapR.xlsx
 ^NEWS.Rmd$
 /doc/
 /Meta/
-data-raw/DEMO_files.R
+data-raw
