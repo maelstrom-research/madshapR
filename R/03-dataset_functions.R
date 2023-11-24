@@ -682,4 +682,3 @@ col_id <- function(dataset){
   return(attributes(dataset)$`madshapR::col_id`)
   
 }
-
