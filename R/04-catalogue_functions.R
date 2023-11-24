@@ -62,8 +62,8 @@ valueType_of <- function(x){
       which(vT_list[['typeof']] == type &
             vT_list[['class']]  == class),]$`toValueType`)
 
-  if(type == "double" & class == "Date")    valueType <- "date"
-  if(type == "double" & class == "POSIXt")  valueType <- "datetime"
+  if(type %in% c("character","double") & class == "Date")    valueType <- "date"
+  if(type %in% c("character","double") & class == "POSIXt")  valueType <- "datetime"
 
   silently_run({
     if(class == "factor"){
