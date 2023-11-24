@@ -2,6 +2,7 @@
 #' Convert input to a categorical variable.
 #'
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' This function is used to convert a vector object to a categorical object. It
 #' Is analoguous to [as.factor()] function when the vector (variable) has no
 #' data dictionary associated. When it has, the characteristics of the category
@@ -67,6 +68,7 @@ as_category <- function(x){
 #' Convert categorical input to a non-categorical variable.
 #'
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' This function is used to convert a vector categorical object to a 
 #' non-categorical object. When it has, the 
 #' characteristics of the category is added to the data dictionary.
@@ -119,6 +121,7 @@ drop_category <- function(x){
 #' Test if a column in a dataset is a categorical variable.
 #'
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Test if a column in a dataset is a categorical variable. This function mainly 
 #' helps validate input within other functions of the package.
 #'
