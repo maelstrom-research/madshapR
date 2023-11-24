@@ -2358,11 +2358,9 @@ investigations.",
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>% mutate(label = .data$`name`)}
   
-  
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
     # addition of label(:xx) if not present
-    
     lab_name_var <-
       names(data_dict[['Variables']] %>%
               select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
@@ -2382,6 +2380,11 @@ investigations.",
       
     }else if(all(data_dict[['Categories']][['labels']] ==
                  data_dict[['Categories']][['name']])) {
+      
+      # preserve information from labels into label:xx
+      data_dict[['Categories']] <- 
+        data_dict[['Categories']] %>%
+        mutate(across(lab_name_cat, ~ ifelse(is.na(.),.data$`labels`,.)))
       data_dict[['Categories']][['labels']] <- NULL}
     
     # addition of missing if not present
