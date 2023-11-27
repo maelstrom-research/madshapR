@@ -4,7 +4,7 @@
 \alias{as_data_dict_mlstr}
 \title{Validate and coerce an object to an Opal data dictionary format}
 \usage{
-as_data_dict_mlstr(object, as_data_dict = FALSE, name_standard = TRUE)
+as_data_dict_mlstr(object, as_data_dict = FALSE, name_standard = FALSE)
 }
 \arguments{
 \item{object}{A potential valid data dictionary to be coerced.}

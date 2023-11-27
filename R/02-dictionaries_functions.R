@@ -2276,7 +2276,7 @@ data dictionary")}}
 as_data_dict_mlstr <- function(
     object, 
     as_data_dict = FALSE, 
-    name_standard = TRUE){
+    name_standard = FALSE){
   
   # test if data_dict is already data dictionary
   data_dict <- as_data_dict(object)
