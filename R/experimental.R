@@ -52,12 +52,13 @@ as_category <- function(x){
   names(fct_att$labels) <-  fct_att$labels
   fct_att$levels <- NULL
   
-  vT_list = valueType_list
+  
+  vT_list <- madshapR::valueType_list
   fct_att$`class` <-
     c("haven_labelled","vctrs_vctr",
-      vT_list[[which(valueType_list$`valueType` == valueType_of(x)),"class"]])
+      vT_list[[which(vT_list$`valueType` == valueType_of(x)),"class"]])
   
-  attributes(x_init) = c(fct_att['labels'],fct_att['class'],att)
+  attributes(x_init) <-  c(fct_att['labels'],fct_att['class'],att)
   
   return(x_init)
   
@@ -100,7 +101,7 @@ drop_category <- function(x){
   fct_att <- attributes(x)
   vT_x <- valueType_of(x)
   
-  x = as_valueType(as.character(x),valueType = vT_x)
+  x <- as_valueType(as.character(x),valueType = vT_x)
   vec_att <- attributes(x)
   
   fct_att <- fct_att[!str_detect(names(fct_att),'Categories::')]
@@ -109,7 +110,7 @@ drop_category <- function(x){
   fct_att['levels']     <- NULL
   fct_att['na_values']  <- NULL
   
-  attributes(x) = c(vec_att, fct_att)
+  attributes(x) <- c(vec_att, fct_att)
   
   return(x)
   
