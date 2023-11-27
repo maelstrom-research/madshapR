@@ -2253,7 +2253,7 @@ data dictionary")}}
 #' FALSE by default.
 #' @param name_standard Whether the input data dictionary has variable names
 #' compatible with Maelstrom Research ecosystem, including Opal)or not. 
-#' TRUE by default.
+#' FALSE by default.
 #'
 #' @returns
 #' A list of tibble(s) identifying a data dictionary.
