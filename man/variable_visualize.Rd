@@ -10,7 +10,8 @@ variable_visualize(
   data_dict = NULL,
   group_by = NULL,
   valueType_guess = FALSE,
-  variable_summary = NULL
+  variable_summary = .summary_var,
+  .summary_var = NULL
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ by this column.}
 valueType that could be applied to the dataset. FALSE by default.}
 
 \item{variable_summary}{A summary list which is the summary of the variables.}
+
+\item{.summary_var}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A list of up to seven elements (charts and figures and datatables) which can
