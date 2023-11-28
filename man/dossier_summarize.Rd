@@ -22,7 +22,7 @@ by this column.}
 classification.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. TRUE by default.}
+valueType that could be applied to the dataset. FALSE by default.}
 }
 \value{
 A list of tibbles of report for each listed dataset.
