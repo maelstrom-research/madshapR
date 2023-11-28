@@ -1006,7 +1006,7 @@ check_dataset_valueType <- function(
 
   # check if `valueType` column exists
   if(is.null(data_dict[['Variables']][['valueType']])){
-    warning("Unknown or uninitialised column: `valueType`")
+    warning("Unknown or uninitialized column: `valueType`")
     return(test)}
 
   # dataset <-
