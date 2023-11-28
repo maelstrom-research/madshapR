@@ -147,6 +147,8 @@ dataset_summarize <- function(
       error = function(cond){return(toString(names(dataset[group_by])))})    
   }else{ group_by <- ''}
 
+  if(sum(nrow(data_dict['Categories'])) == 0) group_by <- ''
+  
   if(group_by != ''){
     
     preprocess_group <- 
