@@ -740,7 +740,7 @@ dataset_summarize <- function(
 #' taken as a grouping column. The visual element will be grouped and displayed
 #' by this column.
 #' @param valueType_guess Whether the output should include a more accurate
-#' valueType that could be applied to the dataset. TRUE by default.
+#' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @returns
 #' A list of tibbles of report for each listed dataset.
