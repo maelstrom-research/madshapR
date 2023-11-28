@@ -81,7 +81,7 @@ library(dplyr)
 
 ###### Example : any data frame (or tibble) can be summarized
 dataset <- 
- as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
+ as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
  dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
 
 }

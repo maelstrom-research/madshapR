@@ -44,7 +44,7 @@ possibilities and their correspondence with R data types are available using
 
 # use madshapR_DEMO provided by the package
 
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 check_data_dict_valueType(data_dict)
 
 }

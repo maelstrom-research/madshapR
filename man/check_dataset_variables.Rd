@@ -45,8 +45,8 @@ automatically by the function.
 
 # use madshapR_DEMO provided by the package
 
-dataset <- madshapR_DEMO$`dataset_TOKYO - with errors in data`
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 check_dataset_variables(dataset,data_dict)
 
 }

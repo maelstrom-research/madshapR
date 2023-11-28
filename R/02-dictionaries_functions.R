@@ -46,7 +46,7 @@
 #' 
 #' # use madshapR_DEMO provided by the package
 #' 
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 #' data_dict_expand(data_dict)
 #' 
 #' }
@@ -357,7 +357,7 @@ data_dict_collapse <- function(
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 #' taxonomy  <- madshapR_DEMO$taxonomy_PARIS
 #' data_dict_pivot_wider(data_dict, taxonomy)
 #'
@@ -647,7 +647,7 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 #' taxonomy <- madshapR_DEMO$taxonomy_PARIS
 #' data_dict_pivot_longer(data_dict,taxonomy)
 #'

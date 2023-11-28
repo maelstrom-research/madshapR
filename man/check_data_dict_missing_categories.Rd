@@ -36,7 +36,7 @@ also be unique'.
 
 # use madshapR_DEMO provided by the package
 
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 check_data_dict_missing_categories(data_dict)
 
 }

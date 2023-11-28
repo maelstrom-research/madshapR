@@ -54,7 +54,7 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use madshapR_DEMO provided by the package
 
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 data_dict_evaluate(data_dict)
 
 }

@@ -28,7 +28,7 @@
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_variables(data_dict)
 #'
 #' }
@@ -110,7 +110,7 @@ check_data_dict_variables <- function(data_dict){
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_categories(data_dict)
 #'
 #' }
@@ -225,7 +225,7 @@ check_data_dict_categories <- function(data_dict){
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_missing_categories(data_dict)
 #'
 #' }
@@ -320,7 +320,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' # use madshapR_DEMO provided by the package
 #'
 #' taxonomy <- madshapR_DEMO$taxonomy_PARIS
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 #' check_data_dict_taxonomy(data_dict, taxonomy)
 #'
 #' }
@@ -357,7 +357,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   return(test)
   # }
 
-  # data_dict <- data_dict_list$`data_dict_TOKYO - with errors`
+  # data_dict <- data_dict_list$`data_dict_TOKYO - errors`
 
   # only works for mlstr_taxo
 
@@ -572,7 +572,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_valueType(data_dict)
 #'
 #' }
@@ -696,8 +696,8 @@ check_data_dict_valueType <- function(data_dict){
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- madshapR_DEMO$`dataset_TOKYO - with errors in data`
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+#' dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_dataset_variables(dataset,data_dict)
 #'
 #' }
@@ -782,8 +782,8 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors in data`
-#' dataset      <- madshapR_DEMO$`dataset_TOKYO - with errors in data`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors with data`
+#' dataset      <- madshapR_DEMO$`dataset_TOKYO - errors with data`
 #' check_dataset_categories(dataset, data_dict)
 #' 
 #' }
@@ -1110,7 +1110,7 @@ check_dataset_valueType <- function(
 #'
 #' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 #' check_name_standards(
-#'  madshapR_DEMO$`data_dict_TOKYO - with errors`$Variables$name)
+#'  madshapR_DEMO$`data_dict_TOKYO - errors`$Variables$name)
 #'
 #' }
 #'

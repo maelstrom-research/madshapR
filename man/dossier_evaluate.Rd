@@ -53,7 +53,7 @@ library(dplyr)
 ###### Example : a dataset list is a dossier by definition.
    
 dataset <-
- as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
+ as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
  
  dossier_evaluate(as_dossier(list(ds = dataset)),as_data_dict_mlstr = FALSE)
 

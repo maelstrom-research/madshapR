@@ -33,7 +33,7 @@ and 'label(:xx)' and/or any taxonomy provided.
 
 check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 check_name_standards(
- madshapR_DEMO$`data_dict_TOKYO - with errors`$Variables$name)
+ madshapR_DEMO$`data_dict_TOKYO - errors`$Variables$name)
 
 }
 

@@ -66,7 +66,7 @@
 #' 
 #' ###### Example : any data frame (or tibble) can be summarized
 #' dataset <- 
-#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
+#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
 #'  dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
 #' 
 #' }
@@ -406,7 +406,7 @@ dataset_evaluate <- function(
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
 #' dataset <-
-#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - with errors in data`,col_id = 'part_id')
+#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
 #'  
 #'  dossier_evaluate(as_dossier(list(ds = dataset)),as_data_dict_mlstr = FALSE)
 #'
@@ -497,7 +497,7 @@ dossier_evaluate <- function(
 #' 
 #' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - with errors`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' data_dict_evaluate(data_dict)
 #'
 #' }

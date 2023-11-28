@@ -57,7 +57,7 @@ also be unique'.
 
 # use madshapR_DEMO provided by the package
 
-data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 data_dict_expand(data_dict)
 
 }

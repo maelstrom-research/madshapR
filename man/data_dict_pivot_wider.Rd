@@ -51,7 +51,7 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 
 # use madshapR_DEMO provided by the package
 
-data_dict <- madshapR_DEMO$`data_dict_PARIS - flatten`
+data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 taxonomy  <- madshapR_DEMO$taxonomy_PARIS
 data_dict_pivot_wider(data_dict, taxonomy)
 

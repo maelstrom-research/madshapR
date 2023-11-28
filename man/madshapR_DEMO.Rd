@@ -7,25 +7,26 @@
 \format{
 \subsection{\code{list}}{
 
-A list with 20 elements used for testing the package
+A list with 11 elements used for testing the package
 (data frames and lists):
 
 \describe{
 \item{data_dict_MELBOURNE}{Data dictionary of Melbourne
 dataset}
 \item{data_dict_PARIS}{Data dictionary of Paris dataset}
-\item{data_dict_PARIS - flatten}{Data dictionary of Paris in preprocessed
-format}
+\item{data_dict_PARIS - collapsed}{Data dictionary of Paris with collapsed
+categories}
 \item{data_dict_TOKYO}{Data dictionary of Tokyo dataset}
-\item{data_dict_TOKYO - with errors}{Tagged data dictionary of
+\item{data_dict_TOKYO - errors}{Data dictionary of
 Tokyo dataset containing errors for testing purpose}
-\item{data_dictt_TOKYO - with errors in data}{data dictionary of Tokyo dataset
-containing errors with for testing purpose}
+\item{data_dict_TOKYO - errors with data}{data dictionary of Tokyo dataset
+containing errors with Tokyo dataset for testing purpose}
 \item{dataset_MELBOURNE}{Dataset of Melbourne}
 \item{dataset_PARIS}{Dataset of Paris}
 \item{dataset_TOKYO}{Dataset of Tokyo}
-\item{data_dict_TOKYO - with errors in data}{Dataset of Tokyo containing errors
-for testing purpose}
+\item{dataset_TOKYO - errors with data}{dataset of Tokyo
+containing errors with Tokyo data dictionary for testing purpose}
+\item{taxonomy_PARIS}{Taxonomy of Paris dataset for testing purpose}
 ...
 }
 }

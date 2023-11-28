@@ -11,8 +11,9 @@ dataset_visualize(
   group_by = NULL,
   taxonomy = NULL,
   valueType_guess = FALSE,
-  dataset_summary = NULL,
   dataset_name = .dataset_name,
+  dataset_summary = .summary_var,
+  .summary_var = NULL,
   .dataset_name = NULL
 )
 }
@@ -36,10 +37,12 @@ classification.}
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 
-\item{dataset_summary}{A list which is the summary of the variables.}
-
 \item{dataset_name}{A character string specifying the name of the dataset
 (used for internal processes and programming).}
+
+\item{dataset_summary}{A list which is the summary of the variables.}
+
+\item{.summary_var}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
