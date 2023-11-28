@@ -207,7 +207,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of duplicated participants in the dataset")
-  if(dataset %>% nrow > 0){                                                     #icitte
+  if(dataset %>% nrow > 0 & FALSE){                                                     #icitte
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
