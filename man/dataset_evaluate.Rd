@@ -8,8 +8,9 @@ dataset_evaluate(
   dataset,
   data_dict = NULL,
   taxonomy = NULL,
-  .dataset_name = NULL,
-  as_data_dict_mlstr = TRUE
+  dataset_name = .dataset_name,
+  as_data_dict_mlstr = TRUE,
+  .dataset_name = NULL
 )
 }
 \arguments{
@@ -22,13 +23,15 @@ associated dataset. Automatically generated if not provided.}
 \item{taxonomy}{A tibble identifying the scheme used for variables
 classification.}
 
-\item{.dataset_name}{A character string specifying the name of the dataset
+\item{dataset_name}{A character string specifying the name of the dataset
 (internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
 \item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
 data dictionary structure or not (meaning has a Maelstrom data dictionary
 structure, compatible with Maelstrom Research ecosystem, including Opal).
 TRUE by default.}
+
+\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A list of tibbles of report for one data dictionary.

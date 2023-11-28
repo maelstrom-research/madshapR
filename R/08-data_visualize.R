@@ -19,7 +19,7 @@
 #' parameter, which is a (categorical) column in the dataset. The user may need 
 #' to use [as.factor()] in this context. To fasten the process (and allow 
 #' recycling object in a workflow) the user can feed the function with a 
-#' `.summary_var`, which is the output of the function [dataset_summarize()] 
+#' `variable_summary`, which is the output of the function [dataset_summarize()] 
 #' of the column(s) `col` and  `group_by`. The summary must have the same 
 #' parameters to operate. 
 #'
@@ -61,7 +61,8 @@
 #' by this column.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
-#' @param .summary_var A summary list which is the summary of the variables.
+#' @param variable_summary A summary list which is the summary of the variables.
+#' @param .summary_var `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [as.factor()]
@@ -82,7 +83,7 @@
 #'  variable_viz <-
 #'    variable_visualize(
 #'    dataset, col = 'Sepal.Width',
-#'    .summary_var =  summary_variable)
+#'    variable_summary =  summary_variable)
 #'  
 #' }
 #'
@@ -101,6 +102,7 @@ variable_visualize <- function(
     data_dict = NULL, 
     group_by = NULL, 
     valueType_guess = FALSE,
+    variable_summary = .summary_var,
     .summary_var = NULL){
   
   if(toString(col_id(dataset)) == col) {
@@ -194,13 +196,13 @@ variable_visualize <- function(
     preprocess_var[preprocess_var$valid_class %in% 
                      c('2_Missing values','4_NA values'),]
   
-  if(is.null(.summary_var)){
+  if(is.null(variable_summary)){
     temp_group <- if(group_by == ''){NULL}else{group_by}
-    .summary_var <- dataset_summarize(
+    variable_summary <- dataset_summarize(
       dataset = as_dataset(dataset[c(names(colset))]),
       data_dict = col_dict,
       group_by = temp_group, 
-      .dataset_name = 'dataset_viz',
+      dataset_name = 'dataset',
       valueType_guess = valueType_guess)}
   
   if(group_by != ''){
@@ -279,7 +281,7 @@ variable_visualize <- function(
   summary_1 <- 
     as.data.frame(t(
       
-      .summary_var$`Variables summary (all)` %>% 
+      variable_summary$`Variables summary (all)` %>% 
         dplyr::filter(.data$`name` %in% col) %>%
         select(c("Total number of observations":last_col()))
     ))
@@ -288,7 +290,7 @@ variable_visualize <- function(
     names(summary_1) <- 
       
       unique(pull(
-        .summary_var$`Variables summary (all)` %>%
+        variable_summary$`Variables summary (all)` %>%
           dplyr::filter(.data$`name` %in% col) %>%
           select(starts_with('Grouping variable:'))
       ))
@@ -391,7 +393,7 @@ variable_visualize <- function(
       summary_2 <- 
         as.data.frame(t(
           
-          .summary_var$`Numerical variable summary` %>%
+          variable_summary$`Numerical variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -401,7 +403,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            .summary_var$`Numerical variable summary` %>%
+            variable_summary$`Numerical variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -493,7 +495,7 @@ variable_visualize <- function(
       summary_2 <- 
         as.data.frame(t(
           
-          .summary_var$`Text variable summary` %>%
+          variable_summary$`Text variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -503,7 +505,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            .summary_var$`Text variable summary` %>%
+            variable_summary$`Text variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -632,7 +634,7 @@ variable_visualize <- function(
       summary_2 <- 
         as.data.frame(t(
           
-          .summary_var$`Datetime variable summary` %>%
+          variable_summary$`Datetime variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -642,7 +644,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            .summary_var$`Datetime variable summary` %>%
+            variable_summary$`Datetime variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -771,7 +773,7 @@ variable_visualize <- function(
       summary_2 <- 
         as.data.frame(t(
           
-          .summary_var$`Date variable summary` %>%
+          variable_summary$`Date variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -781,7 +783,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            .summary_var$`Date variable summary` %>%
+            variable_summary$`Date variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -1128,15 +1130,15 @@ variable_visualize <- function(
   
   # category table
 
-  if(sum(nrow(.summary_var[['Categorical variable summary']])) > 0) {
+  if(sum(nrow(variable_summary[['Categorical variable summary']])) > 0) {
 
-    if(nrow(.summary_var$`Categorical variable summary` %>% 
+    if(nrow(variable_summary$`Categorical variable summary` %>% 
             dplyr::filter(.data$`name` %in% col)) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
-          .summary_var$`Categorical variable summary` %>%
+          variable_summary$`Categorical variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -1146,7 +1148,7 @@ variable_visualize <- function(
         names(summary_categories) <- 
           
           unique(pull(
-            .summary_var$`Categorical variable summary` %>%
+            variable_summary$`Categorical variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -1228,7 +1230,7 @@ variable_visualize <- function(
 #' can be grouped using `group_by` parameter, which is a (categorical) column 
 #' in the dataset. The user may need to use [as.factor()] in this context. To 
 #' fasten the process (and allow recycling object in a workflow) the user can 
-#' feed the function with a `.summary_var`, which is the output of the function 
+#' feed the function with a `dataset_summary`, which is the output of the function 
 #' [dataset_summarize()] of the column(s) `col` and  `group_by`. The summary 
 #' must have the same parameters to operate. 
 #'
@@ -1287,11 +1289,11 @@ variable_visualize <- function(
 #' classification.
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
-#' @param render Output format of the visual report. To date, the format can 
-#' only be 'html', but will be expand to other formats in the future.
-#' @param .summary_var A list which is the summary of the variables.
-#' @param .dataset_name A character string specifying the name of the dataset
+#' @param dataset_summary A list which is the summary of the variables.
+#' @param dataset_name A character string specifying the name of the dataset
 #' (used for internal processes and programming).
+#' @param .dataset_name `r lifecycle::badge("deprecated")`
+#' @param .summary_var `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A bookdown folder containing files in the specified output folder. To
@@ -1309,14 +1311,14 @@ variable_visualize <- function(
 #'     madshapR_DEMO$data_dict_TOKYO,
 #'     filter_var = "name == 'height'")
 #' 
-#' .summary_var <- madshapR_DEMO$summary_var
+#' dataset_summary <- madshapR_DEMO$summary_var
 #' 
 #' if(dir_exists(tempdir())) dir_delete(tempdir())
 #' bookdown_path <- tempdir()
 #'   
 #' dataset_visualize(
 #'   dataset, data_dict,
-#'   .summary_var =.summary_var,
+#'   dataset_summary =dataset_summary,
 #'   bookdown_path = bookdown_path)
 #'   
 #' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
@@ -1336,7 +1338,8 @@ dataset_visualize <- function(
     group_by = NULL,
     taxonomy = NULL,
     valueType_guess = FALSE,
-    render = 'html',
+    dataset_name = .dataset_name, 
+    dataset_summary = .summary_var,
     .summary_var = NULL, 
     .dataset_name = NULL){
   
@@ -1350,15 +1353,15 @@ dataset_visualize <- function(
   # check input
   render <- 'html'
   
+  # check on argument : taxonomy
+  if(!is.null(taxonomy)) as_taxonomy(taxonomy)
+  
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,'`valueType_guess` must be TRUE or FALSE (TRUE by default)')
   
   if(!is.character(bookdown_path))
     stop(call. = FALSE,'`bookdown_path` must be a character string.')
-  
-  if(!is.character(render))
-    stop(call. = FALSE,'`render` must be a character string.')
-  
+
   bookdown_path <- str_squish(bookdown_path)
   path_to <- path_abs(bookdown_path)
   
@@ -1380,13 +1383,10 @@ Please provide another name folder or delete the existing one.")}
   dataset_name <- 
     suppressWarnings(
     ifelse(
-      !is.null(.dataset_name),
-      .dataset_name,
+      !is.null(dataset_name),
+      dataset_name,
       make_name_list(as.character(fargs[['dataset']]),
                            list_elem = list(NULL))))
-  
-  # check on argument : taxonomy
-  if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
@@ -1411,14 +1411,14 @@ Please provide another name folder or delete the existing one.")}
   
   # summarize initial information
   
-  if(is.null(.summary_var)){
+  if(is.null(dataset_summary)){
     temp_group <- if(group_by == ''){NULL}else{group_by}
-    .summary_var <- dataset_summarize(
+    dataset_summary <- dataset_summarize(
       dataset = dataset,
       data_dict = data_dict,
       group_by = temp_group,
       taxonomy = taxonomy,
-      .dataset_name = dataset_name,
+      dataset_name = dataset_name,
       valueType_guess = valueType_guess)}
 
   data_dict$Variables <- 
@@ -1460,7 +1460,7 @@ Please provide another name folder or delete the existing one.")}
   bookdown_template(path_to, overwrite = FALSE)
   if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(
-    path_to,dataset, data_dict, group_by,data_dict_flat, .summary_var,col_id,
+    path_to,dataset, data_dict, group_by,data_dict_flat, dataset_summary,col_id,
     valueType_guess,
     file = paste0(path_to,"/src/r_env.RData"))
   
@@ -1525,8 +1525,8 @@ load(file = paste0("', path_to,'/src/r_env.RData"))
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
-datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
-    options = list(pageLength = nrow(.summary_var$Overview),scrollX = TRUE),
+datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overview)),
+    options = list(pageLength = nrow(dataset_summary$Overview),scrollX = TRUE),
     rownames = FALSE,escape = FALSE)
 
 ```
@@ -1642,7 +1642,7 @@ datatable(.summary_var$Overview, colnames = rep("",ncol(.summary_var$Overview)),
   data_dict = data_dict, 
   group_by = '", group_by, "',
   valueType_guess = '", valueType_guess, "',
-  .summary_var = .summary_var)       
+  variable_summary = variable_summary)       
         
   if(!is.null(plots$summary_table))      plots$summary_table                  ",
         

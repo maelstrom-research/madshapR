@@ -58,10 +58,11 @@
 #' by this column.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
-#' @param .dataset_name A character string specifying the name of the dataset
+#' @param dataset_name A character string specifying the name of the dataset
 #' (internally used in the function [dossier_evaluate()]).
 #' @param valueType_guess Whether the output should include a more accurate
 #' valueType that could be applied to the dataset. FALSE by default.
+#' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [dossier_evaluate()]
@@ -91,8 +92,9 @@ dataset_summarize <- function(
     data_dict = data_dict_extract(dataset),
     group_by = NULL,
     taxonomy = NULL,
-    .dataset_name = NULL,
-    valueType_guess = FALSE){
+    dataset_name = .dataset_name,
+    valueType_guess = FALSE,
+    .dataset_name = NULL){
   
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -105,8 +107,8 @@ dataset_summarize <- function(
   
   dataset_name <- 
     ifelse(
-      !is.null(.dataset_name),
-      .dataset_name,
+      !is.null(dataset_name),
+      dataset_name,
       make_name_list(
         as.character(fargs[['dataset']]),list_elem = list(NULL)))
   
@@ -203,7 +205,7 @@ dataset_summarize <- function(
       dataset,
       data_dict,
       taxonomy = taxonomy,
-      .dataset_name = dataset_name,
+      dataset_name = dataset_name,
       as_data_dict_mlstr = TRUE)
 
   message(
@@ -358,69 +360,69 @@ dataset_summarize <- function(
 
     message("    Summarise information for all variables")
     
-    .dataset_preprocess <- 
+    dataset_preprocess <- 
       lapply(dataset_group,function(x){
         dataset_preprocess(select(x,-any_of(col_id)),data_dict)})
     
     summary_var <- 
-      lapply(.dataset_preprocess,function(x){
-        summary_variables(.dataset_preprocess = x)})
+      lapply(dataset_preprocess,function(x){
+        summary_variables(dataset_preprocess = x)})
     
     if(group_by != ''){
-      summary_group <- summary_variables(.dataset_preprocess = preprocess_group)
+      summary_group <- summary_variables(dataset_preprocess = preprocess_group)
       summary_var <- 
         lapply(summary_var,function(x){
           x %>% dplyr::filter(.data$`name` != group_by) %>%
             bind_rows(summary_group)})}
 
     message("    Summarise information for numerical variables")
-    .dataset_preprocess_num <-
-      lapply(.dataset_preprocess,function(x){
+    dataset_preprocess_num <-
+      lapply(dataset_preprocess,function(x){
       x[x$`name` %in% report$`Numerical variable summary`$name,] %>%
           dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_num <-
-      lapply(.dataset_preprocess_num,function(x){
-        summary_variables_numeric(.dataset_preprocess = x)})
+      lapply(dataset_preprocess_num,function(x){
+        summary_variables_numeric(dataset_preprocess = x)})
     
     message("    Summarise information for text variables")
-    .dataset_preprocess_text <-
-      lapply(.dataset_preprocess,function(x){
+    dataset_preprocess_text <-
+      lapply(dataset_preprocess,function(x){
         x[x$`name` %in% report$`Text variable summary`$name,] %>%
           dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_text <-
-      lapply(.dataset_preprocess_text,function(x){
-        summary_variables_text(.dataset_preprocess = x)})
+      lapply(dataset_preprocess_text,function(x){
+        summary_variables_text(dataset_preprocess = x)})
 
     message("    Summarise information for date variables")
-    .dataset_preprocess_date <-
-      lapply(.dataset_preprocess,function(x){
+    dataset_preprocess_date <-
+      lapply(dataset_preprocess,function(x){
         x[x$`name` %in% report$`Date variable summary`$name,] %>%
           dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_date <-
-      lapply(.dataset_preprocess_date,function(x){
-        summary_variables_date(.dataset_preprocess = x)})
+      lapply(dataset_preprocess_date,function(x){
+        summary_variables_date(dataset_preprocess = x)})
     
     message("    Summarise information for datetime variables")
-    .dataset_preprocess_datetime <-
-      lapply(.dataset_preprocess,function(x){
+    dataset_preprocess_datetime <-
+      lapply(dataset_preprocess,function(x){
         x[x$`name` %in% report$`Datetime variable summary`$name,] %>%
           dplyr::filter(.data$`Categorical variable` != 'yes')})
     summary_datetime <-
-      lapply(.dataset_preprocess_datetime,function(x){
-        summary_variables_datetime(.dataset_preprocess = x)})
+      lapply(dataset_preprocess_datetime,function(x){
+        summary_variables_datetime(dataset_preprocess = x)})
     
     message("    Summarise information for categorical variables")
-    .dataset_preprocess_cat <-
-      lapply(.dataset_preprocess,function(x){
+    dataset_preprocess_cat <-
+      lapply(dataset_preprocess,function(x){
         x[x$`name` %in% report$`Categorical variable summary`$name,] %>%
           dplyr::filter(.data$`Categorical variable` != 'no')}) 
     summary_cat <-
-      lapply(.dataset_preprocess_cat,function(x){
-        summary_variables_categorical(.dataset_preprocess = x)})
+      lapply(dataset_preprocess_cat,function(x){
+        summary_variables_categorical(dataset_preprocess = x)})
     
     if(group_by != ''){
       summary_group_cat <- 
-        summary_variables_categorical(.dataset_preprocess = preprocess_group)
+        summary_variables_categorical(dataset_preprocess = preprocess_group)
       summary_cat <- 
         lapply(summary_cat,function(x){
           x %>% dplyr::filter(.data$`name` != group_by) %>%
@@ -793,7 +795,7 @@ dossier_summarize <- function(
         dataset = dossier[[i]],
         group_by = group_by,
         taxonomy = taxonomy,
-        .dataset_name = names(dossier[i]),
+        dataset_name = names(dossier[i]),
         valueType_guess = valueType_guess)
     
   }
@@ -1037,8 +1039,9 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .dataset_preprocess A tibble which provides summary of the variables 
+#' @param dataset_preprocess A tibble which provides summary of the variables 
 #' (used for internal processes and programming).
+#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A tibble providing statistical description of variables present in
@@ -1048,8 +1051,8 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' {
 #' 
 #' ###### Example : any data frame (or tibble) can be a dataset by definition.
-#' .dataset_preprocess <- dataset_preprocess(iris)
-#' summary_variables(.dataset_preprocess = .dataset_preprocess)
+#' dataset_preprocess <- dataset_preprocess(iris)
+#' summary_variables(dataset_preprocess = dataset_preprocess)
 #'
 #' }
 #'
@@ -1060,12 +1063,13 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 summary_variables <- function(
     dataset = NULL,
     data_dict = NULL,
+    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   #  (for internal processes and programming).
-  if(is.null(.dataset_preprocess)) .dataset_preprocess <- 
+  if(is.null(dataset_preprocess)) dataset_preprocess <- 
       dataset_preprocess(dataset, data_dict)
-  summary <- .dataset_preprocess
+  summary <- dataset_preprocess
   
   # init
   summary_tbl <- tibble(name = as.character())
@@ -1184,8 +1188,9 @@ summary_variables <- function(
 #' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' @param dataset_preprocess A tibble which provides summary of the variables
 #' (for internal processes and programming).
+#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A tibble providing statistical description of 'text' variables present
@@ -1197,8 +1202,8 @@ summary_variables <- function(
 #' ###### Example : any data frame (or tibble) can be a dataset by definition.
 #' library(dplyr)
 #' 
-#' .dataset_preprocess <- dataset_preprocess(starwars['homeworld'])
-#' summary_variables_text(.dataset_preprocess = .dataset_preprocess)
+#' dataset_preprocess <- dataset_preprocess(starwars['homeworld'])
+#' summary_variables_text(dataset_preprocess = dataset_preprocess)
 #'
 #' }
 #'
@@ -1209,15 +1214,16 @@ summary_variables <- function(
 summary_variables_text <- function(
     dataset = NULL,
     data_dict = NULL,
+    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.dataset_preprocess)) return(summary_tbl)
-  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  if(is.null(dataset_preprocess)) return(summary_tbl)
+  if(!nrow(dataset_preprocess)) return(summary_tbl)
   
   summary <-
-    .dataset_preprocess %>%
+    dataset_preprocess %>%
     dplyr::filter(.data$`value_var_occur` == 1 ) %>%
     dplyr::filter(.data$`valid_class`  == "3_Valid other values")
   
@@ -1267,7 +1273,7 @@ summary_variables_text <- function(
   }
   
   # final_summary <-
-  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
+  #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1306,8 +1312,9 @@ summary_variables_text <- function(
 #' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' @param dataset_preprocess A tibble which provides summary of the variables
 #' (for internal processes and programming).
+#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A tibble providing statistical description of 'date' variables present
@@ -1320,14 +1327,14 @@ summary_variables_text <- function(
 #' library(dplyr)
 #' library(fabR)
 #' 
-#' .dataset_preprocess <- 
+#' dataset_preprocess <- 
 #'   storms %>%
 #'     sample_n(50) %>%
 #'     mutate(date_storm = as_any_date(paste(year, month, day,"-"),"ymd")) %>%
 #'     select(date_storm) %>%
 #'     dataset_preprocess
 #'
-#' summary_variables_date(.dataset_preprocess = .dataset_preprocess)
+#' summary_variables_date(dataset_preprocess = dataset_preprocess)
 #'
 #' }
 #'
@@ -1338,15 +1345,16 @@ summary_variables_text <- function(
 summary_variables_date <- function(
     dataset = NULL,
     data_dict = NULL,
+    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.dataset_preprocess)) return(summary_tbl)
-  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  if(is.null(dataset_preprocess)) return(summary_tbl)
+  if(!nrow(dataset_preprocess)) return(summary_tbl)
   
   date_format <-
-    guess_date_format(distinct(.dataset_preprocess['value_var']))
+    guess_date_format(distinct(dataset_preprocess['value_var']))
   
   if(date_format$`% values formated` < 100){
     warning(
@@ -1356,12 +1364,12 @@ summary_variables_date <- function(
       "Use dataset_evaluate(dataset) to get an assessment of your dataset.")
     
     final_summary <- 
-      summary_variables_text(.dataset_preprocess = .dataset_preprocess)
+      summary_variables_text(dataset_preprocess = dataset_preprocess)
     return(final_summary)
   }
   
   summary <-
-    .dataset_preprocess %>%
+    dataset_preprocess %>%
     mutate(
       value_var =
         as_any_date(.data$`value_var`,date_format$`Date format`)) %>%
@@ -1410,7 +1418,7 @@ summary_variables_date <- function(
   }
   
   # final_summary <-
-  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
+  #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1450,8 +1458,9 @@ summary_variables_date <- function(
 #' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .dataset_preprocess A tibble which provides summary of the variables
+#' @param dataset_preprocess A tibble which provides summary of the variables
 #' (for internal processes and programming).
+#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A tibble providing statistical description of 'datetime' variables present
@@ -1465,14 +1474,14 @@ summary_variables_date <- function(
 #' library(fabR)
 #' library(lubridate)
 #' 
-#' .dataset_preprocess <- 
+#' dataset_preprocess <- 
 #'  storms %>%
 #'    sample_n(50) %>%
 #'    mutate(date_storm = as_datetime(paste(year, month, day,"-"))) %>%
 #'    select(date_storm) %>%
 #'    dataset_preprocess
 #'
-#' summary_variables_datetime(.dataset_preprocess = .dataset_preprocess)
+#' summary_variables_datetime(dataset_preprocess = dataset_preprocess)
 #'
 #' }
 #'
@@ -1483,15 +1492,16 @@ summary_variables_date <- function(
 summary_variables_datetime <- function(
     dataset = NULL,
     data_dict = NULL,
+    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.dataset_preprocess)) return(summary_tbl)
-  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  if(is.null(dataset_preprocess)) return(summary_tbl)
+  if(!nrow(dataset_preprocess)) return(summary_tbl)
   
   final_summary <- 
-    summary_variables_text(.dataset_preprocess = .dataset_preprocess)
+    summary_variables_text(dataset_preprocess = dataset_preprocess)
   return(final_summary)
 
   }
@@ -1531,8 +1541,9 @@ summary_variables_datetime <- function(
 #' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .dataset_preprocess A tibble which provides summary of the variables 
+#' @param dataset_preprocess A tibble which provides summary of the variables 
 #' (for internal processes and programming).
+#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #' 
 #' @returns
 #' A tibble providing statistical description of 'numerical' variables
@@ -1542,8 +1553,8 @@ summary_variables_datetime <- function(
 #' {
 #' 
 #' ###### Example : any data frame (or tibble) can be a dataset by definition.
-#' .dataset_preprocess <- dataset_preprocess(iris)
-#' summary_variables_numeric(.dataset_preprocess = .dataset_preprocess)
+#' dataset_preprocess <- dataset_preprocess(iris)
+#' summary_variables_numeric(dataset_preprocess = dataset_preprocess)
 #'
 #' }
 #'
@@ -1555,15 +1566,16 @@ summary_variables_datetime <- function(
 summary_variables_numeric <- function(
     dataset = NULL,
     data_dict = NULL,
+    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.dataset_preprocess)) return(summary_tbl)
-  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  if(is.null(dataset_preprocess)) return(summary_tbl)
+  if(!nrow(dataset_preprocess)) return(summary_tbl)
   
   summary <-
-    .dataset_preprocess %>%
+    dataset_preprocess %>%
     dplyr::filter(.data$`value_var_occur` == 1 ) %>%
     dplyr::filter(.data$`valid_class`  == "3_Valid other values")
   
@@ -1601,7 +1613,7 @@ summary_variables_numeric <- function(
   }
   
   # final_summary <-
-  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
+  #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1649,8 +1661,9 @@ summary_variables_numeric <- function(
 #' associated to its data dictionary.
 #' @param data_dict A list of tibble(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param .dataset_preprocess A tibble which provides summary of the variables 
+#' @param dataset_preprocess A tibble which provides summary of the variables 
 #' (for internal processes and programming).
+#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A tibble providing statistical description of 'categorical' variables
@@ -1663,8 +1676,8 @@ summary_variables_numeric <- function(
 #' library(dplyr)
 #' 
 #' ###### Example : any data frame (or tibble) can be a dataset by definition.
-#' .dataset_preprocess <- dataset_preprocess(storms['status'])
-#' summary_variables_categorical(.dataset_preprocess = .dataset_preprocess)
+#' dataset_preprocess <- dataset_preprocess(storms['status'])
+#' summary_variables_categorical(dataset_preprocess = dataset_preprocess)
 #' 
 #' }
 #'
@@ -1675,15 +1688,16 @@ summary_variables_numeric <- function(
 summary_variables_categorical <- function(
     dataset = NULL,
     data_dict = NULL,
+    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
   summary_tbl <- tibble(name = as.character())
-  if(is.null(.dataset_preprocess)) return(summary_tbl)
-  if(!nrow(.dataset_preprocess)) return(summary_tbl)
+  if(is.null(dataset_preprocess)) return(summary_tbl)
+  if(!nrow(dataset_preprocess)) return(summary_tbl)
   
   summary <-
-    .dataset_preprocess %>%
+    dataset_preprocess %>%
     group_by(across(c(-"value_var_occur",-"index_value"))) %>%
     summarise(
       n = sum(as.integer(.data$`value_var_occur`)),
@@ -1856,7 +1870,7 @@ summary_variables_categorical <- function(
   }
   
   # final_summary <-
-  #   summary_variables(dataset, data_dict, .dataset_preprocess) %>%
+  #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` == 'yes' | 
   #   .data$`categorical` == 'mix') %>%
   #   full_join(summary_tbl, by = 'name')

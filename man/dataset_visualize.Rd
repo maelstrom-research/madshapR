@@ -11,8 +11,8 @@ dataset_visualize(
   group_by = NULL,
   taxonomy = NULL,
   valueType_guess = FALSE,
-  render = "html",
-  .summary_var = NULL,
+  dataset_summary = NULL,
+  dataset_name = .dataset_name,
   .dataset_name = NULL
 )
 }
@@ -36,13 +36,12 @@ classification.}
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 
-\item{render}{Output format of the visual report. To date, the format can
-only be 'html', but will be expand to other formats in the future.}
+\item{dataset_summary}{A list which is the summary of the variables.}
 
-\item{.summary_var}{A list which is the summary of the variables.}
-
-\item{.dataset_name}{A character string specifying the name of the dataset
+\item{dataset_name}{A character string specifying the name of the dataset
 (used for internal processes and programming).}
+
+\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A bookdown folder containing files in the specified output folder. To
@@ -61,7 +60,7 @@ The charts and tables are produced based on their data type. The variable
 can be grouped using \code{group_by} parameter, which is a (categorical) column
 in the dataset. The user may need to use \code{\link[=as.factor]{as.factor()}} in this context. To
 fasten the process (and allow recycling object in a workflow) the user can
-feed the function with a \code{.summary_var}, which is the output of the function
+feed the function with a \code{dataset_summary}, which is the output of the function
 \code{\link[=dataset_summarize]{dataset_summarize()}} of the column(s) \code{col} and  \code{group_by}. The summary
 must have the same parameters to operate.
 }
@@ -115,14 +114,14 @@ data_dict <-
     madshapR_DEMO$data_dict_TOKYO,
     filter_var = "name == 'height'")
 
-.summary_var <- madshapR_DEMO$summary_var
+dataset_summary <- madshapR_DEMO$summary_var
 
 if(dir_exists(tempdir())) dir_delete(tempdir())
 bookdown_path <- tempdir()
   
 dataset_visualize(
   dataset, data_dict,
-  .summary_var =.summary_var,
+  dataset_summary =dataset_summary,
   bookdown_path = bookdown_path)
   
 # To open the file in browser, open 'bookdown_path/docs/index.html'. 

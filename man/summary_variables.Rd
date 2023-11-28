@@ -4,7 +4,12 @@
 \alias{summary_variables}
 \title{Provide descriptive statistics for variables in a dataset}
 \usage{
-summary_variables(dataset = NULL, data_dict = NULL, .dataset_preprocess = NULL)
+summary_variables(
+  dataset = NULL,
+  data_dict = NULL,
+  dataset_preprocess = .dataset_preprocess,
+  .dataset_preprocess = NULL
+)
 }
 \arguments{
 \item{dataset}{A tibble identifying the input dataset observations
@@ -13,8 +18,10 @@ associated to its data dictionary.}
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{.dataset_preprocess}{A tibble which provides summary of the variables
+\item{dataset_preprocess}{A tibble which provides summary of the variables
 (used for internal processes and programming).}
+
+\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A tibble providing statistical description of variables present in
@@ -49,8 +56,8 @@ automatically by the function.
 {
 
 ###### Example : any data frame (or tibble) can be a dataset by definition.
-.dataset_preprocess <- dataset_preprocess(iris)
-summary_variables(.dataset_preprocess = .dataset_preprocess)
+dataset_preprocess <- dataset_preprocess(iris)
+summary_variables(dataset_preprocess = dataset_preprocess)
 
 }
 

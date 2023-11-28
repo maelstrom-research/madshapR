@@ -10,7 +10,7 @@ variable_visualize(
   data_dict = NULL,
   group_by = NULL,
   valueType_guess = FALSE,
-  .summary_var = NULL
+  variable_summary = NULL
 )
 }
 \arguments{
@@ -29,7 +29,7 @@ by this column.}
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 
-\item{.summary_var}{A summary list which is the summary of the variables.}
+\item{variable_summary}{A summary list which is the summary of the variables.}
 }
 \value{
 A list of up to seven elements (charts and figures and datatables) which can
@@ -53,7 +53,7 @@ missing values (if any). The variable can be grouped using \code{group_by}
 parameter, which is a (categorical) column in the dataset. The user may need
 to use \code{\link[=as.factor]{as.factor()}} in this context. To fasten the process (and allow
 recycling object in a workflow) the user can feed the function with a
-\code{.summary_var}, which is the output of the function \code{\link[=dataset_summarize]{dataset_summarize()}}
+\code{variable_summary}, which is the output of the function \code{\link[=dataset_summarize]{dataset_summarize()}}
 of the column(s) \code{col} and  \code{group_by}. The summary must have the same
 parameters to operate.
 }
@@ -95,7 +95,7 @@ possibilities and their correspondence with R data types are available using
  variable_viz <-
    variable_visualize(
    dataset, col = 'Sepal.Width',
-   .summary_var =  summary_variable)
+   variable_summary =  summary_variable)
  
 }
 

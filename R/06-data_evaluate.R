@@ -44,12 +44,13 @@
 #' associated dataset. Automatically generated if not provided.
 #' @param taxonomy A tibble identifying the scheme used for variables 
 #' classification.
-#' @param .dataset_name A character string specifying the name of the dataset
+#' @param dataset_name A character string specifying the name of the dataset
 #' (internally used in the function [dossier_evaluate()]).
 #' @param as_data_dict_mlstr Whether the output data dictionary has a simple
 #' data dictionary structure or not (meaning has a Maelstrom data dictionary
 #' structure, compatible with Maelstrom Research ecosystem, including Opal). 
 #' TRUE by default.
+#' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [dossier_evaluate()]
@@ -79,8 +80,9 @@ dataset_evaluate <- function(
     dataset,
     data_dict = NULL,
     taxonomy = NULL,
-    .dataset_name = NULL,
-    as_data_dict_mlstr = TRUE){
+    dataset_name = .dataset_name,
+    as_data_dict_mlstr = TRUE,
+    .dataset_name = NULL){
   
   # future dev
   # add emptiness of the dataset in the Dataset assessment
@@ -146,7 +148,7 @@ dataset_evaluate <- function(
     select(-all_of(col_id))
   
   dataset_name <-
-    ifelse(!is.null(.dataset_name),.dataset_name,
+    ifelse(!is.null(dataset_name),dataset_name,
            make_name_list(
              as.character(fargs[['dataset']]),list_elem = list(NULL)))
 
@@ -440,7 +442,7 @@ dossier_evaluate <- function(
       dataset_evaluate(
         dataset = dossier[[i]],
         taxonomy = taxonomy,
-        .dataset_name = names(dossier[i]),
+        dataset_name = names(dossier[i]),
         as_data_dict_mlstr = as_data_dict_mlstr)
   }
   

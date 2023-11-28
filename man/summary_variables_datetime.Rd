@@ -7,6 +7,7 @@
 summary_variables_datetime(
   dataset = NULL,
   data_dict = NULL,
+  dataset_preprocess = .dataset_preprocess,
   .dataset_preprocess = NULL
 )
 }
@@ -17,8 +18,10 @@ associated to its data dictionary.}
 \item{data_dict}{A list of tibble(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{.dataset_preprocess}{A tibble which provides summary of the variables
+\item{dataset_preprocess}{A tibble which provides summary of the variables
 (for internal processes and programming).}
+
+\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A tibble providing statistical description of 'datetime' variables present
@@ -57,14 +60,14 @@ library(dplyr)
 library(fabR)
 library(lubridate)
 
-.dataset_preprocess <- 
+dataset_preprocess <- 
  storms \%>\%
    sample_n(50) \%>\%
    mutate(date_storm = as_datetime(paste(year, month, day,"-"))) \%>\%
    select(date_storm) \%>\%
    dataset_preprocess
 
-summary_variables_datetime(.dataset_preprocess = .dataset_preprocess)
+summary_variables_datetime(dataset_preprocess = dataset_preprocess)
 
 }
 
