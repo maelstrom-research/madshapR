@@ -69,7 +69,7 @@ possibilities and their correspondence with R data types are available using
 # use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example 1: Combine functions and summarise datasets.
+###### Example 1: Combine functions and summarize datasets.
 dossier <- list(iris = tibble())
 
 dossier_summary <- dossier_summarize(dossier)

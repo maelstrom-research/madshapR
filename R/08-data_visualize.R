@@ -77,13 +77,16 @@
 #' {
 #' 
 #'  library(dplyr)
-#'  dataset <- iris['Sepal.Width'] %>% slice(0)
-#'  summary_variable <- dataset_summarize(dataset)
+#'  library(fs)
+#'  
+#'  dataset <- madshapR_DEMO$dataset_TOKYO
+#'  
+#'  variable_summary <- madshapR_DEMO$`dataset_summary`
 #'   
-#'  variable_viz <-
-#'    variable_visualize(
-#'    dataset, col = 'Sepal.Width',
-#'    variable_summary =  summary_variable)
+#'  variable_visualize(
+#'    dataset, col = 'height',
+#'    variable_summary =  variable_summary)
+#'  
 #'  
 #' }
 #'
@@ -1305,21 +1308,17 @@ variable_visualize <- function(
 #' 
 #' library(dplyr)
 #' library(fs)
-#' dataset <- madshapR_DEMO$dataset_TOKYO['height'] %>% slice(0)
-#' data_dict <-
-#'   data_dict_filter(
-#'     madshapR_DEMO$data_dict_TOKYO,
-#'     filter_var = "name == 'height'")
 #' 
-#' dataset_summary <- madshapR_DEMO$summary_var
+#' dataset <- madshapR_DEMO$dataset_TOKYO['height']
+#' dataset_summary <- madshapR_DEMO$`dataset_summary`
 #' 
 #' if(dir_exists(tempdir())) dir_delete(tempdir())
 #' bookdown_path <- tempdir()
-#'   
+#' 
 #' dataset_visualize(
-#'   dataset, data_dict,
-#'   dataset_summary =dataset_summary,
-#'   bookdown_path = bookdown_path)
+#'   dataset,
+#'   dataset_summary = dataset_summary,
+#'   bookdown_path = 'bookdown_path)
 #'   
 #' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
 #' # Or use bookdown_open(bookdown_path) function.
@@ -1600,7 +1599,7 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
-        "\n```\n") %>%
+        "\n\n```\n") %>%
       
       paste0("\n</div>\n\n") %>%
       paste0(ifelse(
@@ -1621,7 +1620,7 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
     mutate(across(everything(), as.character)),
     options = list(scrollX = TRUE),rownames = FALSE)                          ",
                         
-                        "\n```\n") %>%
+                        "\n\n```\n") %>%
                       paste0("\n</div>\n\n") ,"")) %>%
       paste0("
 \n----------------------------------------------------------------------\n") %>%
@@ -1642,11 +1641,11 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
   data_dict = data_dict, 
   group_by = '", group_by, "',
   valueType_guess = '", valueType_guess, "',
-  variable_summary = variable_summary)       
+  variable_summary = dataset_summary)       
         
   if(!is.null(plots$summary_table))      plots$summary_table                  ",
         
-        "\n```\n") %>%
+        "\n\n```\n") %>%
       
       paste0("\n</div>\n\n") %>%
       
@@ -1659,7 +1658,7 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
         
   if(!is.null(plots$summary_categories)) plots$summary_categories             ",
         
-        "\n```\n") %>%
+        "\n\n```\n") %>%
       
       paste0("\n</div>\n\n") %>%
       
@@ -1681,7 +1680,7 @@ if(!is.null(plots$cat_values))         plots$cat_values
 if(!is.null(plots$missing_values))     plots$missing_values
 if(!is.null(plots$pie_values))         plots$pie_values                       ",
         
-        "\n```\n") %>%
+        "\n\n```\n") %>%
       write_lines(file = rmd_file_name, append = FALSE)
   }
   

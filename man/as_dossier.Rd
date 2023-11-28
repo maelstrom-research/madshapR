@@ -31,7 +31,7 @@ library(stringr)
 
 ###### Example 1: a dataset list is a dossier by definition.
 dossier <- 
-  as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
+  as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset_TOKYO")])
    
 ###### Example 2: any list of data frame (or tibble) can be a dossier by 
 # definition.

@@ -106,33 +106,6 @@ or scales, which are specific to Maelstrom Research. In this particular
 case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 'vocabulary_scale' and 'term_scale' to work with some specific functions.
 }
-\examples{
-{
-
-library(dplyr)
-library(fs)
-dataset <- madshapR_DEMO$dataset_TOKYO['height'] \%>\% slice(0)
-data_dict <-
-  data_dict_filter(
-    madshapR_DEMO$data_dict_TOKYO,
-    filter_var = "name == 'height'")
-
-dataset_summary <- madshapR_DEMO$summary_var
-
-if(dir_exists(tempdir())) dir_delete(tempdir())
-bookdown_path <- tempdir()
-  
-dataset_visualize(
-  dataset, data_dict,
-  dataset_summary =dataset_summary,
-  bookdown_path = bookdown_path)
-  
-# To open the file in browser, open 'bookdown_path/docs/index.html'. 
-# Or use bookdown_open(bookdown_path) function.
-
-}
-
-}
 \seealso{
 \code{\link[=bookdown_open]{bookdown_open()}}
 }

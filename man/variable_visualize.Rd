@@ -92,13 +92,16 @@ possibilities and their correspondence with R data types are available using
 {
 
  library(dplyr)
- dataset <- iris['Sepal.Width'] \%>\% slice(0)
- summary_variable <- dataset_summarize(dataset)
+ library(fs)
+ 
+ dataset <- madshapR_DEMO$dataset_TOKYO
+ 
+ variable_summary <- madshapR_DEMO$`dataset_summary`
   
- variable_viz <-
-   variable_visualize(
-   dataset, col = 'Sepal.Width',
-   variable_summary =  summary_variable)
+ variable_visualize(
+   dataset, col = 'height',
+   variable_summary =  variable_summary)
+ 
  
 }
 

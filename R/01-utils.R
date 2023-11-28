@@ -75,7 +75,7 @@ madshapR_help <- function(){
 #' material.
 #'
 #' @format ## `list`
-#' A list with 11 elements used for testing the package 
+#' A list with 12 elements used for testing the package 
 #' (data frames and lists):
 #'
 #' \describe{
@@ -95,6 +95,7 @@ madshapR_help <- function(){
 #'   \item{dataset_TOKYO - errors with data}{dataset of Tokyo 
 #'   containing errors with Tokyo data dictionary for testing purpose}
 #'   \item{taxonomy_PARIS}{Taxonomy of Paris dataset for testing purpose}
+#'   \item{dataset_suummary}{example of dataset summary for testing purpose}
 #'   ...
 #' }
 #'
