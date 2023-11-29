@@ -1392,6 +1392,9 @@ Please provide another name folder or delete the existing one.")}
     group_by <- tryCatch(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})    
+    
+    if(! group_by %in% data_dict[['Categories']][['variable']]) group_by <- ''
+    
   }else{ group_by <- ''}
   
   dataset <-
