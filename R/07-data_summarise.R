@@ -148,7 +148,8 @@ dataset_summarize <- function(
     
     if(sum(nrow(
       data_dict[['Categories']][
-        which(data_dict[['Categories']] == group_by)])) == 0) group_by <- ''
+        which(data_dict[['Categories']][['name']] == group_by)])) == 0) 
+      group_by <- ''
     
   }else{ group_by <- ''}
 
