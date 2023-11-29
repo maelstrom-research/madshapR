@@ -2358,6 +2358,12 @@ investigations.",
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>% mutate(label = .data$`name`)}
   
+  # fill labels if some are empty
+    data_dict[['Variables']] <-
+      data_dict[['Variables']] %>% 
+      mutate(across(any_of(matches(c("^label$","^label:[[:alnum:]]")))[1], 
+                    ~ ifelse(is.na(.),.data$`name`,.)))
+  
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
     # addition of label(:xx) if not present
