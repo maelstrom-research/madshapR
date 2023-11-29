@@ -1318,7 +1318,7 @@ variable_visualize <- function(
 #' dataset_visualize(
 #'   dataset,
 #'   dataset_summary = dataset_summary,
-#'   bookdown_path = 'bookdown_path)
+#'   bookdown_path = bookdown_path)
 #'   
 #' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
 #' # Or use bookdown_open(bookdown_path) function.

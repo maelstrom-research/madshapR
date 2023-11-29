@@ -145,9 +145,14 @@ dataset_summarize <- function(
     group_by <- tryCatch(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})    
+    
+    if(sum(nrow(
+      data_dict[['Categories']][
+        which(data_dict[['Categories']] == group_by)])) == 0) group_by <- ''
+    
   }else{ group_by <- ''}
 
-  if(sum(nrow(data_dict['Categories'])) == 0) group_by <- ''
+
   
   if(group_by != ''){
     
