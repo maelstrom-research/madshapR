@@ -109,7 +109,8 @@ case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
 \examples{
 {
 
-library(dplyr)
+# You can use our demonstration files to run examples
+
 library(fs)
 
 dataset <- madshapR_DEMO$dataset_TOKYO['height']

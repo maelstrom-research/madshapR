@@ -281,10 +281,14 @@ variable_visualize <- function(
   }
   
   n_part <- nrow(colset)
+  
+  `Variables summary (all)` <- variable_summary[
+    str_detect(names(variable_summary), "Variables summary \\(all\\)")][[1]]
+  
   summary_1 <- 
     as.data.frame(t(
       
-      variable_summary$`Variables summary (all)` %>% 
+      `Variables summary (all)` %>% 
         dplyr::filter(.data$`name` %in% col) %>%
         select(c("Total number of observations":last_col()))
     ))
@@ -293,7 +297,7 @@ variable_visualize <- function(
     names(summary_1) <- 
       
       unique(pull(
-        variable_summary$`Variables summary (all)` %>%
+        `Variables summary (all)` %>%
           dplyr::filter(.data$`name` %in% col) %>%
           select(starts_with('Grouping variable:'))
       ))
@@ -391,12 +395,15 @@ variable_visualize <- function(
   if(nrow(colset_values) > 0) {
 
     if(vT_col$`genericType` == "numeric"){
+      
+      `Numerical variable summary` <- variable_summary[
+        str_detect(names(variable_summary), "Numerical variable summary")][[1]]
 
       #### summary_2 numeric ####
       summary_2 <- 
         as.data.frame(t(
           
-          variable_summary$`Numerical variable summary` %>%
+          `Numerical variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -406,7 +413,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            variable_summary$`Numerical variable summary` %>%
+            `Numerical variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -494,11 +501,14 @@ variable_visualize <- function(
     
     if(vT_col$`genericType` == "character"){
       
+      `Text variable summary` <- variable_summary[
+        str_detect(names(variable_summary), "Text variable summary")][[1]]
+      
       #### summary_2 character ####
       summary_2 <- 
         as.data.frame(t(
           
-          variable_summary$`Text variable summary` %>%
+          `Text variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -508,7 +518,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            variable_summary$`Text variable summary` %>%
+            `Text variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -632,12 +642,15 @@ variable_visualize <- function(
     }
     
     if(vT_col$`genericType` == "datetime"){
-      
+    
+      `Datetime variable summary` <- variable_summary[
+        str_detect(names(variable_summary), "Datetime variable summary")][[1]]
+        
       #### summary_2 datetime ####
       summary_2 <- 
         as.data.frame(t(
           
-          variable_summary$`Datetime variable summary` %>%
+          `Datetime variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -647,7 +660,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            variable_summary$`Datetime variable summary` %>%
+            `Datetime variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -772,11 +785,14 @@ variable_visualize <- function(
     
     if(vT_col$`genericType` == "date"){
       
+      `Date variable summary` <- variable_summary[
+        str_detect(names(variable_summary), "Date variable summary")][[1]]
+      
       #### summary_2 date ####    
       summary_2 <- 
         as.data.frame(t(
           
-          variable_summary$`Date variable summary` %>%
+          `Date variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -786,7 +802,7 @@ variable_visualize <- function(
         names(summary_2) <- 
           
           unique(pull(
-            variable_summary$`Date variable summary` %>%
+            `Date variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -1133,15 +1149,19 @@ variable_visualize <- function(
   
   # category table
 
-  if(sum(nrow(variable_summary[['Categorical variable summary']])) > 0) {
+  if(length(variable_summary[
+    str_detect(names(variable_summary),"Categorical variable summary")]) == 1){
 
-    if(nrow(variable_summary$`Categorical variable summary` %>% 
+    `Categorical variable summary` <- variable_summary[
+      str_detect(names(variable_summary), "Categorical variable summary")][[1]]
+    
+    if(nrow(`Categorical variable summary` %>% 
             dplyr::filter(.data$`name` %in% col)) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
-          variable_summary$`Categorical variable summary` %>%
+          `Categorical variable summary` %>%
             dplyr::filter(.data$`name` %in% col) %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
@@ -1151,7 +1171,7 @@ variable_visualize <- function(
         names(summary_categories) <- 
           
           unique(pull(
-            variable_summary$`Categorical variable summary` %>%
+            `Categorical variable summary` %>%
               dplyr::filter(.data$`name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
@@ -1306,7 +1326,8 @@ variable_visualize <- function(
 #' @examples
 #' {
 #' 
-#' library(dplyr)
+#' # You can use our demonstration files to run examples
+#' 
 #' library(fs)
 #' 
 #' dataset <- madshapR_DEMO$dataset_TOKYO['height']
@@ -1527,8 +1548,11 @@ load(file = paste0("', path_to,'/src/r_env.RData"))
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
-datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overview)),
-    options = list(pageLength = nrow(dataset_summary$Overview),scrollX = TRUE),
+Overview <- dataset_summary[str_detect(names(dataset_summary), "Overview")][[1]]
+
+datatable(Overview, 
+    colnames = rep("",ncol(Overview)),
+    options = list(pageLength = nrow(Overview),scrollX = TRUE),
     rownames = FALSE,escape = FALSE)
 
 ```
@@ -1595,7 +1619,7 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
         str_squish(
           "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
-
+  
   datatable(t(
      data_dict$Variables %>%
      dplyr::filter(name == '",data_dict$Variables$name[i],"')),
@@ -1628,8 +1652,7 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
       paste0("
 \n----------------------------------------------------------------------\n") %>%
       
-      
-      paste0("\n**SUMMARY STATISTICS**\n") %>%
+      paste0(ifelse(nrow(dataset[i]) > 0, "\n**SUMMARY STATISTICS**\n","")) %>%
       
       paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
       paste0(
@@ -1668,7 +1691,7 @@ datatable(dataset_summary$Overview, colnames = rep("",ncol(dataset_summary$Overv
       paste0(
 "\n---------------------------------------------------------------------\n") %>%
       
-      paste0("\n**VISUAL REPRESENTATION**\n") %>%
+      paste0(ifelse(nrow(dataset[i]) > 0, "\n**VISUAL REPRESENTATION**\n","")) %>%
       
       paste0(
         "\n```{r, figures-plot12-",i,
