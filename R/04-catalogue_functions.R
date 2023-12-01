@@ -146,7 +146,7 @@ valueType_of <- function(x){
 #'
 #' }
 #'
-#' @import dplyr tidyr stringr
+#' @import dplyr tidyr stringr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -294,7 +294,13 @@ The valueType will remain as it is.")
     return(data_dict)
   }
 
-  stop(call. = FALSE, "The argument is neither a dataset or a data dictionary.")
+  message("The argument is neither a dataset or a data dictionary.")
+  message("\nTesting dataset :")
+  try(as_dataset(...))
+  
+  message("\nTesting data dictionary :")
+  try(as_data_dict(...))
+  silently_run(stop(call. = FALSE))
 }
 
 #' @title
@@ -477,8 +483,33 @@ bold("\n\nUseful tip:"),
     return(dataset)
   }
 
-  stop(call. = FALSE,
-       "The arguments are neither or (both) a dataset or a data dictionary.")
+  if(is_dataset(from) & is_dataset(to))
+    stop(call. = FALSE, "The argument are both datasets.")
+  
+  if(is_data_dict(from) & is_data_dict(to))
+    stop(call. = FALSE, "The argument are both data dictionaries.")
+  
+  if(is_dataset(to))   { 
+    message("The argument `from` is not a data dictionary.")
+    as_data_dict(from) }
+  
+  if(is_dataset(from)) { 
+    message("The argument `to` is not a data dictionary.")
+    as_data_dict(to) }
+  
+  if(is_data_dict(to))   { 
+    message("The argument `from` is not a dataset.")
+    as_data_dict(from) }
+  
+  if(is_data_dict(from)) { 
+    message("The argument `to` is not a dataset.")
+    as_dataset(to) }
+  
+  message(
+"The arguments `to` and `from` are neither a dataset nor a data dictionary.")
+  
+  silently_run(stop(call. = FALSE))
+  
 }
 
 #' @title
