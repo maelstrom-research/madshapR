@@ -18,15 +18,15 @@ validate input within other functions of the package but could be used to
 check if a dossier is valid.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
-The name of each tibble will be use as the reference name of the dataset.
+A dossier is a named list containing at least one data frame or more,
+each of them being datasets. The name of each tibble will be use as the
+reference name of the dataset.
 }
 \examples{
 {
 
 # use madshapR_DEMO provided by the package
-# Any list of data frame (or tibble) can be a dossier by definition.
+# Any list of data frame can be a dossier by definition.
 library(stringr)
 
 is_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])

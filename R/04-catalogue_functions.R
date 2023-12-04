@@ -7,14 +7,15 @@
 #' 'integer', 'decimal', and 'text'.
 #'
 #' @details
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #' 
 #' @seealso
 #' [typeof()], [class()]
@@ -99,32 +100,33 @@ valueType_of <- function(x){
 #' 'text'.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
 #' @seealso
 #' [valueType_adjust()]
@@ -132,7 +134,7 @@ valueType_of <- function(x){
 #' @param ... Object that can be either a dataset or a data dictionary.
 #'
 #' @returns
-#' Either a tibble, identifying the dataset, or a list of tibble(s)
+#' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary, depending which the input refers to.
 #'
 #' @examples
@@ -316,32 +318,33 @@ The valueType will remain as it is.")
 #' 'decimal', and text'.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
 #' @seealso
 #' [valueType_self_adjust()]
@@ -352,7 +355,7 @@ The valueType will remain as it is.")
 #' dictionary. NULL by default.
 #'
 #' @returns
-#' Either a tibble, identifying the dataset, or a list of tibble(s)
+#' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary, depending which is 'to'.
 #'
 #' @examples
@@ -521,32 +524,33 @@ bold("\n\nUseful tip:"),
 #' 'decimal', then 'date'. If all others fail, the default valueType is 'text'.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -648,18 +652,19 @@ valueType_guess <- function(x){
 #' Validate and coerce an object according to a given valueType
 #'
 #' @description
-#' Attributes a valueType to an object, that can be a vector, or in a tibble 
+#' Attributes a valueType to an object, that can be a vector, or in a data frame 
 #' using [dplyr::mutate].
 #'
 #' @details
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -815,21 +820,18 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #'
 #' @description
 #' Confirms that the input object is a valid taxonomy and returns it as a
-#' taxonomy with the appropriate 'madshapR::class' attribute. This function 
+#' taxonomy with the appropriate `madshapR::class` attribute. This function 
 #' mainly helps validate input within other functions of the package but could 
 #' be used to check if a taxonomy is valid.
 #'
 #' @details
-#' A taxonomy is classification scheme that can be defined for variable 
-#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
-#' be compatible with (and is generally extracted from) an Opal environment. To 
-#' work with certain functions, a valid taxonomy must contain at least the 
-#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-#' may follow Maelstrom research taxonomy, and its content can be evaluated
-#' accordingly, such as naming convention restriction, tagging elements,
-#' or scales, which are specific to Maelstrom Research. In this particular
-#' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-#' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
+#' A taxonomy is a classification schema that can be defined for variable 
+#' attributes. A taxonomy is usually extracted from an 
+#' [Opal environment](https://www.obiba.org/pages/products/opal/), and a 
+#' taxonomy object is a data frame that must contain at least the columns 
+#' `taxonomy`, `vocabulary`, and `terms`. Additional details about Opal 
+#' taxonomies are 
+#' [available online](https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html).
 #' 
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -837,7 +839,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @param object A potential taxonomy to be coerced.
 #'
 #' @returns
-#' A tibble identifying a taxonomy (generally generated from Opal taxonomy).
+#' A list of data frame(s) with `Rmonize::class` 'taxonomy'.
 #'
 #' @examples
 #' {
@@ -860,8 +862,7 @@ as_taxonomy <- function(object){
     stop(call. = FALSE,
 "\n
 This object is not a taxonomy as defined by Maelstrom standards, which must 
-be a data frame (or tibble) containing at least 'taxonomy', 'vocabulary' and 
-'term' columns. 
+be a data frame containing at least 'taxonomy', 'vocabulary' and 'term' columns. 
 Please refer to documentation.",
 
 #       bold("\n\nUseful tip:"),
@@ -894,14 +895,15 @@ Please refer to documentation.",
 #' to check if a valueType is valid.
 #'
 #' @details
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -944,16 +946,13 @@ is_valueType <- function(object){
 #' used to check if a taxonomy is valid.
 #'
 #' @details
-#' A taxonomy is classification scheme that can be defined for variable 
-#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
-#' be compatible with (and is generally extracted from) an Opal environment. To 
-#' work with certain functions, a valid taxonomy must contain at least the 
-#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-#' may follow Maelstrom research taxonomy, and its content can be evaluated
-#' accordingly, such as naming convention restriction, tagging elements,
-#' or scales, which are specific to Maelstrom Research. In this particular
-#' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-#' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
+#' A taxonomy is a classification schema that can be defined for variable 
+#' attributes. A taxonomy is usually extracted from an 
+#' [Opal environment](https://www.obiba.org/pages/products/opal/), and a 
+#' taxonomy object is a data frame that must contain at least the columns 
+#' `taxonomy`, `vocabulary`, and `terms`. Additional details about Opal 
+#' taxonomies are 
+#' [available online](https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html).
 #'
 #' @param object A potential taxonomy to be evaluated.
 #'
@@ -976,7 +975,7 @@ is_valueType <- function(object){
 is_taxonomy <- function(object){
 
   object <- object
-  # if only the tibble is given in parameter
+  # if only the data frame is given in parameter
   test <- silently_run(try(as_taxonomy(object),silent = TRUE))
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)

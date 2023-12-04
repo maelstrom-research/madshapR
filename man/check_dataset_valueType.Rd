@@ -7,50 +7,52 @@
 check_dataset_valueType(dataset, data_dict = NULL, valueType_guess = FALSE)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations.}
+\item{dataset}{A data frame identifying the input dataset observations.}
 
-\item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing meta data to be evaluated.}
 
-\item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. TRUE by default.}
+\item{valueType_guess}{Whether the output should be generated based on more
+precise valueType inferred from the data. FALSE by default
+(will use the valueType declared).}
 }
 \value{
-A tibble providing values which valueType differs between dataset and
+A data frame providing values which valueType differs between dataset and
 their data dictionary.
 }
 \description{
-Generates a tibble report of any incompatibility between variable values in a
-dataset and the declared valueType in the associated data dictionary.
+Generates a data frame report of any incompatibility between variable values
+in a dataset and the declared valueType in the associated data dictionary.
 This report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions. An
+identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers
-to the OBiBa-internal type of a variable. It is specified in a data
-dictionary in a column \code{valueType} and can be associated with variables as
-attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
-'boolean', datetime', 'date'). The full list of OBiBa valueType
-possibilities and their correspondence with R data types are available using
-\link{valueType_list}.
+The valueType is a declared property of a variable that is required in
+certain functions to determine handling of the variables. Specifically,
+valueType refers to the
+\href{https://opaldoc.obiba.org/en/variables-data.html#value-types}{OBiBa data type of a variable}.
+The valueType is specified in a data dictionary in a column 'valueType' and
+can be associated with variables as attributes. Acceptable valueTypes
+include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
+list of OBiBa valueType possibilities and their correspondence with R data
+types are available using \link{valueType_list}.
 }
 \examples{
 {

@@ -7,10 +7,10 @@
 data_dict_evaluate(data_dict, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing meta data to be evaluated.}
 
-\item{taxonomy}{A tibble identifying the scheme used for variables
-classification as a tibble.}
+\item{taxonomy}{An optional data frame identifying a variable
+classification schema.}
 
 \item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
 data dictionary structure or not (meaning has a Maelstrom data dictionary
@@ -18,7 +18,7 @@ structure, compatible with Maelstrom Research ecosystem, including Opal).
 TRUE by default.}
 }
 \value{
-A list of tibbles of report for one data dictionary.
+A list of data frames of report for one data dictionary.
 }
 \description{
 Assesses the content and structure of a data dictionary and reports potential
@@ -28,26 +28,26 @@ coherence across elements, and taxonomy or data dictionary formats. This
 report is compatible with Excel and can be exported as an Excel spreadsheet.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
+
+The object may be specifically formatted to be compatible with additional
+\href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
+in particular \href{https://www.obiba.org/pages/products/opal}{Opal environments}.
 }
 \examples{
 {

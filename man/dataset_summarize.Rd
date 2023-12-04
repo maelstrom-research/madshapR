@@ -15,29 +15,30 @@ dataset_summarize(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations
+\item{dataset}{A data frame identifying the input dataset observations
 associated to its data dictionary.}
 
-\item{data_dict}{A list of tibble(s) representing meta data of an
+\item{data_dict}{A list of data frame(s) representing meta data of an
 associated dataset. Automatically generated if not provided.}
 
-\item{group_by}{A character string of one column in the dataset that can be
-taken as a grouping column. The visual element will be grouped and displayed
-by this column.}
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Visual elements will be grouped by this
+column.}
 
-\item{taxonomy}{A tibble identifying the scheme used for variables
-classification.}
+\item{taxonomy}{An optional data frame identifying a variable
+classification schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
 (internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
-\item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
+\item{valueType_guess}{Whether the output should be generated based on more
+precise valueType inferred from the data. FALSE by default
+(will use the valueType declared).}
 
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
-A list of tibbles of report for one data dictionary.
+A list of data frames of report for one data dictionary.
 }
 \description{
 Assesses and summarizes the content and structure of a dataset and data
@@ -49,43 +50,41 @@ descriptive statistics. This report is compatible with Excel and can be
 exported as an Excel spreadsheet.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions. An
+identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 
-The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers
-to the OBiBa-internal type of a variable. It is specified in a data
-dictionary in a column \code{valueType} and can be associated with variables as
-attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
-'boolean', datetime', 'date'). The full list of OBiBa valueType
-possibilities and their correspondence with R data types are available using
-\link{valueType_list}.
+The valueType is a declared property of a variable that is required in
+certain functions to determine handling of the variables. Specifically,
+valueType refers to the
+\href{https://opaldoc.obiba.org/en/variables-data.html#value-types}{OBiBa data type of a variable}.
+The valueType is specified in a data dictionary in a column 'valueType' and
+can be associated with variables as attributes. Acceptable valueTypes
+include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
+list of OBiBa valueType possibilities and their correspondence with R data
+types are available using \link{valueType_list}.
 }
 \examples{
 {
@@ -93,7 +92,7 @@ possibilities and their correspondence with R data types are available using
 # use madshapR_DEMO provided by the package
 library(dplyr)
 
-#' ###### Example : any data frame (or tibble) can be summarized
+#' ###### Example : any data frame can be summarized
 dataset <- iris['Sepal.Width']
 dataset_summarize(dataset)
  

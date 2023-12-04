@@ -8,24 +8,23 @@
 #' provided, the class of each column is set accordingly (default is text).
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' @param data_dict A list of tibble(s) representing meta data of an
+#' @param data_dict A list of data frame(s) representing meta data of an
 #' associated dataset (to be generated).
-#' @param data_dict_apply whether to apply the data dictionary to its dataset.
-#' The resulting tibble will have for each column its associated meta data as
-#' attributes. The factors will be preserved. FALSE by default.
+#' @param data_dict_apply Whether to apply the data dictionary to its dataset.
+#' The resulting data frame will have for each column its associated meta data 
+#' as attributes. FALSE by default.
 #'
 #' @returns
-#' A tibble identifying the dataset created from the variable names list in
+#' A data frame identifying the dataset created from the variable names list in
 #' 'Variables' element of the data dictionary.
 #'
 #' @examples
@@ -102,27 +101,28 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' Remove labels (attributes) from a data frame, leaving its unlabelled columns
 #'
 #' @description
-#' Removes any attributes attached to a tibble. Any value in columns will be
+#' Removes any attributes attached to a data frame. Any value in columns will be
 #' preserved. Any 'Date' (typeof) column will be recast as character to
 #' preserve information.
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
-#'
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
+#' 
 #' @seealso
 #' [haven::zap_labels()].
 #'
-#' @param dataset A tibble identifying the input dataset observations 
+#' @param dataset A data frame identifying the input dataset observations 
 #' associated to its data dictionary.
 #'
 #' @returns
-#' A tibble identifying a dataset.
+#' A data frame identifying a dataset.
 #'
 #' @examples
 #' {
@@ -184,34 +184,34 @@ dataset_zap_data_dict <- function(dataset){
 #' columns (variables) in the dataset.
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #'
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' @param dataset A tibble identifying the input dataset observations 
+#' @param dataset A data frame identifying the input dataset observations 
 #' associated to its data dictionary.
-#' @param data_dict A list of tibble(s) representing meta data of an
+#' @param data_dict A list of data frame(s) representing meta data of an
 #' associated dataset (to be generated).
 #' @param col_names A character string specifying the name(s) of the column(s)
 #' which refer to existing column(s) in the dataset. The column(s) can be named
 #' or indicated by position.
 #'
 #' @returns
-#' A tibble identifying a dataset.
+#' A data frame identifying a dataset.
 #'
 #' @examples
 #' {
@@ -319,22 +319,23 @@ dataset_cat_as_labels <- function(
 #' of the package.
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #'
-#' @param dataset_list A list of tibble(s), identifying the input data
+#' @param dataset_list A list of data frame(s), identifying the input data
 #' observations.
 #' @param data_dict_apply whether to apply the data dictionary to its dataset.
-#' The resulting tibble will have for each column its associated meta data as
-#' attributes. The factors will be preserved. FALSE by default.
+#' The resulting data frame will have for each column its associated meta data 
+#' as attributes. FALSE by default.
 #'
 #' @returns
-#' A list of tibble(s), each of them identifying datasets in a dossier.
+#' A list of data frame(s), each of them identifying datasets in a dossier.
 #'
 #' @examples
 #' {
@@ -347,7 +348,7 @@ dataset_cat_as_labels <- function(
 #'    dataset_MELBOURNE = madshapR_DEMO$dataset_MELBOURNE,
 #'    dataset_PARIS = madshapR_DEMO$dataset_PARIS ))
 #'     
-#' ###### Example 2: any data frame (or tibble) can be gathered into a dossier
+#' ###### Example 2: any data frame can be gathered into a dossier
 #' dossier_create(list(iris, mtcars))
 #'    
 #' }
@@ -383,19 +384,20 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' Validate and coerce an object to dataset format
 #'
 #' @description
-#' Confirms that the input object is a valid dataset and returns it as a dataset
-#' with the appropriate 'madshapR::class' attribute. This function mainly helps 
+#' Confirms that the input object is a valid dataset and returns it as a dataset 
+#' with the appropriate `madshapR::class` attribute. This function mainly helps 
 #' validate inputs within other functions of the package but could be used to 
 #' check if a dataset is valid.
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #'
 #' @param object A potential dataset to be coerced.
 #' @param col_id A character string specifying the name(s) of the column(s)
@@ -403,7 +405,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' or indicated by position.
 #'
 #' @returns
-#' A tibble identifying a dataset.
+#' A list of data frame(s) with `Rmonize::class` 'dataset'.
 #'
 #' @examples
 #' {
@@ -414,7 +416,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' # an attribute. 
 #' dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
 #' 
-#' ###### Example 2: any data frame (or tibble) can be a dataset by definition.
+#' ###### Example 2: any data frame can be a dataset by definition.
 #' as_dataset(iris, col_id = "Species")
 #'}
 #'
@@ -424,7 +426,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' @export
 as_dataset <- function(object, col_id = NULL){
 
-  # if only the tibble is given in parameter
+  # if only the data frame is given in parameter
   if(is.data.frame(object)) {
 
     # first column must be completly filled
@@ -459,7 +461,7 @@ as_dataset <- function(object, col_id = NULL){
   # else
   stop(call. = FALSE,
 "\n\nThis object is not a dataset as defined by Maelstrom standards, which must 
-be a data frame (or tibble). 
+be a data frame. 
 Please refer to documentation.")
 
 }
@@ -469,14 +471,14 @@ Please refer to documentation.")
 #'
 #' @description
 #' Confirms that the input object is a valid dossier and returns it as a dossier
-#' with the appropriate 'madshapR::class' attribute. This function mainly helps 
+#' with the appropriate `madshapR::class` attribute. This function mainly helps 
 #' validate input within other functions of the package but could be used to
 #' check if a dossier is valid.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
-#' The name of each tibble will be use as the reference name of the dataset.
+#' A dossier is a named list containing at least one data frame or more, 
+#' each of them being datasets. The name of each tibble will be use as the 
+#' reference name of the dataset.
 #'
 #' @seealso
 #' For a better assessment, please use [dataset_evaluate()].
@@ -484,7 +486,7 @@ Please refer to documentation.")
 #' @param object A potential dossier to be coerced.
 #'
 #' @returns
-#' A list of tibble(s), each of them identifying datasets in a dossier.
+#' A list of data frame(s) with `Rmonize::class` 'dossier'.
 #'
 #' @examples
 #' {
@@ -496,7 +498,7 @@ Please refer to documentation.")
 #' dossier <- 
 #'   as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset_TOKYO")])
 #'    
-#' ###### Example 2: any list of data frame (or tibble) can be a dossier by 
+#' ###### Example 2: any list of data frame can be a dossier by 
 #' # definition.
 #' as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 #' 
@@ -549,13 +551,14 @@ Please refer to documentation."))
 #' to check if a dataset is valid.
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #'
 #' @seealso
 #' For a better assessment, please use [dataset_evaluate()].
@@ -569,7 +572,7 @@ Please refer to documentation."))
 #' {
 #' 
 #' # use madshapR_DEMO provided by the package
-#' # any data frame (or tibble) can be a dataset by definition.
+#' # any data frame can be a dataset by definition.
 #' 
 #' is_dataset(madshapR_DEMO$dataset_MELBOURNE)
 #' is_dataset(iris)
@@ -584,7 +587,7 @@ Please refer to documentation."))
 is_dataset <- function(object){
 
   object <- object
-  # if only the tibble is given in parameter
+  # if only the data frame is given in parameter
   test <- silently_run(
     try(
       as_dataset(
@@ -605,9 +608,9 @@ is_dataset <- function(object){
 #' check if a dossier is valid.
 #'
 #' @details
-#' A dossier must be a named list containing at least one data frame or
-#' data frame extension (e.g. a tibble), each of them being datasets.
-#' The name of each tibble will be use as the reference name of the dataset.
+#' A dossier is a named list containing at least one data frame or more, 
+#' each of them being datasets. The name of each tibble will be use as the 
+#' reference name of the dataset.
 #'
 #' @param object A potential dossier to be evaluated.
 #'
@@ -618,7 +621,7 @@ is_dataset <- function(object){
 #' {
 #' 
 #' # use madshapR_DEMO provided by the package
-#' # Any list of data frame (or tibble) can be a dossier by definition.
+#' # Any list of data frame can be a dossier by definition.
 #' library(stringr)
 #' 
 #' is_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
@@ -649,15 +652,16 @@ is_dossier <- function(object){
 #' returns a NULL object.
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' @param dataset A tibble identifying the input dataset observations.
+#' @param dataset A data frame identifying the input dataset observations.
 #'
 #' @returns
 #' Name(s) of identifier column(s). NULL if not.

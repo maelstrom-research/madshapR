@@ -14,22 +14,23 @@ which refer to key identifier of the dataset. The column(s) can be named
 or indicated by position.}
 }
 \value{
-A tibble identifying a dataset.
+A list of data frame(s) with \code{Rmonize::class} 'dataset'.
 }
 \description{
 Confirms that the input object is a valid dataset and returns it as a dataset
-with the appropriate 'madshapR::class' attribute. This function mainly helps
+with the appropriate \code{madshapR::class} attribute. This function mainly helps
 validate inputs within other functions of the package but could be used to
 check if a dataset is valid.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions. An
+identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
@@ -40,7 +41,7 @@ automatically by the function.
 # an attribute. 
 dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
 
-###### Example 2: any data frame (or tibble) can be a dataset by definition.
+###### Example 2: any data frame can be a dataset by definition.
 as_dataset(iris, col_id = "Species")
 }
 

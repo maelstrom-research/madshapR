@@ -7,7 +7,7 @@
 data_dict_extract(dataset, as_data_dict_mlstr = TRUE)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations which
+\item{dataset}{A data frame identifying the input dataset observations which
 contains meta data as attributes.}
 
 \item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
@@ -16,35 +16,39 @@ structure, compatible with Maelstrom Research ecosystem, including Opal).
 TRUE by default.}
 }
 \value{
-A list of tibble(s) identifying a data dictionary.
+A list of data frame(s) identifying a data dictionary.
 }
 \description{
 Creates a data dictionary in a format compliant with formats used in
 Maelstrom Research ecosystem, including Opal (with 'Variables' and
-'Categories' in separate tibbles and standard columns in each) from any
-dataset in tibble format. If the input dataset has no associated metadata, a
-data dictionary with minimal required information is created from the column
-(variable) names to create the data dictionary structure required for
-'madshapR'. All columns except variable names will be blank.
+'Categories' in separate data frames and standard columns in each) from any
+dataset in data frame format. If the input dataset has no associated
+metadata, a data dictionary with minimal required information is created
+from the column (variable) names to create the data dictionary structure
+required for the package. All columns except variable names will be blank.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions. An
+identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
+
+The object may be specifically formatted to be compatible with additional
+\href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
+in particular \href{https://www.obiba.org/pages/products/opal}{Opal environments}.
 }
 \examples{
 {

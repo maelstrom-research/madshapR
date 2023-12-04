@@ -7,13 +7,13 @@
 data_dict_group_by(data_dict, col)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing meta data to be
 transformed.}
 
 \item{col}{variable to group by.}
 }
 \value{
-A list of tibble(s) identifying a workable data dictionary structure.
+A list of data frame(s) identifying a workable data dictionary structure.
 }
 \description{
 Groups the data dictionary element(s) by the groups defined by the query.
@@ -23,15 +23,14 @@ analogous to running \code{\link[dplyr:group_by]{dplyr::group_by()}}. Each eleme
 group values. \code{\link[=data_dict_ungroup]{data_dict_ungroup()}} reverses the effect.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {

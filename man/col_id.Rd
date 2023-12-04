@@ -7,7 +7,7 @@
 col_id(dataset)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations.}
+\item{dataset}{A data frame identifying the input dataset observations.}
 }
 \value{
 Name(s) of identifier column(s). NULL if not.
@@ -17,13 +17,14 @@ Return the id column names(s) of a dataset if any. If not, the function
 returns a NULL object.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions. An
+identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {

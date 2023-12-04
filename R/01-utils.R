@@ -1,11 +1,11 @@
 #' @title
-#' Call the help center for full documentation
+#' Call to online documentation
 #'
 #' @description
-#' This function is a direct call to the documentation in the repository hosting
-#' the package. The user can access the description of the latest version of the
-#' package, the vignettes, and the list of functions.
-#' 
+#' Direct call to the online documentation for the package, which includes a 
+#' description of the latest version of the package, vignettes, user guides, 
+#' and a reference list of functions and help pages.
+#'
 #' @returns
 #' Nothing to be returned. The function opens a web page.
 #'
@@ -26,27 +26,28 @@ madshapR_help <- function(){
 }
 
 #' @title
-#' Built-in tibble of allowed valueType values
+#' Built-in data frame of allowed valueType values
 #'
 #' @description
-#' Provides a built-in tibble showing the list of allowed Opal valueType values
-#' and their corresponding R data types. This tibble is mainly used for 
-#' internal processes and programming.
+#' Provides a built-in data frame showing the list of allowed Opal valueType 
+#' values and their corresponding R data types. This data frame is mainly used 
+#' for internal processes and programming.
 #'
 #' @details
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using 
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
-#' @format ## `tibble`
+#' @format ## `data.frame`
 #' A data frame with 12 rows and 7 columns:
 #' \describe{
 #'   \item{valueType}{data type as described in Opal}
@@ -71,31 +72,30 @@ madshapR_help <- function(){
 #' Built-in material allowing the user to test the package with demo data
 #'
 #' @description
-#' Built-in tibbles and lists allowing the user to test the package with demo
-#' material.
+#' Demo datasets and data dictionaries, and taxonomy, to provide illustrative 
+#' examples of objects used by madshapR.
 #'
 #' @format ## `list`
-#' A list with 12 elements used for testing the package 
-#' (data frames and lists):
+#' A list with 12 elements (data frames and lists) providing example objects 
+#' for testing the package:
 #'
 #' \describe{
-#'   \item{data_dict_MELBOURNE}{Data dictionary of Melbourne 
-#'   dataset}
-#'   \item{data_dict_PARIS}{Data dictionary of Paris dataset}
-#'   \item{data_dict_PARIS - collapsed}{Data dictionary of Paris with collapsed 
-#'   categories}
-#'   \item{data_dict_TOKYO}{Data dictionary of Tokyo dataset}
-#'   \item{data_dict_TOKYO - errors}{Data dictionary of 
-#'   Tokyo dataset containing errors for testing purpose}
-#'   \item{data_dict_TOKYO - errors with data}{data dictionary of Tokyo dataset 
-#'   containing errors with Tokyo dataset for testing purpose}
-#'   \item{dataset_MELBOURNE}{Dataset of Melbourne}
-#'   \item{dataset_PARIS}{Dataset of Paris}
-#'   \item{dataset_TOKYO}{Dataset of Tokyo}
-#'   \item{dataset_TOKYO - errors with data}{dataset of Tokyo 
-#'   containing errors with Tokyo data dictionary for testing purpose}
-#'   \item{taxonomy_PARIS}{Taxonomy of Paris dataset for testing purpose}
-#'   \item{dataset_suummary}{example of dataset summary for testing purpose}
+#'   \item{data_dict_MELBOURNE}{Example Data dictionary for Melbourne dataset}
+#'   \item{data_dict_PARIS}{Example Data dictionary for Paris dataset}
+#'   \item{data_dict_PARIS - collapsed}{Example Data dictionary for Paris 
+#'   with collapsed categories}
+#'   \item{data_dict_TOKYO}{Example Data dictionary for Tokyo dataset}
+#'   \item{data_dict_TOKYO - errors}{Data dictionary for Tokyo dataset 
+#'   with errors}
+#'   \item{data_dict_TOKYO - errors with data}{Example Data Dictionary for Tokyo 
+#'   dataset with errors with Tokyo dataset}
+#'   \item{dataset_MELBOURNE}{Example Dataset for MELBOURNE dataset}
+#'   \item{dataset_PARIS}{Example Dataset for PARIS dataset}
+#'   \item{dataset_TOKYO}{Example Dataset for TOKYO dataset}
+#'   \item{dataset_TOKYO - errors with data}{Example dataset of Tokyo 
+#'   with errors with Tokyo data dictionary}
+#'   \item{taxonomy_PARIS}{Example Taxonomy for Paris dataset}
+#'   \item{dataset_summary}{Example of dataset summary}
 #'   ...
 #' }
 #'

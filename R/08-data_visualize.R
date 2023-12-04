@@ -24,43 +24,45 @@
 #' parameters to operate. 
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #'
-#' @param dataset A tibble identifying the input dataset observations 
+#' @param dataset A data frame identifying the input dataset observations 
 #' associated to its data dictionary.
 #' @param col A character string specifying the name of the column.
-#' @param data_dict A list of tibble(s) representing meta data of an
+#' @param data_dict A list of data frame(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param group_by A character string of one column in the dataset that can be
-#' taken as a grouping column. The visual element will be grouped and displayed
-#' by this column.
-#' @param valueType_guess Whether the output should include a more accurate
-#' valueType that could be applied to the dataset. FALSE by default.
+#' @param group_by A character string identifying the column in the dataset
+#' to use as a grouping variable. Visual elements will be grouped by this 
+#' column.
+#' @param valueType_guess Whether the output should be generated based on more 
+#' precise valueType inferred from the data. FALSE by default 
+#' (will use the valueType declared).
 #' @param variable_summary A summary list which is the summary of the variables.
 #' @param .summary_var `r lifecycle::badge("deprecated")`
 #'
@@ -1258,61 +1260,62 @@ variable_visualize <- function(
 #' must have the same parameters to operate. 
 #'
 #' @details
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions. An 
+#' identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list].
 #' 
-#' A taxonomy is classification scheme that can be defined for variable 
-#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
-#' be compatible with (and is generally extracted from) an Opal environment. To 
-#' work with certain functions, a valid taxonomy must contain at least the 
-#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-#' may follow Maelstrom research taxonomy, and its content can be evaluated
-#' accordingly, such as naming convention restriction, tagging elements,
-#' or scales, which are specific to Maelstrom Research. In this particular
-#' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-#' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
+#' A taxonomy is a classification schema that can be defined for variable 
+#' attributes. A taxonomy is usually extracted from an 
+#' [Opal environment](https://www.obiba.org/pages/products/opal/), and a 
+#' taxonomy object is a data frame that must contain at least the columns 
+#' `taxonomy`, `vocabulary`, and `terms`. Additional details about Opal 
+#' taxonomies are 
+#' [available online](https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html).
 #'
 #' @seealso
 #' [bookdown_open()]
 #'
-#' @param dataset A tibble identifying the input dataset observations 
+#' @param dataset A data frame identifying the input dataset observations 
 #' associated to its data dictionary.
-#' @param bookdown_path A character string identifying the folder path where the 
-#' bookdown report will be saved.
-#' @param data_dict A list of tibble(s) representing meta data of an
+#' @param bookdown_path A character string identifying the folder path where 
+#' the bookdown report files will be saved.
+#' @param data_dict A list of data frame(s) representing meta data of an
 #' associated dataset. Automatically generated if not provided.
-#' @param group_by A character string of one column in the dataset that can be
-#' taken as a grouping column. The visual element will be grouped and displayed
-#' by this column.
-#' @param taxonomy A tibble identifying the scheme used for variables 
-#' classification.
-#' @param valueType_guess Whether the output should include a more accurate
-#' valueType that could be applied to the dataset. FALSE by default.
-#' @param dataset_summary A list which is the summary of the variables.
+#' @param group_by A character string identifying the column in each 
+#' dataset to use as a grouping variable. Visual elements will be grouped by 
+#' this column.
+#' @param taxonomy An optional data frame identifying a variable 
+#' classification schema.
+#' @param valueType_guess Whether the output should be generated based on more 
+#' precise valueType inferred from the data. FALSE by default 
+#' (will use the valueType declared).
+#' @param dataset_summary A list which identifies an existing 
+#' summary produced by [dataset_summarize()] of the dataset.
+#' Using this parameter can save time in generating the visual report.
 #' @param dataset_name A character string specifying the name of the dataset
 #' (used for internal processes and programming).
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
@@ -1367,7 +1370,7 @@ dataset_visualize <- function(
   
   # future dev
   # mutate(key = paste0('<b>' , key, '</b>')),
-  # @param toc xxx xxx xxx
+  # @ param toc xxx xxx xxx
   # toc <- 'variables'
   
   # check input

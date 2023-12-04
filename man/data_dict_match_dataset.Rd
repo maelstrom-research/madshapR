@@ -12,20 +12,21 @@ data_dict_match_dataset(
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations.}
+\item{dataset}{A data frame identifying the input dataset observations.}
 
-\item{data_dict}{A list of tibble(s) representing meta data.}
+\item{data_dict}{A list of data frame(s) representing meta data
+associated to a dataset.}
 
 \item{data_dict_apply}{whether to apply the data dictionary to its dataset.
-The resulting tibble will have for each column its associated meta data as
-attributes. The factors will be preserved. FALSE by default.}
+The resulting data frame will have for each column its associated meta data
+as attributes. FALSE by default.}
 
 \item{output}{A vector of character string which indicates if the function
 returns a dataset ('dataset'), data dictionary ('data_dict') of both.
 Default is c('dataset','data_dict').}
 }
 \value{
-Either a tibble, identifying the dataset, or a list of tibble(s)
+Either a data frame, identifying the dataset, or a list of data frame(s)
 identifying a data dictionary. Returns both in a list by default.
 }
 \description{
@@ -34,23 +35,23 @@ keeping only variables present in both. This function returns the matched
 dataset rows, the matched data dictionary rows, or both, in a list.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions. An
+identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {

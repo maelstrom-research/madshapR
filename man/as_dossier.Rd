@@ -10,18 +10,18 @@ as_dossier(object)
 \item{object}{A potential dossier to be coerced.}
 }
 \value{
-A list of tibble(s), each of them identifying datasets in a dossier.
+A list of data frame(s) with \code{Rmonize::class} 'dossier'.
 }
 \description{
 Confirms that the input object is a valid dossier and returns it as a dossier
-with the appropriate 'madshapR::class' attribute. This function mainly helps
+with the appropriate \code{madshapR::class} attribute. This function mainly helps
 validate input within other functions of the package but could be used to
 check if a dossier is valid.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
-The name of each tibble will be use as the reference name of the dataset.
+A dossier is a named list containing at least one data frame or more,
+each of them being datasets. The name of each tibble will be use as the
+reference name of the dataset.
 }
 \examples{
 {
@@ -33,7 +33,7 @@ library(stringr)
 dossier <- 
   as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset_TOKYO")])
    
-###### Example 2: any list of data frame (or tibble) can be a dossier by 
+###### Example 2: any list of data frame can be a dossier by 
 # definition.
 as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 
