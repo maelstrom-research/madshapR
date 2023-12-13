@@ -1,34 +1,36 @@
 #' @title
-#' Convert input to a categorical variable.
+#' Validate and coerce any object as a categorical variable.
 #'
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' This function is used to convert a vector object to a categorical object. It
-#' Is analoguous to [as.factor()] function when the vector (variable) has no
-#' data dictionary associated. When it has, the characteristics of the category
-#' is added to the data dictionary.
+#' Converts a vector object to a categorical object, typically a column in a 
+#' data frame. The categories come from non-missing values present in the 
+#' object and are added to an associated data dictionary (when present).
 #'
-#' @param x object to be coerced.
+#' @param x A vector object to be coerced to categorical.
 #'
 #' @seealso
-#' [as.factor()]
+#' [haven::labelled()]
 #'
 #' @return
-#' A R Object of class haven_labelled.
+#' A vector with class haven_labelled.
 #'
 #' @examples
 #' {
 #' 
 #' library(dplyr)
-#' iris %>% mutate(Species = as_category(Species))
-#' as_category(iris[['Species']])
+#' mtcars <- tibble(mtcars)
+#' as_category(mtcars[['cyl']])
+#' 
+#' head(mtcars %>% mutate(cyl = as_category(cyl)))
+#' 
 #' 
 #'}
 #'
 #' @import dplyr haven
 #' @importFrom rlang .data
 #'
-#' @noRd
+#' @export
 as_category <- function(x){
   
   # check if the col is a vector
@@ -66,13 +68,13 @@ as_category <- function(x){
 
 
 #' @title
-#' Convert categorical input to a non-categorical variable.
+#' Validate and coerce any object as a non-categorical variable.
 #'
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' This function is used to convert a vector categorical object to a 
-#' non-categorical object. When it has, the 
-#' characteristics of the category is added to the data dictionary.
+#' Converts a vector object to a non-categorical object, typically a column in a 
+#' data frame. The categories come from non-missing values present in the 
+#' object and are suppressed from an associated data dictionary (when present).
 #'
 #' @param x object to be coerced.
 #'
@@ -82,14 +84,15 @@ as_category <- function(x){
 #' @examples
 #' {
 #' 
-#' drop_category(iris[['Species']])
+#' head(iris[['Species']])
+#' head(drop_category(iris[['Species']]))
 #' 
 #'}
 #'
 #' @import dplyr haven
 #' @importFrom rlang .data
 #'
-#' @noRd
+#' @export
 drop_category <- function(x){
   
   # check if the col is a vector
@@ -116,15 +119,22 @@ drop_category <- function(x){
   
 }
 
-
-
 #' @title
-#' Test if a column in a dataset is a categorical variable.
+#' Test if an object is a valid dataset
+#'
+#' @description
+#' Tests if the input object is a valid dataset. This function mainly helps 
+#' validate input within other functions of the package but could be used
+#' to check if a dataset is valid.
+#' 
+#' @title
+#' Validate if an object is a categorical variable.
 #'
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' Test if a column in a dataset is a categorical variable. This function mainly 
-#' helps validate input within other functions of the package.
+#' Test if vector object is a categorical variable, typically a column in a 
+#' data frame. This function mainly helps validate input within other functions 
+#' of the package.
 #'
 #' @param x object to be coerced.
 #'
@@ -143,7 +153,7 @@ drop_category <- function(x){
 #' @import dplyr haven
 #' @importFrom rlang .data
 #'
-#' @noRd
+#' @export
 is_category <- function(column, threshold = NULL) {
   
   unique_column <- unique(column)
