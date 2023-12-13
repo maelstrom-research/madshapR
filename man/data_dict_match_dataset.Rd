@@ -12,14 +12,14 @@ data_dict_match_dataset(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of data frame(s) representing meta data
-associated to a dataset.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset.}
 
-\item{data_dict_apply}{whether to apply the data dictionary to its dataset.
-The resulting data frame will have for each column its associated meta data
-as attributes. FALSE by default.}
+\item{data_dict_apply}{Whether data dictionary(ies) should be applied to
+associated dataset(s), creating labelled dataset(s) with variable attributes.
+Any previous attributes will be preserved. FALSE by default.}
 
 \item{output}{A vector of character string which indicates if the function
 returns a dataset ('dataset'), data dictionary ('data_dict') of both.
@@ -38,8 +38,8 @@ dataset rows, the matched data dictionary rows, or both, in a list.
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -58,9 +58,11 @@ the \code{variable} and \code{name} columns, with unique combination of
 
 # use madshapR_DEMO provided by the package
 library(dplyr)
+
 dataset <- madshapR_DEMO$dataset_MELBOURNE \%>\% select(-1)
 data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-data_dict_match_dataset(dataset, data_dict)
+head(data_dict_match_dataset(dataset, data_dict, out = 'dataset'))
+glimpse(data_dict_match_dataset(dataset, data_dict, out = 'data_dict'))
 
 }
 

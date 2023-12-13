@@ -7,7 +7,7 @@
 data_dict_ungroup(data_dict)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 }
 \value{

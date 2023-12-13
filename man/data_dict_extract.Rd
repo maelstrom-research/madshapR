@@ -2,37 +2,31 @@
 % Please edit documentation in R/02-dictionaries_functions.R
 \name{data_dict_extract}
 \alias{data_dict_extract}
-\title{Create a data dictionary from a dataset}
+\title{Generate a data dictionary from a dataset}
 \usage{
 data_dict_extract(dataset, as_data_dict_mlstr = TRUE)
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations which
-contains meta data as attributes.}
+\item{dataset}{A dataset object.}
 
-\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
-data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom Research ecosystem, including Opal).
-TRUE by default.}
+\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. TRUE by default.}
 }
 \value{
-A list of data frame(s) identifying a data dictionary.
+A list of data frame(s) representing metadata of the dataset variables.
 }
 \description{
-Creates a data dictionary in a format compliant with formats used in
-Maelstrom Research ecosystem, including Opal (with 'Variables' and
-'Categories' in separate data frames and standard columns in each) from any
-dataset in data frame format. If the input dataset has no associated
-metadata, a data dictionary with minimal required information is created
-from the column (variable) names to create the data dictionary structure
-required for the package. All columns except variable names will be blank.
+Generates a data dictionary from a dataset. If the dataset variables have no
+associated metadata, a minimum data dictionary is created by using variable
+attributes.
 }
 \details{
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.

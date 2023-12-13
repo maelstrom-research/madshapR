@@ -7,11 +7,11 @@
 data_dict_pivot_longer(data_dict, taxonomy = NULL)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
-\item{taxonomy}{An optional data frame identifying a variable
-classification schema.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 }
 \value{
 A list of data frame(s) identifying a data dictionary.

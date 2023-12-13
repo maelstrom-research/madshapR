@@ -7,7 +7,7 @@
 col_id(dataset)
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations.}
+\item{dataset}{A data frame object.}
 }
 \value{
 Name(s) of identifier column(s). NULL if not.
@@ -20,8 +20,8 @@ returns a NULL object.
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -30,7 +30,11 @@ handled automatically by the function.
 {
 
 col_id(iris)
-col_id(as_dataset(iris,'Species'))
+
+library(fabR)
+iris <- add_index(iris)
+iris <- as_dataset(iris, col_id = 'index')
+col_id(iris)
 
 }
 

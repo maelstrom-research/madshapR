@@ -12,7 +12,7 @@ data_dict_collapse(
 )
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
 \item{from}{A symbol identifying the name of the element (data frame) to take

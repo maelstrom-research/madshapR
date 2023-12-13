@@ -7,7 +7,7 @@
 check_data_dict_missing_categories(data_dict)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing metadata to be evaluated.}
 }
 \value{
 A data frame providing categorical values which 'missing' column is not a

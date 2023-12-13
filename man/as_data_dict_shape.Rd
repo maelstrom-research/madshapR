@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dictionaries_functions.R
 \name{as_data_dict_shape}
 \alias{as_data_dict_shape}
-\title{Validate and coerce an object to a workable data dictionary structure}
+\title{Validate and coerce any object as a workable data dictionary structure}
 \usage{
 as_data_dict_shape(object)
 }
@@ -10,7 +10,7 @@ as_data_dict_shape(object)
 \item{object}{A potential valid data dictionary to be coerced.}
 }
 \value{
-A list of data frame(s) with \code{Rmonize::class} 'data_dict_shape'.
+A list of data frame(s) with \code{madshapR::class} 'data_dict_shape'.
 }
 \description{
 Validates the input object as a workable data dictionary structure and

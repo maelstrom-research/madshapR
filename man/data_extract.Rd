@@ -7,12 +7,11 @@
 data_extract(data_dict, data_dict_apply = FALSE)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset (to be generated).}
+\item{data_dict}{A list of data frame(s) representing metadata.}
 
-\item{data_dict_apply}{Whether to apply the data dictionary to its dataset.
-The resulting data frame will have for each column its associated meta data
-as attributes. FALSE by default.}
+\item{data_dict_apply}{Whether data dictionary(ies) should be applied to
+associated dataset(s), creating labelled dataset(s) with variable attributes.
+Any previous attributes will be preserved. FALSE by default.}
 }
 \value{
 A data frame identifying the dataset created from the variable names list in
@@ -25,6 +24,15 @@ data dictionary. If a 'valueType' or alternatively 'typeof' column is
 provided, the class of each column is set accordingly (default is text).
 }
 \details{
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
+
 A data dictionary contains the list of variables in a dataset and metadata
 about the variables and can be associated with a dataset. A data dictionary
 object is a list of data frame(s) named 'Variables' (required) and

@@ -4,10 +4,13 @@
 \alias{is_category}
 \title{Test if an object is a valid dataset}
 \usage{
-is_category(column, threshold = NULL)
+is_category(x, threshold = NULL)
 }
 \arguments{
 \item{x}{object to be coerced.}
+
+\item{threshold}{Optional. The function returns TRUE if the number of unique
+values in the input vector is lower.}
 }
 \value{
 A logical.

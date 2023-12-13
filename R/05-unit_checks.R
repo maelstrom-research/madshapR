@@ -17,7 +17,7 @@
 #' the `variable` and `name` columns, with unique combination of 
 #' `variable` and `name`.
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns
 #' A data frame providing non unique variables across a data dictionary.
@@ -97,7 +97,7 @@ check_data_dict_variables <- function(data_dict){
 #' the `variable` and `name` columns, with unique combination of 
 #' `variable` and `name`.
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns 
 #' A data frame providing categorical variables that has issues within a 
@@ -211,7 +211,7 @@ check_data_dict_categories <- function(data_dict){
 #' the `variable` and `name` columns, with unique combination of 
 #' `variable` and `name`.
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns 
 #' A data frame providing categorical values which 'missing' column is not a 
@@ -300,9 +300,9 @@ check_data_dict_missing_categories <- function(data_dict){
 #' taxonomies are 
 #' [available online](https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html).
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #'
 #' @returns
 #' A data frame providing non-standard taxonomy declared in a data dictionary.
@@ -313,7 +313,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' # use madshapR_DEMO provided by the package
 #'
 #' taxonomy <- madshapR_DEMO$taxonomy_PARIS
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS`
 #' check_data_dict_taxonomy(data_dict, taxonomy)
 #'
 #' }
@@ -553,9 +553,10 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns 
 #' A data frame providing non-standard valueType declared in a data dictionary.
@@ -672,14 +673,14 @@ check_data_dict_valueType <- function(data_dict){
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
-#' @param dataset A data frame identifying the input dataset observations.
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns
 #' A data frame providing undeclared variables across a data dictionary.
@@ -757,14 +758,14 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
-#' @param dataset A data frame identifying the input dataset observations.
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns
 #' A data frame providing categorical values which differ between dataset and
@@ -928,8 +929,8 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -942,13 +943,13 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param dataset A data frame identifying the input dataset observations.
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
-#' @param valueType_guess Whether the output should be generated based on more 
-#' precise valueType inferred from the data. FALSE by default 
-#' (will use the valueType declared).
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @returns
 #' A data frame providing values which valueType differs between dataset and
@@ -957,7 +958,7 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #' @examples
 #' {
 #'
-#' check_dataset_valueType(iris[1], valueType_guess = TRUE)
+#' check_dataset_valueType(mtcars[2], valueType_guess = TRUE)
 #'
 #' }
 #'

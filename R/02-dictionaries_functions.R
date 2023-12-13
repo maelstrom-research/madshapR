@@ -27,11 +27,11 @@
 #' @seealso
 #' [data_dict_collapse()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
-#' transformed. Automatically generated if not provided.
-#' @param from Symbol identifying the name of the element (data frame) to take
+#' @param data_dict A list of data frame(s) representing metadata to be
+#' transformed. 
+#' @param from A symbol identifying the name of the element (data frame) to take
 #' column(s) from. Default is 'Variables'.
-#' @param to Symbol identifying the name of the element (data frame) to create
+#' @param to A symbol identifying the name of the element (data frame) to create
 #' column(s) to. Default is 'Categories'.
 #' @param name_prefix Character string of the prefix of columns of interest.
 #' This prefix will be used to select columns, and to rename them in the 'to'
@@ -209,7 +209,7 @@ Example:
 #' @seealso
 #' [data_dict_expand()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
+#' @param data_dict A list of data frame(s) representing metadata to be
 #' transformed. 
 #' @param from A symbol identifying the name of the element (data frame) to take
 #' column(s) from. Default is 'Categories'.
@@ -338,10 +338,10 @@ data_dict_collapse <- function(
 #' @seealso
 #' [tidyr::pivot_wider()], [as_data_dict()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
+#' @param data_dict A list of data frame(s) representing metadata to be
 #' transformed.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #'
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
@@ -624,10 +624,10 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' @seealso
 #' [tidyr::pivot_longer()], [as_data_dict()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
+#' @param data_dict A list of data frame(s) representing metadata to be
 #' transformed.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #'
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
@@ -900,8 +900,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' @seealso
 #' [dplyr::filter()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
-#' transformed.
+#' @param data_dict A list of data frame(s) representing metadata to be
+#' filtered.
 #' @param filter_var Expressions that are defined in the element 'Variables' in
 #' the data dictionary.
 #' @param filter_cat Expressions that are defined in the element 'Categories' in
@@ -931,7 +931,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
 #' 
 #' ###### Example 1 search and filter through a column in 'Variables' element
-#' data_dict_filter(data_dict_nest,filter_var = "valueType == 'integer'")
+#' data_dict_filter(data_dict_nest,filter_var = "valueType == 'text'")
 #' 
 #' ###### Example 2 search and filter through a column in 'Categories' element
 #' data_dict_filter(data_dict_nest,filter_cat = "missing == TRUE")
@@ -1015,7 +1015,7 @@ data_dict_filter <- function(
 #' [dplyr::group_by()], [dplyr::group_split()] ,
 #' [data_dict_group_by()], [data_dict_list_nest()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
+#' @param data_dict A list of data frame(s) representing metadata to be
 #' transformed.
 #' @param ... Column in the data dictionary to split it by. If not provided, the
 #' splitting will be done on the grouping element of a grouped data dictionary.
@@ -1043,7 +1043,7 @@ data_dict_filter <- function(
 #'   data_dict_list_nest(data_dict_list, name_group = 'table') %>%
 #'   data_dict_group_by(col = "table")
 #' 
-#'  data_dict_group_split(data_dict_nest,col = "table")
+#' glimpse(data_dict_group_split(data_dict_nest,col = "table"))
 #'  
 #' }
 #'
@@ -1145,7 +1145,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @seealso
 #' [dplyr::bind_rows()]
 #'
-#' @param data_dict_list A list of data frame(s) representing meta data to be
+#' @param data_dict_list A list of data frame(s) representing metadata to be
 #' transformed.
 #' @param name_group A character string of one column in the dataset that can be
 #' taken as a grouping column.
@@ -1157,6 +1157,8 @@ cannot be found accross the variables declared in 'Variables'.")
 #' {
 #' 
 #' # use madshapR_DEMO provided by the package
+#' library(dplyr)
+#' 
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
@@ -1167,7 +1169,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
 #' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 #' 
-#' data_dict_list_nest(data_dict_list, name_group = 'table')
+#' glimpse(data_dict_list_nest(data_dict_list, name_group = 'table'))
 #' 
 #' }
 #'
@@ -1269,7 +1271,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @seealso
 #' [dplyr::group_by()], [data_dict_ungroup()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
+#' @param data_dict A list of data frame(s) representing metadata to be
 #' transformed.
 #' @param col variable to group by.
 #'
@@ -1374,7 +1376,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' [dplyr::ungroup()]
 #' [data_dict_group_by()]
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be
+#' @param data_dict A list of data frame(s) representing metadata to be
 #' transformed.
 #'
 #' @returns
@@ -1428,17 +1430,17 @@ data_dict_ungroup <- function(data_dict){
 #' Apply a data dictionary to a dataset
 #'
 #' @description
-#' Applies a data dictionary to a data structure, creating a labelled dataset.
-#' All previous attributes will be preserved. For factors, the attribute 
-#' 'levels' will be transformed into attribute 'labels' and values will be 
-#' recast into appropriate datatypes.
+#' Applies a data dictionary to a dataset, creating a labelled dataset with 
+#' variable attributes. Any previous attributes will be preserved. For 
+#' variables that are factors, variables will be transformed into 
+#' haven-labelled variables.
 #'
 #' @details
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -1453,16 +1455,15 @@ data_dict_ungroup <- function(data_dict){
 #' `variable` and `name`.
 #'
 #' @seealso
-#' [attributes()]
+#' [attributes()], [haven::labelled()]
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #'
 #' @returns
-#' A data frame identifying the dataset with the data dictionary applied to each
-#' variable as attributes.
+#' A labelled data frame with metadata as attributes, specified for each 
+#' variable from the input data dictionary.
 #'
 #' @examples
 #' {
@@ -1471,7 +1472,7 @@ data_dict_ungroup <- function(data_dict){
 #'
 #' dataset <- madshapR_DEMO$dataset_MELBOURNE
 #' data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
-#' data_dict_apply(dataset, data_dict)
+#' head(data_dict_apply(dataset, data_dict))
 #' 
 #' }
 #'
@@ -1614,23 +1615,19 @@ your dataset")}
 }
 
 #' @title
-#' Create a data dictionary from a dataset
+#' Generate a data dictionary from a dataset
 #'
 #' @description
-#' Creates a data dictionary in a format compliant with formats used in 
-#' Maelstrom Research ecosystem, including Opal (with 'Variables' and 
-#' 'Categories' in separate data frames and standard columns in each) from any 
-#' dataset in data frame format. If the input dataset has no associated 
-#' metadata, a data dictionary with minimal required information is created 
-#' from the column (variable) names to create the data dictionary structure 
-#' required for the package. All columns except variable names will be blank.
+#' Generates a data dictionary from a dataset. If the dataset variables have no 
+#' associated metadata, a minimum data dictionary is created by using variable 
+#' attributes.
 #'
 #' @details
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -1648,15 +1645,13 @@ your dataset")}
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
 #' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
 #'
-#' @param dataset A data frame identifying the input dataset observations which 
-#' contains meta data as attributes.
-#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
-#' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
-#' TRUE by default.
+#' @param dataset A dataset object.
+#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. TRUE by default.
 #'
 #' @returns
-#' A list of data frame(s) identifying a data dictionary.
+#' A list of data frame(s) representing metadata of the dataset variables.
 #'
 #' @examples
 #' {
@@ -1762,8 +1757,8 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -1777,12 +1772,12 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' the `variable` and `name` columns, with unique combination of 
 #' `variable` and `name`.
 #'
-#' @param dataset A data frame identifying the input dataset observations.
-#' @param data_dict A list of data frame(s) representing meta data 
-#' associated to a dataset. 
-#' @param data_dict_apply whether to apply the data dictionary to its dataset.
-#' The resulting data frame will have for each column its associated meta data 
-#' as attributes. FALSE by default.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset.
+#' @param data_dict_apply Whether data dictionary(ies) should be applied to 
+#' associated dataset(s), creating labelled dataset(s) with variable attributes. 
+#' Any previous attributes will be preserved. FALSE by default.
 #' @param output A vector of character string which indicates if the function
 #' returns a dataset ('dataset'), data dictionary ('data_dict') of both.
 #' Default is c('dataset','data_dict').
@@ -1796,9 +1791,11 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' 
 #' # use madshapR_DEMO provided by the package
 #' library(dplyr)
+#' 
 #' dataset <- madshapR_DEMO$dataset_MELBOURNE %>% select(-1)
 #' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-#' data_dict_match_dataset(dataset, data_dict)
+#' head(data_dict_match_dataset(dataset, data_dict, out = 'dataset'))
+#' glimpse(data_dict_match_dataset(dataset, data_dict, out = 'data_dict'))
 #' 
 #' }
 #'
@@ -1847,7 +1844,7 @@ Leave blank to get both in a list.")
 }
 
 #' @title
-#' Validate and coerce an object to a workable data dictionary structure
+#' Validate and coerce any object as a workable data dictionary structure
 #'
 #' @description
 #' Validates the input object as a workable data dictionary structure and 
@@ -1871,7 +1868,7 @@ Leave blank to get both in a list.")
 #' @param object A potential valid data dictionary to be coerced.
 #'
 #' @returns
-#' A list of data frame(s) with `Rmonize::class` 'data_dict_shape'.
+#' A list of data frame(s) with `madshapR::class` 'data_dict_shape'.
 #'
 #' @examples
 #' {
@@ -1926,13 +1923,13 @@ Please refer to documentation.")
 }
 
 #' @title
-#' Validate and coerce any object as data dictionary
+#' Validate and coerce any object as a data dictionary
 #'
 #' @description
-#' Validates the input object as a valid data dictionary and coerces it with 
-#' the appropriate `madshapR::class` attribute. This function mainly helps 
-#' validate input within other functions of the package but could be used to 
-#' check if an object is valid for use in a function.
+#' Checks if an object is a valid data dictionary and returns it with the 
+#' appropriate `madshapR::class` attribute. This function mainly helps validate 
+#' inputs within other functions of the package but could be used to check if 
+#' an object is valid for use in a function.
 #' 
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -1947,10 +1944,10 @@ Please refer to documentation.")
 #' @seealso
 #' For a better assessment, please use [data_dict_evaluate()].
 #'
-#' @param object A potential valid data dictionary to be coerced.
+#' @param object A potential data dictionary object to be coerced.
 #'
 #' @returns
-#' A list of data frame(s) with `Rmonize::class` 'data_dict'.
+#' A list of data frame(s) with `madshapR::class` 'data_dict'.
 #'
 #' @examples
 #' {
@@ -2210,7 +2207,7 @@ data dictionary")}}
 }
 
 #' @title
-#' Validate and coerce an object to an Opal data dictionary format
+#' Validate and coerce any object as an Opal data dictionary format
 #'
 #' @description
 #' Validates the input object as a valid data dictionary compliant with formats 
@@ -2237,16 +2234,15 @@ data dictionary")}}
 #' For a better assessment, please use [data_dict_evaluate()].
 #'
 #' @param object A potential valid data dictionary to be coerced.
-#' @param as_data_dict Whether the output data dictionary has a simple
-#' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
-#' FALSE by default.
+#' @param as_data_dict Whether the input data dictionary should not be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. FALSE by default.
 #' @param name_standard Whether the input data dictionary has variable names
 #' compatible with Maelstrom Research ecosystem, including Opal)or not. 
 #' FALSE by default.
 #'
 #' @returns
-#' A list of data frame(s) with `Rmonize::class` 'data_dict_mlstr'.
+#' A list of data frame(s) with `madshapR::class` 'data_dict_mlstr'.
 #'
 #' @examples
 #' {

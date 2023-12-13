@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{dossier_summarize}
 \alias{dossier_summarize}
-\title{Generate a report and summary of a dossier (list of datasets)}
+\title{Generate an assessment report and summary of a dossier}
 \usage{
 dossier_summarize(
   dossier,
@@ -14,32 +14,29 @@ dossier_summarize(
 \arguments{
 \item{dossier}{List of data frame(s), each of them being datasets.}
 
-\item{group_by}{A character string identifying the column in the datasets
-to use as a grouping variable. Visual elements will be grouped by this
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Elements will be grouped by this
 column.}
 
-\item{taxonomy}{An optional data frame identifying a variable
-classification schema.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
-\item{valueType_guess}{Whether the output should be generated based on more
-precise valueType inferred from the data. FALSE by default
-(will use the valueType declared).}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 }
 \value{
-A list of data frames of report for each listed dataset.
+A list of data frames containing overall assessment reports and summaries grouped by dataset.
 }
 \description{
 Assesses and summarizes the content and structure of a dossier
-(list of datasets)  and reports potential issues to facilitate the
-assessment of input data. The report can be used to help assess data
-structure, presence of fields, coherence across elements, and taxonomy or
-data dictionary formats. The summary provides additional information about
-variable distributions and descriptive statistics. This report is compatible
-with Excel and can be exported as an Excel spreadsheet.
+(list of datasets) and generates reports of the results. This function can
+be used to evaluate data structure, presence of specific fields, coherence
+across elements, and data dictionary formats, and to summarize additional
+information about variable distributions and descriptive statistics.
 }
 \details{
 A dossier is a named list containing at least one data frame or more,
-each of them being datasets. The name of each tibble will be use as the
+each of them being datasets. The name of each data frame will be use as the
 reference name of the dataset.
 
 A taxonomy is a classification schema that can be defined for variable
@@ -58,7 +55,8 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {

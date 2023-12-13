@@ -7,8 +7,7 @@
 dataset_zap_data_dict(dataset)
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 }
 \value{
 A data frame identifying a dataset.
@@ -22,8 +21,8 @@ preserve information.
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -36,7 +35,7 @@ handled automatically by the function.
 dataset <- madshapR_DEMO$dataset_TOKYO
 data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_TOKYO)
 dataset <- data_dict_apply(dataset,data_dict)
-dataset_zap_data_dict(dataset)
+head(dataset_zap_data_dict(dataset))
 
 }
 

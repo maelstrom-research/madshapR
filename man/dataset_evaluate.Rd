@@ -2,7 +2,7 @@
 % Please edit documentation in R/06-data_evaluate.R
 \name{dataset_evaluate}
 \alias{dataset_evaluate}
-\title{Generate a quality assessment report of a dataset}
+\title{Generate an assessment report for a dataset}
 \usage{
 dataset_evaluate(
   dataset,
@@ -14,34 +14,31 @@ dataset_evaluate(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
-\item{taxonomy}{An optional data frame identifying a variable
-classification schema.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
+(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
-\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
-data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom Research ecosystem, including Opal).
-TRUE by default.}
+\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. TRUE by default.}
 
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
-A list of data frames of report for one data dictionary.
+A list of data frames containing assessment reports.
 }
 \description{
-Assesses the content and structure of a dataset and reports possible issues
-in the dataset and data dictionary to facilitate assessment of input data.
-The report can be used to help assess data structure, presence of fields,
-coherence across elements, and taxonomy or data dictionary formats. This
-report is compatible with Excel and can be exported as an Excel spreadsheet.
+Assesses the content and structure of a dataset object and generates reports
+of the results. This function can be used to evaluate data structure,
+presence of specific fields, coherence across elements, and data dictionary
+formats.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata
@@ -56,8 +53,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -80,10 +77,12 @@ in particular \href{https://www.obiba.org/pages/products/opal}{Opal environments
 # use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example : any data frame can be summarized
-dataset <- 
- as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
- dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
+###### Example : Any data frame can be summarized
+dataset <- as_dataset(
+  madshapR_DEMO$`dataset_TOKYO - errors with data`,
+  col_id = 'part_id')
+ 
+glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
 
 }
 

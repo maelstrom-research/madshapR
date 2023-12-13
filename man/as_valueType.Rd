@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-catalogue_functions.R
 \name{as_valueType}
 \alias{as_valueType}
-\title{Validate and coerce an object according to a given valueType}
+\title{Validate and coerce any object according to a given valueType}
 \usage{
 as_valueType(x, valueType = "text")
 }
@@ -27,7 +27,8 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
@@ -35,13 +36,11 @@ types are available using \link{valueType_list}.
 # use madshapR_DEMO provided by the package
 
 dataset <- madshapR_DEMO$dataset_TOKYO
-valueType_of(dataset$dob)
-valueType_guess(dataset$dob)
-as_valueType(dataset$dob,'date') 
+as_valueType(head(dataset$dob),'date')
 
 # as_valueType is compatible with tidyverse philosophy
 library(dplyr)
-mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer'))
+mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer')) \%>\% head()
 
 }
 

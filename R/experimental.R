@@ -137,6 +137,8 @@ drop_category <- function(x){
 #' of the package.
 #'
 #' @param x object to be coerced.
+#' @param threshold Optional. The function returns TRUE if the number of unique 
+#' values in the input vector is lower. 
 #'
 #' @return
 #' A logical.
@@ -154,9 +156,9 @@ drop_category <- function(x){
 #' @importFrom rlang .data
 #'
 #' @export
-is_category <- function(column, threshold = NULL) {
+is_category <- function(x, threshold = NULL) {
   
-  unique_column <- unique(column)
+  unique_column <- unique(x)
   if(is.factor(unique_column))   return(TRUE)
   if(is.labelled(unique_column)) return(TRUE)
   if(all(is.na(unique_column)))  return(FALSE)

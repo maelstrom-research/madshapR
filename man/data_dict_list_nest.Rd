@@ -7,7 +7,7 @@
 data_dict_list_nest(data_dict_list, name_group = NULL)
 }
 \arguments{
-\item{data_dict_list}{A list of data frame(s) representing meta data to be
+\item{data_dict_list}{A list of data frame(s) representing metadata to be
 transformed.}
 
 \item{name_group}{A character string of one column in the dataset that can be
@@ -34,6 +34,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 {
 
 # use madshapR_DEMO provided by the package
+library(dplyr)
+
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
 # data dictionary per say, but can be used as a structure which can be 
@@ -44,7 +46,7 @@ data_dict_list <- list(
   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
 names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 
-data_dict_list_nest(data_dict_list, name_group = 'table')
+glimpse(data_dict_list_nest(data_dict_list, name_group = 'table'))
 
 }
 

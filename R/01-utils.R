@@ -42,7 +42,8 @@ madshapR_help <- function(){
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)

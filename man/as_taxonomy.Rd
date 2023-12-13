@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-catalogue_functions.R
 \name{as_taxonomy}
 \alias{as_taxonomy}
-\title{Validate and coerce an object to taxonomy format}
+\title{Validate and coerce any object as a taxonomy}
 \usage{
 as_taxonomy(object)
 }
@@ -10,7 +10,7 @@ as_taxonomy(object)
 \item{object}{A potential taxonomy to be coerced.}
 }
 \value{
-A list of data frame(s) with \code{Rmonize::class} 'taxonomy'.
+A list of data frame(s) with \code{madshapR::class} 'taxonomy'.
 }
 \description{
 Confirms that the input object is a valid taxonomy and returns it as a

@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{dataset_summarize}
 \alias{dataset_summarize}
-\title{Generate a report and summary of a dataset}
+\title{Generate an assessment report and summary of a dataset}
 \usage{
 dataset_summarize(
   dataset,
@@ -15,39 +15,35 @@ dataset_summarize(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
 \item{group_by}{A character string identifying the column in the dataset
-to use as a grouping variable. Visual elements will be grouped by this
+to use as a grouping variable. Elements will be grouped by this
 column.}
 
-\item{taxonomy}{An optional data frame identifying a variable
-classification schema.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
 (internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
-\item{valueType_guess}{Whether the output should be generated based on more
-precise valueType inferred from the data. FALSE by default
-(will use the valueType declared).}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
-A list of data frames of report for one data dictionary.
+A list of data frames containing assessment reports and summaries.
 }
 \description{
-Assesses and summarizes the content and structure of a dataset and data
-dictionary and reports potential issues to facilitate the assessment of
-input. The report can be used to help assess data structure, presence of
-fields, coherence across elements, and taxonomy or data dictionary formats.
-The summary provides additional information about variable distributions and
-descriptive statistics. This report is compatible with Excel and can be
-exported as an Excel spreadsheet.
+Assesses and summarizes the content and structure of a dataset and generates
+reports of the results. This function can be used to evaluate data structure,
+presence of specific fields, coherence across elements, and data dictionary
+formats, and to summarize additional information about variable distributions
+and descriptive statistics.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata
@@ -62,8 +58,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -84,7 +80,8 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
@@ -92,9 +89,9 @@ types are available using \link{valueType_list}.
 # use madshapR_DEMO provided by the package
 library(dplyr)
 
-#' ###### Example : any data frame can be summarized
+#' ###### Example : Any data frame can be summarized
 dataset <- iris['Sepal.Width']
-dataset_summarize(dataset)
+glimpse(dataset_summarize(dataset))
  
 }
 

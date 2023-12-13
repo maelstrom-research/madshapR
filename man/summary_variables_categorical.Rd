@@ -12,11 +12,10 @@ summary_variables_categorical(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
 \item{dataset_preprocess}{A data frame which provides summary of the variables
 (for internal processes and programming).}
@@ -46,8 +45,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -60,17 +59,17 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example : any data frame can be a dataset by definition.
-dataset_preprocess <- dataset_preprocess(storms['status'])
-summary_variables_categorical(dataset_preprocess = dataset_preprocess)
+###### Example : Any data frame can be a dataset by definition.
+dataset_preprocess <- dataset_preprocess(iris['Species'])
+glimpse(summary_variables_categorical(dataset_preprocess = dataset_preprocess))
 
 }
 

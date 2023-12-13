@@ -15,21 +15,19 @@ variable_visualize(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
 \item{col}{A character string specifying the name of the column.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
 \item{group_by}{A character string identifying the column in the dataset
-to use as a grouping variable. Visual elements will be grouped by this
+to use as a grouping variable. Elements will be grouped by this
 column.}
 
-\item{valueType_guess}{Whether the output should be generated based on more
-precise valueType inferred from the data. FALSE by default
-(will use the valueType declared).}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 
 \item{variable_summary}{A summary list which is the summary of the variables.}
 
@@ -55,7 +53,7 @@ variable, One bar chart for categorical values (if any), One bar chart for
 missing values (if any), One pie chart for the proportion of valid and
 missing values (if any). The variable can be grouped using \code{group_by}
 parameter, which is a (categorical) column in the dataset. The user may need
-to use \code{\link[=as.factor]{as.factor()}} in this context. To fasten the process (and allow
+to use \code{\link[=as_category]{as_category()}} in this context. To fasten the process (and allow
 recycling object in a workflow) the user can feed the function with a
 \code{variable_summary}, which is the output of the function \code{\link[=dataset_summarize]{dataset_summarize()}}
 of the column(s) \code{col} and  \code{group_by}. The summary must have the same
@@ -65,8 +63,8 @@ parameters to operate.
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -88,7 +86,8 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
@@ -109,7 +108,6 @@ types are available using \link{valueType_list}.
 
 }
 \seealso{
-\code{\link[=as.factor]{as.factor()}}
 \code{\link[DT:datatable]{DT::datatable()}}, \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}
 \code{\link[=dataset_summarize]{dataset_summarize()}}, \code{\link[=dataset_visualize]{dataset_visualize()}}
 }

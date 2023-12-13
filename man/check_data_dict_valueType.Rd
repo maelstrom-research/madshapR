@@ -7,7 +7,7 @@
 check_data_dict_valueType(data_dict)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing metadata to be evaluated.}
 }
 \value{
 A data frame providing non-standard valueType declared in a data dictionary.
@@ -37,7 +37,8 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {

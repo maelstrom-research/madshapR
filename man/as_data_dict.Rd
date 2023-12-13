@@ -2,21 +2,21 @@
 % Please edit documentation in R/02-dictionaries_functions.R
 \name{as_data_dict}
 \alias{as_data_dict}
-\title{Validate and coerce any object as data dictionary}
+\title{Validate and coerce any object as a data dictionary}
 \usage{
 as_data_dict(object)
 }
 \arguments{
-\item{object}{A potential valid data dictionary to be coerced.}
+\item{object}{A potential data dictionary object to be coerced.}
 }
 \value{
-A list of data frame(s) with \code{Rmonize::class} 'data_dict'.
+A list of data frame(s) with \code{madshapR::class} 'data_dict'.
 }
 \description{
-Validates the input object as a valid data dictionary and coerces it with
-the appropriate \code{madshapR::class} attribute. This function mainly helps
-validate input within other functions of the package but could be used to
-check if an object is valid for use in a function.
+Checks if an object is a valid data dictionary and returns it with the
+appropriate \code{madshapR::class} attribute. This function mainly helps validate
+inputs within other functions of the package but could be used to check if
+an object is valid for use in a function.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata

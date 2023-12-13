@@ -17,7 +17,7 @@
 #' missing values (if any), One pie chart for the proportion of valid and 
 #' missing values (if any). The variable can be grouped using `group_by` 
 #' parameter, which is a (categorical) column in the dataset. The user may need 
-#' to use [as.factor()] in this context. To fasten the process (and allow 
+#' to use [as_category()] in this context. To fasten the process (and allow 
 #' recycling object in a workflow) the user can feed the function with a 
 #' `variable_summary`, which is the output of the function [dataset_summarize()] 
 #' of the column(s) `col` and  `group_by`. The summary must have the same 
@@ -27,8 +27,8 @@
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -50,24 +50,22 @@
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
+#' @param dataset A dataset object.
 #' @param col A character string specifying the name of the column.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param group_by A character string identifying the column in the dataset
-#' to use as a grouping variable. Visual elements will be grouped by this 
+#' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param valueType_guess Whether the output should be generated based on more 
-#' precise valueType inferred from the data. FALSE by default 
-#' (will use the valueType declared).
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #' @param variable_summary A summary list which is the summary of the variables.
 #' @param .summary_var `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
-#' [as.factor()]
 #' [DT::datatable()], [ggplot2::ggplot()]
 #' [dataset_summarize()], [dataset_visualize()]
 #'
@@ -1241,30 +1239,19 @@ variable_visualize <- function(
 }
 
 #' @title
-#' Generate a web-based bookdown visual report of a dataset
+#' Generate a web-based visual report for a dataset
 #'
 #' @description
-#' Generates a visual report for a dataset in an HTML bookdown document. The 
-#' report provides figures and descriptive statistics for each variable to 
-#' facilitate the assessment of input data. Statistics and figures are 
-#' generated according to variable data type. The report can be used to help 
-#' assess data structure, coherence across elements, and taxonomy or 
-#' data dictionary formats. The summaries and figures provide additional 
-#' information about variable distributions and descriptive statistics. 
-#' The charts and tables are produced based on their data type. The variable 
-#' can be grouped using `group_by` parameter, which is a (categorical) column 
-#' in the dataset. The user may need to use [as.factor()] in this context. To 
-#' fasten the process (and allow recycling object in a workflow) the user can 
-#' feed the function with a `dataset_summary`, which is the output of the function 
-#' [dataset_summarize()] of the column(s) `col` and  `group_by`. The summary 
-#' must have the same parameters to operate. 
+#' Generates a visual report of a dataset in an HTML bookdown 
+#' document, with summary figures and statistics for each variable. The report 
+#' outputs can be grouped by a categorical variable.
 #'
 #' @details
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -1286,7 +1273,8 @@ variable_visualize <- function(
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #' 
 #' A taxonomy is a classification schema that can be defined for variable 
 #' attributes. A taxonomy is usually extracted from an 
@@ -1298,33 +1286,32 @@ variable_visualize <- function(
 #'
 #' @seealso
 #' [bookdown_open()]
+#' [as_category()]
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
+#' @param dataset A dataset object.
 #' @param bookdown_path A character string identifying the folder path where 
 #' the bookdown report files will be saved.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
-#' @param group_by A character string identifying the column in each 
-#' dataset to use as a grouping variable. Visual elements will be grouped by 
-#' this column.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
-#' @param valueType_guess Whether the output should be generated based on more 
-#' precise valueType inferred from the data. FALSE by default 
-#' (will use the valueType declared).
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
+#' @param group_by A character string identifying the column in the dataset
+#' to use as a grouping variable. Elements will be grouped by this 
+#' column.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #' @param dataset_summary A list which identifies an existing 
 #' summary produced by [dataset_summarize()] of the dataset.
 #' Using this parameter can save time in generating the visual report.
-#' @param dataset_name A character string specifying the name of the dataset
-#' (used for internal processes and programming).
+#' @param dataset_name A character string specifying the name of the dataset 
+#' (used internally in the function [dossier_evaluate()]).
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
 #' @param .summary_var `r lifecycle::badge("deprecated")`
 #'
 #' @returns
-#' A bookdown folder containing files in the specified output folder. To
-#' open the file in browser, open 'docs/index.html'. Or use 
-#' [bookdown_open()]
+#' A folder containing files for the bookdown site. To open the bookdown site 
+#' in a browser, open 'docs/index.html', or use [bookdown_open()] with the 
+#' folder path.
 #'
 #' @examples
 #' {

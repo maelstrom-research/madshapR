@@ -2,7 +2,7 @@
 % Please edit documentation in R/03-dataset_functions.R
 \name{is_dossier}
 \alias{is_dossier}
-\title{Test if an object is a valid dossier}
+\title{Test if an object is a valid dossier (list of dataset(s))}
 \usage{
 is_dossier(object)
 }

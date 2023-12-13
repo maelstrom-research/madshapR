@@ -7,11 +7,10 @@
 dataset_cat_as_labels(dataset, data_dict = NULL, col_names = names(dataset))
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset (to be generated).}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
 \item{col_names}{A character string specifying the name(s) of the column(s)
 which refer to existing column(s) in the dataset. The column(s) can be named
@@ -28,8 +27,8 @@ columns (variables) in the dataset.
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -46,7 +45,9 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-dataset_cat_as_labels(iris['Sepal.Length'])
+dataset = madshapR_DEMO$dataset_PARIS
+data_dict = as_data_dict_mlstr(madshapR_DEMO$data_dict_PARIS)
+dataset_cat_as_labels(dataset, data_dict, col_names = 'SEX')
 
 }
 

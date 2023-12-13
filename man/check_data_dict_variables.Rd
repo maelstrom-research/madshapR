@@ -7,7 +7,7 @@
 check_data_dict_variables(data_dict)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing metadata to be evaluated.}
 }
 \value{
 A data frame providing non unique variables across a data dictionary.

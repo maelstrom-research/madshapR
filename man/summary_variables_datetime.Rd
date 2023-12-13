@@ -12,11 +12,10 @@ summary_variables_datetime(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
 \item{dataset_preprocess}{A data frame which provides summary of the
 variables (for internal processes and programming).}
@@ -46,8 +45,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -55,19 +54,19 @@ handled automatically by the function.
 \examples{
 {
    
-###### Example : any data frame can be a dataset by definition.
+# use madshapR_DEMO provided by the package
 library(dplyr)
-library(fabR)
 library(lubridate)
+library(fabR)
 
-dataset_preprocess <- 
- storms \%>\%
-   sample_n(50) \%>\%
-   mutate(date_storm = as_datetime(paste(year, month, day,"-"))) \%>\%
-   select(date_storm) \%>\%
-   dataset_preprocess
+dataset_preprocess <-
+  madshapR_DEMO$dataset_TOKYO \%>\%
+  mutate(dob = as_datetime(as_any_date(dob))) \%>\%
+  select(dob) \%>\%
+  head() \%>\%
+  dataset_preprocess
 
-summary_variables_datetime(dataset_preprocess = dataset_preprocess)
+glimpse(summary_variables_datetime(dataset_preprocess = dataset_preprocess))
 
 }
 

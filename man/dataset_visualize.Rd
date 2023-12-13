@@ -2,7 +2,7 @@
 % Please edit documentation in R/08-data_visualize.R
 \name{dataset_visualize}
 \alias{dataset_visualize}
-\title{Generate a web-based bookdown visual report of a dataset}
+\title{Generate a web-based visual report for a dataset}
 \usage{
 dataset_visualize(
   dataset = tibble(id = as.character()),
@@ -18,28 +18,26 @@ dataset_visualize(
 )
 }
 \arguments{
-\item{dataset}{A data frame identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
 \item{bookdown_path}{A character string identifying the folder path where
 the bookdown report files will be saved.}
 
-\item{data_dict}{A list of data frame(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
-\item{group_by}{A character string identifying the column in each
-dataset to use as a grouping variable. Visual elements will be grouped by
-this column.}
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Elements will be grouped by this
+column.}
 
-\item{taxonomy}{An optional data frame identifying a variable
-classification schema.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
-\item{valueType_guess}{Whether the output should be generated based on more
-precise valueType inferred from the data. FALSE by default
-(will use the valueType declared).}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
-(used for internal processes and programming).}
+(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
 \item{dataset_summary}{A list which identifies an existing
 summary produced by \code{\link[=dataset_summarize]{dataset_summarize()}} of the dataset.
@@ -50,32 +48,21 @@ Using this parameter can save time in generating the visual report.}
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
-A bookdown folder containing files in the specified output folder. To
-open the file in browser, open 'docs/index.html'. Or use
-\code{\link[=bookdown_open]{bookdown_open()}}
+A folder containing files for the bookdown site. To open the bookdown site
+in a browser, open 'docs/index.html', or use \code{\link[=bookdown_open]{bookdown_open()}} with the
+folder path.
 }
 \description{
-Generates a visual report for a dataset in an HTML bookdown document. The
-report provides figures and descriptive statistics for each variable to
-facilitate the assessment of input data. Statistics and figures are
-generated according to variable data type. The report can be used to help
-assess data structure, coherence across elements, and taxonomy or
-data dictionary formats. The summaries and figures provide additional
-information about variable distributions and descriptive statistics.
-The charts and tables are produced based on their data type. The variable
-can be grouped using \code{group_by} parameter, which is a (categorical) column
-in the dataset. The user may need to use \code{\link[=as.factor]{as.factor()}} in this context. To
-fasten the process (and allow recycling object in a workflow) the user can
-feed the function with a \code{dataset_summary}, which is the output of the function
-\code{\link[=dataset_summarize]{dataset_summarize()}} of the column(s) \code{col} and  \code{group_by}. The summary
-must have the same parameters to operate.
+Generates a visual report of a dataset in an HTML bookdown
+document, with summary figures and statistics for each variable. The report
+outputs can be grouped by a categorical variable.
 }
 \details{
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no
 data dictionary is provided with a dataset, a minimum workable
-data dictionary will be generated as needed within relevant functions. An
-identifier variable(s) for indexing can be specified by the user.
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
 The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
@@ -97,7 +84,8 @@ The valueType is specified in a data dictionary in a column 'valueType' and
 can be associated with variables as attributes. Acceptable valueTypes
 include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
 list of OBiBa valueType possibilities and their correspondence with R data
-types are available using \link{valueType_list}.
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 
 A taxonomy is a classification schema that can be defined for variable
 attributes. A taxonomy is usually extracted from an
@@ -133,4 +121,5 @@ dataset_visualize(
 }
 \seealso{
 \code{\link[=bookdown_open]{bookdown_open()}}
+\code{\link[=as_category]{as_category()}}
 }

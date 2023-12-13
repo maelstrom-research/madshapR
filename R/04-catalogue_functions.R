@@ -15,12 +15,11 @@
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #' 
 #' @seealso
 #' [typeof()], [class()]
-#' [madshapR::valueType_list] for insights about possible valueType and
-#' translation into type and class in R.
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
 #'
 #' @param x Object. Can be a vector.
@@ -112,8 +111,8 @@ valueType_of <- function(x){
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -126,7 +125,8 @@ valueType_of <- function(x){
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @seealso
 #' [valueType_adjust()]
@@ -144,7 +144,7 @@ valueType_of <- function(x){
 #' # evaluated as whole, and the best valueType match found is applied. If 
 #' # there is no better match found, the column is left as it is.
 #' 
-#' valueType_self_adjust(mtcars['cyl'])
+#' head(valueType_self_adjust(mtcars['cyl']))
 #'
 #' }
 #'
@@ -330,8 +330,8 @@ The valueType will remain as it is.")
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -344,7 +344,8 @@ The valueType will remain as it is.")
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @seealso
 #' [valueType_self_adjust()]
@@ -369,7 +370,8 @@ The valueType will remain as it is.")
 #'   madshapR_DEMO$data_dict_TOKYO %>%
 #'   data_dict_filter(filter_var = 'name == "prg_ever"') %>%
 #'   as_data_dict_mlstr()
-#' valueType_adjust(from = dataset,to = data_dict)
+#' 
+#' head(valueType_adjust(from = data_dict,to = dataset))
 #' 
 #' }
 #'
@@ -536,8 +538,8 @@ bold("\n\nUseful tip:"),
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -550,7 +552,8 @@ bold("\n\nUseful tip:"),
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -566,10 +569,8 @@ bold("\n\nUseful tip:"),
 #' # use madshapR_DEMO provided by the package
 #'
 #' dataset <- madshapR_DEMO$dataset_TOKYO
-#' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
 #' 
-#' valueType_of(mtcars$cyl)
 #' valueType_guess(mtcars$cyl)
 #' 
 #'}
@@ -649,7 +650,7 @@ valueType_guess <- function(x){
 }
 
 #' @title
-#' Validate and coerce an object according to a given valueType
+#' Validate and coerce any object according to a given valueType
 #'
 #' @description
 #' Attributes a valueType to an object, that can be a vector, or in a data frame 
@@ -664,7 +665,8 @@ valueType_guess <- function(x){
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)
@@ -681,13 +683,11 @@ valueType_guess <- function(x){
 #' # use madshapR_DEMO provided by the package
 #'
 #' dataset <- madshapR_DEMO$dataset_TOKYO
-#' valueType_of(dataset$dob)
-#' valueType_guess(dataset$dob)
-#' as_valueType(dataset$dob,'date') 
+#' as_valueType(head(dataset$dob),'date')
 #' 
 #' # as_valueType is compatible with tidyverse philosophy
 #' library(dplyr)
-#' mtcars %>% mutate(cyl = as_valueType(cyl,'integer'))
+#' mtcars %>% mutate(cyl = as_valueType(cyl,'integer')) %>% head()
 #' 
 #'}
 #'
@@ -816,7 +816,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 }
 
 #' @title
-#' Validate and coerce an object to taxonomy format
+#' Validate and coerce any object as a taxonomy
 #'
 #' @description
 #' Confirms that the input object is a valid taxonomy and returns it as a
@@ -839,7 +839,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @param object A potential taxonomy to be coerced.
 #'
 #' @returns
-#' A list of data frame(s) with `Rmonize::class` 'taxonomy'.
+#' A list of data frame(s) with `madshapR::class` 'taxonomy'.
 #'
 #' @examples
 #' {
@@ -903,7 +903,8 @@ Please refer to documentation.",
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @seealso
 #' [Opal documentation](https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html)

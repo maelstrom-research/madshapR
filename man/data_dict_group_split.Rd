@@ -7,7 +7,7 @@
 data_dict_group_split(data_dict, ...)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
 \item{...}{Column in the data dictionary to split it by. If not provided, the
@@ -55,7 +55,7 @@ data_dict_nest <-
   data_dict_list_nest(data_dict_list, name_group = 'table') \%>\%
   data_dict_group_by(col = "table")
 
- data_dict_group_split(data_dict_nest,col = "table")
+glimpse(data_dict_group_split(data_dict_nest,col = "table"))
  
 }
 

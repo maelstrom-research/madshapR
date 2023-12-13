@@ -7,7 +7,7 @@
 data_dict_group_by(data_dict, col)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
 \item{col}{variable to group by.}

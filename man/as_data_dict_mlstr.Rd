@@ -2,24 +2,23 @@
 % Please edit documentation in R/02-dictionaries_functions.R
 \name{as_data_dict_mlstr}
 \alias{as_data_dict_mlstr}
-\title{Validate and coerce an object to an Opal data dictionary format}
+\title{Validate and coerce any object as an Opal data dictionary format}
 \usage{
 as_data_dict_mlstr(object, as_data_dict = FALSE, name_standard = FALSE)
 }
 \arguments{
 \item{object}{A potential valid data dictionary to be coerced.}
 
-\item{as_data_dict}{Whether the output data dictionary has a simple
-data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom Research ecosystem, including Opal).
-FALSE by default.}
+\item{as_data_dict}{Whether the input data dictionary should not be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. FALSE by default.}
 
 \item{name_standard}{Whether the input data dictionary has variable names
 compatible with Maelstrom Research ecosystem, including Opal)or not.
 FALSE by default.}
 }
 \value{
-A list of data frame(s) with \code{Rmonize::class} 'data_dict_mlstr'.
+A list of data frame(s) with \code{madshapR::class} 'data_dict_mlstr'.
 }
 \description{
 Validates the input object as a valid data dictionary compliant with formats

@@ -2,30 +2,28 @@
 % Please edit documentation in R/06-data_evaluate.R
 \name{data_dict_evaluate}
 \alias{data_dict_evaluate}
-\title{Generate a quality assessment report of a data dictionary}
+\title{Generate an assessment report for a data dictionary}
 \usage{
 data_dict_evaluate(data_dict, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing metadata to be evaluated.}
 
-\item{taxonomy}{An optional data frame identifying a variable
-classification schema.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
-\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
-data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom Research ecosystem, including Opal).
-TRUE by default.}
+\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. TRUE by default.}
 }
 \value{
-A list of data frames of report for one data dictionary.
+A list of data frames containing assessment reports.
 }
 \description{
-Assesses the content and structure of a data dictionary and reports potential
-issues to facilitate the assessment of input data.
-The report can be used to help assess data structure, presence of fields,
-coherence across elements, and taxonomy or data dictionary formats. This
-report is compatible with Excel and can be exported as an Excel spreadsheet.
+Assesses the content and structure of a data dictionary and generates reports
+of the results. The report can be used to help assess data dictionary
+structure, presence of fields, coherence across elements, and taxonomy
+or data dictionary formats.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata
@@ -53,9 +51,10 @@ in particular \href{https://www.obiba.org/pages/products/opal}{Opal environments
 {
 
 # use madshapR_DEMO provided by the package
+library(dplyr)
 
 data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
-data_dict_evaluate(data_dict)
+glimpse(data_dict_evaluate(data_dict))
 
 }
 

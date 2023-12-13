@@ -1,12 +1,11 @@
 #' @title
-#' Generate a quality assessment report of a dataset
+#' Generate an assessment report for a dataset
 #'
 #' @description
-#' Assesses the content and structure of a dataset and reports possible issues
-#' in the dataset and data dictionary to facilitate assessment of input data. 
-#' The report can be used to help assess data structure, presence of fields, 
-#' coherence across elements, and taxonomy or data dictionary formats. This 
-#' report is compatible with Excel and can be exported as an Excel spreadsheet.
+#' Assesses the content and structure of a dataset object and generates reports 
+#' of the results. This function can be used to evaluate data structure, 
+#' presence of specific fields, coherence across elements, and data dictionary 
+#' formats.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -21,8 +20,8 @@
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -38,26 +37,24 @@
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
 #' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
-#'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
-#' @param dataset_name A character string specifying the name of the dataset
-#' (internally used in the function [dossier_evaluate()]).
-#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
-#' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
-#' TRUE by default.
+#' 
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
+#' @param dataset_name A character string specifying the name of the dataset 
+#' (used internally in the function [dossier_evaluate()]).
+#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. TRUE by default.
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [dossier_evaluate()]
 #'
 #' @returns
-#' A list of data frames of report for one data dictionary.
+#' A list of data frames containing assessment reports.
 #'
 #' @examples
 #' {
@@ -65,10 +62,12 @@
 #' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
-#' ###### Example : any data frame can be summarized
-#' dataset <- 
-#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
-#'  dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
+#' ###### Example : Any data frame can be summarized
+#' dataset <- as_dataset(
+#'   madshapR_DEMO$`dataset_TOKYO - errors with data`,
+#'   col_id = 'part_id')
+#'  
+#' glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
 #' 
 #' }
 #'
@@ -361,19 +360,17 @@ dataset_evaluate <- function(
 }
 
 #' @title
-#' Generate a quality assessment report of a dossier (list of datasets)
+#' Generate an assessment report of a dossier
 #'
 #' @description
-#' Assesses the content and structure of a dossier object (list of 
-#' datasets) and reports possible issues in the datasets and data dictionaries 
-#' to facilitate assessment of input data. 
-#' The report can be used to help assess data structure, presence of fields, 
-#' coherence across elements, and taxonomy or data dictionary formats.This 
-#' report is compatible with Excel and can be exported as an Excel spreadsheet.
+#' Assesses the content and structure of a dossier object (list of datasets) 
+#' and generates reports of the results. This function can be used to evaluate 
+#' data structure, presence of specific fields, coherence across elements, and 
+#' data dictionary formats.
 #'
 #' @details
 #' A dossier is a named list containing at least one data frame or more, 
-#' each of them being datasets. The name of each tibble will be use as the 
+#' each of them being datasets. The name of each data frame will be use as the 
 #' reference name of the dataset.
 #' 
 #' A taxonomy is a classification schema that can be defined for variable 
@@ -389,15 +386,14 @@ dataset_evaluate <- function(
 #' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
 #'
 #' @param dossier List of data frame, each of them being datasets.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
-#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
-#' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
-#' TRUE by default.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
+#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. TRUE by default.
 #'
 #' @returns
-#' A list of data frames of report for each dataset.
+#' A list of data frames containing assessment reports.
 #'
 #' @examples
 #' {
@@ -407,10 +403,13 @@ dataset_evaluate <- function(
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
-#' dataset <-
-#'  as_dataset(madshapR_DEMO$`dataset_TOKYO - errors with data`,col_id = 'part_id')
+#'  dataset <- as_dataset(
+#'    madshapR_DEMO$`dataset_TOKYO - errors with data`,
+#'    col_id = 'part_id')
 #'  
-#'  dossier_evaluate(as_dossier(list(ds = dataset)),as_data_dict_mlstr = FALSE)
+#'  dossier <- as_dossier(list(dataset = dataset))
+#'  
+#'  glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
 #'
 #' }
 #'
@@ -452,14 +451,13 @@ dossier_evaluate <- function(
 }
 
 #' @title
-#' Generate a quality assessment report of a data dictionary
+#' Generate an assessment report for a data dictionary
 #'
 #' @description
-#' Assesses the content and structure of a data dictionary and reports potential
-#' issues to facilitate the assessment of input data. 
-#' The report can be used to help assess data structure, presence of fields, 
-#' coherence across elements, and taxonomy or data dictionary formats. This 
-#' report is compatible with Excel and can be exported as an Excel spreadsheet.
+#' Assesses the content and structure of a data dictionary and generates reports 
+#' of the results. The report can be used to help assess data dictionary 
+#' structure, presence of fields, coherence across elements, and taxonomy 
+#' or data dictionary formats.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -483,24 +481,24 @@ dossier_evaluate <- function(
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
 #' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
 #'
-#' @param data_dict A list of data frame(s) representing meta data to be evaluated.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
-#' @param as_data_dict_mlstr Whether the output data dictionary has a simple
-#' data dictionary structure or not (meaning has a Maelstrom data dictionary
-#' structure, compatible with Maelstrom Research ecosystem, including Opal). 
-#' TRUE by default.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
+#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. TRUE by default.
 #'
 #' @returns
-#' A list of data frames of report for one data dictionary.
+#' A list of data frames containing assessment reports.
 #'
 #' @examples
 #' {
 #' 
 #' # use madshapR_DEMO provided by the package
+#' library(dplyr)
 #'
 #' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
-#' data_dict_evaluate(data_dict)
+#' glimpse(data_dict_evaluate(data_dict))
 #'
 #' }
 #'
@@ -686,12 +684,13 @@ data_dict_evaluate <- function(
     get_all_na_cols(
       data_dict[['Variables']] %>% select(-"name")) %>%
     mutate(sheet    = "Variables",
-           condition = "[INFO] - Empty column(s)",) %>%
+           condition = "[INFO] - Empty column") %>%
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
         get_all_na_cols(
           data_dict[['Categories']] %>% select(-"variable")) %>%
-          mutate(sheet    = "Categories")
+          mutate(sheet    = "Categories",
+                 condition = "[INFO] - Empty column")
       }else{tibble()})
   
   if(sum(nrow(data_dict[['Categories']])) > 0){

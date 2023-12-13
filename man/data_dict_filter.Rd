@@ -12,8 +12,8 @@ data_dict_filter(
 )
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
-transformed.}
+\item{data_dict}{A list of data frame(s) representing metadata to be
+filtered.}
 
 \item{filter_var}{Expressions that are defined in the element 'Variables' in
 the data dictionary.}
@@ -61,7 +61,7 @@ names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
 
 ###### Example 1 search and filter through a column in 'Variables' element
-data_dict_filter(data_dict_nest,filter_var = "valueType == 'integer'")
+data_dict_filter(data_dict_nest,filter_var = "valueType == 'text'")
 
 ###### Example 2 search and filter through a column in 'Categories' element
 data_dict_filter(data_dict_nest,filter_cat = "missing == TRUE")

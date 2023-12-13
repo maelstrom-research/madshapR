@@ -1,14 +1,12 @@
 #' @title
-#' Generate a report and summary of a dataset
+#' Generate an assessment report and summary of a dataset
 #'
 #' @description
-#' Assesses and summarizes the content and structure of a dataset and data
-#' dictionary and reports potential issues to facilitate the assessment of 
-#' input. The report can be used to help assess data structure, presence of 
-#' fields, coherence across elements, and taxonomy or data dictionary formats. 
-#' The summary provides additional information about variable distributions and
-#' descriptive statistics. This report is compatible with Excel and can be 
-#' exported as an Excel spreadsheet.
+#' Assesses and summarizes the content and structure of a dataset and generates 
+#' reports of the results. This function can be used to evaluate data structure, 
+#' presence of specific fields, coherence across elements, and data dictionary 
+#' formats, and to summarize additional information about variable distributions 
+#' and descriptive statistics.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -23,8 +21,8 @@
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -45,29 +43,28 @@
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param group_by A character string identifying the column in the dataset
-#' to use as a grouping variable. Visual elements will be grouped by this 
+#' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #' @param dataset_name A character string specifying the name of the dataset
 #' (internally used in the function [dossier_evaluate()]).
-#' @param valueType_guess Whether the output should be generated based on more 
-#' precise valueType inferred from the data. FALSE by default 
-#' (will use the valueType declared).
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [dossier_evaluate()]
 #'
 #' @returns
-#' A list of data frames of report for one data dictionary.
+#' A list of data frames containing assessment reports and summaries.
 #'
 #' @examples
 #' {
@@ -75,9 +72,9 @@
 #' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
-#' #' ###### Example : any data frame can be summarized
+#' #' ###### Example : Any data frame can be summarized
 #' dataset <- iris['Sepal.Width']
-#' dataset_summarize(dataset)
+#' glimpse(dataset_summarize(dataset))
 #'  
 #' }
 #'
@@ -699,20 +696,18 @@ dataset_summarize <- function(
 }
 
 #' @title
-#' Generate a report and summary of a dossier (list of datasets)
+#' Generate an assessment report and summary of a dossier
 #'
 #' @description
 #' Assesses and summarizes the content and structure of a dossier 
-#' (list of datasets)  and reports potential issues to facilitate the 
-#' assessment of input data. The report can be used to help assess data 
-#' structure, presence of fields, coherence across elements, and taxonomy or 
-#' data dictionary formats. The summary provides additional information about 
-#' variable distributions and descriptive statistics. This report is compatible
-#' with Excel and can be exported as an Excel spreadsheet.
+#' (list of datasets) and generates reports of the results. This function can 
+#' be used to evaluate data structure, presence of specific fields, coherence 
+#' across elements, and data dictionary formats, and to summarize additional 
+#' information about variable distributions and descriptive statistics.
 #'
 #' @details
 #' A dossier is a named list containing at least one data frame or more, 
-#' each of them being datasets. The name of each tibble will be use as the 
+#' each of them being datasets. The name of each data frame will be use as the 
 #' reference name of the dataset.
 #' 
 #' A taxonomy is a classification schema that can be defined for variable 
@@ -731,20 +726,20 @@ dataset_summarize <- function(
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
 #' @param dossier List of data frame(s), each of them being datasets.
-#' @param taxonomy An optional data frame identifying a variable 
-#' classification schema.
-#' @param group_by A character string identifying the column in the datasets
-#' to use as a grouping variable. Visual elements will be grouped by this 
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
+#' @param group_by A character string identifying the column in the dataset
+#' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param valueType_guess Whether the output should be generated based on more 
-#' precise valueType inferred from the data. FALSE by default 
-#' (will use the valueType declared).
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @returns
-#' A list of data frames of report for each listed dataset.
+#' A list of data frames containing overall assessment reports and summaries grouped by dataset.
 #'
 #' @examples
 #' {
@@ -834,8 +829,8 @@ dossier_summarize <- function(
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -843,10 +838,9 @@ dossier_summarize <- function(
 #' @seealso
 #' [summary_variables()]
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #'
 #' @returns
 #' A data frame providing summary elements of a dataset, including its values 
@@ -855,8 +849,8 @@ dossier_summarize <- function(
 #' @examples
 #' {
 #'  
-#' ###### Example : any data frame can be a dataset by definition.
-#' dataset_preprocess(iris)
+#' ###### Example : Any data frame can be a dataset by definition.
+#' head(dataset_preprocess(iris))
 #'
 #' }
 #'
@@ -1027,16 +1021,15 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param dataset_preprocess A data frame which provides summary of the 
 #' variables (used for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
@@ -1048,9 +1041,11 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' @examples
 #' {
 #' 
-#' ###### Example : any data frame can be a dataset by definition.
+#' library(dplyr)
+#' 
+#' ###### Example : Any data frame can be a dataset by definition.
 #' dataset_preprocess <- dataset_preprocess(iris)
-#' summary_variables(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_variables(dataset_preprocess = dataset_preprocess))
 #'
 #' }
 #'
@@ -1176,16 +1171,15 @@ summary_variables <- function(
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #' 
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param dataset_preprocess A data frame which provides summary of the variables
 #' (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
@@ -1197,11 +1191,11 @@ summary_variables <- function(
 #' @examples
 #' {
 #'    
-#' ###### Example : any data frame can be a dataset by definition.
+#' ###### Example : Any data frame can be a dataset by definition.
 #' library(dplyr)
 #' 
 #' dataset_preprocess <- dataset_preprocess(starwars['homeworld'])
-#' summary_variables_text(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_variables_text(dataset_preprocess = dataset_preprocess))
 #'
 #' }
 #'
@@ -1300,16 +1294,15 @@ summary_variables_text <- function(
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param dataset_preprocess A data frame which provides summary of the 
 #' variables (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
@@ -1321,18 +1314,18 @@ summary_variables_text <- function(
 #' @examples
 #' {
 #'    
-#' ###### Example : any data frame can be a dataset by definition.
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' library(fabR)
 #' 
 #' dataset_preprocess <- 
-#'   storms %>%
-#'     sample_n(50) %>%
-#'     mutate(date_storm = as_any_date(paste(year, month, day,"-"),"ymd")) %>%
-#'     select(date_storm) %>%
+#'   madshapR_DEMO$dataset_TOKYO %>%
+#'     mutate(dob = as_any_date(dob)) %>%
+#'     select(dob) %>%
+#'     head() %>%
 #'     dataset_preprocess
 #'
-#' summary_variables_date(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_variables_date(dataset_preprocess = dataset_preprocess))
 #'
 #' }
 #'
@@ -1446,16 +1439,15 @@ summary_variables_date <- function(
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param dataset_preprocess A data frame which provides summary of the 
 #' variables (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
@@ -1467,19 +1459,19 @@ summary_variables_date <- function(
 #' @examples
 #' {
 #'    
-#' ###### Example : any data frame can be a dataset by definition.
+#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
-#' library(fabR)
 #' library(lubridate)
+#' library(fabR)
 #' 
-#' dataset_preprocess <- 
-#'  storms %>%
-#'    sample_n(50) %>%
-#'    mutate(date_storm = as_datetime(paste(year, month, day,"-"))) %>%
-#'    select(date_storm) %>%
-#'    dataset_preprocess
+#' dataset_preprocess <-
+#'   madshapR_DEMO$dataset_TOKYO %>%
+#'   mutate(dob = as_datetime(as_any_date(dob))) %>%
+#'   select(dob) %>%
+#'   head() %>%
+#'   dataset_preprocess
 #'
-#' summary_variables_datetime(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_variables_datetime(dataset_preprocess = dataset_preprocess))
 #'
 #' }
 #'
@@ -1529,16 +1521,15 @@ summary_variables_datetime <- function(
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
-#' @param dataset A data frame identifying the input dataset observations
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param dataset_preprocess A data frame which provides summary of the 
 #' variables (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
@@ -1550,9 +1541,11 @@ summary_variables_datetime <- function(
 #' @examples
 #' {
 #' 
-#' ###### Example : any data frame can be a dataset by definition.
+#' library(dplyr)
+#' 
+#' ###### Example : Any data frame can be a dataset by definition.
 #' dataset_preprocess <- dataset_preprocess(iris)
-#' summary_variables_numeric(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_variables_numeric(dataset_preprocess = dataset_preprocess))
 #'
 #' }
 #'
@@ -1640,8 +1633,8 @@ summary_variables_numeric <- function(
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
 #' data dictionary is provided with a dataset, a minimum workable 
-#' data dictionary will be generated as needed within relevant functions. An 
-#' identifier variable(s) for indexing can be specified by the user. 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
 #' The id values must be non-missing and will be used in functions that 
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
@@ -1654,12 +1647,12 @@ summary_variables_numeric <- function(
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
 #' list of OBiBa valueType possibilities and their correspondence with R data 
-#' types are available using [valueType_list].
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param dataset A data frame identifying the input dataset observations 
-#' associated to its data dictionary.
-#' @param data_dict A list of data frame(s) representing meta data of an
-#' associated dataset. Automatically generated if not provided.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided. 
 #' @param dataset_preprocess A data frame which provides summary of the variables 
 #' (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
@@ -1671,12 +1664,11 @@ summary_variables_numeric <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
 #' 
-#' ###### Example : any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(storms['status'])
-#' summary_variables_categorical(dataset_preprocess = dataset_preprocess)
+#' ###### Example : Any data frame can be a dataset by definition.
+#' dataset_preprocess <- dataset_preprocess(iris['Species'])
+#' glimpse(summary_variables_categorical(dataset_preprocess = dataset_preprocess))
 #' 
 #' }
 #'

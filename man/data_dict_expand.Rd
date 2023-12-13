@@ -12,17 +12,17 @@ data_dict_expand(
 )
 }
 \arguments{
-\item{data_dict}{A list of data frame(s) representing meta data to be
-transformed. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata to be
+transformed.}
 
-\item{from}{Symbol identifying the name of the element (data frame) to take
+\item{from}{A symbol identifying the name of the element (data frame) to take
 column(s) from. Default is 'Variables'.}
 
 \item{name_prefix}{Character string of the prefix of columns of interest.
 This prefix will be used to select columns, and to rename them in the 'to'
 element. Default is 'Categories::'.}
 
-\item{to}{Symbol identifying the name of the element (data frame) to create
+\item{to}{A symbol identifying the name of the element (data frame) to create
 column(s) to. Default is 'Categories'.}
 }
 \value{
