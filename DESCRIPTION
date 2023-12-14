@@ -1,7 +1,7 @@
 Package: madshapR
 Type: Package
 Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.0.3.0003
+Version: 1.0.3
 Authors@R: 
     c(person(given = "Guillaume",
              family = "Fabre",
@@ -9,16 +9,7 @@ Authors@R:
              email = "guijoseph.fabre@gmail.com",
              comment = c(ORCID = "0000-0002-0124-9970")),
       person("Maelstrom-research group",
-             role=c("cph", "fnd")),
-      person(given = "Alexandre",
-             family = "Trottier",
-             role=c("ctb")),
-      person(given = "Tina",
-             family = "Wey",
-             role=c("ctb")),
-      person(given = "Samuel",
-             family = "El Bouzaïdi Tiali",
-             role=c("ctb")))
+             role=c("cph", "fnd")))
 Description: Functions to support rigorous processes in data cleaning, 
      evaluation, and documentation across datasets from different studies based 
      on Maelstrom Research guidelines. The package includes the core functions 
