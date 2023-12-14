@@ -6,6 +6,17 @@
 Some of the tests were made with another package (Rmonize) which as
 ‘madshapR’ as a dependence.
 
+### Improvement in handling pooled data
+
+The functions `harmo_process()`, `pool_harmonized_dataset_create()`,
+`harmonized_dossier_create()`, `harmonized_dossier_evaluate()`,
+`harmonized_dossier_summarize()`, `harmonized_dossier_visualize()` share
+the same parameter ‘harmonized_col_dataset’ which is (if exists) the
+name of the column referring the input dataset names. If this column
+exists and is declared by the user, this will be used across the
+pipeline as a grouping/separating variable. By default, the name of each
+dataset will be used instead.
+
 ### Enhance reports
 
 - in visual reports, void confusing changes in color scheme in visual
@@ -50,6 +61,14 @@ enhance the function `check_data_dict_valueType()`, which was too slow.
   dataset_zap_data_dict() when the format is unclear.
 
 ## New functions
+
+- `col_id()` function which is a short cut for calling the attribute
+  `madshapR::col_id` of a dataset.
+
+- `as_category()`,`is_category()`,`drop_category()` function which
+  coerces a vector as a categorical object. Typically a column in a
+  dataset that needs to be coerced into a categorical variable (The data
+  dictionary is updated accordingly).
 
 - creation of `col_id()` function which is a short cut for calling the
   attribute `madshapR::col_id` of a dataset.

@@ -10,7 +10,7 @@
 #' The valueType is a declared property of a variable that is required in 
 #' certain functions to determine handling of the variables. Specifically, 
 #' valueType refers to the 
-#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
 #' The valueType is specified in a data dictionary in a column 'valueType' and 
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
@@ -120,7 +120,7 @@ valueType_of <- function(x){
 #' The valueType is a declared property of a variable that is required in 
 #' certain functions to determine handling of the variables. Specifically, 
 #' valueType refers to the 
-#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
 #' The valueType is specified in a data dictionary in a column 'valueType' and 
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
@@ -339,7 +339,7 @@ The valueType will remain as it is.")
 #' The valueType is a declared property of a variable that is required in 
 #' certain functions to determine handling of the variables. Specifically, 
 #' valueType refers to the 
-#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
 #' The valueType is specified in a data dictionary in a column 'valueType' and 
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
@@ -547,7 +547,7 @@ bold("\n\nUseful tip:"),
 #' The valueType is a declared property of a variable that is required in 
 #' certain functions to determine handling of the variables. Specifically, 
 #' valueType refers to the 
-#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
 #' The valueType is specified in a data dictionary in a column 'valueType' and 
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
@@ -660,7 +660,7 @@ valueType_guess <- function(x){
 #' The valueType is a declared property of a variable that is required in 
 #' certain functions to determine handling of the variables. Specifically, 
 #' valueType refers to the 
-#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
 #' The valueType is specified in a data dictionary in a column 'valueType' and 
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
@@ -898,7 +898,7 @@ Please refer to documentation.",
 #' The valueType is a declared property of a variable that is required in 
 #' certain functions to determine handling of the variables. Specifically, 
 #' valueType refers to the 
-#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/variables-data.html#value-types). 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
 #' The valueType is specified in a data dictionary in a column 'valueType' and 
 #' can be associated with variables as attributes. Acceptable valueTypes 
 #' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 

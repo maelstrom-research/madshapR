@@ -9,13 +9,13 @@ output: github_document
 Some of the tests were made with another package (Rmonize) which as 'madshapR' as
 a dependence.
 
-### Improvment in handling pooled data
+### Improvement in handling pooled data
 
 The functions `harmo_process()`, `pool_harmonized_dataset_create()`, 
 `harmonized_dossier_create()`, `harmonized_dossier_evaluate()`, 
 `harmonized_dossier_summarize()`, `harmonized_dossier_visualize()` share the 
 same parameter 'harmonized_col_dataset' which is (if exists) the name of the 
-column refering the input dataset names. If this column exists and is declared 
+column referring the input dataset names. If this column exists and is declared 
 by the user, this will be used across the pipeline as a grouping/separating 
 variable. By default, the name of each dataset will be used instead.
 
