@@ -101,8 +101,9 @@ taxonomies are
 # You can use our demonstration files to run examples
 
 library(fs)
+library(dplyr)
 
-dataset <- madshapR_DEMO$dataset_TOKYO['height']
+dataset <- madshapR_DEMO$dataset_TOKYO['height'] \%>\% slice(0)
 dataset_summary <- madshapR_DEMO$`dataset_summary`
 
 if(dir_exists(tempdir())) dir_delete(tempdir())

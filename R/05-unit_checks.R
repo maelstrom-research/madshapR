@@ -1089,7 +1089,7 @@ check_dataset_valueType <- function(
 #' @details
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
-#' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #'
 #' @param var_names A character vector of names.
 #'

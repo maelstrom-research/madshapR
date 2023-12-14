@@ -1643,7 +1643,7 @@ your dataset")}
 #' 
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
-#' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #'
 #' @param dataset A dataset object.
 #' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
@@ -2228,7 +2228,7 @@ data dictionary")}}
 #' 
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
-#' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #'
 #' @seealso
 #' For a better assessment, please use [data_dict_evaluate()].

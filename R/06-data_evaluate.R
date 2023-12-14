@@ -36,7 +36,7 @@
 #' 
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
-#' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #' 
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
@@ -383,7 +383,7 @@ dataset_evaluate <- function(
 #'
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
-#' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #'
 #' @param dossier List of data frame, each of them being datasets.
 #' @param taxonomy An optional data frame identifying a variable classification 
@@ -479,7 +479,7 @@ dossier_evaluate <- function(
 #'
 #' The object may be specifically formatted to be compatible with additional 
 #' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
-#' in particular [Opal environments](https://www.obiba.org/pages/products/opal).
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #'
 #' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #' @param taxonomy An optional data frame identifying a variable classification 
