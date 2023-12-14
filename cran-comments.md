@@ -3,7 +3,37 @@
 0 errors | 0 warnings | 0 note
 
 
-# Latest submission : madshapR 1.0.2
+# Latest submission : madshapR 1.0.3
+
+## Bug fixes and improvements
+
+- Some of the tests were made with another package (Rmonize) which as
+“madshapR” as a dependence.
+
+- Enhance reports
+
+- Correct Data dictionary functions
+
+
+## New functions
+
+- `as_category()`,`is_category()`,`drop_category()` function which
+  coerces a vector as a categorical object. Typically a column in a
+  dataset that needs to be coerced into a categorical variable (The data
+  dictionary is updated accordingly).
+
+- creation of `col_id()` function which is a short cut for calling the
+  attribute `madshapR::col_id` of a dataset.
+
+## Deprecated functions
+
+- Rename and update example rda Object (in data) of `DEMO_files` into
+  `madshapR_DEMO` for consistency across our other packages.
+
+
+--------------------------------------------------------------------------------
+
+## Previous submission : madshapR 1.0.2
 
 ## Bug fixes and improvements
 
