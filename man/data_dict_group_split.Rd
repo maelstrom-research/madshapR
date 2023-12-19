@@ -7,14 +7,14 @@
 data_dict_group_split(data_dict, ...)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
 \item{...}{Column in the data dictionary to split it by. If not provided, the
 splitting will be done on the grouping element of a grouped data dictionary.}
 }
 \value{
-A list of tibble(s) identifying a list of workable data dictionary structure.
+A list of data frame(s) identifying a list of workable data dictionary structure.
 }
 \description{
 Divides data dictionary element(s) into the groups defined by the query.
@@ -26,20 +26,19 @@ to running \code{\link[dplyr:group_by]{dplyr::group_by()}} and \code{\link[dplyr
 named using the group values. \code{\link[=data_dict_list_nest]{data_dict_list_nest()}} reverses the effect.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
 # Create a list of data dictionaries where the column 'table' is added to 
@@ -47,12 +46,16 @@ library(dplyr)
 # data dictionary per say, but can be used as a structure which can be 
 # shaped into a data dictionary.
 
-data_dict_list <- DEMO_files[
-    c('dd_MELBOURNE_1_format_maelstrom',
-      'dd_MELBOURNE_2_format_maelstrom')] \%>\% 
-    data_dict_list_nest(name_group = 'table')
- 
- data_dict_group_split(data_dict_list,col = "table")
+data_dict_list <- list(
+  data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+  data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+
+data_dict_nest <- 
+  data_dict_list_nest(data_dict_list, name_group = 'table') \%>\%
+  data_dict_group_by(col = "table")
+
+glimpse(data_dict_group_split(data_dict_nest,col = "table"))
  
 }
 

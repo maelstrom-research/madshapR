@@ -1,7 +1,66 @@
 ---
 output: github_document
 ---
-# madshapR (development version)
+
+# madshapR 1.0.3
+
+## Bug fixes and improvements
+
+Some of the tests were made with another package (Rmonize) which as "madshapR" as
+a dependence.
+
+### Enhance reports
+
+* in visual reports, void confusing changes in color scheme in visual reports.
+
+* Histograms for date variables display valid ranges.
+
+* in reports, change % NA as proportion in reports.
+
+* `dossier_visualize()` report shows variable labels in the same lang.
+
+* in visual reports, the bar plot only appears when there are multiple missing 
+value types, otherwise only the pie chart is shown.
+  
+* in reports, all of the percentages are now included under "Other values 
+(non categorical)", which gives a single value.
+
+* https://github.com/maelstrom-research/madshapR/issues/51
+
+suppress overwrite parameter in `dataset_visualize()`.
+  
+* https://github.com/maelstrom-research/madshapR/issues/42
+
+in `dataset_summary()` minor issue (consistency in column names and content).
+  
+* correction of the function `variable_visualize()` when valueType_guess = TRUE
+
+### Correct Data dictionary functions  
+
+* https://github.com/maelstrom-research/madshapR/issues/50
+
+enhance the function `check_data_dict_valueType()`, which was too slow. 
+
+* https://github.com/maelstrom-research/madshapR/issues/49
+
+`valueType_adjust()` now works with empty column (all NAs)
+
+* allow the format date to be transformed into text in dataset_zap_data_dict() 
+when the format is unclear.
+
+## New functions
+
+* `col_id()` function which is a short cut for calling the 
+attribute `madshapR::col_id` of a dataset.
+
+* `as_category()`,`is_category()`,`drop_category()` function which coerces a 
+vector as a categorical object. Typically a column in a dataset that needs to be
+coerced into a categorical variable (The data dictionary is updated accordingly).
+
+## Deprecated functions
+
+* Rename and update example rda Object (in data) of `DEMO_files` into 
+`madshapR_DEMO` for consistency across our other packages.
 
 # madshapR 1.0.2
 
@@ -122,7 +181,7 @@ stored in a tibble that can be use to assess inputs.
 `check_dataset_valueType()`, `check_dataset_variables()`, 
 `check_name_standards()`
 
-## Summarise information in dataset and data dictionaries
+## Summarize information in dataset and data dictionaries
 
 These helper functions evaluate content of a dataset and/or data dictionary to 
 extract from them summary statistics and elements such as missing values, NA, 

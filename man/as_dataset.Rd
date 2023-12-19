@@ -2,46 +2,48 @@
 % Please edit documentation in R/03-dataset_functions.R
 \name{as_dataset}
 \alias{as_dataset}
-\title{Validate and coerce an object to dataset format}
+\title{Validate and coerce any object as a dataset}
 \usage{
 as_dataset(object, col_id = NULL)
 }
 \arguments{
-\item{object}{A potential dataset to be coerced.}
+\item{object}{A potential dataset object to be coerced.}
 
-\item{col_id}{A character string specifying the name(s) of the column(s)
-which refer to key identifier of the dataset. The column(s) can be named
-or indicated by position.}
+\item{col_id}{An optional character string specifying the name(s) or
+position(s) of the column(s) used as identifiers.}
 }
 \value{
-A tibble identifying a dataset.
+A data frame with \code{madshapR::class} 'dataset'.
 }
 \description{
-Confirms that the input object is a valid dataset and returns it as a dataset
-with the appropriate 'madshapR::class' attribute. This function mainly helps
-validate inputs within other functions of the package but could be used to
-check if a dataset is valid.
+Checks if an object is a valid dataset and returns it with the appropriate
+\code{madshapR::class} attribute. This function mainly helps validate inputs
+within other functions of the package but could be used separately to check
+if a dataset is valid.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
+library(dplyr)
 
-###### Example 1: a dataset can have an id column(s) which is specified as
-# an attribute. 
-dataset <- as_dataset(DEMO_files$dataset_MELBOURNE_1, col_id = "id")
+###### Example 1: A dataset can have an id column specified as an attribute. 
+dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
+glimpse(dataset)
 
-###### Example 2: any data frame (or tibble) can be a dataset by definition.
-as_dataset(iris, col_id = "Species")
+###### Example 2: Any data frame can be a dataset by definition.
+glimpse(as_dataset(iris, col_id = "Species"))
+
 }
 
 }

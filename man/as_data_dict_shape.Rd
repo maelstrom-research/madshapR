@@ -2,7 +2,7 @@
 % Please edit documentation in R/02-dictionaries_functions.R
 \name{as_data_dict_shape}
 \alias{as_data_dict_shape}
-\title{Validate and coerce an object to a workable data dictionary structure}
+\title{Validate and coerce any object as a workable data dictionary structure}
 \usage{
 as_data_dict_shape(object)
 }
@@ -10,31 +10,30 @@ as_data_dict_shape(object)
 \item{object}{A potential valid data dictionary to be coerced.}
 }
 \value{
-A list of tibble(s) identifying a data dictionary.
+A list of data frame(s) with \code{madshapR::class} 'data_dict_shape'.
 }
 \description{
 Validates the input object as a workable data dictionary structure and
-returns it with the appropriate 'madshapR::class' attribute. This function
+returns it with the appropriate \code{madshapR::class} attribute. This function
 mainly helps validate input within other functions of the package but could
 be used to check if a data dictionary is valid for use in a function.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-data_dict <- DEMO_files$dd_PARIS_format_maelstrom
+data_dict <- madshapR_DEMO$data_dict_PARIS
 as_data_dict_shape(data_dict)
 
 }

@@ -2,60 +2,61 @@
 % Please edit documentation in R/06-data_evaluate.R
 \name{dossier_evaluate}
 \alias{dossier_evaluate}
-\title{Generate a quality assessment report of a dossier (list of datasets)}
+\title{Generate an assessment report of a dossier}
 \usage{
 dossier_evaluate(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 }
 \arguments{
-\item{dossier}{List of tibble, each of them being datasets.}
+\item{dossier}{List of data frame, each of them being datasets.}
 
-\item{taxonomy}{A tibble identifying the scheme used for variables
-classification.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
-\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
-data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom Research ecosystem, including Opal).
-TRUE by default.}
+\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. TRUE by default.}
 }
 \value{
-A list of tibbles of report for each dataset.
+A list of data frames containing assessment reports.
 }
 \description{
-Assesses the content and structure of a dossier object (list of
-datasets) and reports possible issues in the datasets and data dictionaries
-to facilitate assessment of input data.
-The report can be used to help assess data structure, presence of fields,
-coherence across elements, and taxonomy or data dictionary formats.This
-report is compatible with Excel and can be exported as an Excel spreadsheet.
+Assesses the content and structure of a dossier object (list of datasets)
+and generates reports of the results. This function can be used to evaluate
+data structure, presence of specific fields, coherence across elements, and
+data dictionary formats.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
-The name of each tibble will be use as the reference name of the dataset.
+A dossier is a named list containing at least one data frame or more,
+each of them being datasets. The name of each data frame will be use as the
+reference name of the dataset.
 
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
+
+The object may be specifically formatted to be compatible with additional
+\href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
+in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
 ###### Example : a dataset list is a dossier by definition.
    
-dataset <-
- as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
+ dataset <- as_dataset(
+   madshapR_DEMO$`dataset_TOKYO - errors with data`,
+   col_id = 'part_id')
  
- dossier_evaluate(as_dossier(list(ds = dataset)),as_data_dict_mlstr = FALSE)
+ dossier <- as_dossier(list(dataset = dataset))
+ 
+ glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
 
 }
 

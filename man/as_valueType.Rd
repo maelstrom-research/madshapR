@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-catalogue_functions.R
 \name{as_valueType}
 \alias{as_valueType}
-\title{Validate and coerce an object according to a given valueType}
+\title{Validate and coerce any object according to a given valueType}
 \usage{
 as_valueType(x, valueType = "text")
 }
@@ -15,32 +15,32 @@ as_valueType(x, valueType = "text")
 The object coerced accordingly to the input valueType.
 }
 \description{
-Attributes a valueType to an object, that can be a vector, or in a tibble
+Attributes a valueType to an object, that can be a vector, or in a data frame
 using \link[dplyr:mutate]{dplyr::mutate}.
 }
 \details{
-The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers
-to the OBiBa-internal type of a variable. It is specified in a data
-dictionary in a column \code{valueType} and can be associated with variables as
-attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
-'boolean', datetime', 'date'). The full list of OBiBa valueType
-possibilities and their correspondence with R data types are available using
-\link{valueType_list}.
+The valueType is a declared property of a variable that is required in
+certain functions to determine handling of the variables. Specifically,
+valueType refers to the
+\href{https://opaldoc.obiba.org/en/dev/variables-data.html#value-types}{OBiBa data type of a variable}.
+The valueType is specified in a data dictionary in a column 'valueType' and
+can be associated with variables as attributes. Acceptable valueTypes
+include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
+list of OBiBa valueType possibilities and their correspondence with R data
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_TOKYO
-valueType_of(dataset$dob)
-valueType_guess(dataset$dob)
-as_valueType(dataset$dob,'date') 
+dataset <- madshapR_DEMO$dataset_TOKYO
+as_valueType(head(dataset$dob),'date')
 
 # as_valueType is compatible with tidyverse philosophy
 library(dplyr)
-mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer'))
+mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer')) \%>\% head()
 
 }
 

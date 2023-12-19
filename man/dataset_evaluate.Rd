@@ -2,84 +2,87 @@
 % Please edit documentation in R/06-data_evaluate.R
 \name{dataset_evaluate}
 \alias{dataset_evaluate}
-\title{Generate a quality assessment report of a dataset}
+\title{Generate an assessment report for a dataset}
 \usage{
 dataset_evaluate(
   dataset,
   data_dict = NULL,
   taxonomy = NULL,
-  .dataset_name = NULL,
-  as_data_dict_mlstr = TRUE
+  dataset_name = .dataset_name,
+  as_data_dict_mlstr = TRUE,
+  .dataset_name = NULL
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of tibble(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
-\item{taxonomy}{A tibble identifying the scheme used for variables
-classification.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
-\item{.dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
+\item{dataset_name}{A character string specifying the name of the dataset
+(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
-\item{as_data_dict_mlstr}{Whether the output data dictionary has a simple
-data dictionary structure or not (meaning has a Maelstrom data dictionary
-structure, compatible with Maelstrom Research ecosystem, including Opal).
-TRUE by default.}
+\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. TRUE by default.}
+
+\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
-A list of tibbles of report for one data dictionary.
+A list of data frames containing assessment reports.
 }
 \description{
-Assesses the content and structure of a dataset and reports possible issues
-in the dataset and data dictionary to facilitate assessment of input data.
-The report can be used to help assess data structure, presence of fields,
-coherence across elements, and taxonomy or data dictionary formats. This
-report is compatible with Excel and can be exported as an Excel spreadsheet.
+Assesses the content and structure of a dataset object and generates reports
+of the results. This function can be used to evaluate data structure,
+presence of specific fields, coherence across elements, and data dictionary
+formats.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
+
+The object may be specifically formatted to be compatible with additional
+\href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
+in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example : any data frame (or tibble) can be summarized
-dataset <- 
- as_dataset(DEMO_files$`dataset_TOKYO - ERROR WITH DATA`,col_id = 'part_id')
- dataset_evaluate(dataset,as_data_dict_mlstr = FALSE)
+###### Example : Any data frame can be summarized
+dataset <- as_dataset(
+  madshapR_DEMO$`dataset_TOKYO - errors with data`,
+  col_id = 'part_id')
+ 
+glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
 
 }
 

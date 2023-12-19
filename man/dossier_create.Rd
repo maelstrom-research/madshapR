@@ -2,48 +2,49 @@
 % Please edit documentation in R/03-dataset_functions.R
 \name{dossier_create}
 \alias{dossier_create}
-\title{Create a dossier object from a list of dataset(s)}
+\title{Generate a dossier from a list of one or more datasets}
 \usage{
 dossier_create(dataset_list, data_dict_apply = FALSE)
 }
 \arguments{
-\item{dataset_list}{A list of tibble(s), identifying the input data
-observations.}
+\item{dataset_list}{A list of data frame, each of them being dataset object.}
 
-\item{data_dict_apply}{whether to apply the data dictionary to its dataset.
-The resulting tibble will have for each column its associated meta data as
-attributes. The factors will be preserved. FALSE by default.}
+\item{data_dict_apply}{Whether data dictionary(ies) should be applied to
+associated dataset(s), creating labelled dataset(s) with variable attributes.
+Any previous attributes will be preserved. FALSE by default.}
 }
 \value{
-A list of tibble(s), each of them identifying datasets in a dossier.
+A list of data frame(s), containing input dataset(s).
 }
 \description{
-Assembles a dossier object from the listed datasets. A dossier is a list
-containing at least one valid dataset and is the input used by key functions
-of the package.
+Generates a dossier object (list of one or more datasets).
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
+library(dplyr)
 
 ###### Example 1: datasets can be gathered into a dossier which is a list.
 dossier <- dossier_create(
  dataset_list = list(
-   dataset_MELBOURNE_1 = DEMO_files$dataset_MELBOURNE_1,
-   dataset_MELBOURNE_2 = DEMO_files$dataset_MELBOURNE_2))
-   
-###### Example 2: any data frame (or tibble) can be gathered into a dossier
-dossier_create(list(iris, mtcars))
+   dataset_MELBOURNE = madshapR_DEMO$dataset_MELBOURNE,
+   dataset_PARIS = madshapR_DEMO$dataset_PARIS ))
+
+glimpse(dossier)
+    
+###### Example 2: Any data frame can be gathered into a dossier
+glimpse(dossier_create(list(iris, mtcars)))
    
 }
 

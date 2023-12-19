@@ -2,40 +2,52 @@
 % Please edit documentation in R/03-dataset_functions.R
 \name{as_dossier}
 \alias{as_dossier}
-\title{Validate and coerce an object to dossier format}
+\title{Validate and coerce any object as a dossier (list of dataset(s))}
 \usage{
 as_dossier(object)
 }
 \arguments{
-\item{object}{A potential dossier to be coerced.}
+\item{object}{A potential dossier object to be coerced.}
 }
 \value{
-A list of tibble(s), each of them identifying datasets in a dossier.
+A list of data frame(s) with \code{madshapR::class} 'dossier'.
 }
 \description{
-Confirms that the input object is a valid dossier and returns it as a dossier
-with the appropriate 'madshapR::class' attribute. This function mainly helps
-validate input within other functions of the package but could be used to
+Checks if an object is a valid dossier (list of datasets) and returns it
+with the appropriate \code{madshapR::class} attribute. This function mainly helps
+validate inputs within other functions of the package but could be used to
 check if a dossier is valid.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
-The name of each tibble will be use as the reference name of the dataset.
+A dossier is a named list containing at least one data frame or more,
+each of them being datasets. The name of each tibble will be use as the
+reference name of the dataset.
+
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
+library(dplyr)
 library(stringr)
 
 ###### Example 1: a dataset list is a dossier by definition.
 dossier <- 
-  as_dossier(DEMO_files[str_detect(names(DEMO_files),"dataset")])
+  as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset_TOKYO")])
+  
+glimpse(dossier)
    
-###### Example 2: any list of data frame (or tibble) can be a dossier by 
+###### Example 2: any list of data frame can be a dossier by 
 # definition.
-as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
+glimpse(as_dossier(list(dataset_1 = iris, dataset_2 = mtcars)))
 
 }
 

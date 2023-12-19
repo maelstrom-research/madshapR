@@ -7,14 +7,14 @@
 data_dict_pivot_wider(data_dict, taxonomy = NULL)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
-\item{taxonomy}{A tibble identifying the scheme used for variables
-classification.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 }
 \value{
-A list of tibble(s) identifying a data dictionary.
+A list of data frame(s) identifying a data dictionary.
 }
 \description{
 Transforms column(s) of a data dictionary from long format to wide format.
@@ -25,34 +25,30 @@ columns following the taxonomy structure provided. Variable names in the
 data dictionary must be unique.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-taxonomy <- DEMO_files$taxonomy_opal_mlstr
-data_dict <- DEMO_files$dd_TOKYO_format_maelstrom_tagged
+data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
+taxonomy  <- madshapR_DEMO$taxonomy_PARIS
 data_dict_pivot_wider(data_dict, taxonomy)
 
 }

@@ -7,35 +7,35 @@
 dataset_zap_data_dict(dataset)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 }
 \value{
-A tibble identifying a dataset.
+A data frame identifying a dataset.
 }
 \description{
-Removes any attributes attached to a tibble. Any value in columns will be
+Removes any attributes attached to a data frame. Any value in columns will be
 preserved. Any 'Date' (typeof) column will be recast as character to
 preserve information.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_TOKYO
-data_dict <- as_data_dict_mlstr(DEMO_files$dd_TOKYO_format_maelstrom_tagged)
+dataset <- madshapR_DEMO$dataset_TOKYO
+data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_TOKYO)
 dataset <- data_dict_apply(dataset,data_dict)
-dataset_zap_data_dict(dataset)
+head(dataset_zap_data_dict(dataset))
 
 }
 

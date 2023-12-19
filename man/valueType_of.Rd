@@ -18,21 +18,23 @@ Determines the valueType of an object based on \code{\link[=typeof]{typeof()}} a
 'integer', 'decimal', and 'text'.
 }
 \details{
-The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers
-to the OBiBa-internal type of a variable. It is specified in a data
-dictionary in a column \code{valueType} and can be associated with variables as
-attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
-'boolean', datetime', 'date'). The full list of OBiBa valueType
-possibilities and their correspondence with R data types are available using
-\link{valueType_list}.
+The valueType is a declared property of a variable that is required in
+certain functions to determine handling of the variables. Specifically,
+valueType refers to the
+\href{https://opaldoc.obiba.org/en/dev/variables-data.html#value-types}{OBiBa data type of a variable}.
+The valueType is specified in a data dictionary in a column 'valueType' and
+can be associated with variables as attributes. Acceptable valueTypes
+include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
+list of OBiBa valueType possibilities and their correspondence with R data
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$dataset_MELBOURNE_1
+dataset <- madshapR_DEMO$dataset_MELBOURNE
 valueType_of(dataset$Gender)
 valueType_of(iris$Sepal.Length)
 
@@ -41,7 +43,5 @@ valueType_of(iris$Sepal.Length)
 }
 \seealso{
 \code{\link[=typeof]{typeof()}}, \code{\link[=class]{class()}}
-\link{valueType_list} for insights about possible valueType and
-translation into type and class in R.
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
 }

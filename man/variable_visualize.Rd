@@ -10,26 +10,28 @@ variable_visualize(
   data_dict = NULL,
   group_by = NULL,
   valueType_guess = FALSE,
+  variable_summary = .summary_var,
   .summary_var = NULL
 )
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
 \item{col}{A character string specifying the name of the column.}
 
-\item{data_dict}{A list of tibble(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
-\item{group_by}{A character string of one column in the dataset that can be
-taken as a grouping column. The visual element will be grouped and displayed
-by this column.}
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Elements will be grouped by this
+column.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
 
-\item{.summary_var}{A summary list which is the summary of the variables.}
+\item{variable_summary}{A summary list which is the summary of the variables.}
+
+\item{.summary_var}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A list of up to seven elements (charts and figures and datatables) which can
@@ -51,60 +53,61 @@ variable, One bar chart for categorical values (if any), One bar chart for
 missing values (if any), One pie chart for the proportion of valid and
 missing values (if any). The variable can be grouped using \code{group_by}
 parameter, which is a (categorical) column in the dataset. The user may need
-to use \code{\link[=as.factor]{as.factor()}} in this context. To fasten the process (and allow
+to use \code{\link[=as_category]{as_category()}} in this context. To fasten the process (and allow
 recycling object in a workflow) the user can feed the function with a
-\code{.summary_var}, which is the output of the function \code{\link[=dataset_summarize]{dataset_summarize()}}
+\code{variable_summary}, which is the output of the function \code{\link[=dataset_summarize]{dataset_summarize()}}
 of the column(s) \code{col} and  \code{group_by}. The summary must have the same
 parameters to operate.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers
-to the OBiBa-internal type of a variable. It is specified in a data
-dictionary in a column \code{valueType} and can be associated with variables as
-attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
-'boolean', datetime', 'date'). The full list of OBiBa valueType
-possibilities and their correspondence with R data types are available using
-\link{valueType_list}.
+The valueType is a declared property of a variable that is required in
+certain functions to determine handling of the variables. Specifically,
+valueType refers to the
+\href{https://opaldoc.obiba.org/en/dev/variables-data.html#value-types}{OBiBa data type of a variable}.
+The valueType is specified in a data dictionary in a column 'valueType' and
+can be associated with variables as attributes. Acceptable valueTypes
+include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
+list of OBiBa valueType possibilities and their correspondence with R data
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
 
- dataset <- iris['Sepal.Width']
- summary_variable <- dataset_summarize(dataset)
-  
- variable_viz <-
-    variable_visualize(
-    dataset, col = 'Sepal.Width',
-    .summary_var =  summary_variable)
+ library(dplyr)
+ library(fs)
  
- variable_viz$summary_table
- variable_viz$main_values_1
- variable_viz$main_values_2
+ dataset <- madshapR_DEMO$dataset_TOKYO
+ 
+ variable_summary <- madshapR_DEMO$`dataset_summary`
+  
+ variable_visualize(
+   dataset, col = 'height',
+   variable_summary =  variable_summary)
+ 
  
 }
 
 }
 \seealso{
-\code{\link[=as.factor]{as.factor()}}
 \code{\link[DT:datatable]{DT::datatable()}}, \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}
 \code{\link[=dataset_summarize]{dataset_summarize()}}, \code{\link[=dataset_visualize]{dataset_visualize()}}
 }

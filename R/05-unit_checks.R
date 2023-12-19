@@ -2,33 +2,32 @@
 #' Assess a data dictionary for potential issues in variables
 #'
 #' @description
-#' Generates a tibble report of any non-unique variable names in the 
+#' Generates a data frame report of any non-unique variable names in the 
 #' 'Variables' element.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns
-#' A tibble providing non unique variables across a data dictionary.
+#' A data frame providing non unique variables across a data dictionary.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_variables(data_dict)
 #'
 #' }
@@ -81,36 +80,35 @@ check_data_dict_variables <- function(data_dict){
 #' Assess a data dictionary for potential issues in categories
 #'
 #' @description
-#' Generates a tibble report of any categorical variable name present in the
-#' 'Categories' element but not present in 'Variables'. The tibble also reports 
-#' any non-unique combinations of 'variable' and 'name' in the 'Categories'
-#' element.
+#' Generates a data frame report of any categorical variable name present in the
+#' 'Categories' element but not present in 'Variables'. The data frame also 
+#' reports any non-unique combinations of 'variable' and 'name' in the 
+#' 'Categories' element.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #' 
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns 
-#' A tibble providing categorical variables that has issues within a 
+#' A data frame providing categorical variables that has issues within a 
 #' data dictionary.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_categories(data_dict)
 #'
 #' }
@@ -197,35 +195,34 @@ check_data_dict_categories <- function(data_dict){
 #' Assess categorical variables for non-Boolean values in 'missing' column
 #'
 #' @description
-#' Generates a tibble report of any categorical variables with non-Boolean (or
-#' compatible with boolean) values in the 'missing' column of the 'Categories'
-#' element.
+#' Generates a data frame report of any categorical variables with non-Boolean 
+#' (or compatible with boolean) values in the 'missing' column of the 
+#' 'Categories' element.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns 
-#' A tibble providing categorical values which 'missing' column is not a 
+#' A data frame providing categorical values which 'missing' column is not a 
 #' boolean.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_missing_categories(data_dict)
 #'
 #' }
@@ -280,47 +277,43 @@ check_data_dict_missing_categories <- function(data_dict){
 #' Assess a data dictionary for non-valid taxonomy values
 #'
 #' @description
-#' Generates a tibble report of any variable with a taxonomy value that is not
-#' in the list of allowed values for a given taxonomy.
+#' Generates a data frame report of any variable with a taxonomy value that is 
+#' not in the list of allowed values for a given taxonomy.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #'
-#' A taxonomy is classification scheme that can be defined for variable 
-#' attributes. If defined, a taxonomy must be a data frame-like object. It must 
-#' be compatible with (and is generally extracted from) an Opal environment. To 
-#' work with certain functions, a valid taxonomy must contain at least the 
-#' columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-#' may follow Maelstrom research taxonomy, and its content can be evaluated
-#' accordingly, such as naming convention restriction, tagging elements,
-#' or scales, which are specific to Maelstrom Research. In this particular
-#' case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-#' 'vocabulary_scale' and 'term_scale' to work with some specific functions.
+#' A taxonomy is a classification schema that can be defined for variable 
+#' attributes. A taxonomy is usually extracted from an 
+#' [Opal environment](https://www.obiba.org/pages/products/opal/), and a 
+#' taxonomy object is a data frame that must contain at least the columns 
+#' `taxonomy`, `vocabulary`, and `terms`. Additional details about Opal 
+#' taxonomies are 
+#' [available online](https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html).
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
-#' @param taxonomy A tibble identifying the scheme used for variables 
-#' classification.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #'
 #' @returns
-#' A tibble providing non-standard taxonomy declared in a data dictionary.
+#' A data frame providing non-standard taxonomy declared in a data dictionary.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' taxonomy <- DEMO_files$taxonomy_opal
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' taxonomy <- madshapR_DEMO$taxonomy_PARIS
+#' data_dict <- madshapR_DEMO$`data_dict_PARIS`
 #' check_data_dict_taxonomy(data_dict, taxonomy)
 #'
 #' }
@@ -357,7 +350,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   return(test)
   # }
 
-  # data_dict <- data_dict_list$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+  # data_dict <- data_dict_list$`data_dict_TOKYO - errors`
 
   # only works for mlstr_taxo
 
@@ -536,43 +529,44 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' Assess a data dictionary for non-valid valueType values
 #'
 #' @description
-#' Generates a tibble report of any variable with a valueType that is not in the
-#' list of allowed valueType values. This function also assesses if the 
+#' Generates a data frame report of any variable with a valueType that is not in 
+#' the list of allowed valueType values. This function also assesses if the 
 #' valueType is compatible with any associated categorical values declared.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns 
-#' A tibble providing non-standard valueType declared in a data dictionary.
+#' A data frame providing non-standard valueType declared in a data dictionary.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_data_dict_valueType(data_dict)
 #'
 #' }
@@ -589,7 +583,6 @@ check_data_dict_valueType <- function(data_dict){
 
   test <- 
     test_valueType_names <- 
-    test_valueType_cat <- 
     test_valueType_refined <- 
     tibble(
       name_var = as.character(),
@@ -612,87 +605,46 @@ check_data_dict_valueType <- function(data_dict){
 
   if(length(data_dict[['Categories']]) > 0){
 
-    vT_text <-
-      vT_list %>%
-      dplyr::filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
-
-    data_dict_vt <-
-      data_dict[['Variables']] %>%
-      select(name_var = .data$`name`,.data$`valueType`) %>%
-      dplyr::filter(! .data$`valueType` %in% vT_text)
-
-    vT_names <-
+    vT_categorical <-
       data_dict[['Categories']] %>%
       select(name_var = "variable", "name") %>%
-      inner_join(data_dict_vt,by = "name_var")
+      dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var`) %>%
+      inner_join(
+        data_dict[['Variables']] %>%
+          select(name_var = 'name','valueType'),by = "name_var")
 
-    test_valueType_cat <-
-      vT_names %>%
-      select(-"name_var") %>%
+    # for these, find the best match
+    test_valueType_refined <- 
+      vT_categorical %>%
+      group_by(across(any_of(c("name_var")))) %>%
+      reframe(
+        valueType = .data$`valueType`,
+        name = paste0(.data$`name`,collapse = '|')) %>%
       distinct() %>%
-      rowwise() %>%
+      group_by(across(any_of(c("valueType", 'name')))) %>%
+      reframe(
+        name_var = paste0(.data$`name_var`,collapse = '|')) %>%
+      distinct() %>%
+      separate_longer_delim(cols = 'name',delim = '|') %>%
+      group_by(across(any_of(c("name_var")))) %>%
+      reframe(
+        valueType = .data$`valueType`,
+        test = class(silently_run(as_valueType(.data$`name`,.data$`valueType`[[1]])))[1],
+        suggestion = valueType_guess(.data$`name`)) %>%
+      separate_longer_delim(cols = 'name_var',delim = '|') %>%
+      distinct %>%
+      filter(.data$`valueType` != .data$`suggestion`) %>%
       mutate(
-        test = class(
-          silently_run(as_valueType(.data$`name`,.data$`valueType`)))[1]
-        ) %>%
-      dplyr::filter(.data$`test` == "try-error") %>%
-      inner_join(vT_names,by = c("name", "valueType")) %>%
-      select("name_var", "valueType") %>%
-      distinct
+        condition = case_when(
+          .data$`test` == 'try-error'  ~ "[ERR]  - valueType conflict in 'Categories'",
+          TRUE                         ~ "[INFO] - refined valueType proposed")) %>%
+      select( 'name_var', 'value' = 'valueType', 'condition','suggestion') %>%
+      mutate(across(everything(), ~ as.character(.)))
 
-    test_valueType_cat <-
-      test_valueType_cat %>%
-      full_join(
-        silently_run(
-        valueType_self_adjust(
-          data_dict_filter(
-            data_dict,paste0("name %in% c('",
-                           paste0(unique(test_valueType_cat$name_var),
-                                  collapse = "','"),"')")))[['Variables']]) %>%
-          select(name_var = "name", suggestion = "valueType"),
-        by = "name_var")
-
-    test_valueType_cat <-
-      test_valueType_cat %>%
-      mutate(
-        condition = "[ERR] - valueType conflict in 'Categories'") %>%
-      select(.data$`name_var`, value = .data$`valueType`, .data$`condition`,
-             .data$`suggestion`) %>%
-      mutate(across(everything(), ~as.character(.))) %>%
-      distinct
-    
-    vT_cat <- 
-      na.omit(intersect(
-      unique(data_dict[['Variables']][['name']]),
-      unique(data_dict[['Categories']][['variable']])))
-      
-    vT_cat <- vT_cat[!vT_cat %in% (test_valueType_cat %>% pull(.data$`name_var`))]
-    
-    for(i in vT_cat){
-      # stop()}
-      
-      data_dict_i <- 
-        data_dict %>%
-        data_dict_filter(paste0('name == "',i,'"'))
-      
-      vT_data_dict <- data_dict_i['Variables']
-      vT_dataset <- 
-        data_dict_i[['Categories']]['name'] %>%
-        rename_with(.cols = "name", .fn = ~ i)
-      
-      test_valueType_refined <- 
-        test_valueType_refined %>%
-        bind_rows(
-          check_dataset_valueType(
-            vT_dataset,vT_data_dict,valueType_guess = TRUE)) %>%
-        mutate(
-          condition = str_replace(.data$`condition`,"dataset","'Categories'"))
     }
-  }
 
   test <- bind_rows(
     test_valueType_names, 
-    test_valueType_cat,
     test_valueType_refined)
 
   return(test)
@@ -702,44 +654,44 @@ check_data_dict_valueType <- function(data_dict){
 #' Assess a data dictionary and associated dataset for undeclared variables
 #'
 #' @description
-#' Generates a tibble report of any variable that is present in a dataset but
-#' not in the associated data dictionary or present in a data dictionary but 
+#' Generates a data frame report of any variable that is present in a dataset 
+#' but not in the associated data dictionary or present in a data dictionary but 
 #' not in the associated dataset.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #' 
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #'
-#' @param dataset A tibble identifying the input dataset observations.
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns
-#' A tibble providing undeclared variables across a data dictionary.
+#' A data frame providing undeclared variables across a data dictionary.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+#' dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 #' check_dataset_variables(dataset,data_dict)
 #'
 #' }
@@ -786,46 +738,46 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' Assess a data dictionary and associated dataset for category differences
 #'
 #' @description
-#' Generates a tibble report of any categorical value options (the combination
-#' of 'variable' and 'name' in 'Categories') in a data dictionary that are not 
-#' in the associated dataset and any categorical variable values in a dataset 
-#' that are not declared in the associated data dictionary.
+#' Generates a data frame report of any categorical value options (the 
+#' combination of 'variable' and 'name' in 'Categories') in a data dictionary 
+#' that are not in the associated dataset and any categorical variable values 
+#' in a dataset that are not declared in the associated data dictionary.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #' 
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #'
-#' @param dataset A tibble identifying the input dataset observations.
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #'
 #' @returns
-#' A tibble providing categorical values which differ between dataset and
+#' A data frame providing categorical values which differ between dataset and
 #' their data dictionary.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-#' dataset      <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
+#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors with data`
+#' dataset      <- madshapR_DEMO$`dataset_TOKYO - errors with data`
 #' check_dataset_categories(dataset, data_dict)
 #' 
 #' }
@@ -959,57 +911,54 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #' Assess a data dictionary and associated dataset for valueType differences
 #'
 #' @description
-#' Generates a tibble report of any incompatibility between variable values in a
-#' dataset and the declared valueType in the associated data dictionary.
+#' Generates a data frame report of any incompatibility between variable values 
+#' in a dataset and the declared valueType in the associated data dictionary.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' A data dictionary contains metadata about variables and can be associated 
-#' with a dataset. It must be a list of data frame-like objects with elements 
-#' named 'Variables' (required) and 'Categories' (if any). To be usable in any 
-#' function, the 'Variables' element must contain at least the 'name' column, 
-#' and the 'Categories' element must contain at least the 'variable' and 'name' 
-#' columns. To be considered as a minimum workable data dictionary, in 
-#' 'Variables' the 'name' column must also have unique and non-null entries, 
-#' and in 'Categories' the combination of 'variable' and 'name' columns must 
-#' also be unique'.
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
 #' 
-#' A dataset must be a data frame-like object and can be associated with a 
-#' data dictionary. If no data dictionary is provided, a minimum workable 
-#' data dictionary will be generated as needed by relevant functions. 
-#' An identifier `id` column for sorting can be specified by the user. If 
-#' specified, the `id` values must be non-missing and will be used in functions 
-#' that require it. If no identifier column is specified, indexing is handled 
-#' automatically by the function.
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
 #' 
-#' The valueType is a property of a variable and is required in certain 
-#' functions to determine the handling of the variables. The valueType refers 
-#' to the OBiBa-internal type of a variable. It is specified in a data 
-#' dictionary in a column `valueType` and can be associated with variables as 
-#' attributes. Acceptable valueTypes include 'text', 'integer', 'decimal', 
-#' 'boolean', datetime', 'date'). The full list of OBiBa valueType 
-#' possibilities and their correspondence with R data types are available using
-#' [madshapR::valueType_list].
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
 #'
-#' @param dataset A tibble identifying the input dataset observations.
-#' @param data_dict A list of tibble(s) representing meta data to be evaluated.
-#' @param valueType_guess Whether the output should include a more accurate
-#' valueType that could be applied to the dataset. TRUE by default.
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata to be evaluated.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #'
 #' @returns
-#' A tibble providing values which valueType differs between dataset and
+#' A data frame providing values which valueType differs between dataset and
 #' their data dictionary.
 #'
 #' @examples
 #' {
-#' 
-#' # use DEMO_files provided by the package
 #'
-#' dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-#' data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR WITH DATA`
-#' dataset <- data_dict_apply(dataset, data_dict)
-#' check_dataset_valueType(dataset, data_dict,valueType_guess = TRUE)
+#' check_dataset_valueType(mtcars[2], valueType_guess = TRUE)
 #'
 #' }
 #'
@@ -1018,7 +967,8 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
 #'
 #' @export
 check_dataset_valueType <- function(
-    dataset, data_dict = NULL,
+    dataset, 
+    data_dict = NULL,
     valueType_guess = FALSE){
   
   if(is.null(data_dict)) data_dict <-
@@ -1052,7 +1002,7 @@ check_dataset_valueType <- function(
 
   # check if `valueType` column exists
   if(is.null(data_dict[['Variables']][['valueType']])){
-    warning("Unknown or uninitialised column: `valueType`")
+    warning("Unknown or uninitialized column: `valueType`")
     return(test)}
 
   # dataset <-
@@ -1097,7 +1047,14 @@ check_dataset_valueType <- function(
           condition = ifelse(
             condition == 'try-error',
             "[ERR] - valueType conflict in dataset",NA_character_),
-          suggestion = guess))
+          suggestion = guess) %>% 
+          mutate(
+          condition = ifelse(
+            data_dict_vT == 'date' & guess == 'datetime',
+            "[ERR] - date format not clear",.data$`condition`),
+          suggestion = ifelse(
+            data_dict_vT == 'date' & guess == 'datetime',
+            'text',.data$`suggestion`)))
   }
 
   test <-
@@ -1124,32 +1081,29 @@ check_dataset_valueType <- function(
 #' Assess variable names in a data dictionary for non-standard formats
 #'
 #' @description
-#' Generates a tibble report of any variable names that are not compatible in 
-#' Maelstrom Research ecosystem, including Opal.
+#' Generates a data frame report of any variable names that are not compatible 
+#' in Maelstrom Research ecosystem, including Opal.
 #' This report can be used to help assess data structure, presence of fields, 
 #' coherence across elements, and taxonomy or data dictionary formats.
 #'
 #' @details
-#' The user must provide element which respect a certain structure to work with
-#' the functions of the package or its environment (Maelstrom and/or
-#' Obiba suite). In addition, any element may be compatible with Maelstrom 
-#' Research ecosystem, including Opal, and its content can be evaluated 
-#' accordingly, such as naming convention restriction, columns like 'valueType'
-#' and 'label(:xx)' and/or any taxonomy provided.
+#' The object may be specifically formatted to be compatible with additional 
+#' [Maelstrom Research software](https://maelstrom-research.org/page/software), 
+#' in particular [Opal environments](https://www.obiba.org/pages/products/opal/).
 #'
 #' @param var_names A character vector of names.
 #'
 #' @returns
-#' A tibble providing non-standard names across a vector.
+#' A data frame providing non-standard names across a vector.
 #'
 #' @examples
 #' {
 #' 
-#' # use DEMO_files provided by the package
+#' # use madshapR_DEMO provided by the package
 #'
 #' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 #' check_name_standards(
-#'  DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`$Variables$name)
+#'  madshapR_DEMO$`data_dict_TOKYO - errors`$Variables$name)
 #'
 #' }
 #'

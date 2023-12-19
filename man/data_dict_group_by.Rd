@@ -7,13 +7,13 @@
 data_dict_group_by(data_dict, col)
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be
+\item{data_dict}{A list of data frame(s) representing metadata to be
 transformed.}
 
 \item{col}{variable to group by.}
 }
 \value{
-A list of tibble(s) identifying a workable data dictionary structure.
+A list of data frame(s) identifying a workable data dictionary structure.
 }
 \description{
 Groups the data dictionary element(s) by the groups defined by the query.
@@ -23,33 +23,33 @@ analogous to running \code{\link[dplyr:group_by]{dplyr::group_by()}}. Each eleme
 group values. \code{\link[=data_dict_ungroup]{data_dict_ungroup()}} reverses the effect.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
 # data dictionary per say, but can be used as a structure which can be 
 # shaped into a data dictionary.
 
-library(dplyr)
+data_dict_list <- list(
+  data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+  data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 
-data_dict_list <- 
-  DEMO_files[c('dd_MELBOURNE_1_format_maelstrom',
-               'dd_MELBOURNE_2_format_maelstrom')] \%>\%
-data_dict_list_nest(name_group = 'table')
- 
-data_dict_group_by(data_dict_list,col = "table")
+data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
+
+data_dict_group_by(data_dict_nest, col = "table")
+
 }
 
 }

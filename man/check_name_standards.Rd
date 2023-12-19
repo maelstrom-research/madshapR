@@ -10,30 +10,27 @@ check_name_standards(var_names)
 \item{var_names}{A character vector of names.}
 }
 \value{
-A tibble providing non-standard names across a vector.
+A data frame providing non-standard names across a vector.
 }
 \description{
-Generates a tibble report of any variable names that are not compatible in
-Maelstrom Research ecosystem, including Opal.
+Generates a data frame report of any variable names that are not compatible
+in Maelstrom Research ecosystem, including Opal.
 This report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats.
 }
 \details{
-The user must provide element which respect a certain structure to work with
-the functions of the package or its environment (Maelstrom and/or
-Obiba suite). In addition, any element may be compatible with Maelstrom
-Research ecosystem, including Opal, and its content can be evaluated
-accordingly, such as naming convention restriction, columns like 'valueType'
-and 'label(:xx)' and/or any taxonomy provided.
+The object may be specifically formatted to be compatible with additional
+\href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
+in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 check_name_standards(
- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`$Variables$name)
+ madshapR_DEMO$`data_dict_TOKYO - errors`$Variables$name)
 
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/07-data_summarise.R
 \name{dossier_summarize}
 \alias{dossier_summarize}
-\title{Generate a report and summary of a dossier (list of datasets)}
+\title{Generate an assessment report and summary of a dossier}
 \usage{
 dossier_summarize(
   dossier,
@@ -12,64 +12,59 @@ dossier_summarize(
 )
 }
 \arguments{
-\item{dossier}{List of tibble, each of them being datasets.}
+\item{dossier}{List of data frame(s), each of them being datasets.}
 
-\item{group_by}{A character string of one column in the dataset that can be
-taken as a grouping column. The visual element will be grouped and displayed
-by this column.}
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Elements will be grouped by this
+column.}
 
-\item{taxonomy}{A tibble identifying the scheme used for variables
-classification.}
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. TRUE by default.}
+valueType that could be applied to the dataset. FALSE by default.}
 }
 \value{
-A list of tibbles of report for each listed dataset.
+A list of data frames containing overall assessment reports and summaries grouped by dataset.
 }
 \description{
 Assesses and summarizes the content and structure of a dossier
-(list of datasets)  and reports potential issues to facilitate the
-assessment of input data. The report can be used to help assess data
-structure, presence of fields, coherence across elements, and taxonomy or
-data dictionary formats. The summary provides additional information about
-variable distributions and descriptive statistics. This report is compatible
-with Excel and can be exported as an Excel spreadsheet.
+(list of datasets) and generates reports of the results. This function can
+be used to evaluate data structure, presence of specific fields, coherence
+across elements, and data dictionary formats, and to summarize additional
+information about variable distributions and descriptive statistics.
 }
 \details{
-A dossier must be a named list containing at least one data frame or
-data frame extension (e.g. a tibble), each of them being datasets.
-The name of each tibble will be use as the reference name of the dataset.
-This report is compatible with Excel and can be exported as an Excel
-spreadsheet.
+A dossier is a named list containing at least one data frame or more,
+each of them being datasets. The name of each data frame will be use as the
+reference name of the dataset.
 
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 
-The valueType is a property of a variable and is required in certain
-functions to determine the handling of the variables. The valueType refers
-to the OBiBa-internal type of a variable. It is specified in a data
-dictionary in a column \code{valueType} and can be associated with variables as
-attributes. Acceptable valueTypes include 'text', 'integer', 'decimal',
-'boolean', datetime', 'date'). The full list of OBiBa valueType
-possibilities and their correspondence with R data types are available using
-\link{valueType_list}.
+The valueType is a declared property of a variable that is required in
+certain functions to determine handling of the variables. Specifically,
+valueType refers to the
+\href{https://opaldoc.obiba.org/en/dev/variables-data.html#value-types}{OBiBa data type of a variable}.
+The valueType is specified in a data dictionary in a column 'valueType' and
+can be associated with variables as attributes. Acceptable valueTypes
+include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full
+list of OBiBa valueType possibilities and their correspondence with R data
+types are available using \link{valueType_list}. The valueType can be used to
+coerce the variable to the corresponding data type.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example 1: Combine functions and summarise datasets.
+###### Example 1: Combine functions and summarize datasets.
 dossier <- list(iris = tibble())
 
 dossier_summary <- dossier_summarize(dossier)

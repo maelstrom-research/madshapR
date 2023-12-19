@@ -7,46 +7,47 @@
 dataset_cat_as_labels(dataset, data_dict = NULL, col_names = names(dataset))
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of tibble(s) representing meta data of an
-associated dataset (to be generated).}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 
 \item{col_names}{A character string specifying the name(s) of the column(s)
 which refer to existing column(s) in the dataset. The column(s) can be named
 or indicated by position.}
 }
 \value{
-A tibble identifying a dataset.
+A data frame identifying a dataset.
 }
 \description{
 Applies category labels declared in a data dictionary to the associated
 columns (variables) in the dataset.
 }
 \details{
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {
 
-dataset_cat_as_labels(iris['Sepal.Length'])
+dataset = madshapR_DEMO$dataset_PARIS
+data_dict = as_data_dict_mlstr(madshapR_DEMO$data_dict_PARIS)
+dataset_cat_as_labels(dataset, data_dict, col_names = 'SEX')
 
 }
 

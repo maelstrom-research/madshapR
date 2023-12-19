@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-catalogue_functions.R
 \name{as_taxonomy}
 \alias{as_taxonomy}
-\title{Validate and coerce an object to taxonomy format}
+\title{Validate and coerce any object as a taxonomy}
 \usage{
 as_taxonomy(object)
 }
@@ -10,33 +10,30 @@ as_taxonomy(object)
 \item{object}{A potential taxonomy to be coerced.}
 }
 \value{
-A tibble identifying a taxonomy (generally generated from Opal taxonomy).
+A list of data frame(s) with \code{madshapR::class} 'taxonomy'.
 }
 \description{
 Confirms that the input object is a valid taxonomy and returns it as a
-taxonomy with the appropriate 'madshapR::class' attribute. This function
+taxonomy with the appropriate \code{madshapR::class} attribute. This function
 mainly helps validate input within other functions of the package but could
 be used to check if a taxonomy is valid.
 }
 \details{
-A taxonomy is classification scheme that can be defined for variable
-attributes. If defined, a taxonomy must be a data frame-like object. It must
-be compatible with (and is generally extracted from) an Opal environment. To
-work with certain functions, a valid taxonomy must contain at least the
-columns 'taxonomy', 'vocabulary', and 'terms'. In addition, the taxonomy
-may follow Maelstrom research taxonomy, and its content can be evaluated
-accordingly, such as naming convention restriction, tagging elements,
-or scales, which are specific to Maelstrom Research. In this particular
-case, the tibble must also contain 'vocabulary_short', 'taxonomy_scale',
-'vocabulary_scale' and 'term_scale' to work with some specific functions.
+A taxonomy is a classification schema that can be defined for variable
+attributes. A taxonomy is usually extracted from an
+\href{https://www.obiba.org/pages/products/opal/}{Opal environment}, and a
+taxonomy object is a data frame that must contain at least the columns
+\code{taxonomy}, \code{vocabulary}, and \code{terms}. Additional details about Opal
+taxonomies are
+\href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 ###### Example
-as_taxonomy(DEMO_files$taxonomy_PARIS)
+as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
 
 }
 

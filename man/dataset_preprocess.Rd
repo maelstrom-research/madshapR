@@ -7,25 +7,24 @@
 dataset_preprocess(dataset, data_dict = NULL)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations
-associated to its data dictionary.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of tibble(s) representing meta data of an
-associated dataset. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
 }
 \value{
-A tibble providing summary elements of a dataset, including its values and
-data dictionary elements.
+A data frame providing summary elements of a dataset, including its values
+and data dictionary elements.
 }
 \description{
 Analyses the content of a dataset and its data dictionary (if any),
 identifies variable(s) data type and values accordingly and preprocess the
-variables. The elements of the tibble generated are evaluation of
+variables. The elements of the data frame generated are evaluation of
 valid/non valid/missing values (based on the data dictionary information if
 provided). This function can be used to personalize report parameters and is
 internally used in the function \code{\link[=dataset_summarize]{dataset_summarize()}}.
 
-Generates a tibble that evaluates and aggregates all columns
+Generates a data frame that evaluates and aggregates all columns
 in a dataset with (if any) its data dictionary. The data dictionary (if
 present) separates observations between open values, missing values,
 categorical values , and categorical missing values (which corresponds to the
@@ -33,29 +32,29 @@ categorical values , and categorical missing values (which corresponds to the
 This internal function is mainly used inside summary functions.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
  
-###### Example : any data frame (or tibble) can be a dataset by definition.
-dataset_preprocess(iris)
+###### Example : Any data frame can be a dataset by definition.
+head(dataset_preprocess(iris))
 
 }
 

@@ -7,46 +7,46 @@
 check_dataset_variables(dataset, data_dict = NULL)
 }
 \arguments{
-\item{dataset}{A tibble identifying the input dataset observations.}
+\item{dataset}{A dataset object.}
 
-\item{data_dict}{A list of tibble(s) representing meta data to be evaluated.}
+\item{data_dict}{A list of data frame(s) representing metadata to be evaluated.}
 }
 \value{
-A tibble providing undeclared variables across a data dictionary.
+A data frame providing undeclared variables across a data dictionary.
 }
 \description{
-Generates a tibble report of any variable that is present in a dataset but
-not in the associated data dictionary or present in a data dictionary but
+Generates a data frame report of any variable that is present in a dataset
+but not in the associated data dictionary or present in a data dictionary but
 not in the associated dataset.
 This report can be used to help assess data structure, presence of fields,
 coherence across elements, and taxonomy or data dictionary formats.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 
-A dataset must be a data frame-like object and can be associated with a
-data dictionary. If no data dictionary is provided, a minimum workable
-data dictionary will be generated as needed by relevant functions.
-An identifier \code{id} column for sorting can be specified by the user. If
-specified, the \code{id} values must be non-missing and will be used in functions
-that require it. If no identifier column is specified, indexing is handled
-automatically by the function.
+A dataset is a data table containing variables. A dataset object is a
+data frame and can be associated with a data dictionary. If no
+data dictionary is provided with a dataset, a minimum workable
+data dictionary will be generated as needed within relevant functions.
+Identifier variable(s) for indexing can be specified by the user.
+The id values must be non-missing and will be used in functions that
+require it. If no identifier variable is specified, indexing is
+handled automatically by the function.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-dataset <- DEMO_files$`dataset_TOKYO - ERROR WITH DATA`
-data_dict <- DEMO_files$`dd_TOKYO_format_maelstrom_tagged - ERROR`
+dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
 check_dataset_variables(dataset,data_dict)
 
 }

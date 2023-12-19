@@ -12,8 +12,8 @@ data_dict_filter(
 )
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be
-transformed.}
+\item{data_dict}{A list of data frame(s) representing metadata to be
+filtered.}
 
 \item{filter_var}{Expressions that are defined in the element 'Variables' in
 the data dictionary.}
@@ -25,7 +25,7 @@ the data dictionary.}
 'Variables' in the data dictionary.}
 }
 \value{
-A list of tibble(s) identifying a workable data dictionary structure.
+A list of data frame(s) identifying a workable data dictionary structure.
 }
 \description{
 Subsets either or both the 'Variables' and 'Categories' elements of a data
@@ -33,20 +33,19 @@ dictionary. Rows are conserved if their values satisfy the condition.
 This is a wrapper function analogous to \code{\link[dplyr:filter]{dplyr::filter()}}.
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
@@ -54,27 +53,23 @@ also be unique'.
 # shaped into a data dictionary.
 library(dplyr)
 
-data_dict_list <- list()
-data_dict_1 <-
-  DEMO_files$dd_MELBOURNE_1_format_maelstrom \%>\%
-  lapply(function(x){x \%>\% mutate(table = "MELBOURNE_1")})
-data_dict_2 <- DEMO_files$dd_MELBOURNE_2_format_maelstrom \%>\%
-  lapply(function(x){x \%>\% mutate(table = "MELBOURNE_2")})
+data_dict_list <- list(
+  data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
+  data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
+names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
 
-data_dict_list <-
-  list(Variables = bind_rows(data_dict_1$Variables,data_dict_2$Variables),
-       Categories = bind_rows(data_dict_1$Categories,data_dict_2$Categories))
+data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
 
 ###### Example 1 search and filter through a column in 'Variables' element
-data_dict_filter(data_dict_list,filter_var = "valueType == 'integer'")
+data_dict_filter(data_dict_nest,filter_var = "valueType == 'text'")
 
 ###### Example 2 search and filter through a column in 'Categories' element
-data_dict_filter(data_dict_list,filter_cat = "missing == TRUE")
+data_dict_filter(data_dict_nest,filter_cat = "missing == TRUE")
 
-###### Example 3 search and filter through a column in 'Variables' element.
-# The column must exist in both 'Variables' and 'Categories' and have the 
+###### Example 3 search and filter through* a column in 'Variables' element.
+# The column must exist in both 'Variables' and 'Categories' and have the
 # same meaning
-data_dict_filter(data_dict_list,filter_all = "table == 'MELBOURNE_1'")
+data_dict_filter(data_dict_nest,filter_all = "table == 'dataset_TOKYO'")
 
 }
 

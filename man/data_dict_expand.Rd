@@ -12,29 +12,29 @@ data_dict_expand(
 )
 }
 \arguments{
-\item{data_dict}{A list of tibble(s) representing meta data to be
-transformed. Automatically generated if not provided.}
+\item{data_dict}{A list of data frame(s) representing metadata to be
+transformed.}
 
-\item{from}{Symbol identifying the name of the element (tibble) to take
+\item{from}{A symbol identifying the name of the element (data frame) to take
 column(s) from. Default is 'Variables'.}
 
 \item{name_prefix}{Character string of the prefix of columns of interest.
 This prefix will be used to select columns, and to rename them in the 'to'
 element. Default is 'Categories::'.}
 
-\item{to}{Symbol identifying the name of the element (tibble) to create
+\item{to}{A symbol identifying the name of the element (data frame) to create
 column(s) to. Default is 'Categories'.}
 }
 \value{
-A list of tibble(s) identifying a data dictionary.
+A list of data frame(s) identifying a data dictionary.
 }
 \description{
 Expands data dictionary column(s) in a element (the parameter 'from'),
 into another element (the parameter 'to').
-If the element 'from' contains any column starting with 'prefix', (xx,yy),
+If the element \code{from} contains any column starting with 'prefix', (xx,yy),
 these columns will be added as 'xx' and 'yy' in the element identified by
-'to'. This tibble will be created if necessary, and columns will be added,
-from left to right. (unique names will be generated if necessary).
+\code{to}. This data frame will be created if necessary, and columns will be
+added, from left to right. (unique names will be generated if necessary).
 Separator of each element is the following structure :
 'name = xx1 ; name = xx2'.
 This function is mainly used to expand the column(s) 'Categories::xx' in
@@ -42,22 +42,21 @@ This function is mainly used to expand the column(s) 'Categories::xx' in
 This function is the reversed operation of \code{\link[=data_dict_collapse]{data_dict_collapse()}}
 }
 \details{
-A data dictionary contains metadata about variables and can be associated
-with a dataset. It must be a list of data frame-like objects with elements
-named 'Variables' (required) and 'Categories' (if any). To be usable in any
-function, the 'Variables' element must contain at least the 'name' column,
-and the 'Categories' element must contain at least the 'variable' and 'name'
-columns. To be considered as a minimum workable data dictionary, in
-'Variables' the 'name' column must also have unique and non-null entries,
-and in 'Categories' the combination of 'variable' and 'name' columns must
-also be unique'.
+A data dictionary contains the list of variables in a dataset and metadata
+about the variables and can be associated with a dataset. A data dictionary
+object is a list of data frame(s) named 'Variables' (required) and
+'Categories' (if any). To be usable in any function, the data frame
+'Variables' must contain at least the \code{name} column, with all unique and
+non-missing entries, and the data frame 'Categories' must contain at least
+the \code{variable} and \code{name} columns, with unique combination of
+\code{variable} and \code{name}.
 }
 \examples{
 {
 
-# use DEMO_files provided by the package
+# use madshapR_DEMO provided by the package
 
-data_dict <- DEMO_files$`dd_PARIS_format_flatten`
+data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
 data_dict_expand(data_dict)
 
 }
