@@ -161,7 +161,7 @@ dataset_evaluate <- function(
   
   message(
     "- DATASET ASSESSMENT: ",
-    bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
+    bold(dataset_name), if(nrow(dataset) == 0) " (empty dataset)",
     " --------------------------")
 
   test_name_standards <-
@@ -193,7 +193,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of possible duplicated variable in the dataset")
-  if(dataset %>% nrow > 0){
+  if(nrow(dataset) > 0 & ncol(dataset %>% select(-matches('___mlstr_index___'))) > 1) {
     test_duplicated_columns <-
       get_duplicated_cols(
         dataset %>% select(-matches('___mlstr_index___'))) %>%
@@ -207,7 +207,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of duplicated participants in the dataset")
-  if(dataset %>% nrow > 0 & FALSE){                                                     #icitte
+  if(nrow(dataset) > 0 & FALSE){                                                     #icitte
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
@@ -251,10 +251,11 @@ dataset_evaluate <- function(
       select(-"madshapR::index") 
   }
   
-  if(dataset %>% nrow > 0){
+  if(nrow(dataset) > 0){
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
       get_unique_value_cols(zap_dataset) %>%
+      mutate(condition = "[INFO] - unique value in the column") %>%
       rename(`name_var` = "col_name") %>%
       distinct()
   }
@@ -287,6 +288,7 @@ dataset_evaluate <- function(
     "    Assess the presence all NA(s) of columns in the data dictionary")
   test_empty_col <-
     get_all_na_cols(dataset) %>%
+    mutate(condition = "[INFO] - empty column") %>%
     rename(`name_var` = "col_name")
   
   message(
