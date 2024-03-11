@@ -383,6 +383,9 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
     names(dossier) <-
       make_name_list(as.character(fargs['dataset_list']), dossier)}
 
+  if(sum(is.na(names(dossier))) >= 1)
+    names(dossier) <- paste0('dataset.',seq_along(dossier))
+  
   dossier <- as_dossier(dossier)
 
   return(dossier)
@@ -544,7 +547,8 @@ as_dossier <- function(object){
   # check if names in object are unique
   if(!setequal(length(names(object)),length(unique(names(object))))){
     stop(call. = FALSE,
-"The name of your datasets are not unique. Please provide different names.")}
+"The name of your datasets are not unique or have been wrongly parsed. 
+Please provide different names.")}
   
   tryCatch(
     object <- object %>% lapply(
