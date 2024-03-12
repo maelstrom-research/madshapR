@@ -1354,6 +1354,7 @@ dataset_visualize <- function(
     .summary_var = NULL, 
     .dataset_name = NULL){
   
+  # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
   
   # future dev
@@ -1598,7 +1599,10 @@ datatable(Overview,
     file.create(rmd_file_name)
     
     paste0(
-      "# ",data_dict$Variables$name[i],"{.unnumbered #var",i,"}\n\n") %>%
+      "# ", 
+      data_dict$Variables$name[i] %>%
+      str_replace_all("(?=[^A-Za-z0-9])", "\\\\"),
+      "{.unnumbered #var",i,"}\n\n") %>%
       
       
       paste0("\n**VARIABLE CHARACTERISTICS**\n") %>%
