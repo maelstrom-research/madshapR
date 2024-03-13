@@ -154,8 +154,7 @@ valueType_of <- function(x){
 #' @export
 valueType_self_adjust <- function(...){
 
-  # test dataset
-
+  # is dataset
   if(is_dataset(...) & !is_data_dict(...)){
     
     dataset <- as_dataset(...,col_id = col_id(...))
@@ -178,9 +177,8 @@ valueType_self_adjust <- function(...){
         data_dict[['Categories']])
 
     for(i in names(dataset)) {
-      # stop()}
       dataset[[i]] <-
-        as_valueType(x = dataset[[i]], 
+        as_valueType(x = dataset[[i]],
                      valueType = valueType_guess(x = dataset[[i]]))
       }
 
@@ -199,6 +197,7 @@ valueType_self_adjust <- function(...){
     return(dataset)
   }
 
+  # is data_dict
   if(!is_dataset(...) & is_data_dict(...)){
     
     data_dict <- as_data_dict_shape(...)
@@ -207,16 +206,14 @@ valueType_self_adjust <- function(...){
     if(nrow(data_dict[['Variables']]) == 0) return(data_dict)
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
-      warning(
-"Your data dictionary contains no categorical variables.
-The valueType will remain as it is.")
+      warning("Your data dictionary contains no categorical variables.")
       return(data_dict)
 
     }else{
 
       category_outcomes <-
         data_dict[['Categories']] %>%
-        select(.data$`name`) %>% distinct %>%
+        select("name") %>% distinct %>%
         rowwise() %>%
         mutate(valueType = valueType_guess(.data$`name`))
 
@@ -428,6 +425,8 @@ bold("\n\nUseful tip:"),
       select("valueType")
     # }
 
+    data_dict <- as_data_dict_mlstr(data_dict)
+
     return(data_dict)
     # }
   }
@@ -603,30 +602,32 @@ valueType_guess <- function(x){
     silently_run(as_valueType(as.character.default(x),"integer"))
   test_vT_decimal  <- 
     silently_run(as_valueType(as.character.default(x),"decimal"))
-  test_vT_date     <- 
+  test_vT_date     <-
     silently_run(as_valueType(                     x ,"date"))
-  test_vT_datetime <- 
+  test_vT_datetime <-
     silently_run(as_valueType(                     x ,"datetime"))
   test_vT_text     <-                    
-    as_valueType(                                  x , "text"   )
+    as_valueType(                                  x , "text")
 
   test_vT <-
     tribble(
       ~`valueType` ,~`class`                  ,
-      "boolean"    ,  
+      "boolean"    ,
       class(test_vT_boolean)[[max(length(class(test_vT_boolean)))]][1],
       
-      "integer"    ,  
+      "integer"    ,
       class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1],
       
-      "decimal"    ,  
+      "decimal"    ,
       class(test_vT_decimal)[[max(length(class(test_vT_decimal)))]][1],
       
-      "date"       ,  
+      "date"       ,
       class(test_vT_date)[[max(length(class(test_vT_date)))]][1],
+
+      "datetime"   ,
+      class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]
       
-      "datetime"   ,   
-      class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]) %>%
+      ) %>%
     dplyr::filter(.data$`class` != "try-error") %>%
     summarise(
       valueType = paste0(.data$`valueType`,collapse = "|"),
@@ -643,9 +644,9 @@ valueType_guess <- function(x){
           .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
           TRUE                                              ~  .data$`valueType`
         )) %>% pull(.data$`valueType`)
-
+  
   if(test_vT == "") test_vT <- 'text'
-
+  
   return(test_vT)
 }
 
