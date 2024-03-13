@@ -633,7 +633,7 @@ check_data_dict_valueType <- function(data_dict){
         suggestion = valueType_guess(.data$`name`)) %>%
       separate_longer_delim(cols = 'name_var',delim = '|') %>%
       distinct %>%
-      filter(.data$`valueType` != .data$`suggestion`) %>%
+      dplyr::filter(.data$`valueType` != .data$`suggestion`) %>%
       mutate(
         condition = case_when(
           .data$`test` == 'try-error'  ~ "[ERR]  - valueType conflict in 'Categories'",
