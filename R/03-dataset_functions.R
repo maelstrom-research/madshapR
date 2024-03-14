@@ -301,8 +301,11 @@ dataset_cat_as_labels <- function(
         select(-'___mlstr_name___')
       
       names(col) <- i 
-      col <- valueType_self_adjust(col)
-      data_dict_temp <- valueType_adjust(from = col, to = data_dict_temp)
+      
+      vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$Categories$name)))
+    
+      col[[1]] <- as_valueType(col[[1]], vT_final)
+      data_dict_temp$Variables$valueType <- vT_final
       dataset[i] <- data_dict_apply(col, data_dict_temp)
     }
   }
