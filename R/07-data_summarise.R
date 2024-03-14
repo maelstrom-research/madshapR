@@ -16,7 +16,8 @@
 #' 'Variables' must contain at least the `name` column, with all unique and 
 #' non-missing entries, and the data frame 'Categories' must contain at least 
 #' the `variable` and `name` columns, with unique combination of 
-#' `variable` and `name`.
+#' `variable` and `name`. The function truncates each cell to a maximum of 
+#' 10000 characters, to be readable and compatible with Excel.
 #' 
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
@@ -693,6 +694,15 @@ dataset_summarize <- function(
                           FUN.VALUE = logical(1))]
   report <- report[unique(c('Overview', names(report)))]
 
+  
+  report <-   
+    report %>%
+    lapply(function(y){
+      y %>%
+        lapply(function(x) str_trunc(x, 10000)) %>%
+        as_tibble()      
+    })
+  
   return(report)
 }
 

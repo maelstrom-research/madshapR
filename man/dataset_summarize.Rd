@@ -53,7 +53,8 @@ object is a list of data frame(s) named 'Variables' (required) and
 'Variables' must contain at least the \code{name} column, with all unique and
 non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
-\code{variable} and \code{name}.
+\code{variable} and \code{name}. The function truncates each cell to a maximum of
+10000 characters, to be readable and compatible with Excel.
 
 A dataset is a data table containing variables. A dataset object is a
 data frame and can be associated with a data dictionary. If no

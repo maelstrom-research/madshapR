@@ -15,7 +15,8 @@
 #' 'Variables' must contain at least the `name` column, with all unique and 
 #' non-missing entries, and the data frame 'Categories' must contain at least 
 #' the `variable` and `name` columns, with unique combination of 
-#' `variable` and `name`.
+#' `variable` and `name`. The function truncates each cell to a maximum of 
+#' 10000 characters, to be readable and compatible with Excel.
 #' 
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
@@ -208,7 +209,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of duplicated participants in the dataset")
-  if(nrow(dataset) > 0 & FALSE){                                                     #icitte
+  if(nrow(dataset) > 0){                                                        #icitte
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
@@ -359,6 +360,14 @@ dataset_evaluate <- function(
     "
   ))
   
+  report <-   
+    report %>%
+    lapply(function(y){
+      y %>%
+        lapply(function(x) str_trunc(x, 10000)) %>%
+        as_tibble()      
+    })
+  
   return(report)
 }
 
@@ -470,7 +479,8 @@ dossier_evaluate <- function(
 #' 'Variables' must contain at least the `name` column, with all unique and 
 #' non-missing entries, and the data frame 'Categories' must contain at least 
 #' the `variable` and `name` columns, with unique combination of 
-#' `variable` and `name`.
+#' `variable` and `name`. The function truncates each cell to a maximum of 
+#' 10000 characters, to be readable and compatible with Excel.
 #' 
 #' A taxonomy is a classification schema that can be defined for variable 
 #' attributes. A taxonomy is usually extracted from an 
@@ -819,6 +829,14 @@ data_dict_evaluate <- function(
     "
   - WARNING MESSAGES (if any): --------------------------------------------\n"))
   
+  report <-   
+    report %>%
+    lapply(function(y){
+      y %>%
+        lapply(function(x) str_trunc(x, 10000)) %>%
+        as_tibble()      
+    })
+
   return(report)
 }
 

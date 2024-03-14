@@ -33,7 +33,8 @@ object is a list of data frame(s) named 'Variables' (required) and
 'Variables' must contain at least the \code{name} column, with all unique and
 non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
-\code{variable} and \code{name}.
+\code{variable} and \code{name}. The function truncates each cell to a maximum of
+10000 characters, to be readable and compatible with Excel.
 
 A taxonomy is a classification schema that can be defined for variable
 attributes. A taxonomy is usually extracted from an
