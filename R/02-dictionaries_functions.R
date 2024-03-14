@@ -1533,7 +1533,7 @@ your dataset")}
   names_data_dict <- data_dict[['Variables']]$`name`
   
   for (i in names_data) {
-    # stop()}
+  #   stop()}
     
     vT_list <- madshapR::valueType_list
     vT <- valueType_of(x = dataset[[i]])
@@ -1699,7 +1699,6 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     
     if(length(attrs_i) > 0){
       
-      # if(length(attrs_i) > 0){
       for(j in seq_len(length(attrs_i))){
         # stop()}
         
@@ -1713,7 +1712,8 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
         }else{
           cat_attr <- tibble(variable = i, name = attr_name_cat)
           cat_attr[[attr_col_name]] <- attr_content_col
-          data_dict_cat <- data_dict_cat %>%
+          data_dict_cat <- 
+            data_dict_cat %>%
             full_join(cat_attr,
                       by = intersect(names(data_dict_cat),names(cat_attr)))
         }
@@ -1730,17 +1730,21 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   names(data_dict[['Categories']]) <-
     make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
   
-  
-  if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
+ if(sum(nrow(data_dict[['Categories']])) == 0) data_dict[['Categories']] <- NULL
 
+  if(is.null(data_dict$Variables[['valueType']]) &
+     is.null(data_dict$Variables[['typeof']])){
+    data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
+  }
+  
   data_dict <-  
-    silently_run({
-      valueType_adjust(from = dataset, to = data_dict) %>%
-        valueType_adjust() %>%
-        as_data_dict_mlstr(
-          as_data_dict = !as_data_dict_mlstr,
-          name_standard = FALSE) 
-    })
+    # silently_run({
+    valueType_adjust(from = dataset, to = data_dict) %>%
+    # valueType_self_adjust() %>%
+    as_data_dict_mlstr(
+      as_data_dict = !as_data_dict_mlstr,
+      name_standard = FALSE)
+    # })
   
   return(data_dict)
 }
@@ -2087,7 +2091,11 @@ data dictionary")}}
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
       lapply(function(x) {
-        x$name <- as_valueType(x$`name`, valueType_guess(unique(x$`name`)))
+        test_name <- as_valueType(x$`name`, valueType_guess(unique(x$`name`)))
+        
+        if(all(test_name == as.character(x$name))){
+          x$name <- test_name}
+      
         x <- x %>% arrange(.data$`variable`, .data$`name`) %>%
           mutate(name = as.character(.data$`name`))
         return(x)

@@ -87,6 +87,7 @@ dataset_evaluate <- function(
   # future dev
   # add emptiness of the dataset in the Dataset assessment
 
+  # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
 
   # check on arguments : dataset

@@ -92,6 +92,7 @@ dataset_summarize <- function(
     valueType_guess = FALSE,
     .dataset_name = NULL){
   
+  # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
   
   if(!is.logical(valueType_guess))
