@@ -423,7 +423,7 @@ variable_visualize <- function(
       summary_2 <-
         summary_2 %>% 
         mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), ~ round(.,2))) %>%
+        mutate(across(-c("col"), ~ round(as.numeric(.),2))) %>%
         select(-'col') %>%
         mutate(across(everything(),as.character))
       
