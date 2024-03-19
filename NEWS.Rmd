@@ -6,6 +6,12 @@ output: github_document
 
 ## Bug fixes and improvements
 
+* bug in the function `variable_visualize()` when the column was empty after 
+removing internally stopwords.
+https://github.com/maelstrom-research/Rmonize/issues/53
+https://github.com/maelstrom-research/Rmonize/issues/49
+
+
 * Some elements were missing in the reports in `dataset_evaluate()`
 https://github.com/maelstrom-research/madshapR/issues/66
 

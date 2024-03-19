@@ -570,40 +570,6 @@ variable_visualize <- function(
         arrange(desc(.data$`___n___`)) %>%
         slice(1:10)
       
-      #### plot_1 character ####      
-      n_obs <- nrow(colset_values)
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      group_n <- "___n___"
-      
-      aes <- 
-        if(group_by == ''){
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n),
-            fill = '')
-        }else{
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n), 
-            fill = fct_rev(!! as.symbol(group_by)))}
-      
-      plot_1 <- 
-        ggplot(colset_values_main_word) + aes + 
-        geom_col() +
-        theme_bw() +
-        theme(legend.position = "none",plot.title = 
-                element_text(size = 8,face = "bold"),
-              strip.background = element_rect(color = "white", fill="white")) +
-        ggtitle(paste0('Most common entry', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = rev(palette_values)) +
-        coord_flip()
-      
-      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(as.symbol(group_by))}
       
       #### plot_2 character ####      
       n_obs <- nrow(colset_values)
@@ -624,7 +590,7 @@ variable_visualize <- function(
             y = !! as.symbol(group_n), 
             fill = fct_rev(!! as.symbol(group_by)))}
       
-      plot_2 <- 
+      plot_1 <- 
         ggplot(colset_values_all_word) + aes + 
         geom_col() +
         theme_bw() +
@@ -637,7 +603,53 @@ variable_visualize <- function(
         scale_fill_manual(values = rev(palette_values)) +
         coord_flip()
       
-      if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
+      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(as.symbol(group_by))}
+      
+      #### plot_2 character ####      
+      
+      if(nrow(colset_values_main_word) == 0){
+        
+        plot_2 = NULL
+        
+      }else{
+        
+        n_obs <- nrow(colset_values)
+        
+        title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+        if(group_by != '') title <- paste0(title, ' - per ',group_by)
+        
+        group_n <- "___n___"
+        
+        aes <- 
+          if(group_by == ''){
+            aes(
+              x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+              y = !! as.symbol(group_n),
+              fill = '')
+          }else{
+            aes(
+              x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+              y = !! as.symbol(group_n), 
+              fill = fct_rev(!! as.symbol(group_by)))}
+        
+        plot_2 <- 
+            ggplot(colset_values_main_word) + aes + 
+            geom_col() +
+            theme_bw() +
+            theme(legend.position = "none",plot.title = 
+                    element_text(size = 8,face = "bold"),
+                  strip.background = element_rect(color = "white", fill="white")) +
+            ggtitle(paste0('Most common entry', title)) +
+            ylab("") +
+            xlab("") +
+            scale_fill_manual(values = rev(palette_values)) +
+            coord_flip()
+          
+          if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
+        }
+      
+      
+      
       
     }
     
