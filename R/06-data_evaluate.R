@@ -66,7 +66,7 @@
 #' ###### Example : Any data frame can be summarized
 #' dataset <- as_dataset(
 #'   madshapR_DEMO$`dataset_TOKYO - errors with data`,
-#'   col_id = 'part_id')
+#'   col_id = 'part_id') %>% slice(0)
 #'  
 #' glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
 #' 
@@ -419,13 +419,13 @@ dataset_evaluate <- function(
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
-#'  dataset <- as_dataset(
+#' dataset <- as_dataset(
 #'    madshapR_DEMO$`dataset_TOKYO - errors with data`,
-#'    col_id = 'part_id')
-#'  
-#'  dossier <- as_dossier(list(dataset = dataset))
-#'  
-#'  glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
+#'    col_id = 'part_id') %>% slice(0)
+#' 
+#' dossier <- as_dossier(list(dataset = dataset))
+#' 
+#' glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
 #'
 #' }
 #'

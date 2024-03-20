@@ -408,8 +408,12 @@ bold("\n\nUseful tip:"),
     names(all_vT_type) <- names(dataset)
   
     for(i in names(dataset)){
-      cat_i <- data_dict$Categories[data_dict$Categorie[['variable']] == i,'name']$name
-      all_vT_type[[i]] <- c(as.character(dataset[[i]]),as.character(cat_i))}
+      
+      cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$name
+      all_vT_type[[i]] <- 
+        c(as.character(dataset[[i]]),
+          as.character(cat_i),all_vT_type[[i]])[1:length(all_vT_type[[i]])]
+      }
     
     vT_list<- madshapR::valueType_list
     vT_tables <-
