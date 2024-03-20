@@ -702,7 +702,8 @@ data_dict_evaluate <- function(
             sheet    = "Variables",
             condition = "[INFO] - Empty line(s)",
             sheet    = "Categories") %>% 
-          select("condition","value","sheet"))}
+          select("condition","value","sheet"))
+    }
   
   message("    Assess the presence of empty columns in the data dictionary")
   test_empty_col <-

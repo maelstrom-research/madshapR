@@ -401,10 +401,20 @@ bold("\n\nUseful tip:"),
 
     if(ncol(dataset) == 0) return(data_dict)
     
+    
+    max_len <- length(data_dict$Categories[['name']])
+    all_vT_type <- 
+      as_tibble(data.frame(matrix(nrow = nrow(dataset)+max_len,ncol=ncol(dataset))))
+    names(all_vT_type) <- names(dataset)
+  
+    for(i in names(dataset)){
+      cat_i <- data_dict$Categories[data_dict$Categorie[['variable']] == i,'name']$name
+      all_vT_type[[i]] <- c(as.character(dataset[[i]]),as.character(cat_i))}
+    
     vT_list<- madshapR::valueType_list
     vT_tables <-
-      dataset %>%
-      summarise(across(everything(), valueType_of)) %>%
+      all_vT_type %>%
+      summarise(across(everything(), ~ valueType_guess(.))) %>%
       pivot_longer(cols = everything()) %>%
       rename(valueType = "value") %>%
       left_join(vT_list, by = "valueType") %>%

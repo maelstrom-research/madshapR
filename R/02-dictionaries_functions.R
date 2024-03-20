@@ -1723,6 +1723,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
       data_dict[['Variables']]  %>% bind_rows(data_dict_var)
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>% bind_rows(data_dict_cat)
+    
   }
   
   names(data_dict[['Variables']])  <-
@@ -1730,6 +1731,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   names(data_dict[['Categories']]) <-
     make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
   
+    
  if(sum(nrow(data_dict[['Categories']])) == 0) data_dict[['Categories']] <- NULL
 
   if(is.null(data_dict$Variables[['valueType']]) &
@@ -1739,6 +1741,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   
   data_dict <-  
     # silently_run({
+    # valueType_adjust(from = data_dict, to = dataset) %>%
     valueType_adjust(from = dataset, to = data_dict) %>%
     # valueType_self_adjust() %>%
     as_data_dict_mlstr(
