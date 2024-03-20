@@ -643,16 +643,17 @@ data_dict_evaluate <- function(
   message("    Assess the presence of possible duplicated columns")
   test_duplicated_columns <-
     suppressWarnings(get_duplicated_cols(data_dict[['Variables']])) %>%
-    mutate(condition = ifelse(.data$`condition` == 
-      "Possible duplicated columns: name ; label",NA,.data$`condition`)) %>%
+    mutate(condition = as.character(ifelse(.data$`condition` == 
+      "Possible duplicated columns: name ; label",NA_character_,.data$`condition`))) %>%
     dplyr::filter(!is.na(.data$`condition`)) %>%
     mutate(sheet     = "Variables") %>%
+    mutate(across(everything())) %>%
+    
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
-        suppressWarnings(
-          get_duplicated_cols(data_dict[['Categories']])) %>%
-          mutate(condition = ifelse(.data$`condition` == 
-            "Possible duplicated columns: name ; label",NA,.data$`condition`)) %>%
+        suppressWarnings(get_duplicated_cols(data_dict[['Categories']])) %>%
+          mutate(condition = as.character(ifelse(.data$`condition` == 
+            "Possible duplicated columns: name ; label",NA_character_,.data$`condition`))) %>%
           dplyr::filter(!is.na(.data$`condition`)) %>%
           mutate(sheet    = "Categories")
       }else{tibble()}) %>%
@@ -662,18 +663,19 @@ data_dict_evaluate <- function(
   
   # message("    Assess the presence of duplicated variable in the dataset")
   # test_duplicated_rows <-
-  #   get_duplicated_rows(data_dict[['Variables']] %>%
-  #    select(-.data$`name`)) %>%
-  #   mutate(
-  #     condition = str_remove(.data$`condition`,
-  #                 "\\[INFO\\] - Possible duplicated observations: ")) %>%
-  #   separate_rows(.data$`condition`,sep = " ; ") %>%
-  #   mutate(index = as.integer(.data$`condition`)) %>%
+  #   get_duplicated_rows(
+  #     data_dict[['Variables']] %>%
+  #       bind_rows(data_dict[['Variables']] %>% slice(1:3)) %>%
+  #       select(-"name")) %>%
+  #   add_index("condition_index") %>%
+  #   separate_rows("row_number",sep = " ; ") %>%
+  #   mutate(index = as.integer(.data$`row_number`)) %>%
   #   full_join(data_dict[['Variables']] %>% add_index(.force = TRUE),
   #                                                            by = "index") %>%
   #   dplyr::filter(!is.na(.data$`condition`)) %>%
-  #   select(col_name = .data$`name`) %>%
+  #   select(col_name = "name") %>%
   #   summarise(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
+  #   dplyr::filter(col_name != "''") %>%
   #   mutate(
   #     condition = "[INFO] - possible duplicated rows (variables)",
   #     sheet    = "Variables")
