@@ -145,6 +145,10 @@ dataset_evaluate <- function(
   col_id <- attributes(dataset)$`madshapR::col_id`
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
   
+  dataset <-
+    dataset %>%
+    mutate(across(where(is.character),tolower))
+  
   zap_dataset <- 
     dataset_zap_data_dict(dataset) %>% 
     select(-all_of(col_id))
@@ -639,11 +643,17 @@ data_dict_evaluate <- function(
   message("    Assess the presence of possible duplicated columns")
   test_duplicated_columns <-
     suppressWarnings(get_duplicated_cols(data_dict[['Variables']])) %>%
+    mutate(condition = ifelse(.data$`condition` == 
+      "Possible duplicated columns: name ; label",NA,.data$`condition`)) %>%
+    dplyr::filter(!is.na(.data$`condition`)) %>%
     mutate(sheet     = "Variables") %>%
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
         suppressWarnings(
           get_duplicated_cols(data_dict[['Categories']])) %>%
+          mutate(condition = ifelse(.data$`condition` == 
+            "Possible duplicated columns: name ; label",NA,.data$`condition`)) %>%
+          dplyr::filter(!is.na(.data$`condition`)) %>%
           mutate(sheet    = "Categories")
       }else{tibble()}) %>%
     mutate(value     = str_squish(

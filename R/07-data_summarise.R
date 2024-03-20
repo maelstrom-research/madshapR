@@ -100,7 +100,10 @@ dataset_summarize <- function(
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
   
-  dataset <- as_dataset(dataset, col_id(dataset))
+  dataset <- 
+    as_dataset(dataset, col_id(dataset)) %>%
+    mutate(across(where(is.character),tolower))
+  
   col_id <- col_id(dataset)
   
   dataset_name <- 

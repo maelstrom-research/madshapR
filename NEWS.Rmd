@@ -6,6 +6,10 @@ output: github_document
 
 ## Bug fixes and improvements
 
+* for assessment, summary and visualization, the character columns in dataset are
+put to lower to avoid duplicated informations in outputs.
+https://github.com/maelstrom-research/madshapR/issues/63
+
 * bug in the function `variable_visualize()` when the column was empty after 
 removing internally stopwords.
 https://github.com/maelstrom-research/Rmonize/issues/53

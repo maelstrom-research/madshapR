@@ -112,7 +112,9 @@ variable_visualize <- function(
     warning(call. = FALSE,'Your column is identifier. It will not be analysed.')
     return(ggplot())}
   
-  dataset <- as_dataset(dataset)
+  dataset <- 
+    as_dataset(dataset) %>%
+    mutate(across(where(is.character),tolower))
   
   if(nrow(dataset) == 0) {
     warning(call. = FALSE,'Your column has no observation.')
