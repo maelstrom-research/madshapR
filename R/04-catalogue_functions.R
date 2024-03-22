@@ -389,7 +389,7 @@ valueType_adjust <- function(from, to = NULL){
 
     dataset <- from
     data_dict <- to
-    
+
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
        dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
@@ -401,32 +401,79 @@ bold("\n\nUseful tip:"),
 
     if(ncol(dataset) == 0) return(data_dict)
     
-    
-    max_len <- length(data_dict$Categories[['name']])
-    all_vT_type <- 
-      as_tibble(data.frame(matrix(nrow = nrow(dataset)+max_len,ncol=ncol(dataset))))
-    names(all_vT_type) <- names(dataset)
-  
+    vT_data_dict <- 
+      tibble(name = rep(names(dataset)),
+             valueType = rep(NA_character_,ncol(dataset)))
+      
     for(i in names(dataset)){
       
       cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$name
-      all_vT_type[[i]] <- 
-        c(as.character(dataset[[i]]),
-          as.character(cat_i),all_vT_type[[i]])[1:length(all_vT_type[[i]])]
+      
+      if(length(cat_i) == 0){
+        if(all(is.na(dataset[[i]]))){
+          dataset[[i]] <- as_valueType(dataset[[i]],
+              ifelse(is.null(data_dict$Variables[["valueType"]])|
+                       is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
+                     valueType_of(dataset[[i]]),
+                     data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))}
+        
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(dataset[[i]])
+      }else{
+        
+        test_vec <- silently_run(unique(c(cat_i,unique(dataset[[i]]))))
+        
+        if(class(test_vec)[[1]] == 'try-error')
+          test_vec <- unique(c(as.character(cat_i),as.character(unique(dataset[[i]])))) 
+        
+        if(all(is.na(dataset[[i]]))){
+          dataset[[i]] <- as_valueType(dataset[[i]],
+            ifelse(is.null(data_dict$Variables[["valueType"]])|
+                     is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
+                   valueType_guess(cat_i),
+                   data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))
+          
+        }else{
+          test_vT <- silently_run(as_valueType(test_vec,'integer'))
+        }
+
+        if(class(test_vT)[[1]] == 'try-error')
+          test_vT <- as_valueType(test_vec,valueType_guess(test_vec))
+        
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(test_vT)
+            
       }
-    
+    }
+            
     vT_list<- madshapR::valueType_list
-    vT_tables <-
-      all_vT_type %>%
-      summarise(across(everything(), ~ valueType_guess(.))) %>%
+    vT_data_dict <-
+      left_join(vT_data_dict,vT_list, by = "valueType") %>%
+      select("name", valueType_data_dict = "valueType",typeof_data_dict = "typeof")
+    
+    vT_dataset <-
+      dataset %>%
+      summarise(across(everything(), ~ valueType_of(.))) %>%
       pivot_longer(cols = everything()) %>%
       rename(valueType = "value") %>%
       left_join(vT_list, by = "valueType") %>%
-      select("name", "valueType","typeof")
+      select("name", valueType_dataset = "valueType",typeof_dataset = "typeof")
 
+    vT_final <- 
+      vT_data_dict %>%
+      full_join(vT_dataset,by = join_by(name)) %>%
+      mutate(valueType = ifelse(
+        .data$`valueType_data_dict` == "integer",
+        .data$`valueType_dataset`,
+        .data$`valueType_data_dict`)) %>%
+      mutate(typeof = ifelse(
+        .data$`typeof_data_dict` == "integer",
+        .data$`typeof_dataset`,
+        .data$`typeof_data_dict`)) %>%
+      select('name','valueType','typeof')
+    
+    
     data_dict[['Variables']]['typeof'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_tables %>%
+      left_join(vT_final %>%
                   select("name", "typeof"), by = "name") %>%
       select("typeof")
     # }
@@ -434,7 +481,7 @@ bold("\n\nUseful tip:"),
     # if(length(data_dict[['Variables']][['valueType']]) > 0){
     data_dict[['Variables']]['valueType'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_tables %>%
+      left_join(vT_final %>%
                   select("name", "valueType"), by = "name") %>%
       select("valueType")
     # }
