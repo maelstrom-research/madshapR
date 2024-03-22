@@ -1736,18 +1736,18 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 
   if(is.null(data_dict$Variables[['valueType']]) &
      is.null(data_dict$Variables[['typeof']])){
+    
     data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
+    
+  }else{
+      
   }
   
   data_dict <-  
-    # silently_run({
-    # valueType_adjust(from = data_dict, to = dataset) %>%
     valueType_adjust(from = dataset, to = data_dict) %>%
-    # valueType_self_adjust() %>%
     as_data_dict_mlstr(
       as_data_dict = !as_data_dict_mlstr,
       name_standard = FALSE)
-    # })
   
   return(data_dict)
 }
