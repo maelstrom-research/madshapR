@@ -413,7 +413,9 @@ bold("\n\nUseful tip:"),
         if(all(is.na(dataset[[i]]))){
           dataset[[i]] <- as_valueType(dataset[[i]],
               ifelse(is.null(data_dict$Variables[["valueType"]])|
-                       is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
+                       toString(
+                         data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]) %in%
+                       c("NA",""),
                      valueType_of(dataset[[i]]),
                      data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))}
         
@@ -522,15 +524,15 @@ bold("\n\nUseful tip:"),
 
     is_factor <-
       dataset %>%
-      summarise(across(everything(), ~ class(.))) %>%
+      reframe(across(everything(), ~ class(.))) %>%
       pivot_longer(everything()) %>%
       dplyr::filter(.data$`value` == "factor")
 
     data_dict_data[['Variables']] <-
       data_dict_data[['Variables']] %>%
-      select(-.data$`valueType`) %>%
+      select(-"valueType") %>%
       left_join(data_dict[['Variables']] %>%
-                  select(.data$`name`, .data$`valueType`),by = "name")
+                  select("name", "valueType"),by = "name")
 
     for(i in names(dataset)){
       dataset[[i]] <-
@@ -767,19 +769,16 @@ as_valueType <- function(x, valueType = 'text'){
   if(is.list(x))
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
+  class_x <- class(x)[[max(length(class(x)))]]
+  x_init <- x
+  
   # if x is already the output format, no need to go further
-  if(class(x)[[max(length(class(x)))]] == "Date"    & 
-     valueType == "date")     return(x)
-  if(class(x)[[max(length(class(x)))]] == "POSIXt" & 
-     valueType == "datetime") return(x)
-  if(is.integer(x)            & 
-     valueType == "integer")  return(x)
-  if(class(x)[[max(length(class(x)))]] == "numeric" & 
-     valueType == "decimal")  return(x)
-  if(is.logical(x)            & 
-     valueType == "boolean")  return(x)
-  if(is.na(valueType)         | 
-     valueType == "text")     return(as.character.default(x))
+  if(class_x == "Date"    & valueType == "date")     return(x)
+  if(class_x == "POSIXt"  & valueType == "datetime") return(x)
+  if(is.integer(x)        & valueType == "integer")  return(x)
+  if(class_x == "numeric" & valueType == "decimal")  return(x)
+  if(is.logical(x)        & valueType == "boolean")  return(x)
+  if(is.na(valueType)     | valueType == "text")     return(as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -800,6 +799,14 @@ data dictionary")}
     as.character.default(x)
 
   if(dataType     == "as_any_date"){
+    
+    if(class_x == "POSIXt"){
+      x <- 
+        as_valueType(x,'integer') %>%
+        as.POSIXct.numeric(tz = 'UTC') %>%
+        as.character()
+    }
+    
     date_format <-
       guess_date_format(
         tibble(as.character.default(
