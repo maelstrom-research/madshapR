@@ -407,7 +407,7 @@ bold("\n\nUseful tip:"),
       
     for(i in names(dataset)){
       
-      cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$name
+      cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$`name`
       
       if(length(cat_i) == 0){
         if(all(is.na(dataset[[i]]))){
@@ -461,7 +461,7 @@ bold("\n\nUseful tip:"),
 
     vT_final <- 
       vT_data_dict %>%
-      full_join(vT_dataset,by = join_by(name)) %>%
+      full_join(vT_dataset,by = join_by('name')) %>%
       mutate(valueType = ifelse(
         .data$`valueType_data_dict` == "integer",
         .data$`valueType_dataset`,
