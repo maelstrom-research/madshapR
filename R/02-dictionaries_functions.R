@@ -2387,7 +2387,7 @@ investigations.",
       # preserve information from labels into label:xx
       data_dict[['Categories']] <- 
         data_dict[['Categories']] %>%
-        mutate(across(lab_name_cat, ~ ifelse(is.na(.),.data$`labels`,.)))
+        mutate(across(all_of(lab_name_cat), ~ ifelse(is.na(.),.data$`labels`,.)))
       data_dict[['Categories']][['labels']] <- NULL}
     
     # addition of missing if not present
