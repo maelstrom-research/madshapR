@@ -1244,8 +1244,8 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
     }
   }
   
-  if(sum(nrow(data_dict_list[[i]][['Categories']])) == 0){
-    data_dict_list[[i]][['Categories']] <- NULL
+  if(sum(nrow(data_dict[[i]][['Categories']])) == 0){
+    data_dict[[i]][['Categories']] <- NULL
   }
   
   return(data_dict)
