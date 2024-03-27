@@ -655,62 +655,111 @@ valueType_guess <- function(x){
   if(all(is.na(x))) return(valueType_of(x))
 
   # else :
-  x <-   unique(x)
+  x <- unique(x)
+  x <- x[!is.na(x)]
   
   vT_list <- madshapR::valueType_list
 
-  test_vT_boolean  <- 
-    silently_run(as_valueType(as.character.default(x),"boolean"))
   test_vT_integer  <- 
-    silently_run(as_valueType(as.character.default(x),"integer"))
+    silently_run(as_valueType(as.character(x),"integer"))
+
+  if(class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1] == 'integer'){
+    
+    if(is.logical(x)){
+      return('boolean')}
+      
+      return('integer')
+  }
+    
   test_vT_decimal  <- 
     silently_run(as_valueType(as.character.default(x),"decimal"))
-  test_vT_date     <-
-    silently_run(as_valueType(                     x ,"date"))
-  test_vT_datetime <-
-    silently_run(as_valueType(                     x ,"datetime"))
-  test_vT_text     <-                    
-    as_valueType(                                  x , "text")
-
-  test_vT <-
-    tribble(
-      ~`valueType` ,~`class`                  ,
-      "boolean"    ,
-      class(test_vT_boolean)[[max(length(class(test_vT_boolean)))]][1],
-      
-      "integer"    ,
-      class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1],
-      
-      "decimal"    ,
-      class(test_vT_decimal)[[max(length(class(test_vT_decimal)))]][1],
-      
-      "date"       ,
-      class(test_vT_date)[[max(length(class(test_vT_date)))]][1],
-
-      "datetime"   ,
-      class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]
-      
-      ) %>%
-    dplyr::filter(.data$`class` != "try-error") %>%
-    summarise(
-      valueType = paste0(.data$`valueType`,collapse = "|"),
-      class = paste0(.data$`class`,collapse = "|")) %>%
-    mutate(
-      valueType =
-        case_when(
-          .data$`valueType` == "boolean|integer|decimal"      ~ "integer"      ,
-          .data$`valueType` == "integer|decimal"              ~ "integer"      ,
-          .data$`valueType` == "integer|decimal|date"         ~ "date"         ,
-          .data$`valueType` == "integer|decimal|datetime"     ~ "datetime"     ,
-          .data$`valueType` == "decimal|date"                 ~ "date"         ,
-          .data$`valueType` == "date|datetime"                ~ "date"         ,
-          .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
-          TRUE                                              ~  .data$`valueType`
-        )) %>% pull(.data$`valueType`)
+    
+  if(class(test_vT_decimal)[[1]] != 'try-error'){
+    
+    test_vT_date <- silently_run(as_valueType(x ,"date"))
+    if(class(test_vT_date)[[1]] != 'try-error'){
+      return('date')}
+    
+    test_vT_datetime <- silently_run(as_valueType(x ,"datetime"))
+    if(class(test_vT_datetime)[[1]] != 'try-error'){
+      return('datetime')}
+    
+    return('decimal')
+  }
+    
+  test_vT_date <- silently_run(as_valueType(x ,"date"))
+  if(class(test_vT_date)[[1]] != 'try-error'){
+    return('date')}
   
-  if(test_vT == "") test_vT <- 'text'
+  test_vT_datetime <- silently_run(as_valueType(x ,"datetime"))
+  if(class(test_vT_datetime)[[1]] != 'try-error'){
+    return('datetime')}
   
-  return(test_vT)
+  return(valueType_of(x))
+
+    
+  # t1 = Sys.time()
+  # # test_vT_boolean  <- 
+  # #   silently_run(as_valueType(as.character.default(x),"boolean"))
+  # # 
+  # # test_vT_integer  <- 
+  # #   silently_run(as_valueType(as.character.default(x),"integer"))
+  #   
+  # test_vT_decimal  <- 
+  #   silently_run(as_valueType(as.character.default(x),"decimal"))
+  #   
+  # test_vT_date     <-
+  #   silently_run(as_valueType(                     x ,"date"))
+  #   
+  # test_vT_datetime <-
+  #   silently_run(as_valueType(                     x ,"datetime"))
+  #   
+  # test_vT_text     <-                    
+  #   as_valueType(                                  x , "text")
+  # 
+  # t2 = Sys.time()
+
+  # test_vT <-
+  #   tribble(
+  #     ~`valueType` ,~`class`                  ,
+  #     # "boolean"    ,
+  #     # class(test_vT_boolean)[[max(length(class(test_vT_boolean)))]][1],
+  #     # 
+  #     # "integer"    ,
+  #     # class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1],
+  #     # 
+  #     "decimal"    ,
+  #     class(test_vT_decimal)[[max(length(class(test_vT_decimal)))]][1],
+  # 
+  #     "date"       ,
+  #     class(test_vT_date)[[max(length(class(test_vT_date)))]][1],
+  # 
+  #     "datetime"   ,
+  #     class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]
+  # 
+  #     ) %>%
+  #   dplyr::filter(.data$`class` != "try-error") %>%
+  #   summarise(
+  #     valueType = paste0(.data$`valueType`,collapse = "|"),
+  #     class = paste0(.data$`class`,collapse = "|")) %>%
+  #   mutate(
+  #     valueType =
+  #       case_when(
+  #         # .data$`valueType` == "boolean|integer"              ~ "boolean"      ,
+  #         .data$`valueType` == "boolean|integer|decimal"      ~ "integer"      ,
+  #         # .data$`valueType` == "integer|decimal"              ~ "integer"      ,
+  #         .data$`valueType` == "integer|decimal|date"         ~ "date"         ,
+  #         .data$`valueType` == "integer|decimal|datetime"     ~ "datetime"     ,
+  #         .data$`valueType` == "decimal|date"                 ~ "date"         ,
+  #         .data$`valueType` == "date|datetime"                ~ "date"         ,
+  #         .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
+  #         TRUE                                              ~  .data$`valueType`
+  #       )) %>% pull(.data$`valueType`)
+  # 
+  # if(test_vT == "") test_vT <- 'text'
+  # 
+  # message(paste0(test_vT," ",t2-t1))
+  # return(test_vT)
 }
 
 #' @title
@@ -794,10 +843,12 @@ data dictionary")}
   if(dataType     == "as_any_date")     x <- 
     as.character.default(x)
   if(dataType     == "as_any_boolean")  x <- 
-    as_any_boolean(as.character.default(x))
+    return(as_any_boolean(as.character.default(x)))
+  if(dataType     == "as_any_integer")  x <- 
+    return(as_any_integer(as.character.default(x)))
   if(class(x)[1]  == "factor")          x <- 
     as.character.default(x)
-
+  
   if(dataType     == "as_any_date"){
     
     if(class_x == "POSIXt"){
