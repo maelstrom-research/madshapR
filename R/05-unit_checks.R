@@ -775,9 +775,13 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' {
 #' 
 #' # use madshapR_DEMO provided by the package
-#'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors with data`
-#' dataset      <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+#' library(tidyr)
+#' 
+#' data_dict <-
+#'   madshapR_DEMO$`data_dict_TOKYO - errors with data` %>%
+#'   data_dict_filter('name == "prg_ever"')
+#' dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`['prg_ever']
+#' 
 #' check_dataset_categories(dataset, data_dict)
 #' 
 #' }
@@ -810,11 +814,16 @@ check_dataset_categories <- function(dataset, data_dict = NULL){
       dataset %>% 
       dataset_zap_data_dict() %>%
       mutate(across(any_of(unique(data_dict[['Categories']]$`variable`)),
-        as_category))}
+        as_category)
+        
+  )}
   
   # get the data dictionary
   data_dict_cat_from_dataset <- 
-    silently_run(data_dict_extract(dataset,as_data_dict_mlstr = FALSE))
+    silently_run(data_dict_extract(dataset,as_data_dict_mlstr = TRUE))
+  
+  if(class(data_dict_cat_from_dataset)[[1]] == 'try-error')
+    stop(call. = FALSE, message(data_dict_cat_from_dataset))
   
   cat_from_dataset <- cat_from_data_dict <-
     tibble(variable = as.character(),
