@@ -158,7 +158,7 @@ valueType_self_adjust <- function(...){
   if(is_dataset(...) & !is_data_dict(...)){
     
     dataset <- as_dataset(...,col_id = col_id(...))
-    
+    {
     if(ncol(dataset) == 0) return(dataset)
     if(nrow(dataset) == 0) return(dataset)
     
@@ -176,10 +176,16 @@ valueType_self_adjust <- function(...){
         Categories = tibble(name = as.character(),variable = as.character()),
         data_dict[['Categories']])
 
+    vT <- 
+      dataset %>%
+      reframe(across(everything(),~ valueType_guess(.))) %>%
+      pivot_longer(everything())
+    
     for(i in names(dataset)) {
       dataset[[i]] <-
-        as_valueType(x = dataset[[i]],
-                     valueType = valueType_guess(x = dataset[[i]]))
+        as_valueType(
+          x = dataset[[i]],
+          valueType = vT$value[vT$name == i])
       }
 
     data_dict_final <- data_dict_extract(dataset)
@@ -193,7 +199,7 @@ valueType_self_adjust <- function(...){
       data_dict_apply(dataset, data_dict_final) %>%
       mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
-
+}
     return(dataset)
   }
 
@@ -411,15 +417,24 @@ bold("\n\nUseful tip:"),
       
       if(length(cat_i) == 0){
         if(all(is.na(dataset[[i]]))){
-          dataset[[i]] <- as_valueType(dataset[[i]],
-              ifelse(is.null(data_dict$Variables[["valueType"]])|
-                       toString(
-                         data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]) %in%
-                       c("NA",""),
-                     valueType_of(dataset[[i]]),
-                     data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))}
+          dataset[[i]] <- 
+            as_valueType(dataset[[i]],
+                         
+              ifelse(
+                
+        is.null(data_dict$Variables[["valueType"]])|
+          toString(data_dict$Variables[
+          data_dict$Variables[["name"]] == i,][['valueType']]) %in% c("NA",""),
         
-        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(dataset[[i]])
+        valueType_of(dataset[[i]]),
+        data_dict$Variables[
+          data_dict$Variables[["name"]] == i,][['valueType']])
+        
+                   )}
+        
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- 
+          valueType_of(dataset[[i]])
+        
       }else{
         
         test_vec <- silently_run(unique(c(cat_i,unique(dataset[[i]]))))
@@ -428,11 +443,16 @@ bold("\n\nUseful tip:"),
           test_vec <- unique(c(as.character(cat_i),as.character(unique(dataset[[i]])))) 
         
         if(all(is.na(dataset[[i]]))){
-          dataset[[i]] <- as_valueType(dataset[[i]],
-            ifelse(is.null(data_dict$Variables[["valueType"]])|
-                     is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
-                   valueType_guess(cat_i),
-                   data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))
+          dataset[[i]] <- 
+            as_valueType(dataset[[i]],
+               ifelse(
+                 
+          is.null(data_dict$Variables[["valueType"]])|
+          is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
+          
+          valueType_guess(cat_i),
+          
+          data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))
           
         }else{
           test_vT <- silently_run(as_valueType(test_vec,'integer'))
