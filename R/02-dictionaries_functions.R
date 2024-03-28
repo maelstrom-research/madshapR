@@ -1738,14 +1738,12 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     
  if(sum(nrow(data_dict[['Categories']])) == 0) data_dict[['Categories']] <- NULL
 
-  if(is.null(data_dict$Variables[['valueType']]) &
-     is.null(data_dict$Variables[['typeof']])){
-    
-    data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
-    
-  }else{
-      
-  }
+  # if(is.null(data_dict$Variables[['valueType']]) &
+  #    is.null(data_dict$Variables[['typeof']])){
+  #   
+  #   data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
+  # 
+  # }
   
   data_dict <-  
     valueType_adjust(from = dataset, to = data_dict) %>%
@@ -2100,13 +2098,13 @@ data dictionary")}}
       lapply(function(x) {
         test_name <- as_valueType(x$`name`, valueType_guess(unique(x$`name`)))
         
-        if(all(test_name == as.character(x$name))){
+        if(all(as.character(test_name) == as.character(x$name))){
           x$name <- test_name}
       
         x <- x %>% arrange(.data$`variable`, .data$`name`) %>%
           mutate(name = as.character(.data$`name`))
-        return(x)
-      }) %>% bind_rows() %>%
+        return(x)}) %>% 
+      bind_rows() %>%
       select(-'typeof') %>%
       left_join(
         data_dict[['Categories']] %>%
