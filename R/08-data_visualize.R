@@ -176,13 +176,14 @@ variable_visualize <- function(
     
     preprocess_var <- 
       preprocess_group <- 
-      dataset_preprocess(colset[c(col,group_by)], col_dict)
+      dataset_preprocess(dataset = colset[c(col,group_by)], data_dict = col_dict)
     
     preprocess_var <- preprocess_var[preprocess_var$name == col,] 
     preprocess_group <- preprocess_group[preprocess_group$name == group_by,] 
     
   } else {
-    preprocess_var <- dataset_preprocess(colset[col], col_dict)
+    preprocess_var <- 
+      dataset_preprocess(dataset = colset[col], data_dict = col_dict)
   }
   
   colset <- as_dataset(dataset_zap_data_dict(colset))
@@ -461,7 +462,7 @@ variable_visualize <- function(
         ggtitle(paste0('Box plot', title)) +
         ylab("") +
         xlab("") +
-        scale_fill_manual(values = (palette_values))
+        scale_fill_manual(values = palette_values)
       
       #### plot_2 numeric ####
       aes <- 
