@@ -694,7 +694,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
     taxonomy_i <-
       taxonomy_id[[i]] %>%
       dplyr::filter(.data$`taxonomy_id` %in% 
-                      (names(data_dict[['Variables']]))) %>%
+                      names(data_dict[['Variables']])) %>%
       select('voc_term','taxonomy_id','index_vocabulary', 
              'index_term','vocabulary') %>%
       distinct
@@ -1536,12 +1536,12 @@ your dataset")}
   names_data <- names(dataset)
   names_data_dict <- data_dict[['Variables']]$`name`
   
-  for (i in names_data) {
+  for(i in names_data) {
   #   stop()}
     
     vT_list <- madshapR::valueType_list
     vT <- valueType_of(x = dataset[[i]])
-    dataset[[i]] <- as_valueType(x = (dataset[[i]]),valueType = vT)
+    dataset[[i]] <- as_valueType(x = dataset[[i]],valueType = vT)
     
     attrs_init <- attributes(dataset[[i]])
     
@@ -1557,7 +1557,7 @@ your dataset")}
     attrs_fct <- list()
     attrs_na <- list(na_values = c())
     
-    if (!is.null(data_dict[['Categories']])) {
+    if(!is.null(data_dict[['Categories']])) {
       cat_i <-
         data_dict[['Categories']][
           which(data_dict[['Categories']]$`variable` == i),]
@@ -1744,6 +1744,15 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   #   data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
   # 
   # }
+  
+
+  if(is.null(data_dict$Variables[['valueType']])){
+      data_dict$Variables[['valueType']] <- NA
+      data_dict <- valueType_self_adjust(data_dict)
+    }
+  #   
+  #   data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
+  # 
   
   data_dict <-  
     valueType_adjust(from = dataset, to = data_dict) %>%
