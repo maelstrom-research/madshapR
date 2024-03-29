@@ -154,7 +154,7 @@ dataset_summarize <- function(
   if(group_by != ''){
     
     preprocess_group <- 
-      dataset_preprocess(dataset[c(group_by)], data_dict)
+      dataset_preprocess(dataset = dataset[c(group_by)], data_dict = data_dict)
     
     if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
        c('mix','no'))
@@ -366,7 +366,9 @@ dataset_summarize <- function(
     
     dataset_preprocess <- 
       lapply(dataset_group,function(x){
-        dataset_preprocess(select(x,-any_of(col_id)),data_dict)})
+        dataset_preprocess(
+          dataset = select(x,-any_of(col_id)),
+          data_dict = data_dict)})
     
     summary_var <- 
       lapply(dataset_preprocess,function(x){
@@ -864,7 +866,7 @@ dossier_summarize <- function(
 #' {
 #'  
 #' ###### Example : Any data frame can be a dataset by definition.
-#' head(dataset_preprocess(iris))
+#' head(dataset_preprocess(dataset = iris))
 #'
 #' }
 #'
@@ -890,7 +892,9 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   # handle atomics
   if(is.atomic(dataset) & length(dataset) == 0){return(summary_tbl)}
   if(is.atomic(dataset))
-    return(dataset_preprocess(dataset = tibble(name = dataset), data_dict))
+    return(dataset_preprocess(
+      dataset = tibble(name = dataset), 
+      data_dict = data_dict))
   
   # tests
   as_dataset(dataset)
@@ -1041,11 +1045,11 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
+#' @param dataset_preprocess A data frame which provides summary of the 
+#' variables (used for internal processes and programming).
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param dataset_preprocess A data frame which provides summary of the 
-#' variables (used for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
@@ -1058,7 +1062,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' library(dplyr)
 #' 
 #' ###### Example : Any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(iris)
+#' dataset_preprocess <- dataset_preprocess(dataset = iris)
 #' glimpse(summary_variables(dataset_preprocess = dataset_preprocess))
 #'
 #' }
@@ -1068,14 +1072,14 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #'
 #' @export
 summary_variables <- function(
+    dataset_preprocess = .dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   #  (for internal processes and programming).
   if(is.null(dataset_preprocess)) dataset_preprocess <- 
-      dataset_preprocess(dataset, data_dict)
+      dataset_preprocess(dataset = dataset, data_dict = data_dict)
   summary <- dataset_preprocess
   
   # init
@@ -1191,11 +1195,11 @@ summary_variables <- function(
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #' 
+#' @param dataset_preprocess A data frame which provides summary of the variables
+#' (for internal processes and programming).
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param dataset_preprocess A data frame which provides summary of the variables
-#' (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
@@ -1208,7 +1212,7 @@ summary_variables <- function(
 #' ###### Example : Any data frame can be a dataset by definition.
 #' library(dplyr)
 #' 
-#' dataset_preprocess <- dataset_preprocess(starwars['homeworld'])
+#' dataset_preprocess <- dataset_preprocess(dataset = starwars['homeworld'])
 #' glimpse(summary_variables_text(dataset_preprocess = dataset_preprocess))
 #'
 #' }
@@ -1218,9 +1222,9 @@ summary_variables <- function(
 #'
 #' @export
 summary_variables_text <- function(
+    dataset_preprocess = .dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
@@ -1279,7 +1283,9 @@ summary_variables_text <- function(
   }
   
   # final_summary <-
-  #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
+  #   summary_variables(
+  #     dataset = dataset,data_dict data_dict, 
+  #     dataset_preprocess = dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1314,11 +1320,11 @@ summary_variables_text <- function(
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
+#' @param dataset_preprocess A data frame which provides summary of the 
+#' variables (for internal processes and programming).
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param dataset_preprocess A data frame which provides summary of the 
-#' variables (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
@@ -1332,14 +1338,15 @@ summary_variables_text <- function(
 #' library(dplyr)
 #' library(fabR)
 #' 
-#' dataset_preprocess <- 
+#' dataset <- 
 #'   madshapR_DEMO$dataset_TOKYO %>%
 #'     mutate(dob = as_any_date(dob)) %>%
 #'     select(dob) %>%
-#'     head() %>%
-#'     dataset_preprocess
+#'     head()
+#'     
+#' dataset_preprocess <- dataset_preprocess(dataset = dataset)
 #'
-#' glimpse(summary_variables_date(dataset_preprocess = dataset_preprocess))
+#' summary_variables_date(dataset_preprocess = dataset_preprocess)
 #'
 #' }
 #'
@@ -1348,9 +1355,9 @@ summary_variables_text <- function(
 #'
 #' @export
 summary_variables_date <- function(
+    dataset_preprocess = .dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
@@ -1423,7 +1430,9 @@ summary_variables_date <- function(
   }
   
   # final_summary <-
-  #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
+  #   summary_variables(
+  #     dataset = dataset, data_dict = data_dict, 
+  #     dataset_preprocess = dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
   
@@ -1459,11 +1468,11 @@ summary_variables_date <- function(
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
+#' @param dataset_preprocess A data frame which provides summary of the 
+#' variables (for internal processes and programming).
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param dataset_preprocess A data frame which provides summary of the 
-#' variables (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
@@ -1494,9 +1503,9 @@ summary_variables_date <- function(
 #'
 #' @export
 summary_variables_datetime <- function(
+    dataset_preprocess = .dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
@@ -1541,11 +1550,11 @@ summary_variables_datetime <- function(
 #' require it. If no identifier variable is specified, indexing is 
 #' handled automatically by the function.
 #'
+#' @param dataset_preprocess A data frame which provides summary of the 
+#' variables (for internal processes and programming).
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param dataset_preprocess A data frame which provides summary of the 
-#' variables (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #' 
 #' @returns
@@ -1558,7 +1567,7 @@ summary_variables_datetime <- function(
 #' library(dplyr)
 #' 
 #' ###### Example : Any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(iris)
+#' dataset_preprocess <- dataset_preprocess(dataset = iris)
 #' glimpse(summary_variables_numeric(dataset_preprocess = dataset_preprocess))
 #'
 #' }
@@ -1569,9 +1578,9 @@ summary_variables_datetime <- function(
 #'
 #' @export
 summary_variables_numeric <- function(
+    dataset_preprocess = .dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
@@ -1595,10 +1604,10 @@ summary_variables_numeric <- function(
       summary %>%
       dplyr::filter(.data$`name` == i)
     
-    summary_i$`value_var` <- as.numeric(summary_i$`value_var`)
+    summary_i$`value_var` <- suppressWarnings(as.numeric(summary_i$`value_var`))
     
     # turn the output to be readable
-    if(summary_i %>% nrow > 0){
+    if(summary_i %>% nrow > 0 & !all(is.na(summary_i$value_var))){
       summary_i <-
         tibble(
           `name`         =  i,
@@ -1621,7 +1630,7 @@ summary_variables_numeric <- function(
   #   summary_variables(dataset, data_dict, dataset_preprocess) %>%
   #   dplyr::filter(.data$`categorical` != 'yes') %>%
   #   full_join(summary_tbl, by = 'name')
-  
+
   return(summary_tbl)
 }
 
@@ -1664,11 +1673,11 @@ summary_variables_numeric <- function(
 #' types are available using [valueType_list]. The valueType can be used to 
 #' coerce the variable to the corresponding data type.
 #'
+#' @param dataset_preprocess A data frame which provides summary of the variables 
+#' (for internal processes and programming).
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param dataset_preprocess A data frame which provides summary of the variables 
-#' (for internal processes and programming).
 #' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
@@ -1681,7 +1690,7 @@ summary_variables_numeric <- function(
 #' library(dplyr)
 #' 
 #' ###### Example : Any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(iris['Species'])
+#' dataset_preprocess <- dataset_preprocess(dataset = iris['Species'])
 #' glimpse(summary_variables_categorical(dataset_preprocess = dataset_preprocess))
 #' 
 #' }
@@ -1691,9 +1700,9 @@ summary_variables_numeric <- function(
 #'
 #' @export
 summary_variables_categorical <- function(
+    dataset_preprocess = .dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    dataset_preprocess = .dataset_preprocess,
     .dataset_preprocess = NULL){
   
   # init
@@ -1703,6 +1712,7 @@ summary_variables_categorical <- function(
   
   summary <-
     dataset_preprocess %>%
+    filter(.data$`Categorical variable` != 'no') %>%
     group_by(across(c(-"value_var_occur",-"index_value"))) %>%
     summarise(
       n = sum(as.integer(.data$`value_var_occur`)),

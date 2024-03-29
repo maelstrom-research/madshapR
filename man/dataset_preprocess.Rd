@@ -54,7 +54,7 @@ handled automatically by the function.
 {
  
 ###### Example : Any data frame can be a dataset by definition.
-head(dataset_preprocess(iris))
+head(dataset_preprocess(dataset = iris))
 
 }
 
