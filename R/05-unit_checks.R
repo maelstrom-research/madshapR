@@ -786,133 +786,78 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' 
 #' }
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR 
 #' @importFrom rlang .data
 #'
 #' @export
-check_dataset_categories <- function(dataset, data_dict = NULL){
-
+check_dataset_categories <- function(
+    dataset, 
+    data_dict = silently_run(data_dict_extract(dataset))){
 
   # test if enough data_dict or dataset
   as_dataset(dataset) # no col_id
+  as_data_dict_shape(data_dict)
   
-  auto_dict <- FALSE
-  if(!is.null(data_dict)){
-    
-    data_dict <- as_data_dict_shape(data_dict)
-    
-    }else{
-      auto_dict <- TRUE      
-      data_dict <- 
-        silently_run(data_dict_extract(dataset,as_data_dict_mlstr = FALSE))    
-    }
+  #### * test_categories ####
+  # category in dd but not in dataset WARNING
+  # category in dataset but not in dd ERROR
   
   # apply as_category declared in the data_dict to the variables in dataset
+  categorical_var_dataset <- dataset %>% select(where(is_category)) %>% names
+  
+  categorical_var_data_dict <- c()
   if(sum(nrow(data_dict[['Categories']])) > 0){
-    
-    dataset <- 
-      dataset %>% 
-      dataset_zap_data_dict() %>%
-      mutate(across(any_of(unique(data_dict[['Categories']]$`variable`)),
-        as_category)
-        
-  )}
-  
-  # get the data dictionary
-  data_dict_cat_from_dataset <- 
-    silently_run(data_dict_extract(dataset,as_data_dict_mlstr = TRUE))
-  
-  if(class(data_dict_cat_from_dataset)[[1]] == 'try-error')
-    stop(call. = FALSE, message(data_dict_cat_from_dataset))
-  
-  cat_from_dataset <- cat_from_data_dict <-
-    tibble(variable = as.character(),
-           name = as.character(),
-           labels = as.character())
-    
-  if(sum(nrow(data_dict_cat_from_dataset[['Categories']])) > 0){
-    
-    cat_from_dataset <- 
-      data_dict_cat_from_dataset[['Categories']] %>%
-      select("variable", "name") %>%
-      mutate(across(everything(),as.character)) 
+    categorical_var_data_dict <- unique(data_dict$`Categorie`$`variable`)
+  }else{
+    data_dict[['Categories']] <- 
+      tibble("variable" = as.character(), "name" = as.character())
   }
+  
+  categorical_variables <- unique(c(categorical_var_data_dict,categorical_var_dataset))
+  
+  # exclude already adressed all_na
+  categorical_variables <-
+    categorical_variables[
+      categorical_variables %in% names(dataset %>% remove_empty('cols'))]
+  
+  test <- tibble("name_var" = as.character(),
+                 "value"     = as.character(),
+                 "condition" = as.character())
+  if(length(categorical_variables) == 0){
+    return(test)
+  }else{
     
-  if(sum(nrow(data_dict[['Categories']])) > 0){
-    cat_from_data_dict <- 
-      data_dict[['Categories']] %>%
-      select("variable", "name") %>%
-      mutate(across(everything(),as.character))
-  }
+    for(i in categorical_variables){
+      # stop()}
       
-  test <-
-    test_cat_in_dataset_only <-
-    test_cat_in_data_dict_only <- 
-    test_values_in_dataset_only <-
-    test_values_in_data_dict_only <- 
-    tibble(
-      name_var = as.character(),
-      value = as.character(),
-      condition = as.character())
-
-  # categorical variable in the data_dict, but not in the dataset
-  test_cat_in_data_dict_only <-
-    cat_from_data_dict['variable'] %>%
-    anti_join(
-      cat_from_dataset['variable'], by = "variable") %>%
-    rename(name_var = "variable") %>%
-    distinct %>%
-    mutate(condition =
-"[INFO] - Categorical variable in the data dictionary but not in the dataset")
-
-  # categorical variable in the dataset, but not in the data_dict
-  test_cat_in_dataset_only <-
-    cat_from_dataset['variable'] %>%
-    anti_join(
-      cat_from_data_dict['variable'], by = "variable") %>%
-    rename(name_var = "variable") %>%
-    distinct %>%
-    mutate(condition =
-"[INFO] - Categorical variable in the dataset but not in the data dictionary")
-
-  # remove already assessed
-  cat_from_dataset <-
-    cat_from_dataset %>%
-    dplyr::filter(!.data$`variable` %in% test_cat_in_dataset_only$`name_var`)
-
-  cat_from_data_dict <-
-    cat_from_data_dict %>%
-    dplyr::filter(!.data$`variable` %in% test_cat_in_data_dict_only$`name_var`)
-
-  # categorical values in the data_dict, but not in the dataset
-  test_values_in_data_dict_only <-
-    anti_join(
-      cat_from_data_dict,
-      cat_from_dataset,
-      by = c("variable", "name")) %>% 
-    rename(name_var = "variable") %>%
-    rename(value = "name") %>%
-    mutate(condition =
-"[INFO] - More categories declared in the data dictionary than unique values in the dataset")
+      dd_cat <- data_dict$`Categories`[data_dict$`Categories`$`variable` == i,]$`name`
+      ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i][[1]]))
+      
+      cat_in_dd_only <- dd_cat[!dd_cat %in% ds_cat]
+      cat_in_ds_only <- ds_cat[!ds_cat %in% dd_cat]
+      
+      if(length(cat_in_dd_only) > 0){
+        test <-
+          test %>%
+          bind_rows(
+            tibble(
+              name_var  = i,
+              value     = cat_in_dd_only,
+              condition =
+                "[INFO] - Categorical variable in the data dictionary but not in the dataset"))}
+      
+      if(length(cat_in_ds_only) > 0){
+        test <-
+          test %>%
+          bind_rows(
+            tibble(
+              name_var  = i,
+              value     = cat_in_ds_only,
+              condition =
+                "[INFO] - Categorical variable in the dataset but not in the data dictionary"))}
+    }
+  }
   
-  # categorical values in the dataset, but not in the data_dict
-  test_values_in_dataset_only      <-
-    anti_join(
-      cat_from_dataset,
-      cat_from_data_dict,
-      by = c("variable", "name")) %>%
-    rename(name_var = "variable") %>%
-    rename(value = "name") %>%
-    mutate(condition =
-"[INFO] - More unique values in the dataset than categories declared in the data dictionary")
-  
-
-  test <-
-    bind_rows(test, test_cat_in_data_dict_only, test_cat_in_dataset_only,
-              test_values_in_data_dict_only, test_values_in_dataset_only) %>%
-    dplyr::filter(!(is.na(.data$`name_var`) & is.na(.data$`value`))) %>%
-    distinct()
-
   return(test)
 }
 

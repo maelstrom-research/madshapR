@@ -247,7 +247,7 @@ dataset_evaluate <- function(
                   dataset %>% select(all_of(col_id)) %>%
                     add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
-        rename('value' = !!as.symbol('col_id')) %>%
+        rename('value' = any_of(!!as.symbol('col_id'))) %>%
         select(-all_of('madshapR::value'))
     }
     
@@ -309,12 +309,11 @@ dataset_evaluate <- function(
   test_existing_variable_category <-
     silently_run({
       check_dataset_categories(dataset,data_dict) %>%
-        distinct() %>% group_by(.data$`condition`,.data$`name_var`) %>%
-        summarise(
-          `value` = paste0(.data$`value`, collapse = " ; "),.groups = 'keep')
+        distinct() %>% group_by(.data$`name_var`,.data$`condition`) %>%
+        reframe(
+          `value` = paste0(.data$`value`, collapse = " ; "))
       }) %>%
-    dplyr::filter(!is.na(.data$`name_var`)) %>%
-    ungroup()
+    dplyr::filter(!is.na(.data$`name_var`))
   
   if(valueType_guess == TRUE){
     message(

@@ -212,7 +212,7 @@ valueType_self_adjust <- function(...){
     if(nrow(data_dict[['Variables']]) == 0) return(data_dict)
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
-      warning("Your data dictionary contains no categorical variables.")
+      # warning("Your data dictionary contains no categorical variables.")
       return(data_dict)
 
     }else{
