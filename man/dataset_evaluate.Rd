@@ -7,9 +7,10 @@
 dataset_evaluate(
   dataset,
   data_dict = NULL,
+  valueType_guess = FALSE,
+  as_data_dict_mlstr = TRUE,
   taxonomy = NULL,
   dataset_name = .dataset_name,
-  as_data_dict_mlstr = TRUE,
   .dataset_name = NULL
 )
 }
@@ -19,15 +20,18 @@ dataset_evaluate(
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
 
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. FALSE by default.}
+
+\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+with specific format restrictions for compatibility with other
+Maelstrom Research software. TRUE by default.}
+
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
 (used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
-\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
-with specific format restrictions for compatibility with other
-Maelstrom Research software. TRUE by default.}
 
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }

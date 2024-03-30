@@ -42,13 +42,15 @@
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
+#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. TRUE by default.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset 
 #' (used internally in the function [dossier_evaluate()]).
-#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
-#' with specific format restrictions for compatibility with other 
-#' Maelstrom Research software. TRUE by default.
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
@@ -80,9 +82,10 @@
 dataset_evaluate <- function(
     dataset,
     data_dict = NULL,
+    valueType_guess = FALSE,
+    as_data_dict_mlstr = TRUE,
     taxonomy = NULL,
     dataset_name = .dataset_name,
-    as_data_dict_mlstr = TRUE,
     .dataset_name = NULL){
   
   # future dev
@@ -97,9 +100,13 @@ dataset_evaluate <- function(
   if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
          '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,
+         '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
   
   # check on arguments : data_dict
-  if(is.null(data_dict)) {
+  if(is.null(data_dict)){
     data_dict <-
       silently_run({data_dict_extract(
         dataset = dataset,
@@ -153,7 +160,7 @@ dataset_evaluate <- function(
     dataset_zap_data_dict(dataset) %>% 
     select(-all_of(col_id))
   
-  dataset_name <-
+  dataset_name <- 
     ifelse(!is.null(dataset_name),dataset_name,
            make_name_list(
              as.character(fargs[['dataset']]),list_elem = list(NULL)))
@@ -163,7 +170,8 @@ dataset_evaluate <- function(
 
   # creation of the structure of the report
   report <- 
-    data_dict_evaluate(data_dict,as_data_dict_mlstr = as_data_dict_mlstr)
+    data_dict_evaluate(data_dict,
+      as_data_dict_mlstr = as_data_dict_mlstr)
   
   message(
     "- DATASET ASSESSMENT: ",
@@ -288,8 +296,6 @@ dataset_evaluate <- function(
       select(-'madshapR::value')
   }
   
-  
-  
   message(
     "    Assess the presence all NA(s) of columns in the data dictionary")
   test_empty_col <-
@@ -310,7 +316,7 @@ dataset_evaluate <- function(
     dplyr::filter(!is.na(.data$`name_var`)) %>%
     ungroup()
   
-  if(as_data_dict_mlstr == TRUE){
+  if(valueType_guess == TRUE){
     message(
       "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-

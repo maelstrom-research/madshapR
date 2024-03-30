@@ -207,9 +207,9 @@ variable_visualize <- function(
     variable_summary <- dataset_summarize(
       dataset = as_dataset(dataset[c(names(colset))]),
       data_dict = col_dict,
+      valueType_guess = valueType_guess,
       group_by = temp_group, 
-      dataset_name = 'dataset',
-      valueType_guess = valueType_guess)}
+      dataset_name = 'dataset')}
   
   if(group_by != ''){
     
@@ -1311,10 +1311,10 @@ variable_visualize <- function(
 #' @param group_by A character string identifying the column in the dataset
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param taxonomy An optional data frame identifying a variable classification 
-#' schema.
 #' @param valueType_guess Whether the output should include a more accurate 
 #' valueType that could be applied to the dataset. FALSE by default.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #' @param dataset_summary A list which identifies an existing 
 #' summary produced by [dataset_summarize()] of the dataset.
 #' Using this parameter can save time in generating the visual report.
@@ -1362,8 +1362,8 @@ dataset_visualize <- function(
     bookdown_path,
     data_dict = data_dict_extract(dataset),
     group_by = NULL,
-    taxonomy = NULL,
     valueType_guess = FALSE,
+    taxonomy = NULL,
     dataset_name = .dataset_name, 
     dataset_summary = .summary_var,
     .summary_var = NULL, 
@@ -1447,9 +1447,9 @@ Please provide another name folder or delete the existing one.")}
       dataset = dataset,
       data_dict = data_dict,
       group_by = temp_group,
+      valueType_guess = valueType_guess,
       taxonomy = taxonomy,
-      dataset_name = dataset_name,
-      valueType_guess = valueType_guess)}
+      dataset_name = dataset_name)}
 
   data_dict$Variables <- 
     data_dict$Variables %>% add_index(.force = TRUE)

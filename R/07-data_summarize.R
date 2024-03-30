@@ -53,12 +53,12 @@
 #' @param group_by A character string identifying the column in the dataset
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset
 #' (internally used in the function [dossier_evaluate()]).
-#' @param valueType_guess Whether the output should include a more accurate 
-#' valueType that could be applied to the dataset. FALSE by default.
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
@@ -208,6 +208,7 @@ dataset_summarize <- function(
     dataset_evaluate(
       dataset,
       data_dict,
+      valueType_guess = valueType_guess,
       taxonomy = taxonomy,
       dataset_name = dataset_name,
       as_data_dict_mlstr = TRUE)
@@ -245,23 +246,23 @@ dataset_summarize <- function(
         `___name_var___` = "name",
         `Actual dataset valueType` = "value")
 
-  if(valueType_guess == TRUE){
-    estimated_valueType <-
-      dataset %>%
-      # select(-matches("^___mlstr_index___$")) %>%
-      summarise(across(
-        everything(),
-        ~ valueType_guess(.))) %>%
-      pivot_longer(cols = everything()) %>%
-      rename(
-        `___name_var___` = "name",
-        `Estimated dataset valueType` = "value")
-  }else{
-    estimated_valueType <-
-      dataset_valueType %>%
-      select(
-        "___name_var___",
-        `Estimated dataset valueType` = "Actual dataset valueType")}
+    if(valueType_guess == TRUE){
+      estimated_valueType <-
+        dataset %>%
+        # select(-matches("^___mlstr_index___$")) %>%
+        summarise(across(
+          everything(),
+          ~ valueType_guess(.))) %>%
+        pivot_longer(cols = everything()) %>%
+        rename(
+          `___name_var___` = "name",
+          `Estimated dataset valueType` = "value")
+    }else{
+      estimated_valueType <-
+        dataset_valueType %>%
+        select(
+          "___name_var___",
+          `Estimated dataset valueType` = "Actual dataset valueType")}
 
   }
   ## variables
