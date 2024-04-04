@@ -266,19 +266,34 @@ variable_visualize <- function(
       select(-'___category_level___')
   }
   
+  if(sum(preprocess_var$index_in_dataset,na.rm = TRUE)*2 / 
+     sum(!is.na(preprocess_var$index_in_dataset))-1 != 
+     max(preprocess_var$index_in_dataset,na.rm = TRUE)){
+    stop("error in the function variable_visualize(). Contact Maintainer")
+  }
   
-  colset <- 
-    colset %>%
-    rename_with(.cols = any_of(names(colset)), 
-                .fn = ~ c("variable","group")[1:ncol(colset)]) %>%
-    bind_cols(preprocess_var[c('valid_class','value_var')]) %>%
-    mutate("variable" = 
-      ifelse(.data$`valid_class` == "3_Valid other values",
-             .data$`value_var`,
-             .data$`variable`)) %>%
-    select(-c('valid_class','value_var')) %>%
-    rename_with(.cols = c("variable","group")[1:ncol(colset)], 
-                .fn = ~ names(colset))
+  colset[[1]] <- 
+    preprocess_var %>%
+    arrange(.data$`index_in_dataset`) %>%
+    dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
+    pull('value_var') %>% as_valueType(valueType = valueType_of(colset[[1]]))
+    
+    # colset <- 
+    # colset %>%
+    # rename_with(.cols = any_of(names(colset)), 
+    #             .fn = ~ c("variable","group")[1:ncol(colset)]) %>%
+    # bind_cols(
+    #   preprocess_var %>%
+    #     arrange(.data$`index_in_dataset`) %>%
+    #     dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
+    #     select(c('valid_class','value_var'))) %>%
+    # mutate("variable" = 
+    #          ifelse(.data$`valid_class` == "3_Valid other values",
+    #                 .data$`value_var`,
+    #                 .data$`variable`)) %>%
+    # select(-c('valid_class','value_var')) %>%
+    # rename_with(.cols = c("variable","group")[1:ncol(colset)], 
+    #             .fn = ~ names(colset))
     
   if(is.null(variable_summary)){
     temp_group <- if(group_by == ''){NULL}else{group_by}
