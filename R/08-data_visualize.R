@@ -85,7 +85,12 @@
 #'   
 #'  variable_visualize(
 #'    dataset, col = 'height',
-#'    variable_summary =  variable_summary)
+#'    variable_summary =  variable_summary,valueType_guess = TRUE)
+#'   
+#'  variable_visualize(
+#'    dataset, col = 'height',
+#'    variable_summary =  variable_summary,valueType_guess = TRUE)
+#'   
 #'  
 #'  
 #' }
@@ -266,7 +271,7 @@ variable_visualize <- function(
     colset %>%
     rename_with(.cols = any_of(names(colset)), 
                 .fn = ~ c("variable","group")[1:ncol(colset)]) %>%
-    add_column(preprocess_var[c('valid_class','value_var')]) %>%
+    bind_cols(preprocess_var[c('valid_class','value_var')]) %>%
     mutate("variable" = 
       ifelse(.data$`valid_class` == "3_Valid other values",
              .data$`value_var`,
@@ -311,12 +316,12 @@ variable_visualize <- function(
   if(valueType_guess == TRUE){
       madshapR::valueType_list[
         madshapR::valueType_list$valueType %in% 
-          valueType_guess(colset_values[[col]]),]    
+          valueType_guess(dataset[[col]]),]    
   }else{
 
       madshapR::valueType_list[
         madshapR::valueType_list$valueType %in% 
-          valueType_of(colset_values[[col]]),] 
+          valueType_of(dataset[[col]]),] 
   }
   
   n_part <- nrow(colset)

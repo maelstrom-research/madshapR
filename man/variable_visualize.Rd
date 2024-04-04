@@ -101,7 +101,12 @@ coerce the variable to the corresponding data type.
   
  variable_visualize(
    dataset, col = 'height',
-   variable_summary =  variable_summary)
+   variable_summary =  variable_summary,valueType_guess = TRUE)
+  
+ variable_visualize(
+   dataset, col = 'height',
+   variable_summary =  variable_summary,valueType_guess = TRUE)
+  
  
  
 }
