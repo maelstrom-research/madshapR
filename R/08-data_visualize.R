@@ -112,9 +112,9 @@ variable_visualize <- function(
     warning(call. = FALSE,'Your column is identifier. It will not be analysed.')
     return(ggplot())}
   
-  dataset <- 
-    as_dataset(dataset) %>%
-    mutate(across(where(is.character),tolower))
+  # dataset <- 
+  #   as_dataset(dataset) %>%
+  #   mutate(across(where(is.character),tolower))
   
   if(nrow(dataset) == 0) {
     warning(call. = FALSE,'Your column has no observation.')
@@ -154,7 +154,15 @@ variable_visualize <- function(
   if(ncol(colset)== 1){col <- names(colset)[1] ; group_by <- ''}
   if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
   
+  if(group_by != ''){
+    
+    if(!is_category(colset[[group_by]])) 
+      colset <- as_dataset(colset) %>% 
+        mutate(across(all_of(group_by), as_category))
+  }
+
   if(!is.null(data_dict)){
+    
       tryCatch(
         expr = {
           col_dict <- 
@@ -172,6 +180,19 @@ variable_visualize <- function(
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
   }
   
+  if(! group_by %in% col_dict[['Categories']][['variable']] & group_by != ''){
+    
+    col_dict_group_by <- 
+      as_dataset(colset) %>% 
+      select(all_of(group_by)) %>% data_dict_extract()
+    
+    col_dict[['Categories']] <- 
+      bind_rows(
+        col_dict[['Categories']], 
+        col_dict_group_by$Categories)
+  }
+  
+  
   if(group_by != ''){
     
     preprocess_var <- 
@@ -188,11 +209,11 @@ variable_visualize <- function(
   
   colset <- as_dataset(dataset_zap_data_dict(colset))
 
-  if(group_by != ''){
-    if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
-       c('mix','no'))
-      stop(call. = FALSE,
-           'Your grouping variable must be a categorical variable.')}
+  # if(group_by != ''){
+  #   if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
+  #      c('mix','no'))
+  #     stop(call. = FALSE,
+  #          'Your grouping variable must be a categorical variable.')}
   
   preprocess_var_values <-
     preprocess_var[preprocess_var$valid_class == '3_Valid other values',]
@@ -201,15 +222,7 @@ variable_visualize <- function(
   preprocess_var_cat_miss_values <- 
     preprocess_var[preprocess_var$valid_class %in% 
                      c('2_Missing values','4_NA values'),]
-  
-  if(is.null(variable_summary)){
-    temp_group <- if(group_by == ''){NULL}else{group_by}
-    variable_summary <- dataset_summarize(
-      dataset = as_dataset(dataset[c(names(colset))]),
-      data_dict = col_dict,
-      valueType_guess = valueType_guess,
-      group_by = temp_group, 
-      dataset_name = 'dataset')}
+
   
   if(group_by != ''){
     
@@ -248,6 +261,29 @@ variable_visualize <- function(
       select(-'___category_level___')
   }
   
+  
+  colset <- 
+    colset %>%
+    rename_with(.cols = any_of(names(colset)), 
+                .fn = ~ c("variable","group")[1:ncol(colset)]) %>%
+    add_column(preprocess_var[c('valid_class','value_var')]) %>%
+    mutate("variable" = 
+      ifelse(.data$`valid_class` == "3_Valid other values",
+             .data$`value_var`,
+             .data$`variable`)) %>%
+    select(-c('valid_class','value_var')) %>%
+    rename_with(.cols = c("variable","group")[1:ncol(colset)], 
+                .fn = ~ names(colset))
+    
+  if(is.null(variable_summary)){
+    temp_group <- if(group_by == ''){NULL}else{group_by}
+    variable_summary <- dataset_summarize(
+      dataset = as_dataset(dataset[c(names(colset))]),
+      data_dict = col_dict,
+      valueType_guess = valueType_guess,
+      group_by = temp_group, 
+      dataset_name = 'dataset')}
+  
   colset_values <-
     colset %>% 
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
@@ -267,7 +303,7 @@ variable_visualize <- function(
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
     dplyr::filter(.data$`temp_val` %in% 
                     preprocess_var_cat_miss_values$value_var) %>%
-    select(-'temp_val') 
+    select(-'temp_val')
   
   # guess the generic valueType of the variable (excluding categories):
 

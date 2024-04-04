@@ -99,11 +99,7 @@ dataset_summarize <- function(
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
-  
-  dataset <- 
-    as_dataset(dataset, col_id(dataset)) %>%
-    mutate(across(where(is.character),tolower))
-  
+
   col_id <- col_id(dataset)
   
   dataset_name <- 
@@ -145,21 +141,34 @@ dataset_summarize <- function(
   if(toString(substitute(group_by)) != ''){
     group_by <- tryCatch(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
-      error = function(cond){return(toString(names(dataset[group_by])))})    
+      error = function(cond){return(toString(names(dataset[group_by])))})
     
-    if(! group_by %in% data_dict[['Categories']][['variable']]) group_by <- ''
+    if(! group_by %in% data_dict[['Categories']][['variable']] & group_by != ''){
+     
+      data_dict_group_by <- 
+        as_dataset(dataset) %>% 
+        mutate(across(all_of(group_by), as_category)) %>%
+        select(all_of(group_by)) %>% data_dict_extract()
+      
+      data_dict[['Categories']] <- 
+        bind_rows(
+          data_dict[['Categories']], 
+          data_dict_group_by$Categories)
+    }
     
   }else{ group_by <- ''}
   
   if(group_by != ''){
     
     preprocess_group <- 
-      dataset_preprocess(dataset = dataset[c(group_by)], data_dict = data_dict)
+      dataset_preprocess(
+        dataset = dataset[c(group_by)],
+        data_dict = data_dict)
     
-    if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
-       c('mix','no'))
-      stop(call. = FALSE,
-           'Your grouping variable must be a categorical variable.')
+    # if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
+    #    c('mix','no'))
+    #   stop(call. = FALSE,
+    #        'Your grouping variable must be a categorical variable.')
     
     cat_lab <-  
       data_dict[['Categories']] %>% 
@@ -916,10 +925,10 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     data_dict_cat <-
       data_dict[['Categories']] %>%
       select(
-        name = .data$`variable`, 
-        value_var = .data$`name`,
+        name = "variable", 
+        value_var = "name",
         cat_label = matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1],
-        valid_class = .data$`missing`) %>%
+        valid_class = "missing") %>%
       group_by(.data$`name`, .data$`valid_class`) %>%
       add_index('cat_index') %>%
       ungroup() %>%
@@ -1013,6 +1022,15 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     select(.data$index,
            .data$`name`, everything()) %>%
     arrange(.data$`index`,.data$`valid_class`)
+  
+  
+  # to lower text if not categories
+  final_resume <- 
+    final_resume %>%
+    mutate(
+      value_var = ifelse(
+        .data$`valid_class` == "3_Valid other values",
+        tolower(.data$`value_var`),.data$`value_var`))
   
   return(final_resume)
   

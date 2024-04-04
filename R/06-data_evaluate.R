@@ -152,13 +152,10 @@ dataset_evaluate <- function(
   col_id <- attributes(dataset)$`madshapR::col_id`
   # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
   
-  dataset <-
-    dataset %>%
-    mutate(across(where(is.character),tolower))
-  
   zap_dataset <- 
     dataset_zap_data_dict(dataset) %>% 
-    select(-all_of(col_id))
+    select(-all_of(col_id)) %>%
+    mutate(across(where(is.character),tolower))
   
   dataset_name <- 
     ifelse(!is.null(dataset_name),dataset_name,
