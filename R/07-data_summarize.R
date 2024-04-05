@@ -766,7 +766,7 @@ dataset_summarize <- function(
         `Quality assessment comment` = 
           ifelse(.data$`name` == group_by & 
                   is.na(.data$`Quality assessment comment`),
-                 "qual_comment",
+                 qual_comment,
                  .data$`Quality assessment comment`))})
     
     report <- 
