@@ -158,6 +158,34 @@ dataset_summarize <- function(
     
   }else{ group_by <- ''}
   
+  
+  # if group contains NA, replace by -19071983
+  
+  if(group_by != ''){
+    
+    if(-190719831562453 %in% unique(dataset[[c(group_by)]])) stop('Error. Contact maintainer')
+    
+    dataset <- 
+      dataset %>%
+      mutate(across(any_of(group_by), 
+        ~ replace_na(.,as_valueType(-190719831562453,valueType_of(.)))))
+    
+    data_dict_group_by <- 
+      as_dataset(dataset) %>% 
+      mutate(across(all_of(group_by), as_category)) %>%
+      select(all_of(group_by)) %>% data_dict_extract()
+    
+    data_dict[['Categories']] <- 
+      bind_rows(
+        data_dict[['Categories']], 
+        data_dict_group_by$Categories %>%
+          mutate(
+            missing = ifelse(.data$`name` == "-190719831562453",TRUE,.data$`missing`),
+            label = ifelse(.data$`name` == "-190719831562453","-190719831562453",.data$`label`),
+          )) %>%
+      distinct()
+  }
+  
   if(group_by != ''){
     
     preprocess_group <- 
@@ -221,13 +249,12 @@ dataset_summarize <- function(
       taxonomy = taxonomy,
       dataset_name = dataset_name,
       as_data_dict_mlstr = TRUE)
-
+  
   message(
     "- DATASET SUMMARIZE: ",
     bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
     " --------------------------")
 
-  # 
   # if(is.null(col_id) | ncol(dataset) == 1){
   #   dataset <- madshapR::dataset %>% add_index("___mlstr_index___")
   #   dataset <-   as_dataset(dataset, names(dataset)[1])}
@@ -302,10 +329,12 @@ dataset_summarize <- function(
             .data$`missing` == TRUE,
             "Missing categorical values :",
             "Valid categorical values :")) %>%
+      mutate(
+        label = ifelse(.data$`name` == .data$`label`,NA,.data$`label`)) %>%
       unite(
         "Categories in data dictionary",
         c("name",matches(c("^label$","^label:[[:alnum:]]"))[1]),
-        sep = " = ",remove = TRUE) %>%
+        sep = " = ",na.rm = TRUE, remove = TRUE) %>%
       group_by(pick(c(-"Categories in data dictionary"))) %>%
       summarise(across(c("Categories in data dictionary"),
                        ~ paste0(.,collapse = "\n")),.groups = "drop") %>%
@@ -709,6 +738,57 @@ dataset_summarize <- function(
                           FUN.VALUE = logical(1))]
   report <- report[unique(c('Overview', names(report)))]
 
+  # if group, replace -190719831562453 by NA values if any
+  
+  if(nrow(report[['Variables summary (all)']] %>% bind_rows(tibble()) %>%
+          dplyr::filter(str_detect(if_any(starts_with('Grouping variable')),
+          "-190719831562453"))) > 0){
+    
+    
+    qual_comment = "[INFO] - Grouping variable contains missing values (NA)"
+    
+    report[["Dataset assessment"]] <- 
+      bind_rows(
+        report[["Dataset assessment"]],
+        tibble(
+          `index in data dict.` = 
+            as.character(report$`Variables summary (all)`$`index in data dict.`[
+              report$`Variables summary (all)`$name == group_by]),
+          name = group_by,
+          `Quality assessment comment` = qual_comment,
+          value = NA_character_))
+    
+    report <- 
+      report[c(-1)] %>%
+      lapply(function(x) {
+      x %>% 
+      mutate(
+        `Quality assessment comment` = 
+          ifelse(.data$`name` == group_by & 
+                  is.na(.data$`Quality assessment comment`),
+                 "qual_comment",
+                 .data$`Quality assessment comment`))})
+    
+    report <- 
+      report %>%
+      lapply(function(x) {
+        x %>%
+          mutate(across(
+            everything(), ~
+              str_replace_all(.,"-190719831562453","Missing value (NA)")))}) 
+    
+    report[["Dataset assessment"]] <- 
+      bind_rows(
+        report[["Dataset assessment"]],
+        tibble(
+          `index in data dict.` = 
+            as.character(report$`Variables summary (all)`$`index in data dict.`[
+              report$`Variables summary (all)`$name == group_by]),
+          name = group_by,
+          `Quality assessment comment` = qual_comment,
+          value = NA_character_))
+    
+  }
   
   report <-   
     report %>%
@@ -717,6 +797,8 @@ dataset_summarize <- function(
         lapply(function(x) str_trunc(x, 10000)) %>%
         as_tibble()      
     })
+  
+  
   
   return(report)
 }
@@ -1731,7 +1813,7 @@ summary_variables_categorical <- function(
   
   summary <-
     dataset_preprocess %>%
-    filter(.data$`Categorical variable` != 'no') %>%
+    dplyr::filter(.data$`Categorical variable` != 'no') %>%
     group_by(across(c(-"value_var_occur",-"index_value"))) %>%
     summarise(
       n = sum(as.integer(.data$`value_var_occur`)),
