@@ -1,9 +1,16 @@
-# madshapR 1.1.0
 
-
-# madshapR 1.0.4 (release : 2024-04-01)
+# madshapR 1.1.0 (release : 2024-04-22)
 
 ## Bug fixes and improvements
+
+- for assessment, summary and visualization, the character columns in
+  dataset are put to lower to avoid duplicated informations in outputs.
+  <https://github.com/maelstrom-research/madshapR/issues/63>
+
+- bug in the function `variable_visualize()` when the column was empty
+  after removing internally stopwords.
+  <https://github.com/maelstrom-research/Rmonize/issues/53>
+  <https://github.com/maelstrom-research/Rmonize/issues/49>
 
 - Some elements were missing in the reports in `dataset_evaluate()`
   <https://github.com/maelstrom-research/madshapR/issues/66>
@@ -16,7 +23,7 @@
   been corrected to be more consistent in the usage of these functions.
   <https://github.com/maelstrom-research/madshapR/issues/61>
 
-- The bug affecting tibbles which contain a variable named ‘test’ has
+- The bug affecting tibbles which contain a variable named “test” has
   been corrected in the package fabR.
   <https://github.com/maelstrom-research/madshapR/issues/60>
 
@@ -35,7 +42,7 @@
   the package fabR.
   <https://github.com/maelstrom-research/madshapR/issues/57>
 
-- The unconsitant error in `dataset_evaluate()` has been corrected in
+- The inconsistent error in `dataset_evaluate()` has been corrected in
   the package fabR.
   <https://github.com/maelstrom-research/madshapR/issues/46>
 

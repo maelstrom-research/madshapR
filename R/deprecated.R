@@ -36,7 +36,7 @@ open_visual_report <- function(...) {
 madshapR_help <- function() {
   
   deprecate_warn(
-    "1.0.4", "madshapR_help()", "madshapR_website()")
+    "1.1.0", "madshapR_help()", "madshapR_website()")
   
   # Unquote-splice to avoid argument matching
   
