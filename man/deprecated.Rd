@@ -8,7 +8,7 @@
 \usage{
 open_visual_report(...)
 
-madshapR_help(...)
+madshapR_help()
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}

@@ -636,7 +636,7 @@ check_data_dict_valueType <- function(data_dict){
       dplyr::filter(.data$`valueType` != .data$`suggestion`) %>%
       mutate(
         condition = case_when(
-          .data$`test` == 'try-error'  ~ "[ERR]  - valueType conflict in 'Categories'",
+          .data$`test` == 'try-error'  ~ "[ERR] - valueType conflict in 'Categories'",
           TRUE                         ~ "[INFO] - refined valueType proposed")) %>%
       select( 'name_var', 'value' = 'valueType', 'condition','suggestion') %>%
       mutate(across(everything(), ~ as.character(.)))

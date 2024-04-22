@@ -33,13 +33,13 @@ open_visual_report <- function(...) {
 #' @import dplyr
 #' @importFrom lifecycle deprecate_warn
 #' @export
-madshapR_help <- function(...) {
+madshapR_help <- function() {
   
   deprecate_warn(
     "1.0.4", "madshapR_help()", "madshapR_website()")
   
   # Unquote-splice to avoid argument matching
   
-  madshapR_website(...)
+  madshapR_website()
   
 }
