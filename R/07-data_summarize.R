@@ -137,6 +137,9 @@ dataset_summarize <- function(
     as_data_dict_mlstr(name_standard = FALSE)
       })
   
+  # if the dataset has no observations, group_by is null
+  if(nrow(dataset) == 0) group_by <- NULL
+  
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
     group_by <- tryCatch(
@@ -157,7 +160,6 @@ dataset_summarize <- function(
     }
     
   }else{ group_by <- ''}
-  
   
   # if group contains NA, replace by -19071983
   
