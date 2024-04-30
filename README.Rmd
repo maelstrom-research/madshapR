@@ -39,9 +39,6 @@ library(madshapR)
 # If you need help with the package, please use:
 madshapR_website()
 
-# Downloadable templates are available here
-madshapR_templates()
-
 # Demo files are available here, along with an online demonstration process 
 madshapR_DEMO
 
