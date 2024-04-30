@@ -301,8 +301,11 @@ dataset_cat_as_labels <- function(
         select(-'___mlstr_name___')
       
       names(col) <- i 
-      col <- valueType_self_adjust(col)
-      data_dict_temp <- valueType_adjust(from = col, to = data_dict_temp)
+      
+      vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$Categories$name)))
+    
+      col[[1]] <- as_valueType(col[[1]], vT_final)
+      data_dict_temp$Variables$valueType <- vT_final
       dataset[i] <- data_dict_apply(col, data_dict_temp)
     }
   }
@@ -383,6 +386,9 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
     names(dossier) <-
       make_name_list(as.character(fargs['dataset_list']), dossier)}
 
+  if(sum(is.na(names(dossier))) >= 1)
+    names(dossier) <- paste0('dataset.',seq_along(dossier))
+  
   dossier <- as_dossier(dossier)
 
   return(dossier)
@@ -544,7 +550,8 @@ as_dossier <- function(object){
   # check if names in object are unique
   if(!setequal(length(names(object)),length(unique(names(object))))){
     stop(call. = FALSE,
-"The name of your datasets are not unique. Please provide different names.")}
+"The name of your datasets are not unique or have been wrongly parsed. 
+Please provide different names.")}
   
   tryCatch(
     object <- object %>% lapply(

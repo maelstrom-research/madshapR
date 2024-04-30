@@ -12,14 +12,14 @@
 #' @examples
 #' {
 #'
-#' madshapR_help()
+#' madshapR_website()
 #' 
 #' }
 #'
 #' @importFrom utils browseURL
 #'
 #' @export
-madshapR_help <- function(){
+madshapR_website <- function(){
 
   browseURL("https://maelstrom-research.github.io/madshapR-documentation/")
 

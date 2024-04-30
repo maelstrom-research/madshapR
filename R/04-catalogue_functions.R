@@ -154,12 +154,11 @@ valueType_of <- function(x){
 #' @export
 valueType_self_adjust <- function(...){
 
-  # test dataset
-
+  # is dataset
   if(is_dataset(...) & !is_data_dict(...)){
     
     dataset <- as_dataset(...,col_id = col_id(...))
-    
+    {
     if(ncol(dataset) == 0) return(dataset)
     if(nrow(dataset) == 0) return(dataset)
     
@@ -177,11 +176,16 @@ valueType_self_adjust <- function(...){
         Categories = tibble(name = as.character(),variable = as.character()),
         data_dict[['Categories']])
 
+    vT <- 
+      dataset %>%
+      reframe(across(everything(),~ valueType_guess(.))) %>%
+      pivot_longer(everything())
+    
     for(i in names(dataset)) {
-      # stop()}
       dataset[[i]] <-
-        as_valueType(x = dataset[[i]], 
-                     valueType = valueType_guess(x = dataset[[i]]))
+        as_valueType(
+          x = dataset[[i]],
+          valueType = vT$value[vT$name == i])
       }
 
     data_dict_final <- data_dict_extract(dataset)
@@ -195,10 +199,11 @@ valueType_self_adjust <- function(...){
       data_dict_apply(dataset, data_dict_final) %>%
       mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
-
+}
     return(dataset)
   }
 
+  # is data_dict
   if(!is_dataset(...) & is_data_dict(...)){
     
     data_dict <- as_data_dict_shape(...)
@@ -207,16 +212,14 @@ valueType_self_adjust <- function(...){
     if(nrow(data_dict[['Variables']]) == 0) return(data_dict)
 
     if(sum(nrow(data_dict[['Categories']])) == 0){
-      warning(
-"Your data dictionary contains no categorical variables.
-The valueType will remain as it is.")
+      # warning("Your data dictionary contains no categorical variables.")
       return(data_dict)
 
     }else{
 
       category_outcomes <-
         data_dict[['Categories']] %>%
-        select(.data$`name`) %>% distinct %>%
+        select("name") %>% distinct %>%
         rowwise() %>%
         mutate(valueType = valueType_guess(.data$`name`))
 
@@ -392,7 +395,7 @@ valueType_adjust <- function(from, to = NULL){
 
     dataset <- from
     data_dict <- to
-    
+
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
        dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
@@ -404,18 +407,95 @@ bold("\n\nUseful tip:"),
 
     if(ncol(dataset) == 0) return(data_dict)
     
+    vT_data_dict <- 
+      tibble(name = rep(names(dataset)),
+             valueType = rep(NA_character_,ncol(dataset)))
+      
+    for(i in names(dataset)){
+      
+      cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$`name`
+      
+      if(length(cat_i) == 0){
+        if(all(is.na(dataset[[i]]))){
+          dataset[[i]] <- 
+            as_valueType(dataset[[i]],
+                         
+              ifelse(
+                
+        is.null(data_dict$Variables[["valueType"]])|
+          toString(data_dict$Variables[
+          data_dict$Variables[["name"]] == i,][['valueType']]) %in% c("NA",""),
+        
+        valueType_of(dataset[[i]]),
+        data_dict$Variables[
+          data_dict$Variables[["name"]] == i,][['valueType']])
+        
+                   )}
+        
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- 
+          valueType_of(dataset[[i]])
+        
+      }else{
+        
+        test_vec <- silently_run(unique(c(cat_i,unique(dataset[[i]]))))
+        
+        if(class(test_vec)[[1]] == 'try-error')
+          test_vec <- unique(c(as.character(cat_i),as.character(unique(dataset[[i]])))) 
+        
+        if(all(is.na(dataset[[i]]))){
+          dataset[[i]] <- 
+            as_valueType(dataset[[i]],
+               ifelse(
+                 
+          is.null(data_dict$Variables[["valueType"]])|
+          is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
+          
+          valueType_guess(cat_i),
+          
+          data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))
+          
+        }else{
+          test_vT <- silently_run(as_valueType(test_vec,'integer'))
+        }
+
+        if(class(test_vT)[[1]] == 'try-error')
+          test_vT <- as_valueType(test_vec,valueType_guess(test_vec))
+        
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(test_vT)
+            
+      }
+    }
+            
     vT_list<- madshapR::valueType_list
-    vT_tables <-
+    vT_data_dict <-
+      left_join(vT_data_dict,vT_list, by = "valueType") %>%
+      select("name", valueType_data_dict = "valueType",typeof_data_dict = "typeof")
+    
+    vT_dataset <-
       dataset %>%
-      summarise(across(everything(), valueType_of)) %>%
+      summarise(across(everything(), ~ valueType_of(.))) %>%
       pivot_longer(cols = everything()) %>%
       rename(valueType = "value") %>%
       left_join(vT_list, by = "valueType") %>%
-      select("name", "valueType","typeof")
+      select("name", valueType_dataset = "valueType",typeof_dataset = "typeof")
 
+    vT_final <- 
+      vT_data_dict %>%
+      full_join(vT_dataset,by = join_by('name')) %>%
+      mutate(valueType = ifelse(
+        .data$`valueType_data_dict` == "integer",
+        .data$`valueType_dataset`,
+        .data$`valueType_data_dict`)) %>%
+      mutate(typeof = ifelse(
+        .data$`typeof_data_dict` == "integer",
+        .data$`typeof_dataset`,
+        .data$`typeof_data_dict`)) %>%
+      select('name','valueType','typeof')
+    
+    
     data_dict[['Variables']]['typeof'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_tables %>%
+      left_join(vT_final %>%
                   select("name", "typeof"), by = "name") %>%
       select("typeof")
     # }
@@ -423,10 +503,12 @@ bold("\n\nUseful tip:"),
     # if(length(data_dict[['Variables']][['valueType']]) > 0){
     data_dict[['Variables']]['valueType'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_tables %>%
+      left_join(vT_final %>%
                   select("name", "valueType"), by = "name") %>%
       select("valueType")
     # }
+
+    data_dict <- as_data_dict_mlstr(data_dict)
 
     return(data_dict)
     # }
@@ -462,15 +544,15 @@ bold("\n\nUseful tip:"),
 
     is_factor <-
       dataset %>%
-      summarise(across(everything(), ~ class(.))) %>%
+      reframe(across(everything(), ~ class(.))) %>%
       pivot_longer(everything()) %>%
       dplyr::filter(.data$`value` == "factor")
 
     data_dict_data[['Variables']] <-
       data_dict_data[['Variables']] %>%
-      select(-.data$`valueType`) %>%
+      select(-"valueType") %>%
       left_join(data_dict[['Variables']] %>%
-                  select(.data$`name`, .data$`valueType`),by = "name")
+                  select("name", "valueType"),by = "name")
 
     for(i in names(dataset)){
       dataset[[i]] <-
@@ -593,60 +675,111 @@ valueType_guess <- function(x){
   if(all(is.na(x))) return(valueType_of(x))
 
   # else :
-  x <-   unique(x)
+  x <- unique(x)
+  x <- x[!is.na(x)]
   
   vT_list <- madshapR::valueType_list
 
-  test_vT_boolean  <- 
-    silently_run(as_valueType(as.character.default(x),"boolean"))
   test_vT_integer  <- 
-    silently_run(as_valueType(as.character.default(x),"integer"))
+    silently_run(as_valueType(as.character(x),"integer"))
+
+  if(class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1] == 'integer'){
+    
+    if(is.logical(x)){
+      return('boolean')}
+      
+      return('integer')
+  }
+    
   test_vT_decimal  <- 
     silently_run(as_valueType(as.character.default(x),"decimal"))
-  test_vT_date     <- 
-    silently_run(as_valueType(                     x ,"date"))
-  test_vT_datetime <- 
-    silently_run(as_valueType(                     x ,"datetime"))
-  test_vT_text     <-                    
-    as_valueType(                                  x , "text"   )
+    
+  if(class(test_vT_decimal)[[1]] != 'try-error'){
+    
+    test_vT_date <- silently_run(as_valueType(x ,"date"))
+    if(class(test_vT_date)[[1]] != 'try-error'){
+      return('date')}
+    
+    test_vT_datetime <- silently_run(as_valueType(x ,"datetime"))
+    if(class(test_vT_datetime)[[1]] != 'try-error'){
+      return('datetime')}
+    
+    return('decimal')
+  }
+    
+  test_vT_date <- silently_run(as_valueType(x ,"date"))
+  if(class(test_vT_date)[[1]] != 'try-error'){
+    return('date')}
+  
+  test_vT_datetime <- silently_run(as_valueType(x ,"datetime"))
+  if(class(test_vT_datetime)[[1]] != 'try-error'){
+    return('datetime')}
+  
+  return(valueType_of(x))
 
-  test_vT <-
-    tribble(
-      ~`valueType` ,~`class`                  ,
-      "boolean"    ,  
-      class(test_vT_boolean)[[max(length(class(test_vT_boolean)))]][1],
-      
-      "integer"    ,  
-      class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1],
-      
-      "decimal"    ,  
-      class(test_vT_decimal)[[max(length(class(test_vT_decimal)))]][1],
-      
-      "date"       ,  
-      class(test_vT_date)[[max(length(class(test_vT_date)))]][1],
-      
-      "datetime"   ,   
-      class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]) %>%
-    dplyr::filter(.data$`class` != "try-error") %>%
-    summarise(
-      valueType = paste0(.data$`valueType`,collapse = "|"),
-      class = paste0(.data$`class`,collapse = "|")) %>%
-    mutate(
-      valueType =
-        case_when(
-          .data$`valueType` == "boolean|integer|decimal"      ~ "integer"      ,
-          .data$`valueType` == "integer|decimal"              ~ "integer"      ,
-          .data$`valueType` == "integer|decimal|date"         ~ "date"         ,
-          .data$`valueType` == "integer|decimal|datetime"     ~ "datetime"     ,
-          .data$`valueType` == "decimal|date"                 ~ "date"         ,
-          .data$`valueType` == "date|datetime"                ~ "date"         ,
-          .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
-          TRUE                                              ~  .data$`valueType`
-        )) %>% pull(.data$`valueType`)
+    
+  # t1 = Sys.time()
+  # # test_vT_boolean  <- 
+  # #   silently_run(as_valueType(as.character.default(x),"boolean"))
+  # # 
+  # # test_vT_integer  <- 
+  # #   silently_run(as_valueType(as.character.default(x),"integer"))
+  #   
+  # test_vT_decimal  <- 
+  #   silently_run(as_valueType(as.character.default(x),"decimal"))
+  #   
+  # test_vT_date     <-
+  #   silently_run(as_valueType(                     x ,"date"))
+  #   
+  # test_vT_datetime <-
+  #   silently_run(as_valueType(                     x ,"datetime"))
+  #   
+  # test_vT_text     <-                    
+  #   as_valueType(                                  x , "text")
+  # 
+  # t2 = Sys.time()
 
-  if(test_vT == "") test_vT <- 'text'
-
-  return(test_vT)
+  # test_vT <-
+  #   tribble(
+  #     ~`valueType` ,~`class`                  ,
+  #     # "boolean"    ,
+  #     # class(test_vT_boolean)[[max(length(class(test_vT_boolean)))]][1],
+  #     # 
+  #     # "integer"    ,
+  #     # class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1],
+  #     # 
+  #     "decimal"    ,
+  #     class(test_vT_decimal)[[max(length(class(test_vT_decimal)))]][1],
+  # 
+  #     "date"       ,
+  #     class(test_vT_date)[[max(length(class(test_vT_date)))]][1],
+  # 
+  #     "datetime"   ,
+  #     class(test_vT_datetime)[[max(length(class(test_vT_datetime)))]][1]
+  # 
+  #     ) %>%
+  #   dplyr::filter(.data$`class` != "try-error") %>%
+  #   summarise(
+  #     valueType = paste0(.data$`valueType`,collapse = "|"),
+  #     class = paste0(.data$`class`,collapse = "|")) %>%
+  #   mutate(
+  #     valueType =
+  #       case_when(
+  #         # .data$`valueType` == "boolean|integer"              ~ "boolean"      ,
+  #         .data$`valueType` == "boolean|integer|decimal"      ~ "integer"      ,
+  #         # .data$`valueType` == "integer|decimal"              ~ "integer"      ,
+  #         .data$`valueType` == "integer|decimal|date"         ~ "date"         ,
+  #         .data$`valueType` == "integer|decimal|datetime"     ~ "datetime"     ,
+  #         .data$`valueType` == "decimal|date"                 ~ "date"         ,
+  #         .data$`valueType` == "date|datetime"                ~ "date"         ,
+  #         .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
+  #         TRUE                                              ~  .data$`valueType`
+  #       )) %>% pull(.data$`valueType`)
+  # 
+  # if(test_vT == "") test_vT <- 'text'
+  # 
+  # message(paste0(test_vT," ",t2-t1))
+  # return(test_vT)
 }
 
 #' @title
@@ -705,19 +838,16 @@ as_valueType <- function(x, valueType = 'text'){
   if(is.list(x))
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
+  class_x <- class(x)[[max(length(class(x)))]]
+  x_init <- x
+  
   # if x is already the output format, no need to go further
-  if(class(x)[[max(length(class(x)))]] == "Date"    & 
-     valueType == "date")     return(x)
-  if(class(x)[[max(length(class(x)))]] == "POSIXt" & 
-     valueType == "datetime") return(x)
-  if(is.integer(x)            & 
-     valueType == "integer")  return(x)
-  if(class(x)[[max(length(class(x)))]] == "numeric" & 
-     valueType == "decimal")  return(x)
-  if(is.logical(x)            & 
-     valueType == "boolean")  return(x)
-  if(is.na(valueType)         | 
-     valueType == "text")     return(as.character.default(x))
+  if(class_x == "Date"    & valueType == "date")     return(x)
+  if(class_x == "POSIXt"  & valueType == "datetime") return(x)
+  if(is.integer(x)        & valueType == "integer")  return(x)
+  if(class_x == "numeric" & valueType == "decimal")  return(x)
+  if(is.logical(x)        & valueType == "boolean")  return(x)
+  if(is.na(valueType)     | valueType == "text")     return(as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -733,11 +863,21 @@ data dictionary")}
   if(dataType     == "as_any_date")     x <- 
     as.character.default(x)
   if(dataType     == "as_any_boolean")  x <- 
-    as_any_boolean(as.character.default(x))
+    return(as_any_boolean(as.character.default(x)))
+  if(dataType     == "as_any_integer")  x <- 
+    return(as_any_integer(as.character.default(x)))
   if(class(x)[1]  == "factor")          x <- 
     as.character.default(x)
-
+  
   if(dataType     == "as_any_date"){
+    
+    if(class_x == "POSIXt"){
+      x <- 
+        as_valueType(x,'integer') %>%
+        as.POSIXct.numeric(tz = 'UTC') %>%
+        as.character()
+    }
+    
     date_format <-
       guess_date_format(
         tibble(as.character.default(

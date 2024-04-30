@@ -694,7 +694,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
     taxonomy_i <-
       taxonomy_id[[i]] %>%
       dplyr::filter(.data$`taxonomy_id` %in% 
-                      (names(data_dict[['Variables']]))) %>%
+                      names(data_dict[['Variables']])) %>%
       select('voc_term','taxonomy_id','index_vocabulary', 
              'index_term','vocabulary') %>%
       distinct
@@ -1244,6 +1244,10 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
     }
   }
   
+  if(sum(nrow(data_dict[['Categories']])) == 0){
+    data_dict[['Categories']] <- NULL
+  }
+  
   return(data_dict)
 }
 
@@ -1532,12 +1536,12 @@ your dataset")}
   names_data <- names(dataset)
   names_data_dict <- data_dict[['Variables']]$`name`
   
-  for (i in names_data) {
-    # stop()}
+  for(i in names_data) {
+  #   stop()}
     
     vT_list <- madshapR::valueType_list
     vT <- valueType_of(x = dataset[[i]])
-    dataset[[i]] <- as_valueType(x = (dataset[[i]]),valueType = vT)
+    dataset[[i]] <- as_valueType(x = dataset[[i]],valueType = vT)
     
     attrs_init <- attributes(dataset[[i]])
     
@@ -1553,7 +1557,7 @@ your dataset")}
     attrs_fct <- list()
     attrs_na <- list(na_values = c())
     
-    if (!is.null(data_dict[['Categories']])) {
+    if(!is.null(data_dict[['Categories']])) {
       cat_i <-
         data_dict[['Categories']][
           which(data_dict[['Categories']]$`variable` == i),]
@@ -1699,7 +1703,6 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     
     if(length(attrs_i) > 0){
       
-      # if(length(attrs_i) > 0){
       for(j in seq_len(length(attrs_i))){
         # stop()}
         
@@ -1713,7 +1716,8 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
         }else{
           cat_attr <- tibble(variable = i, name = attr_name_cat)
           cat_attr[[attr_col_name]] <- attr_content_col
-          data_dict_cat <- data_dict_cat %>%
+          data_dict_cat <- 
+            data_dict_cat %>%
             full_join(cat_attr,
                       by = intersect(names(data_dict_cat),names(cat_attr)))
         }
@@ -1723,6 +1727,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
       data_dict[['Variables']]  %>% bind_rows(data_dict_var)
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>% bind_rows(data_dict_cat)
+    
   }
   
   names(data_dict[['Variables']])  <-
@@ -1730,17 +1735,30 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   names(data_dict[['Categories']]) <-
     make.unique(str_remove(names(data_dict[['Categories']]),"^Categories::"))
   
-  
-  if(sum(nrow(data_dict[['Categories']])) == 0)data_dict[['Categories']] <- NULL
+    
+ if(sum(nrow(data_dict[['Categories']])) == 0) data_dict[['Categories']] <- NULL
 
+  # if(is.null(data_dict$Variables[['valueType']]) &
+  #    is.null(data_dict$Variables[['typeof']])){
+  #   
+  #   data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
+  # 
+  # }
+  
+
+  if(is.null(data_dict$Variables[['valueType']])){
+      data_dict$Variables[['valueType']] <- NA
+      data_dict <- valueType_self_adjust(data_dict)
+    }
+  #   
+  #   data_dict <-  silently_run(valueType_adjust(from = dataset, to = data_dict))
+  # 
+  
   data_dict <-  
-    silently_run({
-      valueType_adjust(from = dataset, to = data_dict) %>%
-        valueType_adjust() %>%
-        as_data_dict_mlstr(
-          as_data_dict = !as_data_dict_mlstr,
-          name_standard = FALSE) 
-    })
+    valueType_adjust(from = dataset, to = data_dict) %>%
+    as_data_dict_mlstr(
+      as_data_dict = !as_data_dict_mlstr,
+      name_standard = FALSE)
   
   return(data_dict)
 }
@@ -2087,11 +2105,15 @@ data dictionary")}}
                   select(variable = 'name', 'typeof'), by = "variable") %>%
       group_by(typeof) %>% group_split() %>% as.list %>%
       lapply(function(x) {
-        x$name <- as_valueType(x$`name`, valueType_guess(unique(x$`name`)))
+        test_name <- as_valueType(x$`name`, valueType_guess(unique(x$`name`)))
+        
+        if(all(as.character(test_name) == as.character(x$name))){
+          x$name <- test_name}
+      
         x <- x %>% arrange(.data$`variable`, .data$`name`) %>%
           mutate(name = as.character(.data$`name`))
-        return(x)
-      }) %>% bind_rows() %>%
+        return(x)}) %>% 
+      bind_rows() %>%
       select(-'typeof') %>%
       left_join(
         data_dict[['Categories']] %>%
@@ -2376,7 +2398,7 @@ investigations.",
       # preserve information from labels into label:xx
       data_dict[['Categories']] <- 
         data_dict[['Categories']] %>%
-        mutate(across(lab_name_cat, ~ ifelse(is.na(.),.data$`labels`,.)))
+        mutate(across(all_of(lab_name_cat), ~ ifelse(is.na(.),.data$`labels`,.)))
       data_dict[['Categories']][['labels']] <- NULL}
     
     # addition of missing if not present

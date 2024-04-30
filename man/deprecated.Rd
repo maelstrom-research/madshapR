@@ -3,13 +3,20 @@
 \name{deprecated}
 \alias{deprecated}
 \alias{open_visual_report}
+\alias{madshapR_help}
 \title{Deprecated functions}
 \usage{
 open_visual_report(...)
+
+madshapR_help()
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 Use \code{\link[=bookdown_open]{bookdown_open()}} instead of \code{open_visual_report()}.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+Use \code{\link[=madshapR_website]{madshapR_website()}} instead of \code{madshapR_help()}.
 }
 \keyword{internal}

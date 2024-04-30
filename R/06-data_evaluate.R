@@ -15,7 +15,8 @@
 #' 'Variables' must contain at least the `name` column, with all unique and 
 #' non-missing entries, and the data frame 'Categories' must contain at least 
 #' the `variable` and `name` columns, with unique combination of 
-#' `variable` and `name`.
+#' `variable` and `name`. The function truncates each cell to a maximum of 
+#' 10000 characters, to be readable and compatible with Excel.
 #' 
 #' A dataset is a data table containing variables. A dataset object is a 
 #' data frame and can be associated with a data dictionary. If no 
@@ -41,13 +42,15 @@
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. FALSE by default.
+#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' with specific format restrictions for compatibility with other 
+#' Maelstrom Research software. TRUE by default.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset 
 #' (used internally in the function [dossier_evaluate()]).
-#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
-#' with specific format restrictions for compatibility with other 
-#' Maelstrom Research software. TRUE by default.
 #' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
@@ -65,7 +68,7 @@
 #' ###### Example : Any data frame can be summarized
 #' dataset <- as_dataset(
 #'   madshapR_DEMO$`dataset_TOKYO - errors with data`,
-#'   col_id = 'part_id')
+#'   col_id = 'part_id') %>% slice(0)
 #'  
 #' glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
 #' 
@@ -79,14 +82,16 @@
 dataset_evaluate <- function(
     dataset,
     data_dict = NULL,
+    valueType_guess = FALSE,
+    as_data_dict_mlstr = TRUE,
     taxonomy = NULL,
     dataset_name = .dataset_name,
-    as_data_dict_mlstr = TRUE,
     .dataset_name = NULL){
   
   # future dev
   # add emptiness of the dataset in the Dataset assessment
 
+  # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
 
   # check on arguments : dataset
@@ -95,9 +100,13 @@ dataset_evaluate <- function(
   if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
          '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,
+         '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
   
   # check on arguments : data_dict
-  if(is.null(data_dict)) {
+  if(is.null(data_dict)){
     data_dict <-
       silently_run({data_dict_extract(
         dataset = dataset,
@@ -145,9 +154,10 @@ dataset_evaluate <- function(
   
   zap_dataset <- 
     dataset_zap_data_dict(dataset) %>% 
-    select(-all_of(col_id))
+    select(-all_of(col_id)) %>%
+    mutate(across(where(is.character),tolower))
   
-  dataset_name <-
+  dataset_name <- 
     ifelse(!is.null(dataset_name),dataset_name,
            make_name_list(
              as.character(fargs[['dataset']]),list_elem = list(NULL)))
@@ -157,11 +167,12 @@ dataset_evaluate <- function(
 
   # creation of the structure of the report
   report <- 
-    data_dict_evaluate(data_dict,as_data_dict_mlstr = as_data_dict_mlstr)
+    data_dict_evaluate(data_dict,
+      as_data_dict_mlstr = as_data_dict_mlstr)
   
   message(
     "- DATASET ASSESSMENT: ",
-    bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
+    bold(dataset_name), if(nrow(dataset) == 0) " (empty dataset)",
     " --------------------------")
 
   test_name_standards <-
@@ -193,7 +204,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of possible duplicated variable in the dataset")
-  if(dataset %>% nrow > 0){
+  if(nrow(dataset) > 0 & ncol(dataset %>% select(-matches('___mlstr_index___'))) > 1) {
     test_duplicated_columns <-
       get_duplicated_cols(
         dataset %>% select(-matches('___mlstr_index___'))) %>%
@@ -207,7 +218,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of duplicated participants in the dataset")
-  if(dataset %>% nrow > 0 & FALSE){                                                     #icitte
+  if(nrow(dataset) > 0){                                                        #icitte
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
@@ -233,7 +244,7 @@ dataset_evaluate <- function(
                   dataset %>% select(all_of(col_id)) %>%
                     add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
-        rename('value' = !!as.symbol('col_id')) %>%
+        rename('value' = any_of(!!as.symbol('col_id'))) %>%
         select(-all_of('madshapR::value'))
     }
     
@@ -251,10 +262,11 @@ dataset_evaluate <- function(
       select(-"madshapR::index") 
   }
   
-  if(dataset %>% nrow > 0){
+  if(nrow(dataset) > 0){
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
       get_unique_value_cols(zap_dataset) %>%
+      mutate(condition = "[INFO] - unique value in the column") %>%
       rename(`name_var` = "col_name") %>%
       distinct()
   }
@@ -281,12 +293,11 @@ dataset_evaluate <- function(
       select(-'madshapR::value')
   }
   
-  
-  
   message(
     "    Assess the presence all NA(s) of columns in the data dictionary")
   test_empty_col <-
     get_all_na_cols(dataset) %>%
+    mutate(condition = "[INFO] - empty column") %>%
     rename(`name_var` = "col_name")
   
   message(
@@ -295,14 +306,13 @@ dataset_evaluate <- function(
   test_existing_variable_category <-
     silently_run({
       check_dataset_categories(dataset,data_dict) %>%
-        distinct() %>% group_by(.data$`condition`,.data$`name_var`) %>%
-        summarise(
-          `value` = paste0(.data$`value`, collapse = " ; "),.groups = 'keep')
+        distinct() %>% group_by(.data$`name_var`,.data$`condition`) %>%
+        reframe(
+          `value` = paste0(.data$`value`, collapse = " ; "))
       }) %>%
-    dplyr::filter(!is.na(.data$`name_var`)) %>%
-    ungroup()
+    dplyr::filter(!is.na(.data$`name_var`))
   
-  if(as_data_dict_mlstr == TRUE){
+  if(valueType_guess == TRUE){
     message(
       "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-
@@ -356,6 +366,14 @@ dataset_evaluate <- function(
     "
   ))
   
+  report <-   
+    report %>%
+    lapply(function(y){
+      y %>%
+        lapply(function(x) str_trunc(x, 10000)) %>%
+        as_tibble()      
+    })
+  
   return(report)
 }
 
@@ -403,13 +421,13 @@ dataset_evaluate <- function(
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
-#'  dataset <- as_dataset(
+#' dataset <- as_dataset(
 #'    madshapR_DEMO$`dataset_TOKYO - errors with data`,
-#'    col_id = 'part_id')
-#'  
-#'  dossier <- as_dossier(list(dataset = dataset))
-#'  
-#'  glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
+#'    col_id = 'part_id') %>% slice(0)
+#' 
+#' dossier <- as_dossier(list(dataset = dataset))
+#' 
+#' glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
 #'
 #' }
 #'
@@ -467,7 +485,8 @@ dossier_evaluate <- function(
 #' 'Variables' must contain at least the `name` column, with all unique and 
 #' non-missing entries, and the data frame 'Categories' must contain at least 
 #' the `variable` and `name` columns, with unique combination of 
-#' `variable` and `name`.
+#' `variable` and `name`. The function truncates each cell to a maximum of 
+#' 10000 characters, to be readable and compatible with Excel.
 #' 
 #' A taxonomy is a classification schema that can be defined for variable 
 #' attributes. A taxonomy is usually extracted from an 
@@ -626,11 +645,18 @@ data_dict_evaluate <- function(
   message("    Assess the presence of possible duplicated columns")
   test_duplicated_columns <-
     suppressWarnings(get_duplicated_cols(data_dict[['Variables']])) %>%
+    mutate(condition = as.character(ifelse(.data$`condition` == 
+      "Possible duplicated columns: name ; label",NA_character_,.data$`condition`))) %>%
+    dplyr::filter(!is.na(.data$`condition`)) %>%
     mutate(sheet     = "Variables") %>%
+    mutate(across(everything())) %>%
+    
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
-        suppressWarnings(
-          get_duplicated_cols(data_dict[['Categories']])) %>%
+        suppressWarnings(get_duplicated_cols(data_dict[['Categories']])) %>%
+          mutate(condition = as.character(ifelse(.data$`condition` == 
+            "Possible duplicated columns: name ; label",NA_character_,.data$`condition`))) %>%
+          dplyr::filter(!is.na(.data$`condition`)) %>%
           mutate(sheet    = "Categories")
       }else{tibble()}) %>%
     mutate(value     = str_squish(
@@ -639,18 +665,19 @@ data_dict_evaluate <- function(
   
   # message("    Assess the presence of duplicated variable in the dataset")
   # test_duplicated_rows <-
-  #   get_duplicated_rows(data_dict[['Variables']] %>%
-  #    select(-.data$`name`)) %>%
-  #   mutate(
-  #     condition = str_remove(.data$`condition`,
-  #                 "\\[INFO\\] - Possible duplicated observations: ")) %>%
-  #   separate_rows(.data$`condition`,sep = " ; ") %>%
-  #   mutate(index = as.integer(.data$`condition`)) %>%
+  #   get_duplicated_rows(
+  #     data_dict[['Variables']] %>%
+  #       bind_rows(data_dict[['Variables']] %>% slice(1:3)) %>%
+  #       select(-"name")) %>%
+  #   add_index("condition_index") %>%
+  #   separate_rows("row_number",sep = " ; ") %>%
+  #   mutate(index = as.integer(.data$`row_number`)) %>%
   #   full_join(data_dict[['Variables']] %>% add_index(.force = TRUE),
   #                                                            by = "index") %>%
   #   dplyr::filter(!is.na(.data$`condition`)) %>%
-  #   select(col_name = .data$`name`) %>%
+  #   select(col_name = "name") %>%
   #   summarise(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
+  #   dplyr::filter(col_name != "''") %>%
   #   mutate(
   #     condition = "[INFO] - possible duplicated rows (variables)",
   #     sheet    = "Variables")
@@ -677,7 +704,8 @@ data_dict_evaluate <- function(
             sheet    = "Variables",
             condition = "[INFO] - Empty line(s)",
             sheet    = "Categories") %>% 
-          select("condition","value","sheet"))}
+          select("condition","value","sheet"))
+    }
   
   message("    Assess the presence of empty columns in the data dictionary")
   test_empty_col <-
@@ -816,6 +844,14 @@ data_dict_evaluate <- function(
     "
   - WARNING MESSAGES (if any): --------------------------------------------\n"))
   
+  report <-   
+    report %>%
+    lapply(function(y){
+      y %>%
+        lapply(function(x) str_trunc(x, 10000)) %>%
+        as_tibble()      
+    })
+
   return(report)
 }
 

@@ -9,8 +9,8 @@ dataset_visualize(
   bookdown_path,
   data_dict = data_dict_extract(dataset),
   group_by = NULL,
-  taxonomy = NULL,
   valueType_guess = FALSE,
+  taxonomy = NULL,
   dataset_name = .dataset_name,
   dataset_summary = .summary_var,
   .summary_var = NULL,
@@ -30,11 +30,11 @@ dataset. Automatically generated if not provided.}
 to use as a grouping variable. Elements will be grouped by this
 column.}
 
-\item{taxonomy}{An optional data frame identifying a variable classification
-schema.}
-
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. FALSE by default.}
+
+\item{taxonomy}{An optional data frame identifying a variable classification
+schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
 (used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}

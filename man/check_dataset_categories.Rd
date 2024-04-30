@@ -4,7 +4,10 @@
 \alias{check_dataset_categories}
 \title{Assess a data dictionary and associated dataset for category differences}
 \usage{
-check_dataset_categories(dataset, data_dict = NULL)
+check_dataset_categories(
+  dataset,
+  data_dict = silently_run(data_dict_extract(dataset))
+)
 }
 \arguments{
 \item{dataset}{A dataset object.}
@@ -46,9 +49,13 @@ handled automatically by the function.
 {
 
 # use madshapR_DEMO provided by the package
+library(tidyr)
 
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors with data`
-dataset      <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+data_dict <-
+  madshapR_DEMO$`data_dict_TOKYO - errors with data` \%>\%
+  data_dict_filter('name == "prg_ever"')
+dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`['prg_ever']
+
 check_dataset_categories(dataset, data_dict)
 
 }

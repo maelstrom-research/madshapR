@@ -85,7 +85,12 @@
 #'   
 #'  variable_visualize(
 #'    dataset, col = 'height',
-#'    variable_summary =  variable_summary)
+#'    variable_summary =  variable_summary,valueType_guess = TRUE)
+#'   
+#'  variable_visualize(
+#'    dataset, col = 'height',
+#'    variable_summary =  variable_summary,valueType_guess = TRUE)
+#'   
 #'  
 #'  
 #' }
@@ -112,7 +117,9 @@ variable_visualize <- function(
     warning(call. = FALSE,'Your column is identifier. It will not be analysed.')
     return(ggplot())}
   
-  dataset <- as_dataset(dataset)
+  # dataset <- 
+  #   as_dataset(dataset) %>%
+  #   mutate(across(where(is.character),tolower))
   
   if(nrow(dataset) == 0) {
     warning(call. = FALSE,'Your column has no observation.')
@@ -152,7 +159,15 @@ variable_visualize <- function(
   if(ncol(colset)== 1){col <- names(colset)[1] ; group_by <- ''}
   if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
   
+  if(group_by != ''){
+    
+    if(!is_category(colset[[group_by]])) 
+      colset <- as_dataset(colset) %>% 
+        mutate(across(all_of(group_by), as_category))
+  }
+
   if(!is.null(data_dict)){
+    
       tryCatch(
         expr = {
           col_dict <- 
@@ -170,26 +185,40 @@ variable_visualize <- function(
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
   }
   
+  if(! group_by %in% col_dict[['Categories']][['variable']] & group_by != ''){
+    
+    col_dict_group_by <- 
+      as_dataset(colset) %>% 
+      select(all_of(group_by)) %>% data_dict_extract()
+    
+    col_dict[['Categories']] <- 
+      bind_rows(
+        col_dict[['Categories']], 
+        col_dict_group_by$Categories)
+  }
+  
+  
   if(group_by != ''){
     
     preprocess_var <- 
       preprocess_group <- 
-      dataset_preprocess(colset[c(col,group_by)], col_dict)
+      dataset_preprocess(dataset = colset[c(col,group_by)], data_dict = col_dict)
     
     preprocess_var <- preprocess_var[preprocess_var$name == col,] 
     preprocess_group <- preprocess_group[preprocess_group$name == group_by,] 
     
   } else {
-    preprocess_var <- dataset_preprocess(colset[col], col_dict)
+    preprocess_var <- 
+      dataset_preprocess(dataset = colset[col], data_dict = col_dict)
   }
   
   colset <- as_dataset(dataset_zap_data_dict(colset))
 
-  if(group_by != ''){
-    if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
-       c('mix','no'))
-      stop(call. = FALSE,
-           'Your grouping variable must be a categorical variable.')}
+  # if(group_by != ''){
+  #   if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
+  #      c('mix','no'))
+  #     stop(call. = FALSE,
+  #          'Your grouping variable must be a categorical variable.')}
   
   preprocess_var_values <-
     preprocess_var[preprocess_var$valid_class == '3_Valid other values',]
@@ -198,15 +227,7 @@ variable_visualize <- function(
   preprocess_var_cat_miss_values <- 
     preprocess_var[preprocess_var$valid_class %in% 
                      c('2_Missing values','4_NA values'),]
-  
-  if(is.null(variable_summary)){
-    temp_group <- if(group_by == ''){NULL}else{group_by}
-    variable_summary <- dataset_summarize(
-      dataset = as_dataset(dataset[c(names(colset))]),
-      data_dict = col_dict,
-      group_by = temp_group, 
-      dataset_name = 'dataset',
-      valueType_guess = valueType_guess)}
+
   
   if(group_by != ''){
     
@@ -245,6 +266,44 @@ variable_visualize <- function(
       select(-'___category_level___')
   }
   
+  if(sum(preprocess_var$index_in_dataset,na.rm = TRUE)*2 / 
+     sum(!is.na(preprocess_var$index_in_dataset))-1 != 
+     max(preprocess_var$index_in_dataset,na.rm = TRUE)){
+    stop("error in the function variable_visualize(). Contact Maintainer")
+  }
+  
+  colset[[1]] <- 
+    preprocess_var %>%
+    arrange(.data$`index_in_dataset`) %>%
+    dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
+    pull('value_var') %>% as_valueType(valueType = valueType_of(colset[[1]]))
+    
+    # colset <- 
+    # colset %>%
+    # rename_with(.cols = any_of(names(colset)), 
+    #             .fn = ~ c("variable","group")[1:ncol(colset)]) %>%
+    # bind_cols(
+    #   preprocess_var %>%
+    #     arrange(.data$`index_in_dataset`) %>%
+    #     dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
+    #     select(c('valid_class','value_var'))) %>%
+    # mutate("variable" = 
+    #          ifelse(.data$`valid_class` == "3_Valid other values",
+    #                 .data$`value_var`,
+    #                 .data$`variable`)) %>%
+    # select(-c('valid_class','value_var')) %>%
+    # rename_with(.cols = c("variable","group")[1:ncol(colset)], 
+    #             .fn = ~ names(colset))
+    
+  if(is.null(variable_summary)){
+    temp_group <- if(group_by == ''){NULL}else{group_by}
+    variable_summary <- dataset_summarize(
+      dataset = as_dataset(dataset[c(names(colset))]),
+      data_dict = col_dict,
+      valueType_guess = valueType_guess,
+      group_by = temp_group, 
+      dataset_name = 'dataset')}
+  
   colset_values <-
     colset %>% 
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
@@ -264,7 +323,7 @@ variable_visualize <- function(
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
     dplyr::filter(.data$`temp_val` %in% 
                     preprocess_var_cat_miss_values$value_var) %>%
-    select(-'temp_val') 
+    select(-'temp_val')
   
   # guess the generic valueType of the variable (excluding categories):
 
@@ -272,12 +331,12 @@ variable_visualize <- function(
   if(valueType_guess == TRUE){
       madshapR::valueType_list[
         madshapR::valueType_list$valueType %in% 
-          valueType_guess(colset_values[[col]]),]    
+          valueType_guess(dataset[[col]]),]    
   }else{
 
       madshapR::valueType_list[
         madshapR::valueType_list$valueType %in% 
-          valueType_of(colset_values[[col]]),] 
+          valueType_of(dataset[[col]]),] 
   }
   
   n_part <- nrow(colset)
@@ -423,7 +482,7 @@ variable_visualize <- function(
       summary_2 <-
         summary_2 %>% 
         mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), ~ round(.,2))) %>%
+        mutate(across(-c("col"), ~ round(as.numeric(.),2))) %>%
         select(-'col') %>%
         mutate(across(everything(),as.character))
       
@@ -459,7 +518,7 @@ variable_visualize <- function(
         ggtitle(paste0('Box plot', title)) +
         ylab("") +
         xlab("") +
-        scale_fill_manual(values = (palette_values))
+        scale_fill_manual(values = palette_values)
       
       #### plot_2 numeric ####
       aes <- 
@@ -570,40 +629,6 @@ variable_visualize <- function(
         arrange(desc(.data$`___n___`)) %>%
         slice(1:10)
       
-      #### plot_1 character ####      
-      n_obs <- nrow(colset_values)
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      group_n <- "___n___"
-      
-      aes <- 
-        if(group_by == ''){
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n),
-            fill = '')
-        }else{
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n), 
-            fill = fct_rev(!! as.symbol(group_by)))}
-      
-      plot_1 <- 
-        ggplot(colset_values_main_word) + aes + 
-        geom_col() +
-        theme_bw() +
-        theme(legend.position = "none",plot.title = 
-                element_text(size = 8,face = "bold"),
-              strip.background = element_rect(color = "white", fill="white")) +
-        ggtitle(paste0('Most common entry', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = rev(palette_values)) +
-        coord_flip()
-      
-      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(as.symbol(group_by))}
       
       #### plot_2 character ####      
       n_obs <- nrow(colset_values)
@@ -624,7 +649,7 @@ variable_visualize <- function(
             y = !! as.symbol(group_n), 
             fill = fct_rev(!! as.symbol(group_by)))}
       
-      plot_2 <- 
+      plot_1 <- 
         ggplot(colset_values_all_word) + aes + 
         geom_col() +
         theme_bw() +
@@ -637,7 +662,53 @@ variable_visualize <- function(
         scale_fill_manual(values = rev(palette_values)) +
         coord_flip()
       
-      if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
+      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(as.symbol(group_by))}
+      
+      #### plot_2 character ####      
+      
+      if(nrow(colset_values_main_word) == 0){
+        
+        plot_2 = NULL
+        
+      }else{
+        
+        n_obs <- nrow(colset_values)
+        
+        title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
+        if(group_by != '') title <- paste0(title, ' - per ',group_by)
+        
+        group_n <- "___n___"
+        
+        aes <- 
+          if(group_by == ''){
+            aes(
+              x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+              y = !! as.symbol(group_n),
+              fill = '')
+          }else{
+            aes(
+              x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
+              y = !! as.symbol(group_n), 
+              fill = fct_rev(!! as.symbol(group_by)))}
+        
+        plot_2 <- 
+            ggplot(colset_values_main_word) + aes + 
+            geom_col() +
+            theme_bw() +
+            theme(legend.position = "none",plot.title = 
+                    element_text(size = 8,face = "bold"),
+                  strip.background = element_rect(color = "white", fill="white")) +
+            ggtitle(paste0('Most common entry', title)) +
+            ylab("") +
+            xlab("") +
+            scale_fill_manual(values = rev(palette_values)) +
+            coord_flip()
+          
+          if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
+        }
+      
+      
+      
       
     }
     
@@ -1296,10 +1367,10 @@ variable_visualize <- function(
 #' @param group_by A character string identifying the column in the dataset
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param taxonomy An optional data frame identifying a variable classification 
-#' schema.
 #' @param valueType_guess Whether the output should include a more accurate 
 #' valueType that could be applied to the dataset. FALSE by default.
+#' @param taxonomy An optional data frame identifying a variable classification 
+#' schema.
 #' @param dataset_summary A list which identifies an existing 
 #' summary produced by [dataset_summarize()] of the dataset.
 #' Using this parameter can save time in generating the visual report.
@@ -1347,13 +1418,14 @@ dataset_visualize <- function(
     bookdown_path,
     data_dict = data_dict_extract(dataset),
     group_by = NULL,
-    taxonomy = NULL,
     valueType_guess = FALSE,
+    taxonomy = NULL,
     dataset_name = .dataset_name, 
     dataset_summary = .summary_var,
     .summary_var = NULL, 
     .dataset_name = NULL){
   
+  # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
   
   # future dev
@@ -1431,9 +1503,9 @@ Please provide another name folder or delete the existing one.")}
       dataset = dataset,
       data_dict = data_dict,
       group_by = temp_group,
+      valueType_guess = valueType_guess,
       taxonomy = taxonomy,
-      dataset_name = dataset_name,
-      valueType_guess = valueType_guess)}
+      dataset_name = dataset_name)}
 
   data_dict$Variables <- 
     data_dict$Variables %>% add_index(.force = TRUE)
@@ -1598,7 +1670,10 @@ datatable(Overview,
     file.create(rmd_file_name)
     
     paste0(
-      "# ",data_dict$Variables$name[i],"{.unnumbered #var",i,"}\n\n") %>%
+      "# ", 
+      data_dict$Variables$name[i] %>%
+      str_replace_all("(?=[^A-Za-z0-9])", "\\\\"),
+      "{.unnumbered #var",i,"}\n\n") %>%
       
       
       paste0("\n**VARIABLE CHARACTERISTICS**\n") %>%

@@ -1,3 +1,61 @@
+# madshapR 1.1.0
+
+
+# madshapR 1.1.0 (release : 2024-04-22)
+
+## Bug fixes and improvements
+
+- for assessment, summary and visualization, the character columns in
+  dataset are put to lower to avoid duplicated informations in outputs.
+  <https://github.com/maelstrom-research/madshapR/issues/63>
+
+- bug in the function `variable_visualize()` when the column was empty
+  after removing internally stopwords.
+  <https://github.com/maelstrom-research/Rmonize/issues/53>
+  <https://github.com/maelstrom-research/Rmonize/issues/49>
+
+- Some elements were missing in the reports in `dataset_evaluate()`
+  <https://github.com/maelstrom-research/madshapR/issues/66>
+
+- Problem with names containing underscores in variables when visualized
+  fixed. <https://github.com/maelstrom-research/madshapR/issues/62>
+
+- Functions involving valueType (such as
+  `data_dict_apply()`,`valueType_guess()` and `valueType_adujst()`) have
+  been corrected to be more consistent in the usage of these functions.
+  <https://github.com/maelstrom-research/madshapR/issues/61>
+
+- The bug affecting tibbles which contain a variable named “test” has
+  been corrected in the package fabR.
+  <https://github.com/maelstrom-research/madshapR/issues/60>
+
+- functions such as `data_dict_summarize()` and `dataset_evaluate()`
+  have cells in tibble generated that can have more than accepted
+  characters in a cell in Excel. the function truncates the cells in
+  tibbles to a maximum of 10000 characters.
+  <https://github.com/maelstrom-research/madshapR/issues/59>
+
+- Problem with dataType in the function `dataset_cat_as_labels()` when
+  the values found in the dataset are not in the data dictionary, and
+  the valueType is text, and the dataType is “integer” has been fixed.
+  <https://github.com/maelstrom-research/madshapR/issues/58>
+
+- Functions involving date formatted variables have been corrected in
+  the package fabR.
+  <https://github.com/maelstrom-research/madshapR/issues/57>
+
+- The inconsistent error in `dataset_evaluate()` has been corrected in
+  the package fabR.
+  <https://github.com/maelstrom-research/madshapR/issues/46>
+
+## deprecated functions
+
+To avoid confusion with help(function), the function `madshapR_help()`
+has been renamed `madshapR_website()`.
+
+## Dependency changes
+
+- set a minimum dplyr dependence to avoid bugs
 
 # madshapR 1.0.3
 

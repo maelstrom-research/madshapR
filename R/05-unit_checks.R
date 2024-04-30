@@ -633,10 +633,10 @@ check_data_dict_valueType <- function(data_dict){
         suggestion = valueType_guess(.data$`name`)) %>%
       separate_longer_delim(cols = 'name_var',delim = '|') %>%
       distinct %>%
-      filter(.data$`valueType` != .data$`suggestion`) %>%
+      dplyr::filter(.data$`valueType` != .data$`suggestion`) %>%
       mutate(
         condition = case_when(
-          .data$`test` == 'try-error'  ~ "[ERR]  - valueType conflict in 'Categories'",
+          .data$`test` == 'try-error'  ~ "[ERR] - valueType conflict in 'Categories'",
           TRUE                         ~ "[INFO] - refined valueType proposed")) %>%
       select( 'name_var', 'value' = 'valueType', 'condition','suggestion') %>%
       mutate(across(everything(), ~ as.character(.)))
@@ -775,135 +775,89 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' {
 #' 
 #' # use madshapR_DEMO provided by the package
-#'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors with data`
-#' dataset      <- madshapR_DEMO$`dataset_TOKYO - errors with data`
+#' library(tidyr)
+#' 
+#' data_dict <-
+#'   madshapR_DEMO$`data_dict_TOKYO - errors with data` %>%
+#'   data_dict_filter('name == "prg_ever"')
+#' dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`['prg_ever']
+#' 
 #' check_dataset_categories(dataset, data_dict)
 #' 
 #' }
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR 
 #' @importFrom rlang .data
 #'
 #' @export
-check_dataset_categories <- function(dataset, data_dict = NULL){
-
-  if(is.null(data_dict)) data_dict <-
-      data_dict_extract(dataset,as_data_dict_mlstr = FALSE)
+check_dataset_categories <- function(
+    dataset, 
+    data_dict = silently_run(data_dict_extract(dataset))){
 
   # test if enough data_dict or dataset
-  as_data_dict_shape(data_dict)
   as_dataset(dataset) # no col_id
-
-  test <-
-    test_cat_in_data_dict_only    <- test_cat_in_dataset_only <-
-    test_values_in_data_dict_only <- test_values_in_dataset_only <-
-    tibble(
-      name_var = as.character(),
-      value = as.character(),
-      condition = as.character())
-
-  # if(sum(nrow(data_dict[['Categories']])) == 0){
-  #   warning("You data dictionary contains no categorical variables")
-  #   return(test)}
-
-  # rajouter possible_dataset_category <-
-  #   dataset %>%
-  #   summarise(across(everything(),
-  #              ~{ class(.)[1] %in% c('factor','haven_labelled')})
-  #   ) %>%
-  #   pivot_longer(everything()) %>%
-  #   mutate(value = ifelse(.data$`value`,"yes","no")) %>%
-  #   select(.data$`name`, `Categorical in dataset` = .data$`value`)
-
-  # categorical content extracted from dataset
-  data_dict_cat_from_data <- 
-    silently_run(data_dict_extract(dataset,as_data_dict_mlstr = FALSE))
-  data_dict_cat_from_data[['Variables']] <-
-    data_dict_cat_from_data[['Variables']] %>%
-    dplyr::filter(.data$`name` %in% 
-                    data_dict_cat_from_data[['Categories']]$`variable`)
-
-  # categorical content extracted from data_dict
-  data_dict_cat_from_data_dict <- data_dict
-  data_dict_cat_from_data_dict[['Variables']] <-
-    data_dict_cat_from_data_dict[['Variables']] %>%
-    dplyr::filter(
-      .data$`name` %in% data_dict_cat_from_data_dict[['Categories']]$`variable`)
-
-  # categorical variable in the data_dict, but not in the dataset
-  test_cat_in_data_dict_only <-
-    data_dict_cat_from_data_dict[['Variables']]['name'] %>%
-    anti_join(
-      data_dict_cat_from_data[['Variables']]['name'], by = "name") %>%
-    rename(name_var = .data$`name`) %>%
-    mutate(condition =
-"[INFO] - Categorical variable in the data dictionary but not in the dataset")
-
-  # categorical variable in the dataset, but not in the data_dict
-  test_cat_in_dataset_only <-
-    data_dict_cat_from_data[['Variables']]['name'] %>%
-    anti_join(
-      data_dict_cat_from_data_dict[['Variables']]['name'], by = "name") %>%
-    rename(name_var = .data$`name`) %>%
-    mutate(condition =
-"[INFO] - Categorical variable in the dataset but not in the data dictionary")
-
-  # remove already assessed
-  data_dict_cat_from_data_dict[['Variables']] <-
-    data_dict_cat_from_data_dict[['Variables']] %>%
-    dplyr::filter(!.data$`name` %in% test_cat_in_data_dict_only$`name_var`)
-
-  if(sum(nrow(data_dict_cat_from_data_dict[['Categories']])) > 0){
-    data_dict_cat_from_data_dict[['Categories']] <-
-      data_dict_cat_from_data_dict[['Categories']] %>%
-      dplyr::filter(
-        !.data$`variable` %in% test_cat_in_data_dict_only$`name_var`)}
-
-  data_dict_cat_from_data[['Variables']] <-
-    data_dict_cat_from_data[['Variables']] %>%
-    dplyr::filter(!.data$`name` %in% test_cat_in_dataset_only$`name_var`)
-
-  if(sum(nrow(data_dict_cat_from_data[['Categories']])) > 0){
-    data_dict_cat_from_data[['Categories']] <-
-      data_dict_cat_from_data[['Categories']] %>%
-      dplyr::filter(!.data$`variable` %in% test_cat_in_dataset_only$`name_var`)}
-
-  if(sum(nrow(data_dict_cat_from_data[['Categories']])) > 0){
-    # categorical values in the data_dict, but not in the dataset
-    test_values_in_data_dict_only <-
-      anti_join(
-        data_dict_cat_from_data_dict[['Categories']] %>%
-          select(.data$`variable`, .data$`name`),
-        data_dict_cat_from_data[['Categories']] %>%
-          select(.data$`variable`, .data$`name`),
-        by = c("variable", "name")) %>%
-      rename(name_var = .data$`variable`) %>%
-      rename(value = .data$`name`) %>%
-      mutate(condition =
-"[INFO] - More categories declared in the data dictionary than unique values in the dataset")
-
-    # categorical values in the dataset, but not in the data_dict
-    test_values_in_dataset_only      <-
-      anti_join(
-        data_dict_cat_from_data[['Categories']] %>%
-          select(.data$`variable`, .data$`name`),
-        data_dict_cat_from_data_dict[['Categories']] %>%
-          select(.data$`variable`, .data$`name`),
-        by = c("variable", "name")) %>%
-      rename(name_var = .data$`variable`) %>%
-      rename(value = .data$`name`) %>%
-      mutate(condition =
-"[INFO] - More unique values in the dataset than categories declared in the data dictionary")
+  as_data_dict_shape(data_dict)
+  
+  #### * test_categories ####
+  # category in dd but not in dataset WARNING
+  # category in dataset but not in dd ERROR
+  
+  # apply as_category declared in the data_dict to the variables in dataset
+  categorical_var_dataset <- dataset %>% select(where(is_category)) %>% names
+  
+  categorical_var_data_dict <- c()
+  if(sum(nrow(data_dict[['Categories']])) > 0){
+    categorical_var_data_dict <- unique(data_dict$`Categorie`$`variable`)
+  }else{
+    data_dict[['Categories']] <- 
+      tibble("variable" = as.character(), "name" = as.character())
   }
-
-  test <-
-    bind_rows(test, test_cat_in_data_dict_only, test_cat_in_dataset_only,
-              test_values_in_data_dict_only, test_values_in_dataset_only) %>%
-    dplyr::filter(!is.na(.data$`name_var`)) %>%
-    dplyr::filter(!is.na(.data$`value`)) %>%
-    distinct()
-
+  
+  categorical_variables <- unique(c(categorical_var_data_dict,categorical_var_dataset))
+  
+  # exclude already adressed all_na
+  categorical_variables <-
+    categorical_variables[
+      categorical_variables %in% names(dataset %>% remove_empty('cols'))]
+  
+  test <- tibble("name_var" = as.character(),
+                 "value"     = as.character(),
+                 "condition" = as.character())
+  if(length(categorical_variables) == 0){
+    return(test)
+  }else{
+    
+    for(i in categorical_variables){
+      # stop()}
+      
+      dd_cat <- data_dict$`Categories`[data_dict$`Categories`$`variable` == i,]$`name`
+      ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i][[1]]))
+      
+      cat_in_dd_only <- dd_cat[!dd_cat %in% ds_cat]
+      cat_in_ds_only <- ds_cat[!ds_cat %in% dd_cat]
+      
+      if(length(cat_in_dd_only) > 0){
+        test <-
+          test %>%
+          bind_rows(
+            tibble(
+              name_var  = i,
+              value     = cat_in_dd_only,
+              condition =
+                "[INFO] - Categorical variable in the data dictionary but not in the dataset"))}
+      
+      if(length(cat_in_ds_only) > 0){
+        test <-
+          test %>%
+          bind_rows(
+            tibble(
+              name_var  = i,
+              value     = cat_in_ds_only,
+              condition =
+                "[INFO] - Categorical variable in the dataset but not in the data dictionary"))}
+    }
+  }
+  
   return(test)
 }
 
@@ -1001,13 +955,7 @@ check_dataset_valueType <- function(
       suggestion = as.character())
 
   # check if `valueType` column exists
-  if(is.null(data_dict[['Variables']][['valueType']])){
-    warning("Unknown or uninitialized column: `valueType`")
-    return(test)}
-
-  # dataset <-
-  #   dataset[vapply(
-  #     X = dataset, FUN = function(x) !all(is.na(x)), FUN.VALUE = logical(1))]
+  if(is.null(data_dict[['Variables']][['valueType']])) return(test)
 
   dataset <- suppressWarnings(
     data_dict_match_dataset(dataset, data_dict, output = "dataset"))
@@ -1022,21 +970,15 @@ check_dataset_valueType <- function(
       data_dict[['Variables']][
         which(data_dict[['Variables']]$`name` == i),]$`valueType`
 
-    # test valueType
-    # test_vT   <-
-    #   class(silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
-    condition <-
-      class(silently_run(as_valueType(dataset[[i]],data_dict_vT)))[1]
-    guess   <- as.character(valueType_guess(dataset[[i]]))
-    actual  <- as.character(valueType_of(dataset[[i]]))
-
-    # test_vT_compatible <-
-    #   tibble(
-    #     name_var     = i,
-    #     data_dict_vT = data_dict_vT,
-    #     test_vT      = condition,
-    #     guess        = actual
-    #   )
+    vec <- as.character(c(dataset[[i]]))
+    vec2 <- data_dict[['Categories']][['name']][
+            data_dict[['Categories']][['variable']] == i]
+    if(length(vec2) > 0) vec <- c(vec,vec2)
+    
+    condition <- class(silently_run(as_valueType(vec,data_dict_vT)))[1]
+    actual    <- as.character(valueType_of(dataset[[i]]))
+    guess     <- ifelse(
+      valueType_guess == FALSE,actual,as.character(valueType_guess(vec)))
 
     test_vT_dataset <-
       rbind(
@@ -1068,10 +1010,6 @@ check_dataset_valueType <- function(
     dplyr::filter(.data$`value` != .data$`suggestion`) %>%
     dplyr::filter(!is.na(.data$`condition`)) %>%
     distinct()
-
-  if(valueType_guess == FALSE){
-    test <- test %>% 
-      dplyr::filter(!str_detect(.data$`condition`,"^\\[INFO\\]"))}
 
   return(test)
 }
