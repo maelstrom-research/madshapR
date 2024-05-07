@@ -166,7 +166,7 @@ valueType_self_adjust <- function(...){
 
     is_factor <-
       dataset %>%
-      summarise(across(everything(), ~ toString(class(.)))) %>%
+      reframe(across(everything(), ~ toString(class(.)))) %>%
       pivot_longer(everything()) %>%
       dplyr::filter(.data$`value` %in% c("factor"))
 
@@ -543,9 +543,9 @@ bold("\n\nUseful tip:"),
 
     is_factor <-
       dataset %>%
-      reframe(across(everything(), ~ class(.))) %>%
+      reframe(across(everything(), ~ toString(class(.)))) %>%
       pivot_longer(everything()) %>%
-      dplyr::filter(.data$`value` == "factor")
+      dplyr::filter(.data$`value` %in% c("factor"))
 
     data_dict_data[['Variables']] <-
       data_dict_data[['Variables']] %>%
