@@ -456,12 +456,11 @@ bold("\n\nUseful tip:"),
           
         }else{
           test_vT <- silently_run(as_valueType(test_vec,'integer'))
-        }
 
-        if(class(test_vT)[[1]] == 'try-error')
-          test_vT <- as_valueType(test_vec,valueType_guess(test_vec))
-        
-        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(test_vT)
+          if(class(test_vT)[[1]] == 'try-error')
+            test_vT <- as_valueType(test_vec,valueType_guess(test_vec))
+          vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(test_vT)
+        }
             
       }
     }
