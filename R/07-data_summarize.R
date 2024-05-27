@@ -177,14 +177,17 @@ dataset_summarize <- function(
       mutate(across(all_of(group_by), as_category)) %>%
       select(all_of(group_by)) %>% data_dict_extract()
     
+    label <- str_subset(names(data_dict[['Categories']]),"label")[1]
     data_dict[['Categories']] <- 
       bind_rows(
         data_dict[['Categories']], 
         data_dict_group_by$Categories %>%
           mutate(
             missing = ifelse(.data$`name` == "-190719831562453",TRUE,.data$`missing`),
-            label = ifelse(.data$`name` == "-190719831562453","-190719831562453",.data$`label`),
-          )) %>%
+            !! as_any_symbol(label) := ifelse(
+              .data$`name` == "-190719831562453",
+              "-190719831562453",
+              !! as_any_symbol(label)))) %>%
       distinct()
   }
   
@@ -318,6 +321,9 @@ dataset_summarize <- function(
 
   ## categories
   if(sum(nrow(data_dict[['Categories']])) > 0){
+    
+    label <- str_subset(names(data_dict[['Categories']]),"label")[1]
+    
     data_dict_cat <-
       data_dict[['Categories']] %>% 
       select(-matches("^___name_var___$")) %>%
@@ -332,7 +338,7 @@ dataset_summarize <- function(
             "Missing categorical values :",
             "Valid categorical values :")) %>%
       mutate(
-        label = ifelse(.data$`name` == .data$`label`,NA,.data$`label`)) %>%
+        !!as_any_symbol(label) := ifelse(.data$`name` == !!as_any_symbol(label),NA,!!as_any_symbol(label))) %>%
       unite(
         "Categories in data dictionary",
         c("name",matches(c("^label$","^label:[[:alnum:]]"))[1]),
