@@ -413,63 +413,34 @@ bold("\n\nUseful tip:"),
       
     for(i in names(dataset)){
       
-      cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$`name`
+      # category values in the data dictionary 
+      data_dict_cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$`name`
+      dataset_value_i <- unique(dataset[[i]])
+      vec_i <- unique(c(as.character(data_dict_cat_i),as.character(dataset_value_i)))
+      vT_dataset_i <- valueType_of(dataset_value_i)
       
-      if(length(cat_i) == 0){
-        if(all(is.na(dataset[[i]]))){
-          dataset[[i]] <- 
-            as_valueType(dataset[[i]],
-                         
-              ifelse(
-                
-        is.null(data_dict$Variables[["valueType"]])|
-          toString(data_dict$Variables[
-          data_dict$Variables[["name"]] == i,][['valueType']]) %in% c("NA",""),
-        
-        valueType_of(dataset[[i]]),
-        data_dict$Variables[
-          data_dict$Variables[["name"]] == i,][['valueType']])
-        
-                   )}
-        
-        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- 
-          valueType_of(dataset[[i]])
-        
+      vec_i_rect <- silently_run(as_valueType(vec_i,vT_dataset_i))
+      
+      if(class(vec_i_rect)[[1]] != 'try-error') {
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- vT_dataset_i
       }else{
         
-        test_vec <- silently_run(unique(c(cat_i,unique(dataset[[i]]))))
-        
-        if(class(test_vec)[[1]] == 'try-error')
-          test_vec <- unique(c(as.character(cat_i),as.character(unique(dataset[[i]])))) 
-        
-        if(all(is.na(dataset[[i]]))){
-          dataset[[i]] <- 
-            as_valueType(dataset[[i]],
-               ifelse(
-                 
-          is.null(data_dict$Variables[["valueType"]])|
-          is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
-          
-          valueType_guess(cat_i),
-          
-          data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))
-          
+        vec_i_rect <- silently_run(as_valueType(vec_i,"integer"))
+        if(class(vec_i_rect)[[1]] != 'try-error') {
+          vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- "integer"
         }else{
-          test_vT <- silently_run(as_valueType(test_vec,'integer'))
-
-          if(class(test_vT)[[1]] == 'try-error')
-            test_vT <- as_valueType(test_vec,valueType_guess(test_vec))
-          vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(test_vT)
+          vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_guess(vec_i)
         }
-            
+        
+        dataset[[i]] <- as_valueType(dataset[[i]],vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']])
       }
     }
-            
-    vT_list<- madshapR::valueType_list
+    
+    vT_list <- madshapR::valueType_list
     vT_data_dict <-
       left_join(vT_data_dict,vT_list, by = "valueType") %>%
       select("name", valueType_data_dict = "valueType",typeof_data_dict = "typeof")
-    
+
     vT_dataset <-
       dataset %>%
       summarise(across(everything(), ~ valueType_of(.))) %>%
@@ -478,7 +449,7 @@ bold("\n\nUseful tip:"),
       left_join(vT_list, by = "valueType") %>%
       select("name", valueType_dataset = "valueType",typeof_dataset = "typeof")
 
-    vT_final <- 
+    vT_final <-
       vT_data_dict %>%
       full_join(vT_dataset,by = join_by('name')) %>%
       mutate(valueType = ifelse(
@@ -490,8 +461,8 @@ bold("\n\nUseful tip:"),
         .data$`typeof_dataset`,
         .data$`typeof_data_dict`)) %>%
       select('name','valueType','typeof')
-    
-    
+
+
     data_dict[['Variables']]['typeof'] <-
       data_dict[['Variables']]['name'] %>%
       left_join(vT_final %>%
