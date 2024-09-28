@@ -279,7 +279,7 @@ dataset_summarize <- function(
     dataset_valueType <-
       dataset %>%
       # select(-matches("^___mlstr_index___$")) %>%
-      summarise(across(
+      reframe(across(
         everything(),
         ~ valueType_of(.))) %>%
       pivot_longer(cols = everything()) %>%
@@ -291,7 +291,7 @@ dataset_summarize <- function(
       estimated_valueType <-
         dataset %>%
         # select(-matches("^___mlstr_index___$")) %>%
-        summarise(across(
+        reframe(across(
           everything(),
           ~ valueType_guess(.))) %>%
         pivot_longer(cols = everything()) %>%
@@ -344,16 +344,15 @@ dataset_summarize <- function(
         c("name",matches(c("^label$","^label:[[:alnum:]]"))[1]),
         sep = " = ",na.rm = TRUE, remove = TRUE) %>%
       group_by(pick(c(-"Categories in data dictionary"))) %>%
-      summarise(across(c("Categories in data dictionary"),
-                       ~ paste0(.,collapse = "\n")),.groups = "drop") %>%
+      reframe(across(c("Categories in data dictionary"),
+                       ~ paste0(.,collapse = "\n"))) %>%
       arrange(.data$`___name_var___`,desc(.data$`missing`)) %>%
       unite("Categories in data dictionary",
             c("missing","Categories in data dictionary"),
             sep = "\n",remove = TRUE) %>%
       group_by(pick(c(-"Categories in data dictionary"))) %>%
-      summarise(across(c("Categories in data dictionary"),
-                       ~ paste0(.,collapse = "\n\n")),.groups = "drop") %>%
-      ungroup %>%
+      reframe(across(c("Categories in data dictionary"),
+                       ~ paste0(.,collapse = "\n\n"))) %>%
       select("___name_var___","Categories in data dictionary")
   }else{
     data_dict[['Categories']] <-
@@ -1823,9 +1822,8 @@ summary_variables_categorical <- function(
     dataset_preprocess %>%
     dplyr::filter(.data$`Categorical variable` != 'no') %>%
     group_by(across(c(-"value_var_occur",-"index_value"))) %>%
-    summarise(
-      n = sum(as.integer(.data$`value_var_occur`)),
-      .groups = 'drop') %>%
+    reframe(
+      n = sum(as.integer(.data$`value_var_occur`))) %>%
     arrange(.data$`index`, .data$`valid_class`,.data$`cat_index`) %>%
     ungroup
   
@@ -1859,16 +1857,14 @@ summary_variables_categorical <- function(
       ungroup %>%
       select("valid_class","cat_index","cat_order","value_var","n") %>%
       group_by(.data$`valid_class`,.data$`cat_index`, .data$`cat_order`) %>%
-      summarise(
+      reframe(
         n = sum(.data$`n`),
-        value_var = paste0(.data$`value_var`, collapse = "{semicolon}"),
-        .groups = "drop") %>%
+        value_var = paste0(.data$`value_var`, collapse = "{semicolon}")) %>%
       separate_rows("value_var",sep = "{semicolon}") %>%
       distinct() %>%
       group_by(.data$`valid_class`,.data$`cat_index`,.data$`cat_order`,.data$`n`) %>%
-      summarise(
-        name_var = paste0(.data$`value_var`, collapse = "{semicolon}"),
-        .groups = "drop") %>%
+      reframe(
+        name_var = paste0(.data$`value_var`, collapse = "{semicolon}")) %>%
       arrange(.data$`valid_class`,.data$`cat_order`) %>%
       mutate(
         cat_index = replace_na(.data$`cat_index`,'{blank}'),
@@ -1963,7 +1959,7 @@ summary_variables_categorical <- function(
                  "",.data$`other_val_presence`)) %>%
       ungroup() %>%
       select(-.data$`categorical_index`, -.data$`n`) %>%
-      summarise(across(everything(), ~ paste0(.,collapse = "")))
+      reframe(across(everything(), ~ paste0(.,collapse = "")))
     
     
     if(nrow(dplyr::filter(

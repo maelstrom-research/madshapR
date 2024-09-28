@@ -254,7 +254,7 @@ dataset_evaluate <- function(
       mutate(
         value = 
           ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
-      summarise(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
+      reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
       mutate(condition = "[INFO] - possible duplicated row values") %>%
       mutate(
         `name_var` = 
@@ -676,7 +676,7 @@ data_dict_evaluate <- function(
   #                                                            by = "index") %>%
   #   dplyr::filter(!is.na(.data$`condition`)) %>%
   #   select(col_name = "name") %>%
-  #   summarise(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
+  #   reframe(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
   #   dplyr::filter(col_name != "''") %>%
   #   mutate(
   #     condition = "[INFO] - possible duplicated rows (variables)",

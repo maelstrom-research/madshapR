@@ -276,8 +276,7 @@ data_dict_collapse <- function(
         select("variable","name",!! i) %>%
         unite("from", .data$`name`, !! i, sep = " __SEP_IN__ ") %>%
         group_by(.data$`variable`) %>%
-        summarise(from = paste0(.data$`from`,collapse = " __SEP_OUT__ \n"),
-                  .groups = "drop") %>%
+        reframe(from = paste0(.data$`from`,collapse = " __SEP_OUT__ \n")) %>%
         mutate(
           from = ifelse(str_detect(.data$`from`, ";"),
                         str_replace_all(.data$`from`, "__SEP_OUT__", "_;"),
@@ -743,10 +742,9 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
         silently_run({
           data_dict_temp <-
             data_dict_temp %>%
-            summarise(
+            reframe(
               across(c(any_of(i), .data$`term`),
-                     ~ paste0(.,collapse = "|")),
-              .groups = "drop") %>%
+                     ~ paste0(.,collapse = "|"))) %>%
             separate(
               col = i,
               into = arrange_taxonomy[seq_len(length(arrange_taxonomy))%% 2==1],
@@ -2070,7 +2068,7 @@ data dictionary")}}
           select('variable','valueType') %>%
           distinct %>%
           group_by(.data$`variable`) %>%
-          summarise(valueType = paste0(.data$`valueType`,collapse = "|"))
+          reframe(valueType = paste0(.data$`valueType`,collapse = "|"))
         
         category_outcomes <-
           data_dict[['Categories']] %>%

@@ -29,7 +29,7 @@ of the package.
 {
 
 library(dplyr)
-iris \%>\% summarise(across(everything(), is_category))
+iris \%>\% reframe(across(everything(), is_category))
 is_category(iris[['Species']])
 
 }

@@ -230,7 +230,7 @@ valueType_self_adjust <- function(...){
         select(.data$`variable`,.data$`valueType`) %>%
         distinct %>%
         group_by(.data$`variable`) %>%
-        summarise(valueType = paste0(.data$`valueType`,collapse = "|"))
+        reframe(valueType = paste0(.data$`valueType`,collapse = "|"))
 
       category_outcomes <-
         data_dict[['Categories']] %>%
@@ -443,7 +443,7 @@ bold("\n\nUseful tip:"),
 
     vT_dataset <-
       dataset %>%
-      summarise(across(everything(), ~ valueType_of(.))) %>%
+      reframe(across(everything(), ~ valueType_of(.))) %>%
       pivot_longer(cols = everything()) %>%
       rename(valueType = "value") %>%
       left_join(vT_list, by = "valueType") %>%
@@ -729,7 +729,7 @@ valueType_guess <- function(x){
   # 
   #     ) %>%
   #   dplyr::filter(.data$`class` != "try-error") %>%
-  #   summarise(
+  #   reframe(
   #     valueType = paste0(.data$`valueType`,collapse = "|"),
   #     class = paste0(.data$`class`,collapse = "|")) %>%
   #   mutate(
