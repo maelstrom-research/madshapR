@@ -312,13 +312,16 @@ valueType_self_adjust <- function(...){
 #' Attribute the valueType from a data dictionary to a dataset, or vice versa
 #'
 #' @description
-#' Takes the valueType of the input (from) and attributes it to the output (to).
-#' The parameters 'from' and 'to' can be either a dataset or a data dictionary.
-#' Depending on the input provided, the valueType replaced is either in the
-#' 'valueType' column of a data dictionary or cast to a column in a dataset.
-#' If 'to' is not provided, the function calls [valueType_self_adjust()] 
-#' instead. The possible values returned are 'date', 'boolean', 'integer', 
-#' 'decimal', and text'.
+#' 
+#' It is sometimes useful to take variable valueType’s from a dataset and 
+#' attribute them to the associated data dictionary, or vice versa. 
+#' [valueType_self_adjust()] takes the valueType of the input (from) and 
+#' attributes it to the output (to). The parameters 'from' and 'to' can be 
+#' either a dataset or a data dictionary. Depending on the input provided, 
+#' the valueType replaced is either in the 'valueType' column of a 
+#' data dictionary or cast to a column in a dataset. If 'to' is not provided, 
+#' the function calls [valueType_self_adjust()] instead. The possible values 
+#' returned are 'date', 'boolean', 'integer', 'decimal', and text'.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -353,7 +356,7 @@ valueType_self_adjust <- function(...){
 #' @seealso
 #' [valueType_self_adjust()]
 #'
-#' @param from Object to be adjusted. Can be either a dataset or a data 
+#' @param from Object to take attributes from. Can be either a dataset or a data 
 #' dictionary.
 #' @param to Object to be adjusted. Can be either a dataset or a data 
 #' dictionary. NULL by default.
