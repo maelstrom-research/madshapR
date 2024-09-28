@@ -719,8 +719,10 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
                     ,by = 'voc_term') %>%
           arrange(!! i, .data$`index_vocabulary`, .data$`index_term`) %>% 
           mutate(
-            across(!! i,
-                   ~ ifelse(is.na(.data$`taxonomy_id`),NA_character_,.))) %>%
+            across("vocabulary", ~ ifelse(is.na(.data$`taxonomy_id`),!!as.symbol(i),.))) %>%
+          mutate(
+            # across("term", ~ ifelse(is.na(.data$`taxonomy_id`),paste0("[ERR] - ", .data$term),.))) %>%
+            across("term", ~ ifelse(is.na(.data$`taxonomy_id`),.data$term,.))) %>%
           select(-matches('index_vocabulary'),
                  -matches('index_term'),
                  -matches('index_term'),
@@ -730,6 +732,8 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
           distinct()
       }, silent = TRUE)
 
+      
+      
       group_max_size <- data_dict_temp %>% group_size() %>% max()
       arrange_taxonomy <-
         paste0(i,"::",rep(1:group_max_size,2) %>% sort(),c("",".term"))
@@ -854,11 +858,10 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
         matches("^Mlstr_area::3.term$"),
         everything()) %>%
       rename_with(
-        .cols = any_of("Mlstr_additional::1.term"),
-        .fn = ~ "Mlstr_additional::Source") %>%
-      rename_with(
-        .cols = any_of("Mlstr_additional::2.term"),
-        .fn = ~ "Mlstr_additional::Target") %>%
+        ~ case_when(
+          . == "Mlstr_additional::1.term" ~ "Mlstr_additional::Source",
+          . == "Mlstr_additional::2.term" ~ "Mlstr_additional::Target",
+          TRUE ~ .)) %>%
       select(
         -matches("^Mlstr_additional::1$"),-matches("^Mlstr_additional::2$"))
     

@@ -1,7 +1,7 @@
 Package: madshapR
 Type: Package
 Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.1.0.9003
+Version: 1.1.0.9004
 Authors@R: 
     c(person(given = "Guillaume",
              family = "Fabre",
@@ -44,8 +44,9 @@ Imports: dplyr (>= 1.1.0),
     tidyr,
     fs,
     utils,
-    fabR (>= 2.0.0),
+    fabR (>= 2.1.0),
     lifecycle
+Remotes: guifabre/fabR@testing-2
 URL: https://github.com/maelstrom-research/madshapR
 BugReports: https://github.com/maelstrom-research/madshapR/issues
 Roxygen: list(markdown = TRUE)
