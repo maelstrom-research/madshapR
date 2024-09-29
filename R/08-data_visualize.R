@@ -79,9 +79,9 @@
 #'  library(dplyr)
 #'  library(fs)
 #'  
-#'  dataset <- madshapR_DEMO$dataset_TOKYO
+#'  dataset <- madshapR_example$dataset_example
 #'  
-#'  variable_summary <- madshapR_DEMO$`dataset_summary`
+#'  variable_summary <- madshapR_example$`summary - dataset_example`
 #'   
 #'  variable_visualize(
 #'    dataset, col = 'height',
@@ -1387,13 +1387,11 @@ variable_visualize <- function(
 #' @examples
 #' {
 #' 
-#' # You can use our demonstration files to run examples
-#' 
 #' library(fs)
 #' library(dplyr)
 #' 
-#' dataset <- madshapR_DEMO$dataset_TOKYO['height'] %>% slice(0)
-#' dataset_summary <- madshapR_DEMO$`dataset_summary`
+#' dataset <- madshapR_example$dataset_example['height'] %>% slice(0)
+#' dataset_summary <- madshapR_example$`summary - dataset_example`
 #' 
 #' if(dir_exists(tempdir())) dir_delete(tempdir())
 #' bookdown_path <- tempdir()

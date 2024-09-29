@@ -62,12 +62,12 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
 #' ###### Example : Any data frame can be summarized
 #' dataset <- as_dataset(
-#'   madshapR_DEMO$`dataset_TOKYO - errors with data`,
+#'   madshapR_example$`dataset_example - errors with data`,
 #'   col_id = 'part_id') %>% slice(0)
 #'  
 #' glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
@@ -314,7 +314,7 @@ dataset_evaluate <- function(
   
   if(valueType_guess == TRUE){
     message(
-      "    Assess the `valueType` comparison in dataset and data dictionary")
+      "    Assess the `valueType` comexampleon in dataset and data dictionary")
     test_valueType <-
       check_dataset_valueType(
        dataset = zap_dataset, 
@@ -416,13 +416,13 @@ dataset_evaluate <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
 #' dataset <- as_dataset(
-#'    madshapR_DEMO$`dataset_TOKYO - errors with data`,
+#'    madshapR_example$`dataset_example - errors with data`,
 #'    col_id = 'part_id') %>% slice(0)
 #' 
 #' dossier <- as_dossier(list(dataset = dataset))
@@ -513,10 +513,10 @@ dossier_evaluate <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
+#' data_dict <- madshapR_example$`data_dict_example - errors`
 #' glimpse(data_dict_evaluate(data_dict))
 #'
 #' }

@@ -43,9 +43,9 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' 
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
+#' data_dict <- madshapR_example$`data_dict_example - collapsed`
 #' data_dict_expand(data_dict)
 #' 
 #' }
@@ -225,9 +225,9 @@ Example:
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
+#' data_dict <- madshapR_example$data_dict_example
 #' data_dict_collapse(data_dict)
 #'
 #' }
@@ -348,10 +348,10 @@ data_dict_collapse <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
-#' taxonomy  <- madshapR_DEMO$taxonomy_PARIS
+#' data_dict <- madshapR_example$`data_dict_example - collapsed`
+#' taxonomy  <- madshapR_example$taxonomy_example
 #' data_dict_pivot_wider(data_dict, taxonomy)
 #'
 #' }
@@ -634,10 +634,10 @@ data_dict[['Variables']][['NA']][!is.na(data_dict[['Variables']][['NA']])])),
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
-#' taxonomy <- madshapR_DEMO$taxonomy_PARIS
+#' data_dict <- madshapR_example$`data_dict_example - collapsed`
+#' taxonomy <- madshapR_example$taxonomy_example
 #' data_dict_pivot_longer(data_dict,taxonomy)
 #'
 #' }
@@ -916,7 +916,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' 
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
@@ -925,9 +925,9 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' library(dplyr)
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#'   data_dict_1 <- madshapR_example$data_dict_example ,
+#'   data_dict_2 <- madshapR_example$data_dict_example)
+#' names(data_dict_list) = c("dataset_example","dataset_example")
 #' 
 #' data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
 #' 
@@ -940,7 +940,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' ###### Example 3 search and filter through* a column in 'Variables' element.
 #' # The column must exist in both 'Variables' and 'Categories' and have the
 #' # same meaning
-#' data_dict_filter(data_dict_nest,filter_all = "table == 'dataset_TOKYO'")
+#' data_dict_filter(data_dict_nest,filter_all = "table == 'dataset_example'")
 #'
 #' }
 #'
@@ -1027,7 +1027,7 @@ data_dict_filter <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #'
 #' # Create a list of data dictionaries where the column 'table' is added to 
@@ -1036,9 +1036,9 @@ data_dict_filter <- function(
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#'   data_dict_1 <- madshapR_example$data_dict_example ,
+#'   data_dict_2 <- madshapR_example$data_dict_example)
+#' names(data_dict_list) = c("dataset_example","dataset_example")
 #' 
 #' data_dict_nest <- 
 #'   data_dict_list_nest(data_dict_list, name_group = 'table') %>%
@@ -1157,7 +1157,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
 #' # Create a list of data dictionaries where the column 'table' is added to 
@@ -1166,9 +1166,9 @@ cannot be found accross the variables declared in 'Variables'.")
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#'   data_dict_1 <- madshapR_example$data_dict_example ,
+#'   data_dict_2 <- madshapR_example$data_dict_example)
+#' names(data_dict_list) = c("dataset_example","dataset_example")
 #' 
 #' glimpse(data_dict_list_nest(data_dict_list, name_group = 'table'))
 #' 
@@ -1286,16 +1286,16 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#'   data_dict_1 <- madshapR_example$data_dict_example ,
+#'   data_dict_2 <- madshapR_example$data_dict_example)
+#' names(data_dict_list) = c("dataset_example","dataset_example")
 #' 
 #' data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
 #' 
@@ -1390,7 +1390,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
@@ -1399,9 +1399,9 @@ cannot be found accross the variables declared in 'Variables'.")
 #' library(dplyr)
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-#'   data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-#' names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+#'   data_dict_1 <- madshapR_example$data_dict_example ,
+#'   data_dict_2 <- madshapR_example$data_dict_example)
+#' names(data_dict_list) = c("dataset_example","dataset_example")
 #' 
 #' data_dict_nest <-
 #'   data_dict_list_nest(data_dict_list, name_group = 'table') %>%
@@ -1473,10 +1473,10 @@ data_dict_ungroup <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' dataset <- madshapR_DEMO$dataset_MELBOURNE
-#' data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
+#' dataset <- madshapR_example$dataset_example
+#' data_dict <- as_data_dict_mlstr(madshapR_example$data_dict_example)
 #' head(data_dict_apply(dataset, data_dict))
 #' 
 #' }
@@ -1661,7 +1661,7 @@ your dataset")}
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' 
 #' ###### Example 2: extract data dictionary from any dataset (the 
 #' # data dictionary will be created upon attributes of the dataset. Factors 
@@ -1808,11 +1808,11 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
-#' dataset <- madshapR_DEMO$dataset_MELBOURNE %>% select(-1)
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
+#' dataset <- madshapR_example$dataset_example %>% select(-1)
+#' data_dict <- madshapR_example$data_dict_example
 #' head(data_dict_match_dataset(dataset, data_dict, out = 'dataset'))
 #' glimpse(data_dict_match_dataset(dataset, data_dict, out = 'data_dict'))
 #' 
@@ -1892,9 +1892,9 @@ Leave blank to get both in a list.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_PARIS
+#' data_dict <- madshapR_example$data_dict_example
 #' as_data_dict_shape(data_dict)
 #'
 #'}
@@ -1971,9 +1971,9 @@ Please refer to documentation.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_PARIS
+#' data_dict <- madshapR_example$data_dict_example
 #' as_data_dict(data_dict)
 #'
 #'}
@@ -2270,10 +2270,10 @@ data dictionary")}}
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-#' as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
+#' data_dict <- madshapR_example$data_dict_example
+#' as_data_dict_mlstr(madshapR_example$data_dict_example)
 #'
 #' }
 #'
@@ -2610,9 +2610,9 @@ New name: ",new_name)
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
+#' data_dict <- madshapR_example$data_dict_example
 #' is_data_dict_shape(data_dict)
 #' is_data_dict_shape(iris)
 #'
@@ -2659,9 +2659,9 @@ is_data_dict_shape <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
+#' data_dict <- madshapR_example$data_dict_example
 #' is_data_dict(data_dict)
 #' is_data_dict(iris)
 #'
@@ -2712,9 +2712,9 @@ is_data_dict <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
+#' data_dict <- madshapR_example$data_dict_example
 #' is_data_dict_mlstr(data_dict)
 #' is_data_dict_mlstr(iris)
 #'

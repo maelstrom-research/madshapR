@@ -45,10 +45,10 @@ taxonomies are
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
-data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
-taxonomy <- madshapR_DEMO$taxonomy_PARIS
+data_dict <- madshapR_example$`data_dict_example - collapsed`
+taxonomy <- madshapR_example$taxonomy_example
 data_dict_pivot_longer(data_dict,taxonomy)
 
 }

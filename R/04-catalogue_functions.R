@@ -30,9 +30,9 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' dataset <- madshapR_DEMO$dataset_MELBOURNE
+#' dataset <- madshapR_example$dataset_example
 #' valueType_of(dataset$Gender)
 #' valueType_of(iris$Sepal.Length)
 #'
@@ -368,12 +368,12 @@ valueType_self_adjust <- function(...){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
-#' dataset <- madshapR_DEMO$dataset_TOKYO[c(1:4),'prg_ever']
+#' dataset <- madshapR_example$dataset_example[c(1:4),'prg_ever']
 #' data_dict <-
-#'   madshapR_DEMO$data_dict_TOKYO %>%
+#'   madshapR_example$data_dict_example %>%
 #'   data_dict_filter(filter_var = 'name == "prg_ever"') %>%
 #'   as_data_dict_mlstr()
 #' 
@@ -621,9 +621,9 @@ bold("\n\nUseful tip:"),
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' dataset <- madshapR_DEMO$dataset_TOKYO
+#' dataset <- madshapR_example$dataset_example
 #' valueType_guess(dataset$dob)
 #' 
 #' valueType_guess(mtcars$cyl)
@@ -786,9 +786,9 @@ valueType_guess <- function(x){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' dataset <- madshapR_DEMO$dataset_TOKYO
+#' dataset <- madshapR_example$dataset_example
 #' as_valueType(head(dataset$dob),'date')
 #' 
 #' # as_valueType is compatible with tidyverse philosophy
@@ -957,10 +957,10 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
 #' ###### Example
-#' as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+#' as_taxonomy(madshapR_example$taxonomy_example)
 #' 
 #'}
 #'
@@ -1076,9 +1076,9 @@ is_valueType <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #'
-#' is_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+#' is_taxonomy(madshapR_example$taxonomy_example)
 #'
 #'}
 #'

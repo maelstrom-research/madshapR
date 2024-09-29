@@ -98,13 +98,11 @@ taxonomies are
 \examples{
 {
 
-# You can use our demonstration files to run examples
-
 library(fs)
 library(dplyr)
 
-dataset <- madshapR_DEMO$dataset_TOKYO['height'] \%>\% slice(0)
-dataset_summary <- madshapR_DEMO$`dataset_summary`
+dataset <- madshapR_example$dataset_example['height'] \%>\% slice(0)
+dataset_summary <- madshapR_example$`summary - dataset_example`
 
 if(dir_exists(tempdir())) dir_delete(tempdir())
 bookdown_path <- tempdir()

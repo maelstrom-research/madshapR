@@ -44,10 +44,10 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
-data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
+data_dict <- madshapR_example$data_dict_example
+as_data_dict_mlstr(madshapR_example$data_dict_example)
 
 }
 

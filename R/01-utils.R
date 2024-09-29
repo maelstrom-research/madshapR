@@ -70,10 +70,10 @@ madshapR_website <- function(){
 "valueType_list"
 
 #' @title
-#' Built-in material allowing the user to test the package with demo data
+#' Built-in material allowing the user to test the package with example data
 #'
 #' @description
-#' Demo datasets and data dictionaries, and taxonomy, to provide illustrative 
+#' Example datasets and data dictionaries, and taxonomy, to provide illustrative 
 #' examples of objects used by madshapR.
 #'
 #' @format ## `list`
@@ -81,29 +81,25 @@ madshapR_website <- function(){
 #' for testing the package:
 #'
 #' \describe{
-#'   \item{data_dict_MELBOURNE}{Example Data dictionary for Melbourne dataset}
-#'   \item{data_dict_PARIS}{Example Data dictionary for Paris dataset}
-#'   \item{data_dict_PARIS - collapsed}{Example Data dictionary for Paris 
-#'   with collapsed categories}
-#'   \item{data_dict_TOKYO}{Example Data dictionary for Tokyo dataset}
-#'   \item{data_dict_TOKYO - errors}{Data dictionary for Tokyo dataset 
+#'   \item{dataset_example}{Example Dataset for example dataset}
+#'   \item{data_dict_example}{Example Data dictionary for example dataset}
+#'   \item{dataset_example - errors with data}{Example dataset of example 
+#'   with errors with example data dictionary}
+#'   \item{data_dict_example - errors with data}{Example Data Dictionary for example 
+#'   dataset with errors with example dataset}
+#'   \item{data_dict_example - errors}{Data dictionary for example dataset 
 #'   with errors}
-#'   \item{data_dict_TOKYO - errors with data}{Example Data Dictionary for Tokyo 
-#'   dataset with errors with Tokyo dataset}
-#'   \item{dataset_MELBOURNE}{Example Dataset for MELBOURNE dataset}
-#'   \item{dataset_PARIS}{Example Dataset for PARIS dataset}
-#'   \item{dataset_TOKYO}{Example Dataset for TOKYO dataset}
-#'   \item{dataset_TOKYO - errors with data}{Example dataset of Tokyo 
-#'   with errors with Tokyo data dictionary}
-#'   \item{taxonomy_PARIS}{Example Taxonomy for Paris dataset}
-#'   \item{dataset_summary}{Example of dataset summary}
+#'   \item{data_dict_example - collapsed}{Example Data dictionary for example 
+#'   with collapsed categories}
+#'   \item{taxonomy_example}{Example Taxonomy for example dataset}
+#'   \item{summary - dataset_example}{Example of dataset summary}
 #'   ...
 #' }
 #'
 #' @examples
 #' {
 #'
-#'  print(madshapR_DEMO$dataset_TOKYO)
+#'  print(madshapR_example$dataset_example)
 #'
 #' }
-"madshapR_DEMO"
+"madshapR_example"

@@ -79,12 +79,12 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 library(dplyr)
 
 ###### Example : Any data frame can be summarized
 dataset <- as_dataset(
-  madshapR_DEMO$`dataset_TOKYO - errors with data`,
+  madshapR_example$`dataset_example - errors with data`,
   col_id = 'part_id') \%>\% slice(0)
  
 glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))

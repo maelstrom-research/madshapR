@@ -30,10 +30,10 @@ taxonomies are
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
 ###### Example
-as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+as_taxonomy(madshapR_example$taxonomy_example)
 
 }
 

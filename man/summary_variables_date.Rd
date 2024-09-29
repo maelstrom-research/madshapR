@@ -54,12 +54,12 @@ handled automatically by the function.
 \examples{
 {
    
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 library(dplyr)
 library(fabR)
 
 dataset <- 
-  madshapR_DEMO$dataset_TOKYO \%>\%
+  madshapR_example$dataset_example \%>\%
     mutate(dob = as_any_date(dob)) \%>\%
     select(dob) \%>\%
     head()

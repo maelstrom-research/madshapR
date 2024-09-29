@@ -33,9 +33,9 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
-dataset <- madshapR_DEMO$dataset_TOKYO
+dataset <- madshapR_example$dataset_example
 as_valueType(head(dataset$dob),'date')
 
 # as_valueType is compatible with tidyverse philosophy

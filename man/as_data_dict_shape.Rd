@@ -31,9 +31,9 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
-data_dict <- madshapR_DEMO$data_dict_PARIS
+data_dict <- madshapR_example$data_dict_example
 as_data_dict_shape(data_dict)
 
 }

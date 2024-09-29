@@ -44,10 +44,10 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
-dataset <- madshapR_DEMO$dataset_MELBOURNE
-data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
+dataset <- madshapR_example$dataset_example
+data_dict <- as_data_dict_mlstr(madshapR_example$data_dict_example)
 head(data_dict_apply(dataset, data_dict))
 
 }

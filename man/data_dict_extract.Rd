@@ -47,7 +47,7 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
 ###### Example 2: extract data dictionary from any dataset (the 
 # data dictionary will be created upon attributes of the dataset. Factors 

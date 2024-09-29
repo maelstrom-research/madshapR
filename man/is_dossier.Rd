@@ -25,11 +25,11 @@ reference name of the dataset.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 # Any list of data frame can be a dossier by definition.
 library(stringr)
 
-is_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
+is_dossier(madshapR_example[str_detect(names(madshapR_example),"dataset")])
 is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 is_dossier(iris)
 

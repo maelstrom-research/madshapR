@@ -32,9 +32,9 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 
-dataset <- madshapR_DEMO$dataset_MELBOURNE
+dataset <- madshapR_example$dataset_example
 valueType_of(dataset$Gender)
 valueType_of(iris$Sepal.Length)
 

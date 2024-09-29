@@ -51,10 +51,10 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 library(dplyr)
 
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
+data_dict <- madshapR_example$`data_dict_example - errors`
 glimpse(data_dict_evaluate(data_dict))
 
 }

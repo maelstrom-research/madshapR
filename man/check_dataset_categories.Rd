@@ -48,13 +48,13 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 library(tidyr)
 
 data_dict <-
-  madshapR_DEMO$`data_dict_TOKYO - errors with data` \%>\%
+  madshapR_example$`data_dict_example - errors with data` \%>\%
   data_dict_filter('name == "prg_ever"')
-dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`['prg_ever']
+dataset <- madshapR_example$`dataset_example - errors with data`['prg_ever']
 
 check_dataset_categories(dataset, data_dict)
 

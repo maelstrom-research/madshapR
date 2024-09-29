@@ -95,9 +95,9 @@ coerce the variable to the corresponding data type.
  library(dplyr)
  library(fs)
  
- dataset <- madshapR_DEMO$dataset_TOKYO
+ dataset <- madshapR_example$dataset_example
  
- variable_summary <- madshapR_DEMO$`dataset_summary`
+ variable_summary <- madshapR_example$`summary - dataset_example`
   
  variable_visualize(
    dataset, col = 'height',

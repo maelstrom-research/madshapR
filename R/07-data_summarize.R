@@ -70,7 +70,7 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
 #' #' ###### Example : Any data frame can be summarized
@@ -859,7 +859,7 @@ dataset_summarize <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
 #' ###### Example 1: Combine functions and summarize datasets.
@@ -1442,12 +1442,12 @@ summary_variables_text <- function(
 #' @examples
 #' {
 #'    
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' library(fabR)
 #' 
 #' dataset <- 
-#'   madshapR_DEMO$dataset_TOKYO %>%
+#'   madshapR_example$dataset_example %>%
 #'     mutate(dob = as_any_date(dob)) %>%
 #'     select(dob) %>%
 #'     head()
@@ -1590,13 +1590,13 @@ summary_variables_date <- function(
 #' @examples
 #' {
 #'    
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' library(lubridate)
 #' library(fabR)
 #' 
 #' dataset_preprocess <-
-#'   madshapR_DEMO$dataset_TOKYO %>%
+#'   madshapR_example$dataset_example %>%
 #'   mutate(dob = as_datetime(as_any_date(dob))) %>%
 #'   select(dob) %>%
 #'   head() %>%

@@ -61,7 +61,7 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_example provided by the package
 library(dplyr)
 
 ###### Example 1: Combine functions and summarize datasets.
