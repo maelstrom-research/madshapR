@@ -14,7 +14,7 @@ A character string which is the valueType of the input object.
 }
 \description{
 Determines the valueType of an object based on \code{\link[=typeof]{typeof()}} and
-\code{\link[=class]{class()}}. The possible values returned are 'date', 'boolean',
+\code{\link[=class]{class()}}. The possible values returned are 'date', 'datetime', 'boolean',
 'integer', 'decimal', and 'text'.
 }
 \details{
