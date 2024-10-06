@@ -1176,13 +1176,11 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' @examples
 #' {
 #' 
-#' library(dplyr)
-#' 
 #' # use madshapR_example provided by the package
 #' dataset <- madshapR_example$`dataset_example`
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables(dataset_preprocess = dataset_preprocess)
-#' glimpse(summary_prep)
+#' head(summary_prep)
 #'
 #' }
 #'
@@ -1332,7 +1330,7 @@ summary_variables <- function(
 #' dataset <- madshapR_example$`dataset_example`
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_text(dataset_preprocess = dataset_preprocess)
-#' glimpse(summary_prep)
+#' head(summary_prep)
 #'
 #' }
 #'
@@ -1464,7 +1462,7 @@ summary_variables_text <- function(
 #' 
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_date(dataset_preprocess = dataset_preprocess)
-#' glimpse(summary_prep)
+#' head(summary_prep)
 #'
 #' }
 #'
@@ -1612,7 +1610,7 @@ summary_variables_date <- function(
 #' 
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_datetime(dataset_preprocess = dataset_preprocess)
-#' glimpse(summary_prep)
+#' head(summary_prep)
 #'
 #' }
 #'
@@ -1686,7 +1684,7 @@ summary_variables_datetime <- function(
 #' dataset <- madshapR_example$`dataset_example`
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_numeric(dataset_preprocess = dataset_preprocess)
-#' glimpse(summary_prep)
+#' head(summary_prep)
 #'
 #' }
 #'
@@ -1816,7 +1814,7 @@ summary_variables_numeric <- function(
 #' 
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_categorical(dataset_preprocess = dataset_preprocess)
-#' glimpse(summary_prep)
+#' head(summary_prep)
 #' 
 #' }
 #'

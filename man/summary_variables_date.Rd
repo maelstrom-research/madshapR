@@ -65,7 +65,7 @@ dataset <- madshapR_example$`dataset_example` \%>\%
 
 dataset_preprocess <- dataset_preprocess(dataset)
 summary_prep <- summary_variables_date(dataset_preprocess = dataset_preprocess)
-glimpse(summary_prep)
+head(summary_prep)
 
 }
 
