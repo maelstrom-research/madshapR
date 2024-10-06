@@ -15,15 +15,22 @@
 #' @return
 #' A vector with class haven_labelled.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' library(dplyr)
-#' mtcars <- tibble(mtcars)
-#' as_category(mtcars[['cyl']])
 #' 
-#' head(mtcars %>% mutate(cyl = as_category(cyl)))
+#' # use madshapR_example provided by the package
+#' dataset <- 
+#'   madshapR_example$`dataset_example` %>%
+#'   mutate(prg_ever = as_category(prg_ever))
+#'   
+#' head(dataset$prg_ever)
 #' 
+#' ##### Example 2: any data frame can be a dataset
+#' cat_cyl <- as_category(mtcars[['cyl']])
+#' 
+#' head(cat_cyl)
 #' 
 #'}
 #'
@@ -81,11 +88,24 @@ as_category <- function(x){
 #' @return
 #' A R object.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
-#' head(iris[['Species']])
-#' head(drop_category(iris[['Species']]))
+#' library(dplyr)
+#' 
+#' ###### Example 1: use madshapR_example provided by the package
+#' dataset <-
+#'   madshapR_example$`dataset_example` %>%
+#'   mutate(prg_ever_cat = as_category(prg_ever)) %>%
+#'   mutate(prg_ever_no_cat = drop_category(prg_ever))
+#'   
+#' head(dataset[c("prg_ever_cat","prg_ever_no_cat")])
+#' 
+#' ##### Example 2: any data frame can be a dataset
+#' iris_no_cat <- 
+#'   tibble(iris) %>% mutate(Species = drop_category(Species))
+#' 
+#' head(iris_no_cat)
 #' 
 #'}
 #'
@@ -143,12 +163,22 @@ drop_category <- function(x){
 #' @return
 #' A logical.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' library(dplyr)
+#' 
+#' ###### Example 1: use madshapR_example provided by the package
+#' dataset <-
+#'   madshapR_example$`dataset_example` %>%
+#'   mutate(prg_ever_cat = as_category(prg_ever)) %>%
+#'   mutate(prg_ever_no_cat = drop_category(prg_ever))
+#'   
+#' is_category(dataset[['prg_ever_cat']])
+#' is_category(dataset[['prg_ever_no_cat']])
+#' 
+#' ##### Example 2: any data frame can be a dataset
 #' iris %>% reframe(across(everything(), is_category))
-#' is_category(iris[['Species']])
 #' 
 #'}
 #'

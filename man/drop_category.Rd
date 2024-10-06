@@ -18,12 +18,3 @@ Converts a vector object to a non-categorical object, typically a column in a
 data frame. The categories come from non-missing values present in the
 object and are suppressed from an associated data dictionary (when present).
 }
-\examples{
-{
-
-head(iris[['Species']])
-head(drop_category(iris[['Species']]))
-
-}
-
-}

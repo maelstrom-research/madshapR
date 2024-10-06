@@ -18,19 +18,6 @@ Converts a vector object to a categorical object, typically a column in a
 data frame. The categories come from non-missing values present in the
 object and are added to an associated data dictionary (when present).
 }
-\examples{
-{
-
-library(dplyr)
-mtcars <- tibble(mtcars)
-as_category(mtcars[['cyl']])
-
-head(mtcars \%>\% mutate(cyl = as_category(cyl)))
-
-
-}
-
-}
 \seealso{
 \code{\link[haven:labelled]{haven::labelled()}}
 }

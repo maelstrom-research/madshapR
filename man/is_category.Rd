@@ -25,13 +25,3 @@ Test if vector object is a categorical variable, typically a column in a
 data frame. This function mainly helps validate input within other functions
 of the package.
 }
-\examples{
-{
-
-library(dplyr)
-iris \%>\% reframe(across(everything(), is_category))
-is_category(iris[['Species']])
-
-}
-
-}
