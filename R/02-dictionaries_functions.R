@@ -1566,7 +1566,8 @@ your dataset")}
   
     # preserve initial attributes and class
     attrs_init <- attributes(dataset[[i]])
-    attrs_class <- list(class = attrs_init[['class']])
+    attrs_class <- list(
+      class = unlist(str_split(attrs_init[['class']],pattern = " _; ")))
     attrs_init[['class']] <- NULL
        
     # add Variables attributes from the data dictionary
@@ -1579,8 +1580,8 @@ your dataset")}
     attrs_var <- c(attrs_var) %>% unlist %>% as.list()
     attrs_var[['name']]        <- NULL
     attrs_var[['typeof']]      <- NULL
+    attrs_var[['class']]       <- NULL
     attrs_cat                  <- list()
-    
     
     hasCat <- isTRUE(nrow(data_dict[['Categories']][
       which(data_dict[['Categories']][['variable']] == i),]) > 0)

@@ -872,6 +872,8 @@ data dictionary")}
 
   if(dataType     == "as_any_date")     x <- 
     as.character.default(x)
+  if(dataType     == "as.POSIXct")      x <- 
+    as.character(x)
   if(dataType     == "as_any_boolean")  x <- 
     return(as_any_boolean(as.character.default(x)))
   if(dataType     == "as_any_integer")  x <- 
@@ -879,18 +881,15 @@ data dictionary")}
   if(class(x)[1]  == "factor")          x <- 
     as.character.default(x)
   
+
+  if(dataType == "as.POSIXct"){
+    x <- as.POSIXct(x) }
+    
   if(dataType     == "as_any_date"){
-    
-    if(class_x == "POSIXt"){
-      x <- 
-        as_valueType(x,'integer') %>%
-        as.POSIXct.numeric(tz = 'UTC') %>%
-        as.character()
-    }
-    
+
     date_format <-
       guess_date_format(
-        tibble(as.character.default(
+        tibble(x = as.character.default(
           sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20)))))
 
     if(date_format$`% values formated` == 100){
