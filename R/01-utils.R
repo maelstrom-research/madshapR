@@ -9,7 +9,7 @@
 #' @returns
 #' Nothing to be returned. The function opens a web page.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'
 #' madshapR_website()
@@ -61,7 +61,7 @@ madshapR_website <- function(){
 #'   ...
 #' }
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'
 #' head(valueType_list)
@@ -96,7 +96,7 @@ madshapR_website <- function(){
 #'   ...
 #' }
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'  
 #' library(dplyr)
