@@ -16,7 +16,11 @@ A list of data frame(s) with \code{madshapR::class} 'data_dict'.
 Checks if an object is a valid data dictionary and returns it with the
 appropriate \code{madshapR::class} attribute. This function mainly helps validate
 inputs within other functions of the package but could be used to check if
-an object is valid for use in a function.
+an object is valid for use in a function. If either the columns 'typeof' or
+'class' already exists in 'Variables', or 'na_values', 'labels' in
+'Categories', the function will return the same data dictionary. Otherwise,
+These columns will be added, using 'valueType' in 'Variables', and, 'label'
+and 'missing' in 'Categories.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata
@@ -31,10 +35,12 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
+library(dplyr)
 # use madshapR_example provided by the package
 
-data_dict <- madshapR_example$data_dict_example
-as_data_dict(data_dict)
+data_dict <- madshapR_example$`data_dict_example`
+
+glimpse(as_data_dict(data_dict))
 
 }
 

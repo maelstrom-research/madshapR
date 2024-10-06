@@ -58,7 +58,7 @@ as_category <- function(x){
   vT_list <- madshapR::valueType_list
   fct_att$`class` <-
     c("haven_labelled","vctrs_vctr",
-      vT_list[[which(vT_list$`valueType` == valueType_of(x)),"class"]])
+      vT_list[[which(vT_list$`valueType` == valueType_of(x)),"explicit_class"]])
   
   attributes(x_init) <-  c(fct_att['labels'],fct_att['class'],att)
   

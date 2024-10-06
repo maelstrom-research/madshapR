@@ -4,14 +4,10 @@
 \alias{as_data_dict_mlstr}
 \title{Validate and coerce any object as an Opal data dictionary format}
 \usage{
-as_data_dict_mlstr(object, as_data_dict = FALSE, name_standard = FALSE)
+as_data_dict_mlstr(object, name_standard = FALSE)
 }
 \arguments{
 \item{object}{A potential valid data dictionary to be coerced.}
-
-\item{as_data_dict}{Whether the input data dictionary should not be coerced
-with specific format restrictions for compatibility with other
-Maelstrom Research software. FALSE by default.}
 
 \item{name_standard}{Whether the input data dictionary has variable names
 compatible with Maelstrom Research ecosystem, including Opal)or not.
@@ -46,8 +42,8 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 
 # use madshapR_example provided by the package
 
-data_dict <- madshapR_example$data_dict_example
-as_data_dict_mlstr(madshapR_example$data_dict_example)
+data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
+as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 
 }
 

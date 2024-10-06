@@ -34,8 +34,8 @@ coerce the variable to the corresponding data type.
 
 # use madshapR_example provided by the package
 
-dataset <- madshapR_example$dataset_example
-valueType_of(dataset$Gender)
+dataset <- madshapR_example$`dataset_example`
+valueType_of(dataset$gndr)
 valueType_of(iris$Sepal.Length)
 
 }
