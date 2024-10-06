@@ -18,3 +18,25 @@ Converts a vector object to a non-categorical object, typically a column in a
 data frame. The categories come from non-missing values present in the
 object and are suppressed from an associated data dictionary (when present).
 }
+\examples{
+{
+
+library(dplyr)
+
+###### Example 1: use madshapR_example provided by the package
+dataset <-
+  madshapR_example$`dataset_example` \%>\%
+  mutate(prg_ever_cat = as_category(prg_ever)) \%>\%
+  mutate(prg_ever_no_cat = drop_category(prg_ever))
+  
+head(dataset[c("prg_ever_cat","prg_ever_no_cat")])
+
+##### Example 2: any data frame can be a dataset
+iris_no_cat <- 
+  tibble(iris) \%>\% mutate(Species = drop_category(Species))
+
+head(iris_no_cat)
+
+}
+
+}

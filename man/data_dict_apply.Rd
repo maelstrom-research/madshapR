@@ -41,6 +41,20 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+
+dataset   <- madshapR_example$`dataset_example`
+data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+dataset   <- data_dict_apply(dataset, data_dict)
+
+head(dataset)
+
+}
+
+}
 \seealso{
 \code{\link[=attributes]{attributes()}}, \code{\link[haven:labelled]{haven::labelled()}}
 }

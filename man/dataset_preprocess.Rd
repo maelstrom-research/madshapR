@@ -50,6 +50,16 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
+\examples{
+{
+ 
+# use madshapR_example provided by the package
+dataset <- madshapR_example$`dataset_example`
+head(dataset_preprocess(dataset))
+
+}
+
+}
 \seealso{
 \code{\link[=summary_variables]{summary_variables()}}
 }

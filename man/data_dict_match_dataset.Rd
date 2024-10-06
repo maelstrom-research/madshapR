@@ -53,3 +53,21 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
+\examples{
+{
+
+library(dplyr)
+
+# use madshapR_example provided by the package
+dataset <- madshapR_example$`dataset_example`
+data_dict <- madshapR_example$`data_dict_example - errors`
+
+match_data_dict <- data_dict_match_dataset(dataset,data_dict,output = 'data_dict')
+match_dataset <- data_dict_match_dataset(dataset,data_dict,output = 'dataset')
+
+head(match_data_dict)
+glimpse(match_dataset)
+
+}
+
+}

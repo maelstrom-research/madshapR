@@ -22,7 +22,7 @@
 #' @returns
 #' A data frame providing non unique variables across a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -103,7 +103,7 @@ check_data_dict_variables <- function(data_dict){
 #' A data frame providing categorical variables that has issues within a 
 #' data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -217,7 +217,7 @@ check_data_dict_categories <- function(data_dict){
 #' A data frame providing categorical values which 'missing' column is not a 
 #' boolean.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -307,7 +307,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @returns
 #' A data frame providing non-standard taxonomy declared in a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -561,7 +561,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' @returns 
 #' A data frame providing non-standard valueType declared in a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -685,7 +685,7 @@ check_data_dict_valueType <- function(data_dict){
 #' @returns
 #' A data frame providing undeclared variables across a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -771,7 +771,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' A data frame providing categorical values which differ between dataset and
 #' their data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -924,7 +924,7 @@ check_dataset_categories <- function(
 #' A data frame providing values which valueType differs between dataset and
 #' their data dictionary.
 #'
-#' @examplesok
+#' @examples
 #' {
 #'
 #' data_dict <- madshapR_example$`data_dict_example - errors with data`
@@ -1064,7 +1064,7 @@ check_dataset_valueType <- function(
 #' @returns
 #' A data frame providing non-standard names across a vector.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package

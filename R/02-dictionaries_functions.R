@@ -40,7 +40,7 @@
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -225,7 +225,7 @@ Example:
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'
 #' # use madshapR_example provided by the package
@@ -348,7 +348,7 @@ data_dict_collapse <- function(
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'
 #' library(dplyr)
@@ -640,7 +640,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -925,7 +925,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1034,7 +1034,7 @@ data_dict_filter <- function(
 #' @returns
 #' A list of data frame(s) identifying a list of workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1165,7 +1165,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1297,7 +1297,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1404,7 +1404,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1487,7 +1487,7 @@ data_dict_ungroup <- function(data_dict){
 #' A labelled data frame with metadata as attributes, specified for each 
 #' variable from the input data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1703,7 +1703,7 @@ your dataset")}
 #' @returns
 #' A list of data frame(s) representing metadata of the dataset variables.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' ###### Example 1: use madshapR_example provided by the package
@@ -1876,7 +1876,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary. Returns both in a list by default.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1974,7 +1974,7 @@ Leave blank to get both in a list.")
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'data_dict_shape'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -2059,7 +2059,7 @@ Please refer to documentation.")
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'data_dict'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -2415,7 +2415,7 @@ data dictionary")}}
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'data_dict_mlstr'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -2792,7 +2792,7 @@ investigations.")
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -2841,7 +2841,7 @@ is_data_dict_shape <- function(object){
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -2895,7 +2895,7 @@ is_data_dict <- function(object){
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package

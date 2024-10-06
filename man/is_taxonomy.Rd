@@ -26,3 +26,14 @@ taxonomy object is a data frame that must contain at least the columns
 taxonomies are
 \href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+
+is_taxonomy(madshapR_example$`taxonomy_example`)
+is_taxonomy(madshapR_example$`dataset_example`)
+
+}
+
+}

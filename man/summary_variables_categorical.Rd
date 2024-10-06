@@ -62,3 +62,22 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+library(dplyr)
+library(fabR)
+
+# use madshapR_example provided by the package
+dataset <- madshapR_example$`dataset_example` \%>\%
+  mutate(prg_ever = as_category(prg_ever)) \%>\%
+  select(prg_ever)
+
+dataset_preprocess <- dataset_preprocess(dataset)
+summary_prep <- summary_variables_categorical(dataset_preprocess = dataset_preprocess)
+glimpse(summary_prep)
+
+}
+
+}

@@ -32,6 +32,26 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+library(dplyr)
+library(stringr)
+
+###### Example 1: a dataset list is a dossier by definition.
+dossier <- 
+  as_dossier(madshapR_example[str_detect(names(madshapR_example),"^dataset_example")])
+glimpse(dossier)
+   
+###### Example 2: any list of data frame can be a dossier by 
+# definition.
+dossier <- as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
+glimpse(dossier)
+
+}
+
+}
 \seealso{
 For a better assessment, please use \code{\link[=dataset_evaluate]{dataset_evaluate()}}.
 }

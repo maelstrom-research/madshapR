@@ -15,7 +15,7 @@
 #' @return
 #' A vector with class haven_labelled.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -88,7 +88,7 @@ as_category <- function(x){
 #' @return
 #' A R object.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -163,7 +163,7 @@ drop_category <- function(x){
 #' @return
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)

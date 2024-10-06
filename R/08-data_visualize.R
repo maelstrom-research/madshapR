@@ -73,7 +73,7 @@
 #' A list of up to seven elements (charts and figures and datatables) which can 
 #' be used to summarize visualize data.
 #' 
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #'  library(dplyr)
@@ -1380,7 +1380,7 @@ variable_visualize <- function(
 #' in a browser, open 'docs/index.html', or use [bookdown_open()] with the 
 #' folder path.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(fs)

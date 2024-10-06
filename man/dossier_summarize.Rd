@@ -58,3 +58,21 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+library(dplyr)
+
+###### Example : a dataset list is a dossier by definition.
+   
+dataset1 <- as_dataset(madshapR_example$`dataset_example`)
+dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+dossier <- dossier_create(list(dataset1,dataset2))
+
+summary_dossier <- dossier_summarize(dossier)
+glimpse(summary_dossier)
+
+}
+
+}

@@ -89,6 +89,25 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+ library(dplyr)
+ library(fs)
+ 
+ dataset   <- madshapR_example$`dataset_example`
+ data_dict <- madshapR_example$`data_dict_example`
+ variable_summary <- madshapR_example$`summary - dataset_example`
+  
+plots <- variable_visualize(
+ dataset,data_dict, col = 'prg_ever',
+ variable_summary =  variable_summary,valueType_guess = TRUE)
+ 
+print(plots$main_values_1)
+ 
+}
+
+}
 \seealso{
 \code{\link[DT:datatable]{DT::datatable()}}, \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}
 \code{\link[=dataset_summarize]{dataset_summarize()}}, \code{\link[=dataset_visualize]{dataset_visualize()}}

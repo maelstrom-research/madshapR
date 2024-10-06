@@ -48,3 +48,17 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+library(dplyr)
+
+data_dict <- madshapR_example$`data_dict_example - errors`
+eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
+
+glimpse(eval_data_dict)
+
+}
+
+}

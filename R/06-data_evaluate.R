@@ -57,7 +57,7 @@
 #' @returns
 #' A list of data frames containing assessment reports.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -412,7 +412,7 @@ dataset_evaluate <- function(
 #' @returns
 #' A list of data frames containing assessment reports.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -508,7 +508,7 @@ dossier_evaluate <- function(
 #' @returns
 #' A list of data frames containing assessment reports.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package

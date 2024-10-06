@@ -35,7 +35,7 @@
 #' A data frame identifying the dataset created from the variable names list in
 #' 'Variables' element of the data dictionary.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -128,7 +128,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @returns
 #' A data frame identifying a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -218,7 +218,7 @@ dataset_zap_data_dict <- function(dataset){
 #' @returns
 #' A data frame identifying a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'
 #' dataset = madshapR_example$`dataset_example`
@@ -344,7 +344,7 @@ dataset_cat_as_labels <- function(
 #' @returns
 #' A list of data frame(s), containing input dataset(s).
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -419,7 +419,7 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' @returns
 #' A data frame with `madshapR::class` 'dataset'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -515,7 +515,7 @@ Please refer to documentation.")
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'dossier'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -599,7 +599,7 @@ Please refer to documentation."))
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -648,7 +648,7 @@ is_dataset <- function(object){
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -698,7 +698,7 @@ is_dossier <- function(object){
 #' @returns
 #' Name(s) of identifier column(s). NULL if not.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package

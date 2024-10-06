@@ -42,3 +42,21 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+library(dplyr)
+
+###### Example : a dataset list is a dossier by definition.
+   
+dataset1 <- as_dataset(madshapR_example$`dataset_example`)
+dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+dossier <- dossier_create(list(dataset1,dataset2))
+
+eval_dossier <- dossier_evaluate(dossier,is_data_dict_mlstr = TRUE)
+glimpse(eval_dossier)
+
+}
+
+}

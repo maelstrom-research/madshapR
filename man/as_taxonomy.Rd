@@ -27,6 +27,18 @@ taxonomy object is a data frame that must contain at least the columns
 taxonomies are
 \href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+
+###### Example
+taxonomy <- as_taxonomy(madshapR_example$`taxonomy_example`)
+head(taxonomy)
+
+}
+
+}
 \seealso{
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
 }

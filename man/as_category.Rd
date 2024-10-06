@@ -18,6 +18,26 @@ Converts a vector object to a categorical object, typically a column in a
 data frame. The categories come from non-missing values present in the
 object and are added to an associated data dictionary (when present).
 }
+\examples{
+{
+
+library(dplyr)
+
+# use madshapR_example provided by the package
+dataset <- 
+  madshapR_example$`dataset_example` \%>\%
+  mutate(prg_ever = as_category(prg_ever))
+  
+head(dataset$prg_ever)
+
+##### Example 2: any data frame can be a dataset
+cat_cyl <- as_category(mtcars[['cyl']])
+
+head(cat_cyl)
+
+}
+
+}
 \seealso{
 \code{\link[haven:labelled]{haven::labelled()}}
 }

@@ -27,7 +27,7 @@
 #' @returns
 #' A character string which is the valueType of the input object.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -145,7 +145,7 @@ valueType_of <- function(x){
 #' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary, depending which the input refers to.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -376,7 +376,7 @@ valueType_self_adjust <- function(...){
 #' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary, depending which is 'to'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -661,7 +661,7 @@ bold("\n\nUseful tip:"),
 #' @returns
 #' A character string which is the first possible valueType of the input object.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -827,7 +827,7 @@ valueType_guess <- function(x){
 #' @returns
 #' The object coerced accordingly to the input valueType.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1003,7 +1003,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'taxonomy'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1077,7 +1077,7 @@ Please refer to documentation.",
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'
 #' is_valueType('integer')
@@ -1123,7 +1123,7 @@ is_valueType <- function(object){
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1181,7 +1181,7 @@ is_taxonomy <- function(object){
 #' @returns
 #' A character vector, named 'valueType'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'
 #' typeof_convert_to_valueType(typeof = "character")
@@ -1266,7 +1266,7 @@ documentation or print(madshapR::valueType_list)")
 #' @returns
 #' A character vector, named 'typeof' and 'class'.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'
 #' valueType_convert_to_typeof(valueType = NA)

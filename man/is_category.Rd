@@ -25,3 +25,23 @@ Test if vector object is a categorical variable, typically a column in a
 data frame. This function mainly helps validate input within other functions
 of the package.
 }
+\examples{
+{
+
+library(dplyr)
+
+###### Example 1: use madshapR_example provided by the package
+dataset <-
+  madshapR_example$`dataset_example` \%>\%
+  mutate(prg_ever_cat = as_category(prg_ever)) \%>\%
+  mutate(prg_ever_no_cat = drop_category(prg_ever))
+  
+is_category(dataset[['prg_ever_cat']])
+is_category(dataset[['prg_ever_no_cat']])
+
+##### Example 2: any data frame can be a dataset
+iris \%>\% reframe(across(everything(), is_category))
+
+}
+
+}

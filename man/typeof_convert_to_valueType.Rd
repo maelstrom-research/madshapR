@@ -38,3 +38,13 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+typeof_convert_to_valueType(typeof = "character")
+typeof_convert_to_valueType(typeof = "double")
+typeof_convert_to_valueType(typeof = "double", class = "Date")
+
+}
+
+}

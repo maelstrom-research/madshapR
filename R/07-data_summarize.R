@@ -67,7 +67,7 @@
 #' @returns
 #' A list of data frames containing assessment reports and summaries.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -861,7 +861,7 @@ dataset_summarize <- function(
 #' @returns
 #' A list of data frames containing overall assessment reports and summaries grouped by dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -969,7 +969,7 @@ dossier_summarize <- function(
 #' A data frame providing summary elements of a dataset, including its values 
 #' and data dictionary elements.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'  
 #' # use madshapR_example provided by the package
@@ -1173,7 +1173,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' A data frame providing statistical description of variables present in
 #' a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' library(dplyr)
@@ -1325,7 +1325,7 @@ summary_variables <- function(
 #' A data frame providing statistical description of 'text' variables present
 #' in a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'    
 #' # use madshapR_example provided by the package
@@ -1450,7 +1450,7 @@ summary_variables_text <- function(
 #' A data frame providing statistical description of 'date' variables present
 #' in a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'    
 #' # use madshapR_example provided by the package
@@ -1597,7 +1597,7 @@ summary_variables_date <- function(
 #' A data frame providing statistical description of 'datetime' variables present
 #' in a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #'    
 #' # use madshapR_example provided by the package
@@ -1679,7 +1679,7 @@ summary_variables_datetime <- function(
 #' A data frame providing statistical description of 'numerical' variables
 #' present in a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1802,7 +1802,7 @@ summary_variables_numeric <- function(
 #' A data frame providing statistical description of 'categorical' variables
 #' present in a dataset.
 #'
-#' @examplesOK
+#' @examples
 #' {
 #' 
 #' # use madshapR_example provided by the package

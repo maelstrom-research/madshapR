@@ -53,6 +53,26 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+
+###### Example 1: The valueType of a dataset can be adjusted. each column is
+# evaluated as whole, and the best valueType match found is applied. If 
+# there is no better match found, the column is left as it is.
+
+dataset <- madshapR_example$`dataset_example`
+dataset <- valueType_self_adjust(dataset["gndr"])
+head(dataset)
+
+# any data frame can be dataset by definition
+dataset <- valueType_self_adjust(mtcars)
+head(dataset)
+
+}
+
+}
 \seealso{
 \code{\link[=valueType_adjust]{valueType_adjust()}}
 }

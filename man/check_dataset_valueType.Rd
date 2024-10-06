@@ -54,3 +54,15 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+data_dict <- madshapR_example$`data_dict_example - errors with data`
+dataset <- madshapR_example$`dataset_example - errors with data`
+
+check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
+check_dataset_valueType(dataset, data_dict, valueType_guess = FALSE)
+
+}
+
+}

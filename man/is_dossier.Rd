@@ -22,3 +22,18 @@ A dossier is a named list containing at least one data frame or more,
 each of them being datasets. The name of each tibble will be use as the
 reference name of the dataset.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+# Any list of data frame can be a dossier by definition.
+library(stringr)
+
+dossier <- madshapR_example[str_detect(names(madshapR_example),"^dataset_example")]
+is_dossier(dossier)
+is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
+is_dossier(iris)
+
+}
+
+}

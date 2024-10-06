@@ -44,3 +44,27 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
+\examples{
+{
+
+###### Example 1: use madshapR_example provided by the package
+# download a dataset and its data dictionary
+# apply the data dictionary to its dataset
+dataset   <- madshapR_example$`dataset_example` 
+data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+dataset   <- data_dict_apply(dataset,data_dict)
+
+# extract the data dictionary from the dataset
+data_dict <- data_dict_extract(dataset)
+
+glimpse(data_dict)
+
+###### Example 2: extract data dictionary from any dataset (the 
+# data dictionary will be created upon attributes of the dataset. Factors 
+# will be considered as categorical variables)
+
+glimpse(data_dict)
+
+}
+
+}

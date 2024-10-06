@@ -84,6 +84,25 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
+\examples{
+{
+
+library(dplyr)
+
+###### Example 1: use madshapR_example provided by the package
+dataset <- as_dataset(madshapR_example$`dataset_example`,col_id = "part_id")
+data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+
+summary_dataset <- dataset_summarize(dataset, data_dict)
+glimpse(summary_dataset)
+
+###### Example 2: Any data frame can be a dataset by definition
+summary_iris <- dataset_summarize(iris)
+glimpse(summary_iris)
+ 
+}
+
+}
 \seealso{
 \code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }

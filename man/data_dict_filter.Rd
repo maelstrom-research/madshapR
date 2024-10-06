@@ -42,6 +42,36 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
+\examples{
+{
+
+library(dplyr)
+
+# use madshapR_example provided by the package
+# Data dictionary where the column 'table' is added to 
+# refer to the associated dataset.
+
+data_dict <- 
+  madshapR_example$`data_dict_example` \%>\% 
+  lapply(function(x) mutate(x,table = "dataset"))
+
+###### Example 1 search and filter through a column in 'Variables' element
+data_dict_f1 <- data_dict_filter(data_dict,filter_var = "name == 'gndr'")
+glimpse(data_dict_f1)
+
+###### Example 2 search and filter through a column in 'Categories' element
+data_dict_f2 <- data_dict_filter(data_dict,filter_cat = "missing == TRUE")
+glimpse(data_dict_f2)
+
+###### Example 3 search and filter through a column across all elements.
+# The column must exist in both 'Variables' and 'Categories' and have the
+# same meaning
+data_dict_f3 <- data_dict_filter(data_dict,filter_all = "table == 'dataset'")
+glimpse(data_dict_f3)
+
+}
+
+}
 \seealso{
 \code{\link[dplyr:filter]{dplyr::filter()}}
 }

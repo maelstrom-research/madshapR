@@ -28,6 +28,18 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+is_data_dict_shape(madshapR_example$`data_dict_example - errors`)
+is_data_dict_shape(madshapR_example$`data_dict_example - errors with data`)
+is_data_dict_shape(madshapR_example$`data_dict_example`)
+is_data_dict_shape(iris)
+
+}
+
+}
 \seealso{
 For a better assessment, please use \code{\link[=data_dict_evaluate]{data_dict_evaluate()}}.
 }

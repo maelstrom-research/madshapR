@@ -29,3 +29,23 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
+\examples{
+{
+
+# use madshapR_example provided by the package
+library(dplyr)
+
+###### Example 1: datasets can be gathered into a dossier which is a list.
+dataset_example1 <- madshapR_example$`dataset_example`
+dataset_example2 <- madshapR_example$`dataset_example - errors with data`
+dossier <- dossier_create(list(dataset_example1,dataset_example2))
+
+glimpse(dossier)
+    
+###### Example 2: Any data frame can be gathered into a dossier
+dossier <- dossier_create(list(iris,mtcars))
+glimpse(dossier)
+   
+}
+
+}

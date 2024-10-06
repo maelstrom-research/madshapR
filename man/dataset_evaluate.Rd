@@ -72,6 +72,25 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
+\examples{
+{
+
+library(dplyr)
+
+###### Example 1: use madshapR_example provided by the package
+dataset <- madshapR_example$`dataset_example - errors with data`
+data_dict <- madshapR_example$`data_dict_example - errors with data`
+
+eval_dataset <- dataset_evaluate(dataset, data_dict, is_data_dict_mlstr = TRUE)
+glimpse(eval_dataset)
+
+###### Example 2: Any data frame can be a dataset by definition
+eval_iris <- dataset_evaluate(iris)
+glimpse(eval_iris)
+
+}
+
+}
 \seealso{
 \code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }
