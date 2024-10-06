@@ -95,29 +95,6 @@ taxonomy object is a data frame that must contain at least the columns
 taxonomies are
 \href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
-\examples{
-{
-
-library(fs)
-library(dplyr)
-
-dataset <- madshapR_example$`dataset_example`['height'] \%>\% slice(0)
-dataset_summary <- madshapR_example$`summary - dataset_example`
-
-if(dir_exists(tempdir())) dir_delete(tempdir())
-bookdown_path <- tempdir()
-
-dataset_visualize(
-  dataset,
-  dataset_summary = dataset_summary,
-  bookdown_path = bookdown_path)
-  
-# To open the file in browser, open 'bookdown_path/docs/index.html'. 
-# Or use bookdown_open(bookdown_path) function.
-
-}
-
-}
 \seealso{
 \code{\link[=bookdown_open]{bookdown_open()}}
 \code{\link[=as_category]{as_category()}}

@@ -89,29 +89,6 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
- library(dplyr)
- library(fs)
- 
- dataset <- madshapR_example$`dataset_example`
- 
- variable_summary <- madshapR_example$`summary - dataset_example`
-  
- variable_visualize(
-   dataset, col = 'height',
-   variable_summary =  variable_summary,valueType_guess = TRUE)
-  
- variable_visualize(
-   dataset, col = 'height',
-   variable_summary =  variable_summary,valueType_guess = TRUE)
-  
- 
- 
-}
-
-}
 \seealso{
 \code{\link[DT:datatable]{DT::datatable()}}, \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}
 \code{\link[=dataset_summarize]{dataset_summarize()}}, \code{\link[=dataset_visualize]{dataset_visualize()}}

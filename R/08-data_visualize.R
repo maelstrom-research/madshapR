@@ -73,25 +73,21 @@
 #' A list of up to seven elements (charts and figures and datatables) which can 
 #' be used to summarize visualize data.
 #' 
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #'  library(dplyr)
 #'  library(fs)
 #'  
-#'  dataset <- madshapR_example$`dataset_example`
-#'  
+#'  dataset   <- madshapR_example$`dataset_example`
+#'  data_dict <- madshapR_example$`data_dict_example`
 #'  variable_summary <- madshapR_example$`summary - dataset_example`
 #'   
-#'  variable_visualize(
-#'    dataset, col = 'height',
-#'    variable_summary =  variable_summary,valueType_guess = TRUE)
-#'   
-#'  variable_visualize(
-#'    dataset, col = 'height',
-#'    variable_summary =  variable_summary,valueType_guess = TRUE)
-#'   
+#' plots <- variable_visualize(
+#'  dataset,data_dict, col = 'prg_ever',
+#'  variable_summary =  variable_summary,valueType_guess = TRUE)
 #'  
+#' print(plots$main_values_1)
 #'  
 #' }
 #'
@@ -1384,20 +1380,22 @@ variable_visualize <- function(
 #' in a browser, open 'docs/index.html', or use [bookdown_open()] with the 
 #' folder path.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' library(fs)
 #' library(dplyr)
 #' 
-#' dataset <- madshapR_example$`dataset_example`['height'] %>% slice(0)
-#' dataset_summary <- madshapR_example$`summary - dataset_example`
+#' dataset <- madshapR_example$`dataset_example`
+#' data_dict <- madshapR_example$`data_dict_example`
+# dataset_summary <- madshapR_example$`summary - dataset_example`
 #' 
 #' if(dir_exists(tempdir())) dir_delete(tempdir())
 #' bookdown_path <- tempdir()
 #' 
 #' dataset_visualize(
 #'   dataset,
+#'   data_dict,
 #'   dataset_summary = dataset_summary,
 #'   bookdown_path = bookdown_path)
 #'   
