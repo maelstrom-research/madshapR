@@ -993,7 +993,7 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'taxonomy'.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1112,7 +1112,7 @@ is_valueType <- function(object){
 #' @returns
 #' A logical.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -1170,7 +1170,7 @@ is_taxonomy <- function(object){
 #' @returns
 #' A character vector, named 'valueType'.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'
 #' typeof_convert_to_valueType(typeof = "character")
@@ -1255,7 +1255,7 @@ documentation or print(madshapR::valueType_list)")
 #' @returns
 #' A character vector, named 'typeof' and 'class'.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'
 #' valueType_convert_to_typeof(valueType = NA)
