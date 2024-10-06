@@ -37,17 +37,6 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
-as_data_dict_mlstr(madshapR_example$`data_dict_example`)
-
-}
-
-}
 \seealso{
 For a better assessment, please use \code{\link[=data_dict_evaluate]{data_dict_evaluate()}}.
 }

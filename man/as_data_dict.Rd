@@ -32,19 +32,6 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
-\examples{
-{
-
-library(dplyr)
-# use madshapR_example provided by the package
-
-data_dict <- madshapR_example$`data_dict_example`
-
-glimpse(as_data_dict(data_dict))
-
-}
-
-}
 \seealso{
 For a better assessment, please use \code{\link[=data_dict_evaluate]{data_dict_evaluate()}}.
 }
