@@ -92,13 +92,17 @@ valueType_of <- function(x){
 }
 
 #' @title
-#' Guess and attribute the valueType of a data dictionary or dataset variable
+#' Self-adjust the valueType from a data dictionary or a dataset.
 #'
 #' @description
-#' Determines the valueType of an object based on [base::typeof()] and 
-#' [base::class()].
-#' The possible values returned are 'date', 'boolean', 'integer', 'decimal', and
-#' 'text'.
+#' It is sometimes useful to take variable valueType’s from a dataset and 
+#' attribute them to the associated data dictionary, or vice versa. 
+#' [valueType_self_adjust()] takes the valueType guessed of the input and 
+#' attributes it to itself. The parameter can be either a dataset or a 
+#' data dictionary. Depending on the input provided, the valueType replaced is 
+#' either in the 'valueType' column of the data dictionary or cast to a column 
+#' in the dataset. The possible values of the valueTypes returned are 
+#' 'date','datetime', 'boolean', 'integer', 'decimal', and text'.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -310,16 +314,16 @@ valueType_self_adjust <- function(...){
 #' Attribute the valueType from a data dictionary to a dataset, or vice versa
 #'
 #' @description
-#' 
 #' It is sometimes useful to take variable valueType’s from a dataset and 
 #' attribute them to the associated data dictionary, or vice versa. 
-#' [valueType_self_adjust()] takes the valueType of the input (from) and 
+#' [valueType_adjust()] takes the valueType of the input (from) and 
 #' attributes it to the output (to). The parameters 'from' and 'to' can be 
 #' either a dataset or a data dictionary. Depending on the input provided, 
 #' the valueType replaced is either in the 'valueType' column of a 
 #' data dictionary or cast to a column in a dataset. If 'to' is not provided, 
 #' the function calls [valueType_self_adjust()] instead. The possible values 
-#' returned are 'date', 'boolean', 'integer', 'decimal', and text'.
+#' of the valueTypes returned are date','datetime', 'boolean', 'integer', 
+#' 'decimal', and text'.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
