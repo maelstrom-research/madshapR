@@ -3,7 +3,7 @@
 #'
 #' @description
 #' Determines the valueType of an object based on [typeof()] and 
-#' [class()]. The possible values returned are 'date', 'boolean', 
+#' [class()]. The possible values returned are 'date', 'datetime', 'boolean', 
 #' 'integer', 'decimal', and 'text'.
 #'
 #' @details
