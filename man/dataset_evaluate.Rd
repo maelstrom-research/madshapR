@@ -7,8 +7,7 @@
 dataset_evaluate(
   dataset,
   data_dict = NULL,
-  valueType_guess = FALSE,
-  as_data_dict_mlstr = TRUE,
+  is_data_dict_mlstr = TRUE,
   taxonomy = NULL,
   dataset_name = .dataset_name,
   .dataset_name = NULL
@@ -20,10 +19,7 @@ dataset_evaluate(
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
 
-\item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
-
-\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+\item{is_data_dict_mlstr}{Whether the input data dictionary should be coerced
 with specific format restrictions for compatibility with other
 Maelstrom Research software. TRUE by default.}
 
@@ -87,7 +83,7 @@ dataset <- as_dataset(
   madshapR_example$`dataset_example - errors with data`,
   col_id = 'part_id') \%>\% slice(0)
  
-glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
+glimpse(dataset_evaluate(dataset,is_data_dict_mlstr = FALSE))
 
 }
 

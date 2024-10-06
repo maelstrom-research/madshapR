@@ -42,9 +42,7 @@
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided.
-#' @param valueType_guess Whether the output should include a more accurate 
-#' valueType that could be applied to the dataset. FALSE by default.
-#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' @param is_data_dict_mlstr Whether the input data dictionary should be coerced 
 #' with specific format restrictions for compatibility with other 
 #' Maelstrom Research software. TRUE by default.
 #' @param taxonomy An optional data frame identifying a variable classification 
@@ -70,7 +68,7 @@
 #'   madshapR_example$`dataset_example - errors with data`,
 #'   col_id = 'part_id') %>% slice(0)
 #'  
-#' glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
+#' glimpse(dataset_evaluate(dataset,is_data_dict_mlstr = FALSE))
 #' 
 #' }
 #'
@@ -82,8 +80,7 @@
 dataset_evaluate <- function(
     dataset,
     data_dict = NULL,
-    valueType_guess = FALSE,
-    as_data_dict_mlstr = TRUE,
+    is_data_dict_mlstr = TRUE,
     taxonomy = NULL,
     dataset_name = .dataset_name,
     .dataset_name = NULL){
@@ -97,26 +94,22 @@ dataset_evaluate <- function(
   # check on arguments : dataset
   as_dataset(dataset) # no col_id
   
-  if(!is.logical(as_data_dict_mlstr))
+  if(!is.logical(is_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
-
-  if(!is.logical(valueType_guess))
-    stop(call. = FALSE,
-         '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
+         '`is_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
   # check on arguments : data_dict
   if(is.null(data_dict)){
     data_dict <-
       silently_run({data_dict_extract(
         dataset = dataset,
-        as_data_dict_mlstr = as_data_dict_mlstr)})
+        is_data_dict_mlstr = is_data_dict_mlstr)})
 
     if(class(data_dict)[1] == "try-error"){
       data_dict <- 
         silently_run({data_dict_extract(
           dataset = dataset,
-          as_data_dict_mlstr = FALSE)})}
+          is_data_dict_mlstr = FALSE)})}
   }
 
   as_data_dict_shape(data_dict)
@@ -131,7 +124,7 @@ dataset_evaluate <- function(
     lapply(function(x) x %>% mutate(across(everything(),as.character)))
 
   # add valueType and missing if don't exist
-  if(as_data_dict_mlstr == TRUE){
+  if(is_data_dict_mlstr == TRUE){
 
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
@@ -168,8 +161,8 @@ dataset_evaluate <- function(
   # creation of the structure of the report
   report <- 
     data_dict_evaluate(data_dict,
-      as_data_dict_mlstr = as_data_dict_mlstr)
-  
+      is_data_dict_mlstr = is_data_dict_mlstr) 
+
   message(
     "- DATASET ASSESSMENT: ",
     bold(dataset_name), if(nrow(dataset) == 0) " (empty dataset)",
@@ -186,7 +179,7 @@ dataset_evaluate <- function(
     test_valueType <-
     tibble(name_var = as.character())
 
-  if(as_data_dict_mlstr == TRUE){
+  if(is_data_dict_mlstr == TRUE){
     message(
       "    Assess the standard adequacy of naming")
     test_name_standards  <- 
@@ -312,9 +305,9 @@ dataset_evaluate <- function(
       }) %>%
     dplyr::filter(!is.na(.data$`name_var`))
   
-  if(valueType_guess == TRUE){
+  if(is_data_dict_mlstr == TRUE){
     message(
-      "    Assess the `valueType` comexampleon in dataset and data dictionary")
+      "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-
       check_dataset_valueType(
        dataset = zap_dataset, 
@@ -406,7 +399,7 @@ dataset_evaluate <- function(
 #' @param dossier List of data frame, each of them being datasets.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
-#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' @param is_data_dict_mlstr Whether the input data dictionary should be coerced 
 #' with specific format restrictions for compatibility with other 
 #' Maelstrom Research software. TRUE by default.
 #'
@@ -427,7 +420,7 @@ dataset_evaluate <- function(
 #' 
 #' dossier <- as_dossier(list(dataset = dataset))
 #' 
-#' glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
+#' glimpse(dossier_evaluate(dossier,is_data_dict_mlstr = FALSE))
 #'
 #' }
 #'
@@ -436,16 +429,16 @@ dataset_evaluate <- function(
 #' @importFrom rlang .data
 #' @export
 dossier_evaluate <- function(
-    dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE){
+    dossier, taxonomy = NULL, is_data_dict_mlstr = TRUE){
   
   # amelioration :rajouter taxonomy
   
   # check on arguments
   as_dossier(dossier)
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
-  if(!is.logical(as_data_dict_mlstr))
+  if(!is.logical(is_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+         '`is_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
   report_list <-
     vector(mode = "list", length = length(names(dossier)))
@@ -462,7 +455,7 @@ dossier_evaluate <- function(
         dataset = dossier[[i]],
         taxonomy = taxonomy,
         dataset_name = names(dossier[i]),
-        as_data_dict_mlstr = as_data_dict_mlstr)
+        is_data_dict_mlstr = is_data_dict_mlstr)
   }
   
   return(report_list)
@@ -503,7 +496,7 @@ dossier_evaluate <- function(
 #' @param data_dict A list of data frame(s) representing metadata to be evaluated.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
-#' @param as_data_dict_mlstr Whether the input data dictionary should be coerced 
+#' @param is_data_dict_mlstr Whether the input data dictionary should be coerced 
 #' with specific format restrictions for compatibility with other 
 #' Maelstrom Research software. TRUE by default.
 #'
@@ -529,7 +522,7 @@ dossier_evaluate <- function(
 data_dict_evaluate <- function(
     data_dict,
     taxonomy = NULL,
-    as_data_dict_mlstr = TRUE){
+    is_data_dict_mlstr = TRUE){
   
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -537,9 +530,9 @@ data_dict_evaluate <- function(
     silently_run(make_name_list(args_list = fargs['data_dict'], list(NULL)))
   
   # check args
-  if(!is.logical(as_data_dict_mlstr))
+  if(!is.logical(is_data_dict_mlstr))
     stop(call. = FALSE,
-         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+         '`is_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
   # check on arguments : data_dict
   as_data_dict_shape(data_dict)
@@ -553,7 +546,7 @@ data_dict_evaluate <- function(
     lapply(function(x) x %>% mutate(across(everything(),as.character)))
   
   # add label, valueType and missing if don't exist
-  if(as_data_dict_mlstr == TRUE){
+  if(is_data_dict_mlstr == TRUE){
     
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
@@ -622,7 +615,7 @@ data_dict_evaluate <- function(
     test_missing_category <-
     tibble(name_var = as.character())
   
-  if(as_data_dict_mlstr == TRUE){
+  if(is_data_dict_mlstr == TRUE){
     
     message("    Assess the standard adequacy of naming")
     test_name_standards  <-
@@ -735,7 +728,7 @@ data_dict_evaluate <- function(
         sheet    = "Categories")
   }
   
-  if(as_data_dict_mlstr == TRUE){
+  if(is_data_dict_mlstr == TRUE){
     
     message("    Assess the `valueType` column in 'Variables'")
     test_valueType <-

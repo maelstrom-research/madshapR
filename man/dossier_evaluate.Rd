@@ -4,7 +4,7 @@
 \alias{dossier_evaluate}
 \title{Generate an assessment report of a dossier}
 \usage{
-dossier_evaluate(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE)
+dossier_evaluate(dossier, taxonomy = NULL, is_data_dict_mlstr = TRUE)
 }
 \arguments{
 \item{dossier}{List of data frame, each of them being datasets.}
@@ -12,7 +12,7 @@ dossier_evaluate(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
-\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+\item{is_data_dict_mlstr}{Whether the input data dictionary should be coerced
 with specific format restrictions for compatibility with other
 Maelstrom Research software. TRUE by default.}
 }
@@ -56,7 +56,7 @@ dataset <- as_dataset(
 
 dossier <- as_dossier(list(dataset = dataset))
 
-glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
+glimpse(dossier_evaluate(dossier,is_data_dict_mlstr = FALSE))
 
 }
 
