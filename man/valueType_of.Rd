@@ -29,18 +29,6 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-dataset <- madshapR_example$`dataset_example`
-valueType_of(dataset$gndr)
-valueType_of(iris$Sepal.Length)
-
-}
-
-}
 \seealso{
 \code{\link[=typeof]{typeof()}}, \code{\link[=class]{class()}}
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}

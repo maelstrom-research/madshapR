@@ -53,18 +53,6 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-###### Example : The valueType of a dataset can be adjusted. each column is
-# evaluated as whole, and the best valueType match found is applied. If 
-# there is no better match found, the column is left as it is.
-
-head(valueType_self_adjust(mtcars['cyl']))
-
-}
-
-}
 \seealso{
 \code{\link[=valueType_adjust]{valueType_adjust()}}
 }

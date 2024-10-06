@@ -30,21 +30,6 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-dataset <- madshapR_example$`dataset_example`
-as_valueType(head(dataset$dob),'date')
-
-# as_valueType is compatible with tidyverse philosophy
-library(dplyr)
-mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer')) \%>\% head()
-
-}
-
-}
 \seealso{
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
 }

@@ -27,14 +27,16 @@
 #' @returns
 #' A character string which is the valueType of the input object.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #'
 #' dataset <- madshapR_example$`dataset_example`
-#' valueType_of(dataset$gndr)
-#' valueType_of(iris$Sepal.Length)
+#' valueType_of(dataset[['part_id']])
+#' 
+#' # any data frame can be dataset by definition
+#' valueType_of(iris[['Sepal.Length']])
 #'
 #' }
 #'
@@ -143,14 +145,22 @@ valueType_of <- function(x){
 #' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary, depending which the input refers to.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
-#' ###### Example : The valueType of a dataset can be adjusted. each column is
+#' # use madshapR_example provided by the package
+#' 
+#' ###### Example 1: The valueType of a dataset can be adjusted. each column is
 #' # evaluated as whole, and the best valueType match found is applied. If 
 #' # there is no better match found, the column is left as it is.
 #' 
-#' head(valueType_self_adjust(mtcars['cyl']))
+#' dataset <- madshapR_example$`dataset_example`
+#' dataset <- valueType_self_adjust(dataset["gndr"])
+#' head(dataset)
+#' 
+#' # any data frame can be dataset by definition
+#' dataset <- valueType_self_adjust(mtcars)
+#' head(dataset)
 #'
 #' }
 #'
@@ -366,26 +376,17 @@ valueType_self_adjust <- function(...){
 #' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary, depending which is 'to'.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #' library(dplyr)
 #'  
-#' dataset <-
-#'   madshapR_example$`dataset_example` %>%
-#'   mutate(
-#'     empty = as.character(empty),
-#'     dob = as_any_date(dob),
-#'     prg_ever = as_category(prg_ever),
-#'     gndr = as.factor(gndr))
+#' dataset <- madshapR_example$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 #' 
-#' 
-#' data_dict <-
-#'   madshapR_example$`data_dict_example` %>%
-#'   as_data_dict_mlstr()
-#' 
-#' head(valueType_adjust(from = data_dict,to = dataset))
+#' dataset <- valueType_adjust(from = data_dict,to = dataset)
+#' head(dataset)
 #' 
 #' }
 #'
@@ -660,14 +661,17 @@ bold("\n\nUseful tip:"),
 #' @returns
 #' A character string which is the first possible valueType of the input object.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #'
 #' dataset <- madshapR_example$`dataset_example`
+#' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
 #' 
+#' # any data frame can be a dataset by definition
+#' valueType_guess(mtcars$cyl)
 #' valueType_guess(mtcars$cyl)
 #' 
 #'}
@@ -823,7 +827,7 @@ valueType_guess <- function(x){
 #' @returns
 #' The object coerced accordingly to the input valueType.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -831,9 +835,13 @@ valueType_guess <- function(x){
 #' dataset <- madshapR_example$`dataset_example`
 #' as_valueType(head(dataset$dob),'date')
 #' 
-#' # as_valueType is compatible with tidyverse philosophy
+#' # as_valueType is compatible with tidyverse syntax
 #' library(dplyr)
-#' mtcars %>% mutate(cyl = as_valueType(cyl,'integer')) %>% head()
+#' dataset <- 
+#'   tibble(mtcars) %>%
+#'   mutate(cyl = as_valueType(cyl,'integer'))
+#' 
+#' head(dataset)
 #' 
 #'}
 #'
@@ -1001,7 +1009,8 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' # use madshapR_example provided by the package
 #'
 #' ###### Example
-#' head(as_taxonomy(madshapR_example$`taxonomy_example`))
+#' taxonomy <- as_taxonomy(madshapR_example$`taxonomy_example`)
+#' head(taxonomy)
 #' 
 #'}
 #'
@@ -1068,11 +1077,11 @@ Please refer to documentation.",
 #' @returns
 #' A logical.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'
 #' is_valueType('integer')
-#' is_valueType('integre')
+#' is_valueType('intereg')
 #'
 #'}
 #'

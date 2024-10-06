@@ -29,15 +29,6 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-is_valueType('integer')
-is_valueType('integre')
-
-}
-
-}
 \seealso{
 \href{https://opaldoc.obiba.org/en/dev/magma-user-guide/value/type.html}{Opal documentation}
 }
