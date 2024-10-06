@@ -965,9 +965,6 @@ check_dataset_valueType <- function(
     data_dict[['Variables']] %>%
     mutate(across(everything(),as.character))
 
-  # check if `valueType` column exists
-  if(is.null(data_dict[['Variables']][['valueType']])) return(test)
-
   dataset <- suppressWarnings(
     data_dict_match_dataset(dataset, data_dict, output = "dataset"))
   
@@ -981,6 +978,9 @@ check_dataset_valueType <- function(
       value = as.character(),
       condition = as.character(),
       suggestion = as.character())
+  
+  # check if `valueType` column exists
+  if(is.null(data_dict[['Variables']][['valueType']])) return(test)
     
   for(i in names(dataset)){
     # stop()}

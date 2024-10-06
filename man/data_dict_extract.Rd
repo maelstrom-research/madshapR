@@ -47,6 +47,8 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
+library(dplyr)
+
 ###### Example 1: use madshapR_example provided by the package
 # download a dataset and its data dictionary
 # apply the data dictionary to its dataset

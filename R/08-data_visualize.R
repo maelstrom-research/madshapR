@@ -1388,7 +1388,7 @@ variable_visualize <- function(
 #' 
 #' dataset <- madshapR_example$`dataset_example`
 #' data_dict <- madshapR_example$`data_dict_example`
-# dataset_summary <- madshapR_example$`summary - dataset_example`
+#' dataset_summary <- madshapR_example$`summary - dataset_example`
 #' 
 #' if(dir_exists(tempdir())) dir_delete(tempdir())
 #' bookdown_path <- tempdir()

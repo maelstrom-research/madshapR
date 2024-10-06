@@ -41,18 +41,18 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 {
 
 library(dplyr)
-# use madshapR_example provided by the package
+
 ###### Example 1 : use the function to apply the attribute "data_dict" to the 
-object. 
+# object. 
 data_dict <- 
   as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 
 glimpse(data_dict)
 
 ###### Example 2 : use the function to shape the data dictionary formatted as
-data_dict_mlstr to data_dict object. The function mainly converts valueType 
-column into corresponding typeof/class columns in 'Variables', and converts
-missing column into "na_values" column. 
+# data_dict_mlstr to data_dict object. The function mainly converts valueType 
+# column into corresponding typeof/class columns in 'Variables', and converts
+# missing column into "na_values" column. 
 data_dict <- 
   as_data_dict_mlstr(madshapR_example$`data_dict_example - as_data_dict`)
   
