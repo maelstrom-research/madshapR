@@ -40,7 +40,7 @@
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -49,7 +49,7 @@
 #' data_dict_collapsed <- madshapR_example$`data_dict_example - collapsed`
 #' 
 #' data_dict_expanded <- data_dict_expand(data_dict_collapsed)
-#' glimpse(data_dict_expand(data_dict_collapsed))
+#' glimpse(data_dict_expand(data_dict_expanded))
 #' 
 #' }
 #'
@@ -225,13 +225,13 @@ Example:
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'
 #' # use madshapR_example provided by the package
 #' data_dict <- madshapR_example$`data_dict_example`
-#' 
-#' head(data_dict_collapse(data_dict))
+#' data_dict_collapsed <- data_dict_collapse(data_dict)
+#' head(data_dict_collapse(data_dict_collapsed))
 #'
 #' }
 #'
@@ -348,7 +348,7 @@ data_dict_collapse <- function(
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #'
 #' library(dplyr)
@@ -356,8 +356,10 @@ data_dict_collapse <- function(
 #' # use madshapR_example provided by the package
 #' data_dict <- madshapR_example$`data_dict_example`
 #' taxonomy  <- madshapR_example$`taxonomy_example`
+#' data_dict_longer <- data_dict_pivot_longer(data_dict, taxonomy)
+#' data_dict_wider <- data_dict_pivot_wider(data_dict_longer, taxonomy)
 #' 
-#' glimpse(data_dict_pivot_longer(data_dict, taxonomy))
+#' glimpse(data_dict_wider)
 #'
 #' }
 #'
@@ -638,7 +640,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' @returns
 #' A list of data frame(s) identifying a data dictionary.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -646,8 +648,9 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' # use madshapR_example provided by the package
 #' data_dict <- madshapR_example$`data_dict_example`
 #' taxonomy  <- madshapR_example$`taxonomy_example`
+#' data_dict_longer <- data_dict_pivot_longer(data_dict, taxonomy)
 #' 
-#' glimpse(data_dict_pivot_longer(data_dict,taxonomy))
+#' glimpse(data_dict_longer)
 #'
 #' }
 #'
@@ -922,7 +925,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -936,15 +939,18 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #'   lapply(function(x) mutate(x,table = "dataset"))
 #' 
 #' ###### Example 1 search and filter through a column in 'Variables' element
-#' glimpse(data_dict_filter(data_dict,filter_var = "name == 'gndr'"))
+#' data_dict_f1 <- data_dict_filter(data_dict,filter_var = "name == 'gndr'")
+#' glimpse(data_dict_f1)
 #' 
 #' ###### Example 2 search and filter through a column in 'Categories' element
-#' glimpse(data_dict_filter(data_dict,filter_cat = "missing == TRUE"))
+#' data_dict_f2 <- data_dict_filter(data_dict,filter_cat = "missing == TRUE")
+#' glimpse(data_dict_f2)
 #' 
 #' ###### Example 3 search and filter through a column across all elements.
 #' # The column must exist in both 'Variables' and 'Categories' and have the
 #' # same meaning
-#' glimpse(data_dict_filter(data_dict,filter_all = "table == 'dataset'"))
+#' data_dict_f3 <- data_dict_filter(data_dict,filter_all = "table == 'dataset'")
+#' glimpse(data_dict_f3)
 #'
 #' }
 #'
@@ -1028,7 +1034,7 @@ data_dict_filter <- function(
 #' @returns
 #' A list of data frame(s) identifying a list of workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -1041,13 +1047,15 @@ data_dict_filter <- function(
 #' 
 #' data_dict_list <- list(
 #'   data_dict_1 = madshapR_example$`data_dict_example` ,
-#'   data_dict_2 = madshapR_example$`data_dict_example`)
+#'   data_dict_2 = madshapR_example$`data_dict_example - collapsed`)
 #' 
-#' data_dict_nest <-
+#' data_dict_ns <-
 #'   data_dict_list_nest(data_dict_list, name_group = "table") %>%
 #'   data_dict_group_by(col = "table")
+#'   
+#' data_dict_sp <- data_dict_group_split(data_dict_ns,col = "table")
 #' 
-#' glimpse(data_dict_group_split(data_dict_nest,col = "table"))
+#' glimpse(data_dict_sp)
 #'  
 #' }
 #'
@@ -1157,7 +1165,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -1170,9 +1178,13 @@ cannot be found accross the variables declared in 'Variables'.")
 #' 
 #' data_dict_list <- list(
 #'   data_dict_1 = madshapR_example$`data_dict_example` ,
-#'   data_dict_2 = madshapR_example$`data_dict_example`)
+#'   data_dict_2 = madshapR_example$`data_dict_example - collapsed`)
 #' 
-#' glimpse(data_dict_list_nest(data_dict_list, name_group = "table"))
+#' data_dict_ns <-
+#'   data_dict_list_nest(data_dict_list, name_group = "table") %>%
+#'   data_dict_group_by(col = "table")
+#' 
+#' glimpse(data_dict_ns)
 #' 
 #' }
 #'
@@ -1285,7 +1297,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -1298,12 +1310,13 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' 
 #' data_dict_list <- list(
 #'   data_dict_1 = madshapR_example$`data_dict_example` ,
-#'   data_dict_2 = madshapR_example$`data_dict_example`)
+#'   data_dict_2 = madshapR_example$`data_dict_example - collapsed`)
 #' 
-#' data_dict_nest <- 
+#' data_dict_ns <- 
 #'   data_dict_list_nest(data_dict_list, name_group = "table")
 #' 
-#' glimpse(data_dict_group_by(data_dict_nest, col = "table"))
+#' data_dict_gp <- data_dict_group_by(data_dict_ns, col = "table")
+#' glimpse(data_dict_gp)
 #' 
 #' }
 #'
@@ -1391,7 +1404,7 @@ cannot be found accross the variables declared in 'Variables'.")
 #' @returns
 #' A list of data frame(s) identifying a workable data dictionary structure.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
@@ -1474,14 +1487,16 @@ data_dict_ungroup <- function(data_dict){
 #' A labelled data frame with metadata as attributes, specified for each 
 #' variable from the input data dictionary.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
-#' dataset <- madshapR_example$`dataset_example`
+#' 
+#' dataset   <- madshapR_example$`dataset_example`
 #' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
-#' head(data_dict_apply(dataset, data_dict))
+#' dataset   <- data_dict_apply(dataset, data_dict)
+#' 
+#' head(dataset)
 #' 
 #' }
 #'
@@ -1688,24 +1703,26 @@ your dataset")}
 #' @returns
 #' A list of data frame(s) representing metadata of the dataset variables.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' ###### Example 1: use madshapR_example provided by the package
+#' # download a dataset and its data dictionary
+#' # apply the data dictionary to its dataset
+#' dataset   <- madshapR_example$`dataset_example` 
+#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' dataset   <- data_dict_apply(dataset,data_dict)
 #' 
-#' ddss <-
-#'   madshapR_example$`dataset_example` %>%
-#'   mutate(
-#'     gndr = as.factor(gndr),
-#'     dob = as_any_date(dob),
-#'     prg_ever = as_category((prg_ever)))
-#'   glimpse(data_dict_extract(dataset))
+#' # extract the data dictionary from the dataset
+#' data_dict <- data_dict_extract(dataset)
+#' 
+#' glimpse(data_dict)
 #' 
 #' ###### Example 2: extract data dictionary from any dataset (the 
 #' # data dictionary will be created upon attributes of the dataset. Factors 
 #' # will be considered as categorical variables)
 #' 
-#' glimpse(data_dict_extract(iris))
+#' glimpse(data_dict)
 #' 
 #' }
 #'
@@ -1859,16 +1876,20 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' Either a data frame, identifying the dataset, or a list of data frame(s)
 #' identifying a data dictionary. Returns both in a list by default.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
 #' 
 #' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example` %>% select(2)
-#' data_dict <- madshapR_example$`data_dict_example`
-#' head(data_dict_match_dataset(dataset, data_dict, out = 'dataset'))
-#' glimpse(data_dict_match_dataset(dataset, data_dict, out = 'data_dict'))
+#' dataset <- madshapR_example$`dataset_example`
+#' data_dict <- madshapR_example$`data_dict_example - errors`
+#' 
+#' match_data_dict <- data_dict_match_dataset(dataset,data_dict,output = 'data_dict')
+#' match_dataset <- data_dict_match_dataset(dataset,data_dict,output = 'dataset')
+#' 
+#' head(match_data_dict)
+#' glimpse(match_dataset)
 #' 
 #' }
 #'
@@ -1898,8 +1919,18 @@ data_dict_match_dataset <- function(
   if(length(dataset) == 0)
     warning("No match found between dataset and data dictionary")
   
-  if(data_dict_apply == TRUE)
-    return(data_dict_apply(dataset, data_dict))
+  if(data_dict_apply == TRUE){
+    
+    if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
+      data_dict <- 
+        as_data_dict_mlstr(data_dict, name_standard = FALSE)
+    }else{
+      data_dict <- as_data_dict(data_dict)}
+    
+    dataset <- data_dict_apply(dataset, data_dict)
+  }
+
+    
   
   if(all(output[2:1] %in% c("dataset","data_dict")))
     return(list(dataset = dataset, data_dict = data_dict))
@@ -1943,14 +1974,15 @@ Leave blank to get both in a list.")
 #' @returns
 #' A list of data frame(s) with `madshapR::class` 'data_dict_shape'.
 #'
-#' @examplesOK
+#' @examplesOKOK
 #' {
 #' 
 #' library(dplyr)
 #' 
 #' # use madshapR_example provided by the package
 #' data_dict <- madshapR_example$`data_dict_example`
-#' glimpse(as_data_dict_shape(data_dict))
+#' data_dict <- as_data_dict_shape(data_dict)
+#' glimpse(data_dict)
 #'
 #'}
 #'
