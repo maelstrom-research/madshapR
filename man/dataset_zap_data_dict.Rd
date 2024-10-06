@@ -32,8 +32,8 @@ handled automatically by the function.
 
 # use madshapR_example provided by the package
 
-dataset <- madshapR_example$dataset_example
-data_dict <- as_data_dict_mlstr(madshapR_example$data_dict_example)
+dataset <- madshapR_example$`dataset_example`
+data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 dataset <- data_dict_apply(dataset,data_dict)
 head(dataset_zap_data_dict(dataset))
 

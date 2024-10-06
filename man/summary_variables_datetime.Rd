@@ -60,7 +60,7 @@ library(lubridate)
 library(fabR)
 
 dataset_preprocess <-
-  madshapR_example$dataset_example \%>\%
+  madshapR_example$`dataset_example` \%>\%
   mutate(dob = as_datetime(as_any_date(dob))) \%>\%
   select(dob) \%>\%
   head() \%>\%

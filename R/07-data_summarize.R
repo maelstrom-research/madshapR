@@ -1447,7 +1447,7 @@ summary_variables_text <- function(
 #' library(fabR)
 #' 
 #' dataset <- 
-#'   madshapR_example$dataset_example %>%
+#'   madshapR_example$`dataset_example` %>%
 #'     mutate(dob = as_any_date(dob)) %>%
 #'     select(dob) %>%
 #'     head()
@@ -1596,7 +1596,7 @@ summary_variables_date <- function(
 #' library(fabR)
 #' 
 #' dataset_preprocess <-
-#'   madshapR_example$dataset_example %>%
+#'   madshapR_example$`dataset_example` %>%
 #'   mutate(dob = as_datetime(as_any_date(dob))) %>%
 #'   select(dob) %>%
 #'   head() %>%

@@ -95,7 +95,7 @@ coerce the variable to the corresponding data type.
  library(dplyr)
  library(fs)
  
- dataset <- madshapR_example$dataset_example
+ dataset <- madshapR_example$`dataset_example`
  
  variable_summary <- madshapR_example$`summary - dataset_example`
   

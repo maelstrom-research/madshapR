@@ -558,7 +558,7 @@ data_dict_evaluate <- function(
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
       bind_rows(tibble(valueType = as.character()))
-    
+  
     if(length(names(
       data_dict[['Variables']] %>%
       select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
@@ -568,19 +568,23 @@ data_dict_evaluate <- function(
         bind_rows(tibble(label = as.character()))
     }
     
+    
     if(sum(nrow(data_dict[['Categories']])) > 0){
-      
+    
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
         bind_rows(tibble(missing = as.character()))
       
-      if(length(names(
-        data_dict[['Categories']] %>%
-        select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
+      first_lab_var <- 
+        data_dict[['Variables']] %>%
+        select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
+      
+      if(!first_lab_var %in% names(data_dict[['Categories']])){
         
         data_dict[['Categories']] <-
           data_dict[['Categories']] %>%
-          bind_rows(tibble(label = as.character()))
+          bind_rows(tibble(labeld = as.character())) %>%
+          rename_with(.cols = "labeld", .fn =  ~ first_lab_var)
       }
     }
   }
@@ -731,31 +735,7 @@ data_dict_evaluate <- function(
         sheet    = "Categories")
   }
   
-  
   if(as_data_dict_mlstr == TRUE){
-    
-    message(
-      "    Assess the completion of `label(:xx)` column in 'Variables'")
-    test_var_label <-
-      data_dict[['Variables']] %>%
-      select(
-        "name",
-        label = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-      # dplyr::filter(if_any(-.data$`label`, ~ is.na(.))) %>%
-      pivot_longer(
-        cols = !.data$`name`,
-        names_to = "col_name",
-        values_to = "value") %>%
-      dplyr::filter(is.na(.data$`value`)) %>%
-      select(name_var = "name", "col_name") %>%
-      mutate(
-        col_name = names(
-          data_dict[['Variables']] %>%
-            select(matches(c("^label$","^label:[[:alnum:]]"))[1])),
-        condition =
-          paste0(
-"[ERR] - The column `label(:xx)` must exist contain no 'NA' values")) %>%
-      mutate(sheet    = "Variables")
     
     message("    Assess the `valueType` column in 'Variables'")
     test_valueType <-
@@ -764,39 +744,69 @@ data_dict_evaluate <- function(
         col_name = "valueType",
         sheet    = "Variables")
     
+    first_lab_var <- 
+      data_dict[['Variables']] %>%
+      select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
+    
+    message(
+      "    Assess the completion of `",first_lab_var,"` column in 'Variables'")
+    test_var_label <-
+      data_dict[['Variables']] %>%
+      select(
+        "name", "label" = !! first_lab_var) %>%
+      pivot_longer(
+        cols = !"name",
+        names_to = "col_name",
+        values_to = "value") %>%
+      dplyr::filter(is.na(.data$`value`)) %>%
+      select(name_var = "name", "col_name") %>%
+      mutate(
+        col_name = !! first_lab_var,
+        condition =
+          paste0(
+"[ERR] - The column `",!! first_lab_var,"` must exist contain no 'NA' values")) %>%
+      mutate(sheet    = "Variables")
+    
+    if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
+      test_var_label <- 
+        test_var_label %>% mutate(name_var = '(all)') %>% distinct}
+
     if(sum(nrow(data_dict[['Categories']])) > 0){
-      
+    
       message(
-"    Assess presence and completion of `label(:xx)` column in 'Categories'")
-      test_cat_label <-
-        data_dict[['Categories']] %>%
-        select(
-          .data$`name`,
-          label = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-        # dplyr::filter(if_any(-.data$`label`, ~ is.na(.))) %>%
-        pivot_longer(
-          cols = !.data$`name`,
-          names_to = "col_name",
-          values_to = "value") %>%
-        dplyr::filter(is.na(.data$`value`)) %>%
-        select(name_var = "name", "col_name") %>%
-        mutate(
-          col_name =
-            names(data_dict[['Variables']] %>%
-                    select(matches(c("^label$","^label:[[:alnum:]]"))[1])),
-          condition =
-            paste0(
-"[ERR] - The column `label(:xx)` must exist contain no 'NA' values")) %>%
-        mutate(sheet    = "Categories")
+"    Assess presence and completion of `",first_lab_var,"` column in 'Categories'")
       
-      test_missing_category <- tibble()
-      if(sum(nrow(data_dict[['Categories']])) > 0){
-        message("    Assess the logical values of missing column in Categories")
-        test_missing_category <- 
-          check_data_dict_missing_categories(data_dict) %>%
+        
+        test_cat_label <-
+          data_dict[['Categories']] %>%
+          select(
+            "name", "label" = !! first_lab_var) %>%
+          pivot_longer(
+            cols = !"name",
+            names_to = "col_name",
+            values_to = "value") %>%
+          dplyr::filter(is.na(.data$`value`)) %>%
+          select(name_var = "name", "col_name") %>%
           mutate(
-            col_name = "missing",
-            sheet    = "Categories")}
+            col_name = first_lab_var,
+            condition =
+              paste0(
+                "[ERR] - The column `",first_lab_var,"` must exist contain no 'NA' values")) %>%
+          mutate(sheet    = "Categories")
+        
+        if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
+          test_var_label <- 
+            test_var_label %>% mutate(name_var = '(all)') %>% distinct}
+      
+      
+        test_missing_category <- tibble()
+        if(sum(nrow(data_dict[['Categories']])) > 0){
+          message("    Assess the logical values of missing column in Categories")
+          test_missing_category <- 
+            check_data_dict_missing_categories(data_dict) %>%
+            mutate(
+              col_name = "missing",
+              sheet    = "Categories")}
       }
   }
   

@@ -42,18 +42,6 @@ taxonomy object is a data frame that must contain at least the columns
 taxonomies are
 \href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-data_dict <- madshapR_example$`data_dict_example - collapsed`
-taxonomy  <- madshapR_example$taxonomy_example
-data_dict_pivot_wider(data_dict, taxonomy)
-
-}
-
-}
 \seealso{
 \code{\link[tidyr:pivot_wider]{tidyr::pivot_wider()}}, \code{\link[=as_data_dict]{as_data_dict()}}
 }

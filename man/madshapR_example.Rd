@@ -34,11 +34,4 @@ madshapR_example
 Example datasets and data dictionaries, and taxonomy, to provide illustrative
 examples of objects used by madshapR.
 }
-\examples{
-{
-
- print(madshapR_example$dataset_example)
-
-}
-}
 \keyword{datasets}

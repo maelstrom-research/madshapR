@@ -307,12 +307,12 @@ check_data_dict_missing_categories <- function(data_dict){
 #' @returns
 #' A data frame providing non-standard taxonomy declared in a data dictionary.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #'
-#' taxonomy <- madshapR_example$taxonomy_example
+#' taxonomy <- madshapR_example$`taxonomy_example`
 #' data_dict <- madshapR_example$`data_dict_example`
 #' check_data_dict_taxonomy(data_dict, taxonomy)
 #'

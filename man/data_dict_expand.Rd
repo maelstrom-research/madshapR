@@ -51,17 +51,6 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-data_dict <- madshapR_example$`data_dict_example - collapsed`
-data_dict_expand(data_dict)
-
-}
-
-}
 \seealso{
 \code{\link[=data_dict_collapse]{data_dict_collapse()}}
 }

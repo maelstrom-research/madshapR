@@ -59,7 +59,7 @@ library(dplyr)
 library(fabR)
 
 dataset <- 
-  madshapR_example$dataset_example \%>\%
+  madshapR_example$`dataset_example` \%>\%
     mutate(dob = as_any_date(dob)) \%>\%
     select(dob) \%>\%
     head()

@@ -79,7 +79,7 @@
 #'  library(dplyr)
 #'  library(fs)
 #'  
-#'  dataset <- madshapR_example$dataset_example
+#'  dataset <- madshapR_example$`dataset_example`
 #'  
 #'  variable_summary <- madshapR_example$`summary - dataset_example`
 #'   
@@ -1390,7 +1390,7 @@ variable_visualize <- function(
 #' library(fs)
 #' library(dplyr)
 #' 
-#' dataset <- madshapR_example$dataset_example['height'] %>% slice(0)
+#' dataset <- madshapR_example$`dataset_example`['height'] %>% slice(0)
 #' dataset_summary <- madshapR_example$`summary - dataset_example`
 #' 
 #' if(dir_exists(tempdir())) dir_delete(tempdir())

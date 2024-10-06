@@ -52,7 +52,7 @@ coerce the variable to the corresponding data type.
 
 # use madshapR_example provided by the package
 
-dataset <- madshapR_example$dataset_example
+dataset <- madshapR_example$`dataset_example`
 valueType_guess(dataset$dob)
 
 valueType_guess(mtcars$cyl)

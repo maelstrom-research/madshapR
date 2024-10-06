@@ -38,7 +38,7 @@ handled automatically by the function.
 library(dplyr)
 
 ###### Example 1: A dataset can have an id column specified as an attribute. 
-dataset <- as_dataset(madshapR_example$dataset_example, col_id = "id")
+dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = "id")
 glimpse(dataset)
 
 ###### Example 2: Any data frame can be a dataset by definition.

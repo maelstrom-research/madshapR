@@ -32,7 +32,7 @@ the \code{variable} and \code{name} columns, with unique combination of
 
 # use madshapR_example provided by the package
 
-data_dict <- madshapR_example$data_dict_example
+data_dict <- madshapR_example$`data_dict_example`
 is_data_dict(data_dict)
 is_data_dict(iris)
 
