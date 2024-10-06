@@ -1220,13 +1220,13 @@ typeof_convert_to_valueType <- function(typeof, class = NA_character_){
   typeof_test <- 
     vT_list %>%
     dplyr::filter(.data$typeof == !! toString(typeof)) %>%
-    select("typeof","class",toValueType) %>% distinct
+    select("typeof","class","toValueType") %>% distinct
   
   if(!is.na(class)){
     typeof_test <-
       typeof_test %>%
       dplyr::filter(.data$class == !! toString(class)) %>%
-      select("typeof","class",toValueType) %>% distinct
+      select("typeof","class","toValueType") %>% distinct
     }
   
   if(nrow(typeof_test) == 1) return(c(valueType = typeof_test$toValueType))
