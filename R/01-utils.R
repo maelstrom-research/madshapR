@@ -9,7 +9,7 @@
 #' @returns
 #' Nothing to be returned. The function opens a web page.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'
 #' madshapR_website()
@@ -52,19 +52,19 @@ madshapR_website <- function(){
 #' A data frame with 12 rows and 7 columns:
 #' \describe{
 #'   \item{valueType}{data type as described in Opal}
-#'   \item{typeof}{data type provided by base::typeof}
-#'   \item{class}{data class provided by base::class}
+#'   \item{typeof}{data type provided by base::typeof(x)}
+#'   \item{class}{data class provided by attributes(x)}
+#'   \item{class}{data class provided by base::class(x) explicit class}
 #'   \item{call}{function to transpose object according base::do.call function}
 #'   \item{toValueType}{ensemble data type as described in Opal}
-#'   \item{toTypeof}{ensemble data type provided by base::typeof}
 #'   \item{genericType}{ensemble data type which valueType belongs}
 #'   ...
 #' }
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'
-#' print(valueType_list)
+#' head(valueType_list)
 #'
 #' }
 "valueType_list"
@@ -96,10 +96,13 @@ madshapR_website <- function(){
 #'   ...
 #' }
 #'
-#' @examples
+#' @examplesOK
 #' {
-#'
-#'  print(madshapR_example$dataset_example)
+#'  
+#' library(dplyr)
+#'  
+#' head(madshapR_example$`dataset_example`)
+#' glimpse(madshapR_example$`data_dict_example`)
 #'
 #' }
 "madshapR_example"
