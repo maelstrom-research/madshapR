@@ -188,17 +188,16 @@ valueType_self_adjust <- function(...){
       reframe(across(everything(),~ valueType_guess(.))) %>%
       pivot_longer(everything())
     
-    for(i in names(dataset)) {
-      dataset[[i]] <-
-        as_valueType(
-          x = dataset[[i]],
-          valueType = vT$value[vT$name == i])}
-
-    data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
+    # for(i in names(dataset)) {
+    #   dataset[[i]] <-
+    #     as_valueType(
+    #       x = dataset[[i]],
+    #       valueType = vT$value[vT$name == i])}
+    # data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
     data_dict[['Variables']][['valueType']] <- vT$value
 
     dataset <-
-      data_dict_apply(dataset, data_dict_final) %>%
+      data_dict_apply(dataset, data_dict) %>%
       # mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
       as_dataset(col_id = preserve_attributes)
 }
