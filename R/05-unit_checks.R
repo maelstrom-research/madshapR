@@ -790,8 +790,23 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' @export
 check_dataset_categories <- function(
     dataset, 
-    data_dict = silently_run(data_dict_extract(dataset))){
-
+    data_dict = NULL){
+  
+  
+  # check on arguments : data_dict
+  if(is.null(data_dict)){
+    data_dict <-
+      silently_run({data_dict_extract(
+        dataset = dataset,
+        as_data_dict_mlstr = TRUE)})
+    
+    if(class(data_dict)[1] == "try-error"){
+      data_dict <- 
+        silently_run({data_dict_extract(
+          dataset = dataset,
+          as_data_dict_mlstr = FALSE)})}
+  }
+  
   # test if enough data_dict or dataset
   as_dataset(dataset) # no col_id
   as_data_dict_shape(data_dict)
@@ -829,7 +844,7 @@ check_dataset_categories <- function(
       # stop()}
       
       dd_cat <- data_dict$`Categories`[data_dict$`Categories`$`variable` == i,]$`name`
-      ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i][[1]]))
+      ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i]))
       
       cat_in_dd_only <- as.character(dd_cat[!dd_cat %in% ds_cat])
       cat_in_ds_only <- as.character(ds_cat[!ds_cat %in% dd_cat])

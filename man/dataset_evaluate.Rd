@@ -72,22 +72,6 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-library(dplyr)
-
-###### Example : Any data frame can be summarized
-dataset <- as_dataset(
-  madshapR_example$`dataset_example - errors with data`,
-  col_id = 'part_id') \%>\% slice(0)
- 
-glimpse(dataset_evaluate(dataset,is_data_dict_mlstr = FALSE))
-
-}
-
-}
 \seealso{
 \code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }

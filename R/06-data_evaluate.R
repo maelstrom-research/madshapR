@@ -57,18 +57,21 @@
 #' @returns
 #' A list of data frames containing assessment reports.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
-#' ###### Example : Any data frame can be summarized
-#' dataset <- as_dataset(
-#'   madshapR_example$`dataset_example - errors with data`,
-#'   col_id = 'part_id') %>% slice(0)
-#'  
-#' glimpse(dataset_evaluate(dataset,is_data_dict_mlstr = FALSE))
+#' ###### Example 1: use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example - errors with data`
+#' data_dict <- madshapR_example$`data_dict_example - errors with data`
+#' 
+#' eval_dataset <- dataset_evaluate(dataset, data_dict, is_data_dict_mlstr = TRUE)
+#' glimpse(eval_dataset)
+#' 
+#' ###### Example 2: Any data frame can be a dataset by definition
+#' eval_iris <- dataset_evaluate(iris)
+#' glimpse(eval_iris)
 #' 
 #' }
 #'
@@ -103,13 +106,13 @@ dataset_evaluate <- function(
     data_dict <-
       silently_run({data_dict_extract(
         dataset = dataset,
-        is_data_dict_mlstr = is_data_dict_mlstr)})
+        as_data_dict_mlstr = TRUE)})
 
     if(class(data_dict)[1] == "try-error"){
       data_dict <- 
         silently_run({data_dict_extract(
           dataset = dataset,
-          is_data_dict_mlstr = FALSE)})}
+          as_data_dict_mlstr = FALSE)})}
   }
 
   as_data_dict_shape(data_dict)
@@ -346,6 +349,9 @@ dataset_evaluate <- function(
     select('index in data dict.' = "index", "name", everything()) %>%
     arrange(.data$`index in data dict.`)
   
+  if(all(is.na(report[['Dataset assessment']][['suggestion']]))){
+    report[['Dataset assessment']][['suggestion']] <- NULL}
+  
   message("    Generate report")
   
   if(nrow(report$`Dataset assessment`) == 0){
@@ -364,7 +370,7 @@ dataset_evaluate <- function(
     lapply(function(y){
       y %>%
         lapply(function(x) str_trunc(x, 10000)) %>%
-        as_tibble()      
+        as_tibble()
     })
   
   return(report)
@@ -406,7 +412,7 @@ dataset_evaluate <- function(
 #' @returns
 #' A list of data frames containing assessment reports.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -414,13 +420,12 @@ dataset_evaluate <- function(
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'    
-#' dataset <- as_dataset(
-#'    madshapR_example$`dataset_example - errors with data`,
-#'    col_id = 'part_id') %>% slice(0)
+#' dataset1 <- as_dataset(madshapR_example$`dataset_example`)
+#' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+#' dossier <- dossier_create(list(dataset1,dataset2))
 #' 
-#' dossier <- as_dossier(list(dataset = dataset))
-#' 
-#' glimpse(dossier_evaluate(dossier,is_data_dict_mlstr = FALSE))
+#' eval_dossier <- dossier_evaluate(dossier,is_data_dict_mlstr = TRUE)
+#' glimpse(eval_dossier)
 #'
 #' }
 #'
@@ -503,14 +508,16 @@ dossier_evaluate <- function(
 #' @returns
 #' A list of data frames containing assessment reports.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #' library(dplyr)
-#'
+#' 
 #' data_dict <- madshapR_example$`data_dict_example - errors`
-#' glimpse(data_dict_evaluate(data_dict))
+#' eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
+#' 
+#' glimpse(eval_data_dict)
 #'
 #' }
 #'

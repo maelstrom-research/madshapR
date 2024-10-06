@@ -4,10 +4,7 @@
 \alias{check_dataset_categories}
 \title{Assess a data dictionary and associated dataset for category differences}
 \usage{
-check_dataset_categories(
-  dataset,
-  data_dict = silently_run(data_dict_extract(dataset))
-)
+check_dataset_categories(dataset, data_dict = NULL)
 }
 \arguments{
 \item{dataset}{A dataset object.}
