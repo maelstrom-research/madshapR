@@ -22,7 +22,7 @@
 #' @returns
 #' A data frame providing non unique variables across a data dictionary.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -103,7 +103,7 @@ check_data_dict_variables <- function(data_dict){
 #' A data frame providing categorical variables that has issues within a 
 #' data dictionary.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -217,7 +217,7 @@ check_data_dict_categories <- function(data_dict){
 #' A data frame providing categorical values which 'missing' column is not a 
 #' boolean.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -561,7 +561,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' @returns 
 #' A data frame providing non-standard valueType declared in a data dictionary.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
@@ -685,12 +685,12 @@ check_data_dict_valueType <- function(data_dict){
 #' @returns
 #' A data frame providing undeclared variables across a data dictionary.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #'
-#' dataset <- madshapR_example$`dataset_example - errors with data`
+#' dataset <- madshapR_example$`dataset_example - errors`
 #' data_dict <- madshapR_example$`data_dict_example - errors`
 #' check_dataset_variables(dataset,data_dict)
 #'
@@ -771,18 +771,16 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' A data frame providing categorical values which differ between dataset and
 #' their data dictionary.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #' library(tidyr)
 #' 
-#' data_dict <-
-#'   madshapR_example$`data_dict_example - errors with data` %>%
-#'   data_dict_filter('name == "prg_ever"')
-#' dataset <- madshapR_example$`dataset_example - errors with data`['prg_ever']
+#' data_dict <- madshapR_example$`data_dict_example - errors with data`
+#' dataset <- madshapR_example$`dataset_example - errors with data`
 #' 
-#' check_dataset_categories(dataset, data_dict)
+#' check_dataset_categories(dataset['gndr'], data_dict)
 #' 
 #' }
 #'
@@ -833,8 +831,8 @@ check_dataset_categories <- function(
       dd_cat <- data_dict$`Categories`[data_dict$`Categories`$`variable` == i,]$`name`
       ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i][[1]]))
       
-      cat_in_dd_only <- dd_cat[!dd_cat %in% ds_cat]
-      cat_in_ds_only <- ds_cat[!ds_cat %in% dd_cat]
+      cat_in_dd_only <- as.character(dd_cat[!dd_cat %in% ds_cat])
+      cat_in_ds_only <- as.character(ds_cat[!ds_cat %in% dd_cat])
       
       if(length(cat_in_dd_only) > 0){
         test <-
@@ -909,10 +907,14 @@ check_dataset_categories <- function(
 #' A data frame providing values which valueType differs between dataset and
 #' their data dictionary.
 #'
-#' @examples
+#' @examplesok
 #' {
 #'
-#' check_dataset_valueType(mtcars[2], valueType_guess = TRUE)
+#' data_dict <- madshapR_example$`data_dict_example - errors with data`
+#' dataset <- madshapR_example$`dataset_example - errors with data`
+#' 
+#' check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
+#' check_dataset_valueType(dataset, data_dict, valueType_guess = FALSE)
 #'
 #' }
 #'
@@ -945,14 +947,6 @@ check_dataset_valueType <- function(
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     mutate(across(everything(),as.character))
-  
-  test <- test_vT_dataset <-
-    # test_vT_compatible <-
-    tibble(
-      name_var = as.character(),
-      value = as.character(),
-      condition = as.character(),
-      suggestion = as.character())
 
   # check if `valueType` column exists
   if(is.null(data_dict[['Variables']][['valueType']])) return(test)
@@ -963,6 +957,14 @@ check_dataset_valueType <- function(
   data_dict <- suppressWarnings(
     data_dict_match_dataset(dataset, data_dict, output = "data_dict"))
 
+  test <- test_vT_dataset <-
+    # test_vT_compatible <-
+    tibble(
+      name_var = as.character(),
+      value = as.character(),
+      condition = as.character(),
+      suggestion = as.character())
+    
   for(i in names(dataset)){
     # stop()}
 
@@ -999,8 +1001,13 @@ check_dataset_valueType <- function(
             'text',.data$`suggestion`)))
   }
 
-  test <-
-    bind_rows(test, test_vT_dataset) %>%
+  test <- bind_rows(test, test_vT_dataset)
+
+  if(valueType_guess == FALSE) 
+    test <- test %>% dplyr::filter(!is.na(.data$`condition`))
+
+  test <- 
+    test %>% 
     mutate(
       condition = ifelse(
         is.na(.data$`condition`) &
@@ -1034,14 +1041,15 @@ check_dataset_valueType <- function(
 #' @returns
 #' A data frame providing non-standard names across a vector.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #'
+#' names_in_data_dict <- 
+#'   madshapR_example$`data_dict_example - errors`$Variables$name
+#' check_name_standards(names_in_data_dict)
 #' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
-#' check_name_standards(
-#'  madshapR_example$`data_dict_example - errors`$Variables$name)
 #'
 #' }
 #'

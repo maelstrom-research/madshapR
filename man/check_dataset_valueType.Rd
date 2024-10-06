@@ -54,11 +54,3 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-check_dataset_valueType(mtcars[2], valueType_guess = TRUE)
-
-}
-
-}

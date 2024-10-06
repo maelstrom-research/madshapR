@@ -30,14 +30,3 @@ non-missing entries, and the data frame 'Categories' must contain at least
 the \code{variable} and \code{name} columns, with unique combination of
 \code{variable} and \code{name}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-data_dict <- madshapR_example$`data_dict_example - errors`
-check_data_dict_missing_categories(data_dict)
-
-}
-
-}

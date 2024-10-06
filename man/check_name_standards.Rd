@@ -23,15 +23,3 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-check_name_standards(c("coucou", "cou cou", "$coucou",NA))
-check_name_standards(
- madshapR_example$`data_dict_example - errors`$Variables$name)
-
-}
-
-}
