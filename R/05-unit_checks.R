@@ -844,7 +844,9 @@ check_dataset_categories <- function(
       # stop()}
       
       dd_cat <- data_dict$`Categories`[data_dict$`Categories`$`variable` == i,]$`name`
-      ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i]))
+      if(is.factor(dataset[[i]])) 
+        ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i])) else
+          ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i])[[1]])
       
       cat_in_dd_only <- as.character(dd_cat[!dd_cat %in% ds_cat])
       cat_in_ds_only <- as.character(ds_cat[!ds_cat %in% dd_cat])
@@ -996,6 +998,12 @@ check_dataset_valueType <- function(
     actual    <- as.character(valueType_of(dataset[[i]]))
     guess     <- ifelse(
       valueType_guess == FALSE,actual,as.character(valueType_guess(vec)))
+    
+    # preserve original valueType when is NA
+    if(all(is.na(vec))){
+      guess     <- ifelse(
+        valueType_guess == FALSE,actual,as.character(valueType_guess(dataset[[i]])))}
+    
 
     test_vT_dataset <-
       rbind(

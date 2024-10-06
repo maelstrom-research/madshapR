@@ -51,23 +51,3 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
-\examples{
-{
-   
-# use madshapR_example provided by the package
-library(dplyr)
-library(lubridate)
-library(fabR)
-
-dataset_preprocess <-
-  madshapR_example$`dataset_example` \%>\%
-  mutate(dob = as_datetime(as_any_date(dob))) \%>\%
-  select(dob) \%>\%
-  head() \%>\%
-  dataset_preprocess
-
-glimpse(summary_variables_datetime(dataset_preprocess = dataset_preprocess))
-
-}
-
-}

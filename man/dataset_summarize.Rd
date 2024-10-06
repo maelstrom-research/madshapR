@@ -84,19 +84,6 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-library(dplyr)
-
-#' ###### Example : Any data frame can be summarized
-dataset <- iris['Sepal.Width']
-glimpse(dataset_summarize(dataset))
- 
-}
-
-}
 \seealso{
 \code{\link[=dossier_evaluate]{dossier_evaluate()}}
 }

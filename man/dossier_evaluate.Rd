@@ -42,22 +42,3 @@ The object may be specifically formatted to be compatible with additional
 \href{https://maelstrom-research.org/page/software}{Maelstrom Research software},
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-library(dplyr)
-
-###### Example : a dataset list is a dossier by definition.
-   
-dataset <- as_dataset(
-   madshapR_example$`dataset_example - errors with data`,
-   col_id = 'part_id') \%>\% slice(0)
-
-dossier <- as_dossier(list(dataset = dataset))
-
-glimpse(dossier_evaluate(dossier,is_data_dict_mlstr = FALSE))
-
-}
-
-}

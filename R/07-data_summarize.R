@@ -67,15 +67,21 @@
 #' @returns
 #' A list of data frames containing assessment reports and summaries.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
-#' #' ###### Example : Any data frame can be summarized
-#' dataset <- iris['Sepal.Width']
-#' glimpse(dataset_summarize(dataset))
+#' ###### Example 1: use madshapR_example provided by the package
+#' dataset <- as_dataset(madshapR_example$`dataset_example`,col_id = "part_id")
+#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' 
+#' summary_dataset <- dataset_summarize(dataset, data_dict)
+#' glimpse(summary_dataset)
+#' 
+#' ###### Example 2: Any data frame can be a dataset by definition
+#' summary_iris <- dataset_summarize(iris)
+#' glimpse(summary_iris)
 #'  
 #' }
 #'
@@ -855,17 +861,20 @@ dataset_summarize <- function(
 #' @returns
 #' A list of data frames containing overall assessment reports and summaries grouped by dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' # use madshapR_example provided by the package
 #' library(dplyr)
+#'
+#' ###### Example : a dataset list is a dossier by definition.
+#'    
+#' dataset1 <- as_dataset(madshapR_example$`dataset_example`)
+#' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+#' dossier <- dossier_create(list(dataset1,dataset2))
 #' 
-#' ###### Example 1: Combine functions and summarize datasets.
-#' dossier <- list(iris = tibble())
-#' 
-#' dossier_summary <- dossier_summarize(dossier)
-#' glimpse(dossier_summary)
+#' summary_dossier <- dossier_summarize(dossier)
+#' glimpse(summary_dossier)
 #' 
 #' }
 #'
@@ -960,11 +969,12 @@ dossier_summarize <- function(
 #' A data frame providing summary elements of a dataset, including its values 
 #' and data dictionary elements.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'  
-#' ###### Example : Any data frame can be a dataset by definition.
-#' head(dataset_preprocess(dataset = iris))
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example`
+#' head(dataset_preprocess(dataset))
 #'
 #' }
 #'
@@ -1163,14 +1173,16 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
 #' A data frame providing statistical description of variables present in
 #' a dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example : Any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(dataset = iris)
-#' glimpse(summary_variables(dataset_preprocess = dataset_preprocess))
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example`
+#' dataset_preprocess <- dataset_preprocess(dataset)
+#' summary_prep <- summary_variables(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_prep)
 #'
 #' }
 #'
@@ -1313,14 +1325,14 @@ summary_variables <- function(
 #' A data frame providing statistical description of 'text' variables present
 #' in a dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'    
-#' ###### Example : Any data frame can be a dataset by definition.
-#' library(dplyr)
-#' 
-#' dataset_preprocess <- dataset_preprocess(dataset = starwars['homeworld'])
-#' glimpse(summary_variables_text(dataset_preprocess = dataset_preprocess))
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example`
+#' dataset_preprocess <- dataset_preprocess(dataset)
+#' summary_prep <- summary_variables_text(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_prep)
 #'
 #' }
 #'
@@ -1438,22 +1450,21 @@ summary_variables_text <- function(
 #' A data frame providing statistical description of 'date' variables present
 #' in a dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'    
 #' # use madshapR_example provided by the package
 #' library(dplyr)
 #' library(fabR)
 #' 
-#' dataset <- 
-#'   madshapR_example$`dataset_example` %>%
-#'     mutate(dob = as_any_date(dob)) %>%
-#'     select(dob) %>%
-#'     head()
-#'     
-#' dataset_preprocess <- dataset_preprocess(dataset = dataset)
-#'
-#' summary_variables_date(dataset_preprocess = dataset_preprocess)
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example` %>%
+#'   mutate(dob = as_any_date(dob)) %>%
+#'   select(dob)
+#' 
+#' dataset_preprocess <- dataset_preprocess(dataset)
+#' summary_prep <- summary_variables_date(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_prep)
 #'
 #' }
 #'
@@ -1586,7 +1597,7 @@ summary_variables_date <- function(
 #' A data frame providing statistical description of 'datetime' variables present
 #' in a dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #'    
 #' # use madshapR_example provided by the package
@@ -1594,14 +1605,14 @@ summary_variables_date <- function(
 #' library(lubridate)
 #' library(fabR)
 #' 
-#' dataset_preprocess <-
-#'   madshapR_example$`dataset_example` %>%
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example` %>%
 #'   mutate(dob = as_datetime(as_any_date(dob))) %>%
-#'   select(dob) %>%
-#'   head() %>%
-#'   dataset_preprocess
-#'
-#' glimpse(summary_variables_datetime(dataset_preprocess = dataset_preprocess))
+#'   select(dob)
+#' 
+#' dataset_preprocess <- dataset_preprocess(dataset)
+#' summary_prep <- summary_variables_datetime(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_prep)
 #'
 #' }
 #'
@@ -1668,14 +1679,14 @@ summary_variables_datetime <- function(
 #' A data frame providing statistical description of 'numerical' variables
 #' present in a dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
-#' library(dplyr)
-#' 
-#' ###### Example : Any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(dataset = iris)
-#' glimpse(summary_variables_numeric(dataset_preprocess = dataset_preprocess))
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example`
+#' dataset_preprocess <- dataset_preprocess(dataset)
+#' summary_prep <- summary_variables_numeric(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_prep)
 #'
 #' }
 #'
@@ -1791,14 +1802,21 @@ summary_variables_numeric <- function(
 #' A data frame providing statistical description of 'categorical' variables
 #' present in a dataset.
 #'
-#' @examples
+#' @examplesOK
 #' {
 #' 
+#' # use madshapR_example provided by the package
 #' library(dplyr)
+#' library(fabR)
 #' 
-#' ###### Example : Any data frame can be a dataset by definition.
-#' dataset_preprocess <- dataset_preprocess(dataset = iris['Species'])
-#' glimpse(summary_variables_categorical(dataset_preprocess = dataset_preprocess))
+#' # use madshapR_example provided by the package
+#' dataset <- madshapR_example$`dataset_example` %>%
+#'   mutate(prg_ever = as_category(prg_ever)) %>%
+#'   select(prg_ever)
+#' 
+#' dataset_preprocess <- dataset_preprocess(dataset)
+#' summary_prep <- summary_variables_categorical(dataset_preprocess = dataset_preprocess)
+#' glimpse(summary_prep)
 #' 
 #' }
 #'

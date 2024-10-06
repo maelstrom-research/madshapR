@@ -62,15 +62,3 @@ list of OBiBa valueType possibilities and their correspondence with R data
 types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
-\examples{
-{
-
-library(dplyr)
-
-###### Example : Any data frame can be a dataset by definition.
-dataset_preprocess <- dataset_preprocess(dataset = iris['Species'])
-glimpse(summary_variables_categorical(dataset_preprocess = dataset_preprocess))
-
-}
-
-}

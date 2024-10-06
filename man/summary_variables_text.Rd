@@ -51,15 +51,3 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
-\examples{
-{
-   
-###### Example : Any data frame can be a dataset by definition.
-library(dplyr)
-
-dataset_preprocess <- dataset_preprocess(dataset = starwars['homeworld'])
-glimpse(summary_variables_text(dataset_preprocess = dataset_preprocess))
-
-}
-
-}
