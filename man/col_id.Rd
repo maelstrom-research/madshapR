@@ -26,16 +26,3 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
-\examples{
-{
-
-col_id(iris)
-
-library(fabR)
-iris <- add_index(iris)
-iris <- as_dataset(iris, col_id = 'index')
-col_id(iris)
-
-}
-
-}

@@ -890,6 +890,8 @@ data dictionary")}
     
   if(dataType     == "as_any_date"){
 
+    if(length(x) == 0) return(as.Date(x))
+    
     date_format <-
       guess_date_format(
         tibble(x = as.character.default(

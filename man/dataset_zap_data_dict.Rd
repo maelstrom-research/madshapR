@@ -27,19 +27,6 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-
-dataset <- madshapR_example$`dataset_example`
-data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
-dataset <- data_dict_apply(dataset,data_dict)
-head(dataset_zap_data_dict(dataset))
-
-}
-
-}
 \seealso{
 \code{\link[haven:zap_labels]{haven::zap_labels()}}.
 }

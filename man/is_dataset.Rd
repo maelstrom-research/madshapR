@@ -27,19 +27,6 @@ The id values must be non-missing and will be used in functions that
 require it. If no identifier variable is specified, indexing is
 handled automatically by the function.
 }
-\examples{
-{
-
-# use madshapR_example provided by the package
-# any data frame can be a dataset by definition.
-
-is_dataset(madshapR_example$`dataset_example`)
-is_dataset(iris)
-is_dataset(AirPassengers)
-
-}
-
-}
 \seealso{
 For a better assessment, please use \code{\link[=dataset_evaluate]{dataset_evaluate()}}.
 }
