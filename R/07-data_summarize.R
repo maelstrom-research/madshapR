@@ -134,7 +134,7 @@ dataset_summarize <- function(
     data_dict_match_dataset(
       dataset,data_dict,
       output = 'data_dict') %>%
-    as_data_dict_mlstr(name_standard = FALSE)
+    as_data_dict_mlstr()
       })
   
   # if the dataset has no observations, group_by is null
@@ -1001,7 +1001,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   if(is.null(data_dict)){
     data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
   }else{
-    data_dict <- as_data_dict_mlstr(data_dict,name_standard = FALSE)}
+    data_dict <- as_data_dict_mlstr(data_dict)}
   
   data_dict_var  <-
     data_dict[['Variables']] %>%

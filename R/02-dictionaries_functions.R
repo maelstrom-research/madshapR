@@ -1517,7 +1517,7 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   if(toString(attributes(data_dict)$`madshapR::class`) == 'data_dict_mlstr'){
     data_dict <- 
-      as_data_dict_mlstr(data_dict, name_standard = FALSE) %>%
+      as_data_dict_mlstr(data_dict) %>%
       as_data_dict
   }else{data_dict <- as_data_dict(data_dict)}
   
@@ -1923,7 +1923,7 @@ data_dict_match_dataset <- function(
     
     if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
       data_dict <- 
-        as_data_dict_mlstr(data_dict, name_standard = FALSE)
+        as_data_dict_mlstr(data_dict)
     }else{
       data_dict <- as_data_dict(data_dict)}
     

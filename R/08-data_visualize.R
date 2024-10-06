@@ -173,7 +173,7 @@ variable_visualize <- function(
           col_dict <- 
             data_dict %>%
             data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
-            as_data_dict_mlstr(name_standard = FALSE)
+            as_data_dict_mlstr()
         },
         warning = function(cond){
           stop(cond)
@@ -1491,7 +1491,7 @@ Please provide another name folder or delete the existing one.")}
       data_dict_match_dataset(
         dataset,data_dict,
         output = 'data_dict') %>%
-        as_data_dict_mlstr(name_standard = FALSE)})
+        as_data_dict_mlstr()})
   
   # summarize initial information
   

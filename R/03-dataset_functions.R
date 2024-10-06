@@ -39,9 +39,12 @@
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
-#' data_dict <- madshapR_example$`data_dict_example`
-#' data_extract(data_dict)
+#' ###### Example 1 : from a data dictionary, you can use the function to 
+#' # extract and generate an empty dataset
+#' 
+#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' 
+#' dataset <- data_extract(data_dict)
 #'
 #' }
 #'
@@ -54,7 +57,7 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
   # tests
   if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
     data_dict <- 
-      as_data_dict_mlstr(data_dict, name_standard = FALSE)
+      as_data_dict_mlstr(data_dict)
     }else{
       data_dict <- as_data_dict(data_dict)}
 
@@ -73,16 +76,18 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 
   data_dict_temp <- data_dict
 
-  if(is.null(data_dict_temp[["Variables"]][['valueType']])){
-    data_dict_temp[["Variables"]] <-
-      data_dict_temp[["Variables"]] %>%
-      left_join(
-        vT_list %>%
-          select(
-            typeof = .data$`typeof`,
-            valueType = .data$`toValueType`) %>%
-          distinct, by = "typeof") %>%
-      mutate(valueType = replace_na(.data$`valueType`, "character"))}
+
+
+  # if(is.null(data_dict_temp[["Variables"]][['valueType']])){
+  #   data_dict_temp[["Variables"]] <-
+  #     data_dict_temp[["Variables"]] %>%
+  #     left_join(
+  #       vT_list %>%
+  #         select(
+  #           typeof = .data$`typeof`,
+  #           valueType = .data$`toValueType`) %>%
+  #         distinct, by = "typeof") %>%
+  #     mutate(valueType = replace_na(.data$`valueType`, "character"))}
 
   dataset <-
     data_dict_temp[["Variables"]]  %>%
