@@ -250,10 +250,9 @@ dataset_summarize <- function(
     dataset_evaluate(
       dataset,
       data_dict,
-      valueType_guess = valueType_guess,
       taxonomy = taxonomy,
       dataset_name = dataset_name,
-      as_data_dict_mlstr = TRUE)
+      is_data_dict_mlstr = TRUE)
   
   message(
     "- DATASET SUMMARIZE: ",

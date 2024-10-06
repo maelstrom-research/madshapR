@@ -7,12 +7,16 @@
 \format{
 \subsection{\code{list}}{
 
-A list with 12 elements (data frames and lists) providing example objects
+A list with 9 elements (data frames and lists) providing example objects
 for testing the package:
 
 \describe{
 \item{dataset_example}{Example Dataset for example dataset}
-\item{data_dict_example}{Example Data dictionary for example dataset}
+\item{data_dict_example - as_data_dict}{Example Data dictionary for example
+dataset where the structure is a data dictionary}
+\item{data_dict_example - as_data_dict_mlstr}{Example Data dictionary for
+example dataset where the structure is a data dictionary compliant with
+Maelstrom}
 \item{dataset_example - errors with data}{Example dataset of example
 with errors with example data dictionary}
 \item{data_dict_example - errors with data}{Example Data Dictionary for example
