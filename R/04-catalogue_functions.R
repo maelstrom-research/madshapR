@@ -40,7 +40,7 @@
 #'
 #' }
 #'
-#' @import dplyr tidyr fabR haven
+#' @import dplyr tidyr fabR haven stringr
 #' @importFrom rlang .data
 #'
 #' @export
@@ -851,7 +851,7 @@ valueType_guess <- function(x){
 #' 
 #'}
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR haven stringr
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -865,16 +865,17 @@ as_valueType <- function(x, valueType = 'text'){
   if(is.list(x))
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
-  class_x <- class(x)[[max(length(class(x)))]]
+  class_x <- class(zap_labels(x))
+  # class_x <- class(x)[[max(length(class(x)))]]
   x_init <- x
   
   # if x is already the output format, no need to go further
-  if(class_x == "Date"    & valueType == "date")     return(x)
-  if(class_x == "POSIXt"  & valueType == "datetime") return(x)
-  if(is.integer(x)        & valueType == "integer")  return(x)
-  if(class_x == "numeric" & valueType == "decimal")  return(x)
-  if(is.logical(x)        & valueType == "boolean")  return(x)
-  if(is.na(valueType)     | valueType == "text")     return(as.character.default(x))
+  if(str_detect(toString(class_x), c("^Date$"))    & valueType == "date")     return(x)
+  if(str_detect(toString(class_x), c("POSIX"))     & valueType == "datetime") return(x)
+  if(is.integer(x)                               & valueType == "integer")  return(x)
+  if(str_detect(toString(class_x), c("^numeric$")) & valueType == "decimal")  return(x)
+  if(is.logical(x)                               & valueType == "boolean")  return(x)
+  if(is.na(valueType)                            | valueType == "text")     return(as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -888,7 +889,7 @@ data dictionary")}
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
   if(dataType     == "as_any_date")     x <- 
-    as.character.default(x)
+    as.character(x)
   if(dataType     == "as.POSIXct")      x <- 
     as.character(x)
   if(dataType     == "as_any_boolean")  x <- 
