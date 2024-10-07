@@ -153,16 +153,15 @@ dataset_zap_data_dict <- function(dataset){
   as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
 
-  dataset_init = dataset # = dataset_init
+  dataset_init <- dataset # = dataset_init
 
   vec <- tibble(index = as.integer(), valueType = as.character())
   for(i in seq_len(length(dataset))){
     # stop()}
     vT_init <- valueType_of(dataset_init[[i]])
     if(vT_init %in% c('date','datetime')){
-      dataset[[i]] <- as.character(dataset[[i]])
-      vec <- vec %>% add_row(index = i, valueType = vT_init) }
-  }
+      dataset[[i]] <- as.character(dataset[[i]])}
+    vec <- vec %>% add_row(index = i, valueType = vT_init)}
   
   dataset <- 
     dataset %>% lapply(as.vector) %>% as_tibble() %>%
@@ -174,7 +173,7 @@ dataset_zap_data_dict <- function(dataset){
       expr = {dataset[[vec$`index`[[i]]]] <- 
       as_valueType(dataset[[vec$`index`[[i]]]],vec$`valueType`[[i]])},
       error = function(cond){
-        warning('column : ',names(dataset[vec$`index`[[i]]]))
+        warning('Column : ',names(dataset[vec$`index`[[i]]]),' as character.')
         dataset[[vec$`index`[[i]]]] <- as_valueType(dataset[[vec$`index`[[i]]]],'text')
       })
   }
