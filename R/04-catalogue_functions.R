@@ -40,7 +40,7 @@
 #'
 #' }
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR haven
 #' @importFrom rlang .data
 #'
 #' @export
@@ -55,7 +55,8 @@ valueType_of <- function(x){
     stop(call. = FALSE, "'list' object cannot be coerced to valueType")
 
   type  <- typeof(x)
-  class <- class(x)[[max(length(class(x)))]]
+  class <- class(zap_labels(x))
+  # class <- class(x)[[max(length(class(x)))]]
   
   vT_list <- madshapR::valueType_list
 
@@ -63,14 +64,15 @@ valueType_of <- function(x){
     unique(vT_list[
       which(vT_list[['typeof']] == type),]$`toValueType`)
 
-  if(class %in% "numeric")            valueType <- "decimal"
-  if(class %in% "Date")               valueType <- "date"
-  if(class %in% c("POSIXt","POSIXt")) valueType <- "datetime"
-  if(type == "logical")               valueType <- "boolean"
+  if(str_detect(toString(class), c("^numeric$"))) valueType <- "decimal"
+  if(str_detect(toString(class), c("^Date$")))    valueType <- "date"
+  if(str_detect(toString(class), c("POSIX")))     valueType <- "datetime"
+  if(type == "logical")                           valueType <- "boolean"
 
   silently_run({
     if(class == "factor"){
       lvls <- attributes(x)$`levels` %>% as.character()
+      
       valueType <-
         try({as_valueType(lvls,"integer");valueType <- "integer"},silent = TRUE)
 
@@ -85,6 +87,10 @@ valueType_of <- function(x){
 
       if(class(valueType)[1] == "try-error") valueType <-
         try({                             valueType <- "text"   },silent = TRUE)
+      
+      test_vT_bool  <- all(str_detect(toupper(lvls),"T|F"))
+      if(valueType == "integer" & test_vT_bool) valueType <- "boolean" 
+      
     }
   })
   
