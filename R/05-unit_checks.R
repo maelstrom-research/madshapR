@@ -388,7 +388,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   # if(is.null(data_dict_elem[['Mlstr_additional::Target']])){
   #   test <- test %>% add_row(
   #     name_var = 'Mlstr_additional::Target',
-  #     condition = "[ERROR] - 'Mlstr_additional::Target' column is missing")}
+  #     condition = "[ERROR] - 'Mlstr_additional::Target' column is missing.")}
   #
   #   for(i in 2:ncol(data_dict_elem)){
   #     # stop()}
@@ -402,23 +402,23 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #
   #   test <- test %>% add_row(
   #     name_var = 'Mlstr_additional::Source',
-  #     condition = "[ERROR] - 'Mlstr_additional::Source' column is missing")
+  #     condition = "[ERROR] - 'Mlstr_additional::Source' column is missing.")
   #
   #   if(is.null(data_dict_elem[['Mlstr_additional::Target']])){
   #     test <- test %>% add_row(
   #       name_var = 'Mlstr_additional::Target',
-  #       condition = "[ERROR] - 'Mlstr_additional::Target' column is missing")}
+  #       condition = "[ERROR] - 'Mlstr_additional::Target' column is missing.")}
   #
   #   # area::1 and area::1.term are mandatory
   #   if(is.null(data_dict_elem[['Mlstr_area::1']])){
   #     test <- test %>% add_row(
   #       name_var = 'Mlstr_area::1',
-  #       condition = "[ERROR] - 'Mlstr_area::1' column is missing")}
+  #       condition = "[ERROR] - 'Mlstr_area::1' column is missing.")}
   #
   #   if(is.null(data_dict_elem[['Mlstr_area::1.term']])){
   #     test <- test %>% add_row(
   #       name_var = 'Mlstr_area::1.term',
-  #       condition = "[ERROR] - 'Mlstr_area::1.term' column is missing")}
+  #       condition = "[ERROR] - 'Mlstr_area::1.term' column is missing.")}
   #
   #
   #
@@ -428,7 +428,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   !is.null(data_dict_elem[['Mlstr_area::1.term']])){
   #     test <- test %>% add_row(
   #       name_var = 'Mlstr_area::1.term',
-  #       condition = "[ERROR] - 'Mlstr_area::1.term' column is missing")}
+  #       condition = "[ERROR] - 'Mlstr_area::1.term' column is missing.")}
   #
   #
   #
