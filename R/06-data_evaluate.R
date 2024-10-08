@@ -335,18 +335,19 @@ dataset_evaluate <- function(
     bind_rows(test_unique_value) %>%
     bind_rows(test_existing_variable_category) %>%
     bind_rows(test_valueType) %>%
-    
     select(
-      name = "name_var",
-      `Quality assessment comment` = "condition", everything()) %>%
+      'Variable name' = "name_var",
+      `Quality assessment comment` = "condition", "Value" = matches("value"), 
+      "Suggested valueType" = matches("suggestion")) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble %>%
     left_join(
       report$`Data dictionary summary` %>%
-        select("index", "name"),
-      by = 'name') %>% 
-    select('index in data dict.' = "index", "name", everything()) %>%
-    arrange(.data$`index in data dict.`)
+        select("Index", "Variable name"),
+      by = 'Variable name') %>% 
+    select("Index", everything()) %>%
+    arrange(.data$`Index`)
+    
   
   if(all(is.na(report[['Dataset assessment']][['suggestion']]))){
     report[['Dataset assessment']][['suggestion']] <- NULL}
@@ -582,8 +583,8 @@ data_dict_evaluate <- function(
         
         data_dict[['Categories']] <-
           data_dict[['Categories']] %>%
-          bind_rows(tibble(labeld = as.character())) %>%
-          rename_with(.cols = "labeld", .fn =  ~ first_lab_var)
+          bind_rows(tibble(label_temp = as.character())) %>%
+          rename_with(.cols = "labeld_temp", .fn =  ~ first_lab_var)
       }
     }
   }
@@ -597,16 +598,53 @@ data_dict_evaluate <- function(
   # creation of the structure of the report
   report <- list()
   
+  missing_labels <- 
+    list(Variables = tibble(
+      "index" = as.character(),
+      "name"  = as.character(), 
+      "Categories::label" = as.character()))
+
+  if(length(data_dict[["Categories"]] > 0)){
+
+    data_dict[["Categories"]] <- 
+      data_dict[["Categories"]] %>%
+      mutate(across(everything(),as.character)) %>%
+      bind_rows(tibble(missing = as.character()))
+      
+    missing_labels <-
+      suppressWarnings(data_dict_collapse(
+        data_dict %>% data_dict_filter(filter_cat = "missing %in% 'TRUE'")))
+    }
+
+    
+  missing_labels <-  
+    missing_labels$Variables %>%
+    bind_rows(tibble("Category missing codes" = as.character())) %>%
+    select("index","name","Category missing codes" = starts_with("Categories::label")) %>%
+    bind_rows(tibble("temp" = as.character())) %>%
+    select("index","name","Category missing codes" = 3) %>%
+    dplyr::filter(!is.na(.data$`Category missing codes`))
+  
   report$`Data dictionary summary` <-
     suppressWarnings(data_dict_collapse(data_dict))
+  
   report$`Data dictionary summary` <-
-    tibble(report$`Data dictionary summary`[['Variables']] %>%
-             select(
-               'index','name',
-               matches(c("^label$","^label:[[:alnum:]]"))[1],
-               matches('^valueType$'),starts_with("Categories::"),
-               everything())) %>%
-    mutate(index = as.integer(.data$`index`))
+    tibble(report$`Data dictionary summary`[['Variables']]) %>%
+    select(
+      'Index' = 'index',
+      'Variable name' = 'name',
+      'Variable label' = matches(c("^label$","^label:[[:alnum:]]"))[1],
+      'Variable valueType' = matches('^valueType$'),
+      "Category codes and labels" = starts_with("Categories::label")) %>%
+    left_join(missing_labels, by = c('Index' = "index", 'Variable name' = "name")) %>%
+    mutate(Index = as.integer(.data$`Index`))
+  
+   # clean labels and missing
+  if(all(is.na(report$`Data dictionary summary`[["Category missing codes"]]))){
+
+    report$`Data dictionary summary`[["Category missing codes"]] <- NULL
+    
+    }
   
   test_name_standards <-
     test_unique_variable <-
@@ -833,12 +871,14 @@ data_dict_evaluate <- function(
     bind_rows(test_valueType) %>%
     bind_rows(test_cat_label) %>%
     bind_rows(test_missing_category) %>%
-    
-    select(
-      "sheet","col_name","name_var",
-      "Quality assessment comment" = "condition",
-      matches("value"), matches("suggestion")) %>%
     arrange(desc(.data$`sheet`),.data$`col_name`,.data$`name_var`) %>%
+    select(
+      "Sheet" = "sheet",
+      "Column name" = "col_name",
+      "Variable name" = "name_var",
+      "Quality assessment comment" = "condition",
+      "Value" = matches("value"), 
+      "Suggested valueType" = matches("suggestion")) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble
   
