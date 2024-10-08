@@ -11,22 +11,22 @@ A list with 9 elements (data frames and lists) providing example objects
 for testing the package:
 
 \describe{
-\item{dataset_example}{Example Dataset for example dataset}
-\item{data_dict_example - as_data_dict}{Example Data dictionary for example
+\item{dataset_example}{Dataset for example dataset}
+\item{data_dict_example - as_data_dict}{Data dictionary for example
 dataset where the structure is a data dictionary}
-\item{data_dict_example - as_data_dict_mlstr}{Example Data dictionary for
+\item{data_dict_example - as_data_dict_mlstr}{Data dictionary for
 example dataset where the structure is a data dictionary compliant with
 Maelstrom}
-\item{dataset_example - errors with data}{Example dataset of example
+\item{dataset_example - errors with data}{Dataset of example
 with errors with example data dictionary}
-\item{data_dict_example - errors with data}{Example Data Dictionary for example
+\item{data_dict_example - errors with data}{Data Dictionary for example
 dataset with errors with example dataset}
 \item{data_dict_example - errors}{Data dictionary for example dataset
 with errors}
-\item{data_dict_example - collapsed}{Example Data dictionary for example
+\item{data_dict_example - collapsed}{Data dictionary for example
 with collapsed categories}
-\item{taxonomy_example}{Example Taxonomy for example dataset}
-\item{summary - dataset_example}{Example of dataset summary}
+\item{taxonomy_example}{Taxonomy for example dataset}
+\item{summary - dataset_example}{Dataset example summary}
 ...
 }
 }
