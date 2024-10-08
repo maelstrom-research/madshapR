@@ -218,13 +218,12 @@ dataset_evaluate <- function(
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
-      mutate(
-        condition = "[INFO] - Duplicated rows.") %>%
-
-      mutate(
-        value = str_remove(
-          .data$`condition`,
-          "\\[INFO\\] - Duplicated observations : ")) %>%
+      # mutate(
+      #   condition = "[INFO] - Duplicated rows.") %>%
+      # mutate(
+      #   value = str_remove(
+      #     .data$`condition`,
+      #     "\\[INFO\\] - Duplicated observations : ")) %>%
       add_index('madshapR::index') %>%
       separate_rows("value",sep = " ; ") %>%
       group_by(.data$`madshapR::index`) %>%
@@ -251,7 +250,7 @@ dataset_evaluate <- function(
         value = 
           ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
       reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-      mutate(condition = "[INFO] - Duplicated rows (excluding identifer).") %>%
+      mutate(condition = "[INFO] - Duplicated rows (excluding identifier).") %>%
       mutate(
         `name_var` = 
           ifelse(col_id == "___mlstr_index___",NA_character_, !! col_id)) %>%
@@ -683,7 +682,7 @@ data_dict_evaluate <- function(
   #   reframe(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
   #   dplyr::filter(col_name != "''") %>%
   #   mutate(
-  #     condition = "[INFO] - Duplicated rows (excluding identifer).",
+  #     condition = "[INFO] - Duplicated rows (excluding identifier).",
   #     sheet    = "Variables")
   
   message("    Assess the presence of empty rows in the data dictionary")
