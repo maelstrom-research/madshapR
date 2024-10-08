@@ -208,7 +208,7 @@ dataset_evaluate <- function(
       mutate(
         value = str_squish(
           str_remove(.data$`condition`,'Possible duplicated columns:')),
-        condition = "[INFO] - Possible duplicated columns") %>%
+        condition = "[INFO] - Possible duplicated variable.") %>%
       select('condition','name_var','value')
   }
   
@@ -218,13 +218,13 @@ dataset_evaluate <- function(
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
-      # mutate(
-      #   condition = "[INFO] - Duplicated observations") %>%
-      # 
-      # mutate(
-      #   value = str_remove(
-      #     .data$`condition`,
-      #     "\\[INFO\\] - Duplicated observations : ")) %>%
+      mutate(
+        condition = "[INFO] - Duplicated rows.") %>%
+
+      mutate(
+        value = str_remove(
+          .data$`condition`,
+          "\\[INFO\\] - Duplicated observations : ")) %>%
       add_index('madshapR::index') %>%
       separate_rows("value",sep = " ; ") %>%
       group_by(.data$`madshapR::index`) %>%
@@ -251,7 +251,7 @@ dataset_evaluate <- function(
         value = 
           ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
       reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-      mutate(condition = "[INFO] - possible duplicated row values") %>%
+      mutate(condition = "[INFO] - Duplicated rows (excluding identifer).") %>%
       mutate(
         `name_var` = 
           ifelse(col_id == "___mlstr_index___",NA_character_, !! col_id)) %>%
@@ -262,7 +262,7 @@ dataset_evaluate <- function(
     message("    Assess the presence of unique value columns in dataset")
     test_unique_value <-
       get_unique_value_cols(zap_dataset) %>%
-      mutate(condition = "[INFO] - unique value in the column") %>%
+      mutate(condition = "[INFO] - Variable has a constant value.") %>%
       rename(`name_var` = "col_name") %>%
       distinct()
   }
@@ -274,7 +274,7 @@ dataset_evaluate <- function(
     rename('value' = "row_number") %>%
     mutate(
       condition =
-        "[INFO] - Empty participant(s) (Except participant identifier column)")
+        "[INFO] - Empty row (except for participant identifier variable).")
   
   if(col_id != "___mlstr_index___"){
     
@@ -665,7 +665,7 @@ data_dict_evaluate <- function(
       }else{tibble()}) %>%
     mutate(value     = str_squish(
              str_remove(.data$`condition`,"Possible duplicated columns:")),
-           condition = "[INFO] - Possible duplicated columns") 
+           condition = "[INFO] - Possible duplicated columns.") 
   
   # message("    Assess the presence of duplicated variable in the dataset")
   # test_duplicated_rows <-
@@ -683,7 +683,7 @@ data_dict_evaluate <- function(
   #   reframe(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
   #   dplyr::filter(col_name != "''") %>%
   #   mutate(
-  #     condition = "[INFO] - possible duplicated rows (variables)",
+  #     condition = "[INFO] - Duplicated rows (excluding identifer).",
   #     sheet    = "Variables")
   
   message("    Assess the presence of empty rows in the data dictionary")
@@ -693,7 +693,7 @@ data_dict_evaluate <- function(
     mutate(
       value = paste0("row number: ", .data$`row_number`), 
       sheet    = "Variables",
-      condition = "[INFO] - Empty line(s)",
+      condition = "[INFO] - Empty row(s).",
       sheet    = "Variables") %>% 
     select("condition","value","sheet")
   
@@ -706,7 +706,7 @@ data_dict_evaluate <- function(
           mutate(
             value = paste0("row number: ", .data$`row_number`), 
             sheet    = "Variables",
-            condition = "[INFO] - Empty line(s)",
+            condition = "[INFO] - Empty row(s).",
             sheet    = "Categories") %>% 
           select("condition","value","sheet"))
     }
@@ -716,13 +716,13 @@ data_dict_evaluate <- function(
     get_all_na_cols(
       data_dict[['Variables']] %>% select(-"name")) %>%
     mutate(sheet    = "Variables",
-           condition = "[INFO] - Empty column") %>%
+           condition = "[INFO] - Empty column.") %>%
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
         get_all_na_cols(
           data_dict[['Categories']] %>% select(-"variable")) %>%
           mutate(sheet    = "Categories",
-                 condition = "[INFO] - Empty column")
+                 condition = "[INFO] - Empty column.")
       }else{tibble()})
   
   if(sum(nrow(data_dict[['Categories']])) > 0){
@@ -764,7 +764,7 @@ data_dict_evaluate <- function(
         col_name = !! first_lab_var,
         condition =
           paste0(
-"[ERR] - The column `",!! first_lab_var,"` must exist contain no 'NA' values")) %>%
+"[ERROR] - Column `",!! first_lab_var,"` does not exist or contains empty values.")) %>%
       mutate(sheet    = "Variables")
     
     if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
@@ -791,7 +791,7 @@ data_dict_evaluate <- function(
             col_name = first_lab_var,
             condition =
               paste0(
-                "[ERR] - The column `",first_lab_var,"` must exist contain no 'NA' values")) %>%
+"[ERROR] - Column `",!! first_lab_var,"` does not exist or contains empty values.")) %>%
           mutate(sheet    = "Categories")
         
         if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){

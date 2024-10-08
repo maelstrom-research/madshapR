@@ -732,7 +732,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
           mutate(
             across("vocabulary", ~ ifelse(is.na(.data$`taxonomy_id`),!!as.symbol(i),.))) %>%
           mutate(
-            # across("term", ~ ifelse(is.na(.data$`taxonomy_id`),paste0("[ERR] - ", .data$term),.))) %>%
+            # across("term", ~ ifelse(is.na(.data$`taxonomy_id`),paste0("[ERROR] - ", .data$term),.))) %>%
             across("term", ~ ifelse(is.na(.data$`taxonomy_id`),.data$term,.))) %>%
           select(-matches('index_vocabulary'),
                  -matches('index_term'),
@@ -2650,7 +2650,10 @@ investigations.")
           data_dict[['Categories']] %>%
           select(1:'na_values','missing',everything())
       }
-      }
+    }
+    
+    data_dict[['Categories']][['missing']] <- 
+      as_any_boolean(data_dict[['Categories']][['missing']])
   
 #   if(as_data_dict == TRUE){
 #     
