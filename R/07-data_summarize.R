@@ -137,11 +137,10 @@ dataset_summarize <- function(
   
   data_dict <- 
     suppressWarnings({
-    data_dict_match_dataset(
-      dataset,data_dict,
-      output = 'data_dict') %>%
-    as_data_dict_mlstr()
-      })
+      data_dict_match_dataset(
+        dataset,data_dict,
+        output = 'data_dict') %>%
+        as_data_dict_mlstr()})
   
   # if the dataset has no observations, group_by is null
   if(nrow(dataset) == 0) group_by <- NULL
@@ -169,33 +168,19 @@ dataset_summarize <- function(
   
   # if group contains NA, replace by -19071983
   
-  # if(group_by != ''){
-  #   
-  #   if(-190719831562453 %in% unique(dataset[[c(group_by)]])) stop('Error. Contact maintainer')
-  #   
-  #   dataset <- 
-  #     dataset %>%
-  #     mutate(across(any_of(group_by),
-  #       ~ replace_na(.,as_valueType(-190719831562453,valueType_of(.)))))
-  #   
-  #   data_dict_group_by <- 
-  #     as_dataset(dataset) %>% 
-  #     mutate(across(all_of(group_by), as_category)) %>%
-  #     select(all_of(group_by)) %>% data_dict_extract()
-  #   
-  #   label <- str_subset(names(data_dict[['Categories']]),"label")[1]
-  #   data_dict[['Categories']] <- 
-  #     bind_rows(
-  #       data_dict[['Categories']], 
-  #       data_dict_group_by$Categories %>%
-  #         mutate(
-  #           missing = ifelse(.data$`name` == "-190719831562453",TRUE,.data$`missing`),
-  #           !! as_any_symbol(label) := ifelse(
-  #             .data$`name` == "-190719831562453",
-  #             "-190719831562453",
-  #             !! as_any_symbol(label)))) %>%
-  #     distinct()
-  # }
+  if(group_by != ''){
+    
+    no_NA <-
+      dataset %>%
+      reframe(across(!! group_by, ~ all(!is.na(.)))) %>%
+      unlist %>% all
+    
+    if(!no_NA){
+      stop(call. = FALSE,
+"Grouping variable contains empty values, and cannot be used as a grouping variable.")
+      
+    }
+  }
   
   if(group_by != ''){
     
@@ -752,56 +737,6 @@ dataset_summarize <- function(
 
   # if group, replace -190719831562453 by NA values if any
   
-  if(nrow(report[['Variables summary (all)']] %>% bind_rows(tibble()) %>%
-          dplyr::filter(str_detect(if_any(starts_with('Grouping variable')),
-          "-190719831562453"))) > 0){
-    
-    
-    qual_comment = "[INFO] - Grouping variable contains missing values (NA)"
-    
-    report[["Dataset assessment"]] <- 
-      bind_rows(
-        report[["Dataset assessment"]],
-        tibble(
-          `index in data dict.` = 
-            as.character(report$`Variables summary (all)`$`index in data dict.`[
-              report$`Variables summary (all)`$name == group_by]),
-          name = group_by,
-          `Quality assessment comment` = qual_comment,
-          value = NA_character_))
-    
-    report <- 
-      report[c(-1)] %>%
-      lapply(function(x) {
-      x %>% 
-      mutate(
-        `Quality assessment comment` = 
-          ifelse(.data$`name` == group_by & 
-                  is.na(.data$`Quality assessment comment`),
-                 qual_comment,
-                 .data$`Quality assessment comment`))})
-    
-    report <- 
-      report %>%
-      lapply(function(x) {
-        x %>%
-          mutate(across(
-            everything(), ~
-              str_replace_all(.,"-190719831562453","Missing value (NA)")))}) 
-    
-    report[["Dataset assessment"]] <- 
-      bind_rows(
-        report[["Dataset assessment"]],
-        tibble(
-          `index in data dict.` = 
-            as.character(report$`Variables summary (all)`$`index in data dict.`[
-              report$`Variables summary (all)`$name == group_by]),
-          name = group_by,
-          `Quality assessment comment` = qual_comment,
-          value = NA_character_))
-    
-  }
-  
   report <-   
     report %>%
     lapply(function(y){
@@ -1260,20 +1195,20 @@ summary_variables <- function(
       `Quality assessment comment` = case_when(
         
         .data$`Total number of observations` == .data$`Nb. distinct values`    ~
-"[INFO] - All observations are unique" ,
+"[INFO] - All rows are unique." ,
         
         .data$`Nb. distinct values` == 0                                       ~
-"[INFO] - The column is empty" ,
+"[INFO] - Empty variable." ,
         
         .data$`Nb. distinct values` == 1                                       ~
-"[INFO] - The column has a constant value",
+"[INFO] - Variable has a constant value.",
         
         .data$`Nb. distinct values` > 0 & .data$`% total Valid values` == 0    ~
-"[INFO] - All the categorical values present in the dataset are 'missing'",
+"[INFO] - All categorical values present in variable indicate nonvalid ('missing') values.",
         
         .data$`% total Valid values` > 0 &
           .data$`% Valid categorical values (if applicable)` == 0              ~
-"[INFO] - All the categorical values found in the dataset are non categorical" ,
+"[INFO] - Categorical values present in dataset that do not match categorical values in data dictionary." ,
         
         TRUE                                                                   ~
           NA_character_
