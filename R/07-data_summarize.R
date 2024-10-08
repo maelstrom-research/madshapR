@@ -169,33 +169,33 @@ dataset_summarize <- function(
   
   # if group contains NA, replace by -19071983
   
-  if(group_by != ''){
-    
-    if(-190719831562453 %in% unique(dataset[[c(group_by)]])) stop('Error. Contact maintainer')
-    
-    dataset <- 
-      dataset %>%
-      mutate(across(any_of(group_by), 
-        ~ replace_na(.,as_valueType(-190719831562453,valueType_of(.)))))
-    
-    data_dict_group_by <- 
-      as_dataset(dataset) %>% 
-      mutate(across(all_of(group_by), as_category)) %>%
-      select(all_of(group_by)) %>% data_dict_extract()
-    
-    label <- str_subset(names(data_dict[['Categories']]),"label")[1]
-    data_dict[['Categories']] <- 
-      bind_rows(
-        data_dict[['Categories']], 
-        data_dict_group_by$Categories %>%
-          mutate(
-            missing = ifelse(.data$`name` == "-190719831562453",TRUE,.data$`missing`),
-            !! as_any_symbol(label) := ifelse(
-              .data$`name` == "-190719831562453",
-              "-190719831562453",
-              !! as_any_symbol(label)))) %>%
-      distinct()
-  }
+  # if(group_by != ''){
+  #   
+  #   if(-190719831562453 %in% unique(dataset[[c(group_by)]])) stop('Error. Contact maintainer')
+  #   
+  #   dataset <- 
+  #     dataset %>%
+  #     mutate(across(any_of(group_by),
+  #       ~ replace_na(.,as_valueType(-190719831562453,valueType_of(.)))))
+  #   
+  #   data_dict_group_by <- 
+  #     as_dataset(dataset) %>% 
+  #     mutate(across(all_of(group_by), as_category)) %>%
+  #     select(all_of(group_by)) %>% data_dict_extract()
+  #   
+  #   label <- str_subset(names(data_dict[['Categories']]),"label")[1]
+  #   data_dict[['Categories']] <- 
+  #     bind_rows(
+  #       data_dict[['Categories']], 
+  #       data_dict_group_by$Categories %>%
+  #         mutate(
+  #           missing = ifelse(.data$`name` == "-190719831562453",TRUE,.data$`missing`),
+  #           !! as_any_symbol(label) := ifelse(
+  #             .data$`name` == "-190719831562453",
+  #             "-190719831562453",
+  #             !! as_any_symbol(label)))) %>%
+  #     distinct()
+  # }
   
   if(group_by != ''){
     
