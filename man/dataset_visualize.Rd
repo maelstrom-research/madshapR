@@ -98,24 +98,24 @@ taxonomies are
 \examples{
 {
 
-library(fs)
-library(dplyr)
-
-dataset <- madshapR_example$`dataset_example`
-data_dict <- madshapR_example$`data_dict_example`
-dataset_summary <- madshapR_example$`summary - dataset_example`
-
-if(dir_exists(tempdir())) dir_delete(tempdir())
-bookdown_path <- tempdir()
-
-dataset_visualize(
-  dataset,
-  data_dict,
-  dataset_summary = dataset_summary,
-  bookdown_path = bookdown_path)
-  
-# To open the file in browser, open 'bookdown_path/docs/index.html'. 
-# Or use bookdown_open(bookdown_path) function.
+# library(fs)
+# library(dplyr)
+# 
+# dataset <- madshapR_example$`dataset_example`
+# data_dict <- madshapR_example$`data_dict_example`
+# dataset_summary <- madshapR_example$`summary - dataset_example`
+# 
+# if(dir_exists(tempdir())) dir_delete(tempdir())
+# bookdown_path <- tempdir()
+# 
+# dataset_visualize(
+#   dataset,
+#   data_dict,
+#   dataset_summary = dataset_summary,
+#   bookdown_path = bookdown_path)
+#   
+# # To open the file in browser, open 'bookdown_path/docs/index.html'. 
+# # Or use bookdown_open(bookdown_path) function.
 
 }
 

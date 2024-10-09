@@ -76,18 +76,18 @@
 #' @examples
 #' {
 #' 
-#'  library(dplyr)
-#'  library(fs)
-#'  
-#'  dataset   <- madshapR_example$`dataset_example`
-#'  data_dict <- madshapR_example$`data_dict_example`
-#'  variable_summary <- madshapR_example$`summary - dataset_example`
-#'   
-#' plots <- variable_visualize(
-#'  dataset,data_dict, col = 'prg_ever',
-#'  variable_summary =  variable_summary,valueType_guess = TRUE)
-#'  
-#' print(plots$main_values_1)
+#' # library(dplyr)
+#' # library(fs)
+#' #  
+#' # dataset   <- madshapR_example$`dataset_example`
+#' # data_dict <- madshapR_example$`data_dict_example`
+#' # variable_summary <- madshapR_example$`summary - dataset_example`
+#' #   
+#' # plots <- variable_visualize(
+#' #  dataset,data_dict, col = 'prg_ever',
+#' #  variable_summary =  variable_summary,valueType_guess = TRUE)
+#' #  
+#' # print(plots$main_values_1)
 #'  
 #' }
 #'
@@ -344,8 +344,8 @@ variable_visualize <- function(
     as.data.frame(t(
       
       `Variables summary (all)` %>% 
-        dplyr::filter(.data$`name` %in% col) %>%
-        select(c("Total number of observations":last_col()))
+        dplyr::filter(.data$`Variable name` %in% col) %>%
+        select(c("Number of rows":last_col()))
     ))
   
   if(group_by != ''){
@@ -353,7 +353,7 @@ variable_visualize <- function(
       
       unique(pull(
         `Variables summary (all)` %>%
-          dplyr::filter(.data$`name` %in% col) %>%
+          dplyr::filter(.data$`Variable name` %in% col) %>%
           select(starts_with('Grouping variable:'))
       ))
     
@@ -417,35 +417,35 @@ variable_visualize <- function(
                      c(palette_values,palette_categories,NA))][seq_len(
                        length(unique(colset[[group_by]])))]
   
-  palette_NA <- "#afb1b2"
+  palette_Empty <- "#afb1b2"
   palette_missing     <- 
     c("darkseagreen3", "lemonchiffon3","darksalmon","slategray3")
   palette_missing_fct <- colorRampPalette(palette_missing, 1)
   
   palette_missing <- 
-    c(palette_NA, palette_missing,
+    c(palette_Empty, palette_missing,
       palette_missing[seq_len(length(unique(colset_cat_miss_values[[col]])))],
       sample(palette_mlstr_fct(
         length(unique(colset_cat_miss_values[[col]])) +
-        length(palette_NA) +
+        length(palette_Empty) +
         length(palette_missing)
       ))) %>%
     tolower() %>% unique
   
   palette_missing <- 
-    palette_missing[(!palette_missing %in% c(palette_NA,NA))][
+    palette_missing[(!palette_missing %in% c(palette_Empty,NA))][
       seq_len(length(unique(colset_cat_miss_values[[col]])))]
   
   # a ameliorer
   # names(palette_missing) <- levels(colset_cat_miss_values[[col]])
-  # palette_missing['NA'] <- palette_NA
+  # palette_missing['Empty'] <- palette_Empty
   #FCDF5C
   palette_pie <- c()
   # palette_pie["Valid values"]       <- "#88C79A" # green
   palette_pie["Valid values"]         <- "#FCDF5C" # yellow
   palette_pie["Valid other values"]   <- "#6581C0" # blue
   palette_pie["Non-valid values"]     <- "#EE7765" # red
-  palette_pie["Empty values"]            <- palette_NA # grey
+  palette_pie["Empty values"]         <- palette_Empty # grey
   
   if(nrow(colset_values) > 0) {
 
@@ -1132,7 +1132,7 @@ variable_visualize <- function(
       ggtitle(paste0('Bar plot', title)) +
       ylab("") +
       xlab("") +
-      scale_fill_manual(na.value = palette_NA, values = palette_missing) +
+      scale_fill_manual(na.value = palette_Empty, values = palette_missing) +
       coord_flip()
     
       if(group_by != '') {plot_4 <- plot_4 + facet_wrap(as.symbol(group_by))}
@@ -1383,24 +1383,24 @@ variable_visualize <- function(
 #' @examples
 #' {
 #' 
-#' library(fs)
-#' library(dplyr)
-#' 
-#' dataset <- madshapR_example$`dataset_example`
-#' data_dict <- madshapR_example$`data_dict_example`
-#' dataset_summary <- madshapR_example$`summary - dataset_example`
-#' 
-#' if(dir_exists(tempdir())) dir_delete(tempdir())
-#' bookdown_path <- tempdir()
-#' 
-#' dataset_visualize(
-#'   dataset,
-#'   data_dict,
-#'   dataset_summary = dataset_summary,
-#'   bookdown_path = bookdown_path)
-#'   
-#' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
-#' # Or use bookdown_open(bookdown_path) function.
+#' # library(fs)
+#' # library(dplyr)
+#' # 
+#' # dataset <- madshapR_example$`dataset_example`
+#' # data_dict <- madshapR_example$`data_dict_example`
+#' # dataset_summary <- madshapR_example$`summary - dataset_example`
+#' # 
+#' # if(dir_exists(tempdir())) dir_delete(tempdir())
+#' # bookdown_path <- tempdir()
+#' # 
+#' # dataset_visualize(
+#' #   dataset,
+#' #   data_dict,
+#' #   dataset_summary = dataset_summary,
+#' #   bookdown_path = bookdown_path)
+#' #   
+#' # # To open the file in browser, open 'bookdown_path/docs/index.html'. 
+#' # # Or use bookdown_open(bookdown_path) function.
 #' 
 #' }
 #'
@@ -1528,9 +1528,9 @@ Please provide another name folder or delete the existing one.")}
     suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
     bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
     select(
-      "index in data dict." = matches("index"),
-      "name",
-      matches(c("^label$","^label:[[:alnum:]]"))[1],
+      "Index" = matches("index"),
+      "Variable name" = "name",
+      "Variable label" = matches(c("^label$","^label:[[:alnum:]]"))[1],
       matches('valueType'),
       Categories = matches(c("^Categories::labels$","^Categories::label$",
                              "^Categories::label:[[:alnum:]]"))[1]) %>% 
@@ -1630,8 +1630,8 @@ datatable(Overview,
   datatable(
     data_dict_flat %>%
       mutate(
-        name = ifelse(name %in% col_id, name, paste0(
-        "<a href=\\"./var",`index in data dict.`,".html\\" >",name,"</a>"))),
+        "Variable name" = ifelse(`Variable name` %in% col_id, `Variable name`, paste0(
+        "<a href=\\"./var",`Index`,".html\\" >",`Variable name`,"</a>"))),
     options=list(scrollX = TRUE,pageLength=20),rownames = FALSE,escape = FALSE)
 
 # }else{
@@ -1667,7 +1667,7 @@ datatable(Overview,
     
     paste0(
       "# ", 
-      data_dict$Variables$name[i] %>%
+      data_dict$Variables$`name`[i] %>%
       str_replace_all("(?=[^A-Za-z0-9])", "\\\\"),
       "{.unnumbered #var",i,"}\n\n") %>%
       
@@ -1684,7 +1684,7 @@ datatable(Overview,
   
   datatable(t(
      data_dict$Variables %>%
-     dplyr::filter(name == '",data_dict$Variables$name[i],"')),
+     dplyr::filter(`Variable name` == '",data_dict$Variables$`name`[i],"')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
@@ -1694,7 +1694,7 @@ datatable(Overview,
       paste0(ifelse(
         sum(nrow(
           data_dict[['Categories']][data_dict[['Categories']][['variable']] == 
-                                      data_dict$Variables$name[i],])) > 0,
+                                      data_dict$Variables$`name`[i],])) > 0,
         paste0("\n* **Categories**: ","\n\n") %>%
           paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
           paste0(
@@ -1703,9 +1703,9 @@ datatable(Overview,
                    
   datatable(
     data_dict$Categories %>% 
-      dplyr::filter(variable == '",data_dict$Variables$name[i],"') %>%
-    select(variable, name, 
-    matches(c('^label$','^label:[[:alnum:]]'))[1], missing) %>%
+      dplyr::filter(variable == '",data_dict$Variables$`name`[i],"') %>%
+    select('Variable name' = variable, name, 
+    label = matches(c('^label$','^label:[[:alnum:]]'))[1], missing) %>%
     mutate(across(everything(), as.character)),
     options = list(scrollX = TRUE),rownames = FALSE)                          ",
                         
