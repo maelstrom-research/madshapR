@@ -520,6 +520,7 @@ dataset_summarize <- function(
     
     minimum_cols <- c(
         "Index" ,
+        paste0('Grouping variable: ', group_by),
         "Variable name",
         "Variable label",
         "Quality assessment comment",
@@ -528,7 +529,6 @@ dataset_summarize <- function(
         "Suggested valueType",
         "Categorical variable",
         "Categories in data dictionary",
-        paste0('Grouping variable: ', group_by),
         "Number of rows",
         "Number of valid values",
         "Number of non-valid values",
