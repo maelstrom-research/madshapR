@@ -670,8 +670,9 @@ dataset_summarize <- function(
     report$Overview %>%
     rowwise() %>%
     mutate(
-      rem := !!as.name(names(report$Overview)[2]) == "0") %>%
-    dplyr::filter(!rem) %>% select(-rem)
+      'rem' := !!as.name(names(report$Overview)[2]) == "0") %>%
+    dplyr::filter(!.data$`rem`) %>% select(-"rem") %>%
+    ungroup()
   
   
   message("    Generate report\n")
@@ -894,7 +895,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   
   # if no data_dict
   if(is.null(data_dict)){
-    data_dict <- data_dict_extract(data_dict,as_data_dict_mlstr = TRUE)
+    data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
   }else{
     data_dict <- as_data_dict_mlstr(data_dict)}
   
@@ -1116,13 +1117,13 @@ summary_variables <- function(
               c("4_Empty values"),]$value_var_occur),
                 
         `% Valid values` =
-          round(100*(`Number of valid values`/`Number of rows`),2),
+          round(100*(.data$`Number of valid values`/.data$`Number of rows`),2),
         
         `% Non-valid values` =
-          round(100*(`Number of non-valid values`/`Number of rows`),2),
+          round(100*(.data$`Number of non-valid values`/.data$`Number of rows`),2),
         
         `% Empty values` =
-          round(100*(`Number of empty values`/`Number of rows`),2),
+          round(100*(.data$`Number of empty values`/.data$`Number of rows`),2),
 
         `Number of distinct values` =
           length(unique(summary_i[
