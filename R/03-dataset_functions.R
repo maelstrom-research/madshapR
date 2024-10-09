@@ -471,6 +471,7 @@ as_dataset <- function(object, col_id = NULL){
     
     attributes(object)$`madshapR::class` <- "dataset"
     attributes(object)$`madshapR::col_id` <- names_id
+    # attributes(object)$`madshapR::data_dict` <- data_dict_extract(object)
 
     return(object)
   }

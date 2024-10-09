@@ -1455,7 +1455,9 @@ data_dict_ungroup <- function(data_dict){
 #' Applies a data dictionary to a dataset, creating a labelled dataset with 
 #' variable attributes. Any previous attributes will be preserved. For 
 #' variables that are factors, variables will be transformed into 
-#' haven-labelled variables.
+#' haven-labelled variables. The data dictionary will be added as an attribute
+#' (attributes(dataset)`madshapR::Data dictionary`) and can be extracted using
+#' the function [data_dict_extract()]
 #'
 #' @details
 #' A dataset is a data table containing variables. A dataset object is a 
@@ -1477,7 +1479,7 @@ data_dict_ungroup <- function(data_dict){
 #' `variable` and `name`.
 #'
 #' @seealso
-#' [attributes()], [haven::labelled()]
+#' [attributes()], [haven::labelled()],[data_dict_extract()]
 #'
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
@@ -1516,10 +1518,13 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   if(toString(attributes(data_dict)$`madshapR::class`) == 'data_dict_mlstr'){
+    data_dict_init <- data_dict
     data_dict <- 
       as_data_dict_mlstr(data_dict) %>%
       as_data_dict
-  }else{data_dict <- as_data_dict(data_dict)}
+  }else{
+    data_dict <- as_data_dict(data_dict)
+    data_dict_init <- data_dict}
   
   # names must exist both in dataset and data dictionary
   # data dictionary is not applied to dataset, since it may come from an
@@ -1661,6 +1666,8 @@ your dataset")}
     as_tibble() %>%
     as_dataset(col_id = preserve_attributes)
   
+  attributes(dataset)$`madshapR::Data dictionary` <- data_dict_init
+  
   return(dataset)
 }
 
@@ -1739,6 +1746,10 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   if(!is.logical(as_data_dict_mlstr))
     stop(call. = FALSE,
          '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+  
+  if(!is.null(attributes(dataset)$`madshapR::Data dictionary`)){
+    return(attributes(dataset)$`madshapR::Data dictionary`)
+  }
   
   dataset <- ungroup(dataset)
   
