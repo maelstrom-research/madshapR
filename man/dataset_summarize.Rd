@@ -10,7 +10,7 @@ dataset_summarize(
   group_by = NULL,
   taxonomy = NULL,
   dataset_name = .dataset_name,
-  valueType_guess = FALSE,
+  valueType_guess = TRUE,
   .dataset_name = NULL
 )
 }
@@ -97,7 +97,7 @@ summary_dataset <- dataset_summarize(dataset, data_dict)
 glimpse(summary_dataset)
 
 ###### Example 2: Any data frame can be a dataset by definition
-summary_iris <- dataset_summarize(iris)
+summary_iris <- dataset_summarize(iris, group_by = "Species")
 glimpse(summary_iris)
  
 }

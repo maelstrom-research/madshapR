@@ -4,7 +4,7 @@
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Converts a vector object to a categorical object, typically a column in a 
-#' data frame. The categories come from non-missing values present in the 
+#' data frame. The categories come from valid values present in the 
 #' object and are added to an associated data dictionary (when present).
 #'
 #' @param x A vector object to be coerced to categorical.
@@ -80,7 +80,7 @@ as_category <- function(x){
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Converts a vector object to a non-categorical object, typically a column in a 
-#' data frame. The categories come from non-missing values present in the 
+#' data frame. The categories come from valid values present in the 
 #' object and are suppressed from an associated data dictionary (when present).
 #'
 #' @param x object to be coerced.

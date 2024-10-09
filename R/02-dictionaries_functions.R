@@ -2024,7 +2024,7 @@ as_data_dict_shape <- function(object){
   
   # else
   stop(call. = FALSE,
-       "\n\nThis object is not a data dictionary as defined by Maelstrom standards, 
+       "\n\nThis object is not a data dictionary as defined by the package, 
 which must be a list containing at least 'Variables' list of elements.
 Please refer to documentation.")
   
@@ -2454,7 +2454,7 @@ as_data_dict_mlstr <- function(object, name_standard = FALSE){
   if(suppressWarnings(check_data_dict_valueType(data_dict))  %>%
      dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
-"valueType are incompatible with Maelstrom standards.",
+"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).",
 bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
@@ -2464,7 +2464,7 @@ data dictionary")}
      dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
          "\n
-Incompatible missing value in the missing columns with Maelstrom standards",
+Values in 'missing' column (in Categories) are non-Boolean",
 bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
@@ -2473,7 +2473,7 @@ data dictionary")}
   if(name_standard == TRUE){
     if(nrow(check_name_standards(data_dict[['Variables']][['name']])) > 0){
       stop(call. = FALSE,
-"names are incompatible with Maelstrom standards.",
+"Variable names contain special characters, contain spaces, or begin with a number.",
 bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}

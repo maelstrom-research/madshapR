@@ -41,17 +41,17 @@ be used to summarize visualize data.
 Analyses the content of a variable and its data dictionary (if any),
 identifies its data type and values accordingly and generates figures and
 summaries (datatable format). The figures and tables are representations of
-data distribution, statistics and valid/non valid/missing values (based on
+data distribution, statistics and valid/non valid/empty values (based on
 the data dictionary information if provided and the data type of the
 variable). This function can be used to personalize report parameters and is
 internally used in the function \code{\link[=dataset_visualize]{dataset_visualize()}}. Up to seven objects
 are generated which include : One datatable of the key elements of the
 data dictionary, one datatable summarizing statistics (such as mean,
-quartile, most seen value, most recent date, ... , depending on the
+quartile, most common values, most recent date, ... , depending on the
 data type of the variable), two graphs showing the distribution of the
 variable, One bar chart for categorical values (if any), One bar chart for
-missing values (if any), One pie chart for the proportion of valid and
-missing values (if any). The variable can be grouped using \code{group_by}
+non valid values (if any), One pie chart for the proportion of valid and
+non-valid values (if any). The variable can be grouped using \code{group_by}
 parameter, which is a (categorical) column in the dataset. The user may need
 to use \code{\link[=as_category]{as_category()}} in this context. To fasten the process (and allow
 recycling object in a workflow) the user can feed the function with a

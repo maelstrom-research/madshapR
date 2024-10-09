@@ -20,14 +20,14 @@ and data dictionary elements.
 Analyses the content of a dataset and its data dictionary (if any),
 identifies variable(s) data type and values accordingly and preprocess the
 variables. The elements of the data frame generated are evaluation of
-valid/non valid/missing values (based on the data dictionary information if
+valid/non valid/empty values (based on the data dictionary information if
 provided). This function can be used to personalize report parameters and is
 internally used in the function \code{\link[=dataset_summarize]{dataset_summarize()}}.
 
 Generates a data frame that evaluates and aggregates all columns
 in a dataset with (if any) its data dictionary. The data dictionary (if
-present) separates observations between open values, missing values,
-categorical values , and categorical missing values (which corresponds to the
+present) separates observations between open values, empty values,
+categorical values , and categorical non-valid values (which corresponds to the
 'missing' column in the 'Categories' sheet).
 This internal function is mainly used inside summary functions.
 }

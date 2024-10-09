@@ -1031,7 +1031,7 @@ as_taxonomy <- function(object){
   if(sum(names(object) %in% c("taxonomy","vocabulary" ,"term")) != 3){
     stop(call. = FALSE,
 "\n
-This object is not a taxonomy as defined by Maelstrom standards, which must 
+This object is not a taxonomy as defined by the package, which must 
 be a data frame containing at least 'taxonomy', 'vocabulary' and 'term' columns. 
 Please refer to documentation.",
 

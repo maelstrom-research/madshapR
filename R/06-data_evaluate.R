@@ -289,10 +289,10 @@ dataset_evaluate <- function(
   }
   
   message(
-    "    Assess the presence all NA(s) of columns in the data dictionary")
+    "    Assess the presence all empty variable in the dataset")
   test_empty_col <-
     get_all_na_cols(dataset) %>%
-    mutate(condition = "[INFO] - Empty column.") %>%
+    mutate(condition = "[INFO] - Empty variable.") %>%
     rename(`name_var` = "col_name")
   
   message(
@@ -748,7 +748,7 @@ data_dict_evaluate <- function(
           select("condition","value","sheet"))
     }
   
-  message("    Assess the presence of empty columns in the data dictionary")
+  message("    Assess the presence of empty column in the data dictionary")
   test_empty_col <-
     get_all_na_cols(
       data_dict[['Variables']] %>% select(-"name")) %>%

@@ -461,7 +461,7 @@ as_dataset <- function(object, col_id = NULL){
 
     if(sum(is.na(object %>% select(!! all_of(col_id)))) > 0)
       stop(call. = FALSE,
-           "Your id column(s) must not contain any NA values.")
+           "Your id column(s) must not contain any empty values.")
 
     names_id <- names(object %>% select(!! all_of(col_id)))
     if(length(names_id) == 0) names_id <- NULL
@@ -477,7 +477,7 @@ as_dataset <- function(object, col_id = NULL){
 
   # else
   stop(call. = FALSE,
-"\n\nThis object is not a dataset as defined by Maelstrom standards, which must 
+"\n\nThis object is not a dataset as defined by the package, which must 
 be a data frame. 
 Please refer to documentation.")
 

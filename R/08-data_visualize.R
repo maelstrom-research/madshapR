@@ -5,17 +5,17 @@
 #' Analyses the content of a variable and its data dictionary (if any), 
 #' identifies its data type and values accordingly and generates figures and 
 #' summaries (datatable format). The figures and tables are representations of
-#' data distribution, statistics and valid/non valid/missing values (based on 
+#' data distribution, statistics and valid/non valid/empty values (based on 
 #' the data dictionary information if provided and the data type of the 
 #' variable). This function can be used to personalize report parameters and is 
 #' internally used in the function [dataset_visualize()]. Up to seven objects 
 #' are generated which include : One datatable of the key elements of the 
 #' data dictionary, one datatable summarizing statistics (such as mean, 
-#' quartile, most seen value, most recent date, ... , depending on the 
+#' quartile, most common values, most recent date, ... , depending on the 
 #' data type of the variable), two graphs showing the distribution of the 
 #' variable, One bar chart for categorical values (if any), One bar chart for 
-#' missing values (if any), One pie chart for the proportion of valid and 
-#' missing values (if any). The variable can be grouped using `group_by` 
+#' non valid values (if any), One pie chart for the proportion of valid and 
+#' non-valid values (if any). The variable can be grouped using `group_by` 
 #' parameter, which is a (categorical) column in the dataset. The user may need 
 #' to use [as_category()] in this context. To fasten the process (and allow 
 #' recycling object in a workflow) the user can feed the function with a 
@@ -222,7 +222,7 @@ variable_visualize <- function(
     preprocess_var[preprocess_var$valid_class == '1_Valid values',]
   preprocess_var_cat_miss_values <- 
     preprocess_var[preprocess_var$valid_class %in% 
-                     c('2_Missing values','4_NA values'),]
+                     c('2_Non-valid values','4_Empty values'),]
 
   
   if(group_by != ''){
@@ -442,10 +442,10 @@ variable_visualize <- function(
   #FCDF5C
   palette_pie <- c()
   # palette_pie["Valid values"]       <- "#88C79A" # green
-  palette_pie["Valid values"]       <- "#FCDF5C" # yellow
-  palette_pie["Valid other values"] <- "#6581C0" # blue
-  palette_pie["Missing values"]     <- "#EE7765" # red
-  palette_pie["NA values"]          <- palette_NA # grey
+  palette_pie["Valid values"]         <- "#FCDF5C" # yellow
+  palette_pie["Valid other values"]   <- "#6581C0" # blue
+  palette_pie["Non-valid values"]     <- "#EE7765" # red
+  palette_pie["Empty values"]            <- palette_NA # grey
   
   if(nrow(colset_values) > 0) {
 
@@ -1159,7 +1159,7 @@ variable_visualize <- function(
     rename(`___n___` = last_col()) %>%
     mutate(!! as.symbol(col) := factor(!! as.symbol(col),
       levels = 
-        c('Valid values','Valid other values','Missing values','NA values')))
+        c('Valid values','Valid other values','Non-valid values','Empty values')))
   
   plot_5 <- NULL
   

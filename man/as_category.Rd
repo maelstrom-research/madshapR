@@ -15,7 +15,7 @@ A vector with class haven_labelled.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Converts a vector object to a categorical object, typically a column in a
-data frame. The categories come from non-missing values present in the
+data frame. The categories come from valid values present in the
 object and are added to an associated data dictionary (when present).
 }
 \examples{
