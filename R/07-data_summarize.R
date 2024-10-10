@@ -108,7 +108,7 @@ dataset_summarize <- function(
 
   col_id <- col_id(dataset)
   
-  dataset_name <- 
+  dataset_name <-
     ifelse(
       !is.null(dataset_name),
       dataset_name,
@@ -311,8 +311,8 @@ dataset_summarize <- function(
     # mutate(`Suggested valueType` = ifelse(
     #   .data$`Dataset valueType` == .data$`Suggested valueType`,NA_character_,.data$`Suggested valueType`)) %>%
     mutate(`Suggested valueType` = ifelse(
-      .data$`Suggested valueType` == .data$`Data dictionary valueType`,NA_character_,.data$`Suggested valueType`)) %>%
-    remove_empty('cols')
+      .data$`Dataset valueType` == .data$`Data dictionary valueType`,NA_character_,.data$`Suggested valueType`)) 
+  # %>% remove_empty('cols')
 
   ## categories
   if(sum(nrow(data_dict[['Categories']])) > 0){
@@ -662,15 +662,19 @@ dataset_summarize <- function(
   report$Overview <- bind_cols(Overview_group)
   if(group_by == ''){
     report$Overview   <- report$Overview %>% slice(-4) %>% select(-3)
-    report$Overview   <- report$Overview %>% rename(" " = "(all)")
-    report$Overview[[13,2]] <- " "
+    # report$Overview   <- report$Overview %>% rename(" " = "(all)")
+    # report$Overview[[13,2]] <- " "
   }
   
   report$Overview <- 
     report$Overview %>%
     rowwise() %>%
     mutate(
-      'rem' := !!as.name(names(report$Overview)[2]) == "0") %>%
+      
+      # to correct GF 
+      
+      'rem' := (!!as.name(names(report$Overview)[2]) == "0" &
+        !str_detect(report$Overview,"Number of empty variables"))) %>%
     dplyr::filter(!.data$`rem`) %>% select(-"rem") %>%
     ungroup()
   

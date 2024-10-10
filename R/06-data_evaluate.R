@@ -636,16 +636,18 @@ data_dict_evaluate <- function(
       'Variable label' = matches(c("^label$","^label:[[:alnum:]]"))[1],
       'Variable valueType' = matches('^valueType$'),
       "Category codes and labels" = starts_with("Categories::label")) %>%
+    bind_rows(tibble("Category codes and labels" = as.character())) %>%
     left_join(missing_labels, by = c('Index' = "index", 'Variable name' = "name")) %>%
     mutate(Index = as.integer(.data$`Index`))
   
-   # clean labels and missing
-  if(all(is.na(report$`Data dictionary summary`[["Category missing codes"]]))){
+  # clean labels and missing
+  # if(all(is.na(report$`Data dictionary summary`[["Category missing codes"]]))){
+  # 
+  #   report$`Data dictionary summary`[["Category missing codes"]] <- NULL
+  #   
+  #   }
 
-    report$`Data dictionary summary`[["Category missing codes"]] <- NULL
-    
-    }
-  
+
   test_name_standards <-
     test_unique_variable <-
     test_duplicated_columns <-
@@ -900,6 +902,20 @@ data_dict_evaluate <- function(
         lapply(function(x) str_trunc(x, 10000)) %>%
         as_tibble()      
     })
+  
+  # # add categories labels and missing (GF : to check further [ERROR])
+  # if(is.null(report$`Data dictionary summary`[["Category codes and labels"]] |
+  #            is.null(report$`Data dictionary summary`[["Category missing codes"]]))){
+  #   
+  #   report$`Data dictionary summary`[["Category codes and labels"]] <- NA_character_
+  #   report$`Data dictionary summary`[["Category missing codes"]] <- NA_character_
+  #   
+  #   report$`Data dictionary summary` <-
+  #     report$`Data dictionary summary` %>%
+  #     select(everything(),any_of("Category codes and labels"),
+  #            any_of("Category missing codes"))
+  #   
+  # }
 
   return(report)
 }

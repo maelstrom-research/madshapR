@@ -459,8 +459,8 @@ variable_visualize <- function(
         as.data.frame(t(
           
           `Numerical variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
+            dplyr::filter(.data$`Variable name` %in% col) %>%
+            select(-c(1:"% Non-valid values"))
           
           ))
     
@@ -469,7 +469,7 @@ variable_visualize <- function(
           
           unique(pull(
             `Numerical variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
+              dplyr::filter(.data$`Variable name` %in% col) %>%
               select(starts_with('Grouping variable:'))
           ))
             
