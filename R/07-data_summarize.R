@@ -72,10 +72,11 @@
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
-#' dataset <- as_dataset(madshapR_example$`dataset_example`,col_id = "part_id")
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 #' 
+#' ###### Example 1: use madshapR_example provided by the package
+#' dataset   <- as_dataset(madshapR_example$`dataset_example`,col_id = "part_id")
+#' data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
+#'   
 #' summary_dataset <- dataset_summarize(dataset, data_dict)
 #' glimpse(summary_dataset)
 #' 
@@ -124,8 +125,7 @@ dataset_summarize <- function(
     group_by <- group_vars(dataset)
   }
 
-  dataset <- 
-    as_dataset(ungroup(dataset),col_id)
+  dataset <- as_dataset(ungroup(dataset),col_id)
     
   dataset <-
     suppressWarnings({
@@ -170,12 +170,12 @@ dataset_summarize <- function(
   
   if(group_by != ''){
     
-    no_NA <-
+    has_empty <-
       dataset %>%
-      reframe(across(!! group_by, ~ all(!is.na(.)))) %>%
+      reframe(across(!! group_by, ~ !all(!is.na(.)))) %>%
       unlist %>% all
     
-    if(!no_NA){
+    if(has_empty){
       stop(call. = FALSE,
 "Grouping variable contains empty values, and cannot be used as a grouping variable.")
       
@@ -377,34 +377,43 @@ dataset_summarize <- function(
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Data dictionary valueType` %in%
         vT_text,] %>% dplyr::filter(!.data$`Variable name` %in% col_id) %>%
-    select(-any_of("Dataset valueType"),-any_of("Suggested valueType"))
+    select(-any_of("Dataset valueType"),
+           -any_of("Suggested valueType"),
+           -any_of("Categories in data dictionary"))
 
   vT_num  <- vT[vT$`genericType` == 'numeric',][['valueType']]
   report$`Numerical variable summary` <-
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Data dictionary valueType` %in%
         vT_num,] %>% dplyr::filter(!.data$`Variable name` %in% col_id) %>%
-    select(-any_of("Dataset valueType"),-any_of("Suggested valueType"))
+    select(-any_of("Dataset valueType"),
+           -any_of("Suggested valueType"),
+           -any_of("Categories in data dictionary"))
 
   vT_date <- vT[vT$`genericType` == 'date',][['valueType']]
   report$`Date variable summary` <-
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Data dictionary valueType` %in%
         vT_date,] %>% dplyr::filter(!.data$`Variable name` %in% col_id) %>%
-    select(-any_of("Dataset valueType"),-any_of("Suggested valueType"))
+    select(-any_of("Dataset valueType"),
+           -any_of("Suggested valueType"),
+           -any_of("Categories in data dictionary"))
   
   vT_datetime <- vT[vT$`genericType` == 'datetime',][['valueType']]
   report$`Datetime variable summary` <-
     report$`Variables summary (all)`[
       report$`Variables summary (all)`$`Data dictionary valueType` %in%
         vT_datetime,] %>% dplyr::filter(!.data$`Variable name` %in% col_id) %>%
-    select(-any_of("Dataset valueType"),-any_of("Suggested valueType"))
-  
+    select(-any_of("Dataset valueType"),
+           -any_of("Suggested valueType"),
+           -any_of("Categories in data dictionary"))
 
   report$`Categorical variable summary` <-
     report$`Variables summary (all)`[
       !is.na(report$`Variables summary (all)`$`Categories in data dictionary`),
-      ] %>% dplyr::filter(!.data$`Variable name` %in% col_id)
+      ] %>% dplyr::filter(!.data$`Variable name` %in% col_id) %>%
+    select(-any_of("Dataset valueType"),
+           -any_of("Suggested valueType"))
 
   if(nrow(dataset) > 0){
 
@@ -417,6 +426,8 @@ dataset_summarize <- function(
         dataset_preprocess(
           dataset = select(x,-any_of(col_id)),
           data_dict = data_dict)})
+    
+    # dataset_preprocess <- dataset_preprocess$no_group
     
     summary_var <- 
       lapply(dataset_preprocess,function(x){
@@ -564,7 +575,8 @@ dataset_summarize <- function(
     
     report$`Numerical variable summary` <-
       suppressMessages(report$`Numerical variable summary` %>%
-      inner_join(summary_var , by = "Variable name", multiple = "all")) %>%
+      inner_join(summary_var , by = "Variable name", multiple = "all") %>%
+      inner_join(summary_num, multiple = "all")) %>%
       select(any_of(minimum_cols),everything())
       
     report$`Categorical variable summary` <-
@@ -628,15 +640,23 @@ dataset_summarize <- function(
         .data$`---` == '    1_ Variable data types (valueType)'                ~
           " ",
         .data$`---` == '        1_Number of text variables'                          ~
-      as.character(length(unique(report$`Text variable summary`$`Variable name`))),
+      as.character(ifelse(length(unique(report$`Text variable summary`$`Variable name`)) > 0,
+                          length(unique(report$`Text variable summary`$`Variable name`)), "madshapR::remove")),
         .data$`---` == '        1_Number of date variables'                          ~
-      as.character(length(unique(report$`Date variable summary`$`Variable name`))),
+      as.character(ifelse(length(unique(report$`Date variable summary`$`Variable name`)) > 0,
+                          length(unique(report$`Date variable summary`$`Variable name`)), "madshapR::remove")),
         .data$`---` == '        1_Number of datetime variables'                      ~
-      as.character(length(unique(report$`Datetime variable summary`$`Variable name`))),
+      as.character(ifelse(length(unique(report$`Datetime variable summary`$`Variable name`)) > 0,
+                          length(unique(report$`Datetime variable summary`$`Variable name`)), "madshapR::remove")),
         .data$`---` == '        1_Number of numerical variables'                     ~
-      as.character(length(unique(report$`Numerical variable summary`$`Variable name`))),
+      as.character(ifelse(length(unique(report$`Numerical variable summary`$`Variable name`)) > 0,
+                          length(unique(report$`Numerical variable summary`$`Variable name`)), "madshapR::remove")),
         .data$`---` == '        1_Number of categorical variables'                   ~
-      as.character(length(unique(report$`Categorical variable summary`$`Variable name`))),
+        
+        
+      # question GF
+      as.character(ifelse(length(unique(report$`Categorical variable summary`$`Variable name`)) > 0,
+                          length(unique(report$`Categorical variable summary`$`Variable name`)), "madshapR::remove")),
         .data$`---` == '    2_Rows'                                                  ~
           i,
         .data$`---` == '        2_Number of rows'                                    ~
@@ -666,19 +686,10 @@ dataset_summarize <- function(
     # report$Overview[[13,2]] <- " "
   }
   
-  report$Overview <- 
+  report$Overview <-
     report$Overview %>%
-    rowwise() %>%
-    mutate(
-      
-      # to correct GF 
-      
-      'rem' := (!!as.name(names(report$Overview)[2]) == "0" &
-        !str_detect(report$Overview,"Number of empty variables"))) %>%
-    dplyr::filter(!.data$`rem`) %>% select(-"rem") %>%
-    ungroup()
-  
-  
+    dplyr::filter(!.data$`(all)` == "madshapR::remove")
+
   message("    Generate report\n")
 
   # create report structure
@@ -939,7 +950,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     mutate(`Categorical variable` = 
              ifelse(is.na(.data$`valid_class`),"no","yes"))
   
-  summary <- tibble(name = as.character())
+  summary <- tibble("Variable name" = as.character())
   
   if(nrow(dataset) > 0){
     for(i in names(dataset)){
@@ -1088,7 +1099,7 @@ summary_variables <- function(
   summary <- dataset_preprocess
   
   # init
-  summary_tbl <- tibble(`Variable name` = as.character())
+  summary_tbl <- tibble("Variable name" = as.character())
   if(nrow(summary) == 0) return(summary_tbl)
   
   for(i in unique(summary$`Variable name`)){
@@ -1143,19 +1154,19 @@ summary_variables <- function(
     mutate(
       `Quality assessment comment` = case_when(
         
-        .data$`Number of rows` == .data$`Number of distinct values`    ~
+        summary_tbl$`Number of rows` == summary_tbl$`Number of distinct values`    ~
 "[INFO] - All rows are unique." ,
         
-        .data$`Number of distinct values` == 0                                       ~
+summary_tbl$`Number of distinct values` == 0                                       ~
 "[INFO] - Empty variable." ,
         
-        .data$`Number of distinct values` == 1                                       ~
+summary_tbl$`Number of distinct values` == 1                                       ~
 "[INFO] - Variable has a constant value.",
         
-        .data$`Number of distinct values` > 0 & .data$`% Valid values` == 0    ~
+summary_tbl$`Number of distinct values` > 0 & summary_tbl$`Number of valid values` == 0        ~
 "[INFO] - All categorical values present in variable indicate non-valid ('missing') values.",
         
-        .data$`Number of valid values` > 0 & .data$`Number of non-valid values` == 0              ~
+summary_tbl$`Number of valid values` > 0 & summary_tbl$`Number of non-valid values` == 0       ~
 "[INFO] - Categorical values present in dataset that do not match categorical values in data dictionary." ,
         
         TRUE       ~   NA_character_
@@ -1243,9 +1254,7 @@ summary_variables_text <- function(
   for(i in unique(summary$`Variable name`)){
     # stop()}
     
-    summary_i <-
-      summary %>%
-      dplyr::filter(.data$`Variable name` == i)
+    summary_i <- summary %>% dplyr::filter(.data$`Variable name` == i)
     
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
@@ -1393,9 +1402,7 @@ summary_variables_date <- function(
   for(i in unique(summary$`Variable name`)){
     # stop()}
     
-    summary_i <-
-      summary %>%
-      dplyr::filter(.data$`Variable name` == i)
+    summary_i <- summary %>% dplyr::filter(.data$`Variable name` == i)
     
     # turn the output to be readable
     if(summary_i %>% nrow > 0){
@@ -1598,9 +1605,7 @@ summary_variables_numeric <- function(
   for(i in unique(summary$`Variable name`)){
     # stop()}
     
-    summary_i <-
-      summary %>%
-      dplyr::filter(.data$`Variable name` == i)
+    summary_i <- summary %>% dplyr::filter(.data$`Variable name` == i)
     
     summary_i$`value_var` <- suppressWarnings(as.numeric(summary_i$`value_var`))
     
@@ -1729,9 +1734,7 @@ summary_variables_categorical <- function(
   for(i in unique(summary$`Variable name`)){
     # stop()}
     
-    summary_i <-
-      summary %>%
-      dplyr::filter(.data$`Variable name` == i)
+    summary_i <- summary %>% dplyr::filter(.data$`Variable name` == i)
     
     summary_category <- 
       summary_i %>%
