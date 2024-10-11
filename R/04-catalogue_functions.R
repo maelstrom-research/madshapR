@@ -424,7 +424,7 @@ valueType_adjust <- function(from, to = NULL){
     
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 bold("\n\nUseful tip:"),
@@ -552,7 +552,7 @@ bold("\n\nUseful tip:"),
 
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 bold("\n\nUseful tip:"),

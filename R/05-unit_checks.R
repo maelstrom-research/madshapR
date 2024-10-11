@@ -37,16 +37,16 @@
 #'
 #' @export
 check_data_dict_variables <- function(data_dict){
-
+  
   # test if enough data_dict
   as_data_dict_shape(data_dict)
-
+  
   var_names <-
     data_dict[['Variables']] %>%
     add_count(.data$`name`) %>%
     dplyr::filter(.data$`n` > 1) %>%
     select("name")
-
+  
   test <-
     var_names %>%
     mutate(
@@ -54,14 +54,14 @@ check_data_dict_variables <- function(data_dict){
     select(name_var = "name", "condition") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
-
+  
   var_NA <-
     data_dict[['Variables']] %>%
     add_index(.force = TRUE) %>%
     dplyr::filter(is.na(.data$`name`) | .data$`name` == "") %>%
     mutate(name = paste0("row number: ",.data$`index`)) %>%
     select(.data$`name`)
-
+  
   test <-
     test %>% bind_rows(
       var_NA %>%
@@ -71,7 +71,7 @@ check_data_dict_variables <- function(data_dict){
         mutate(across(everything(), ~as.character(.)))) %>%
     dplyr::filter(!is.na(.data$`name_var`)) %>%
     distinct
-
+  
   return(test)
 }
 
@@ -118,26 +118,26 @@ check_data_dict_variables <- function(data_dict){
 #'
 #' @export
 check_data_dict_categories <- function(data_dict){
-
+  
   # test if enough data_dict
   as_data_dict_shape(data_dict)
-
+  
   test <- test_cat_presence <- test_cat_unique <-
     tibble(
       name_var = as.character(),
       value = as.character(),
       condition = as.character())
-
+  
   if(sum(nrow(data_dict[['Categories']])) == 0){
     warning("You data dictionary contains no categorical variables")
     return(test)}
-
+  
   var_names <-
     data_dict[['Variables']] %>%
     mutate(name_var = as.character(.data$`name`)) %>%
     select(.data$`name_var`) %>% distinct %>%
     dplyr::filter(!is.na(.data$`name_var`))
-
+  
   cat_names <-
     data_dict[['Categories']] %>%
     mutate(across(everything(), as.character)) %>%
@@ -147,7 +147,7 @@ check_data_dict_categories <- function(data_dict){
     select(value = .data$`name`,.data$`name_var`,.data$`index`) %>%
     arrange(.data$`name_var`) %>%
     distinct
-
+  
   test_cat_presence <-
     anti_join(cat_names,var_names, by = "name_var") %>%
     bind_rows(tibble(
@@ -155,11 +155,11 @@ check_data_dict_categories <- function(data_dict){
     rowwise() %>%
     mutate(
       condition = ifelse(is.na(.data$`name_var`),
-        "[ERROR] - Category has no corresponding 'variable' name.",
-        "[ERROR] - Category 'variable' name has no corresponding variable in 'Variables' sheet."
-        ),
+"[ERROR] - Category has no corresponding 'variable' name.",
+"[ERROR] - Category 'variable' name has no corresponding variable in 'Variables' sheet."
+      ),
       condition = ifelse(is.na(.data$`value`),
-        "[ERROR] - Category 'name' is empty.", .data$`condition`),
+"[ERROR] - Category 'name' is empty.", .data$`condition`),
       value = ifelse(!is.na(.data$`value`),"value",.data$`value`),
       value = replace_na(.data$`value`,.data$`index`),
       value = na_if(.data$`value`,"value"),
@@ -169,14 +169,14 @@ check_data_dict_categories <- function(data_dict){
     select(.data$`name_var`, .data$`condition`, .data$`value`) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
-
+  
   cat_names_count <-
     data_dict[['Categories']] %>%
     select(name_var = .data$`variable`,.data$`name`) %>%
     mutate(across(everything(), as.character)) %>%
     group_by(.data$`name_var`,.data$`name`) %>% add_count() %>% ungroup %>%
     dplyr::filter(.data$`n` > 1)
-
+  
   test_cat_unique <-
     cat_names_count %>%
     mutate(
@@ -184,11 +184,11 @@ check_data_dict_categories <- function(data_dict){
     select(.data$`name_var`, value = .data$`name`, .data$`condition`) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
-
+  
   test <- bind_rows(test, test_cat_presence, test_cat_unique)
-
+  
   return(test)
-
+  
 }
 
 #' @title
@@ -232,24 +232,24 @@ check_data_dict_categories <- function(data_dict){
 #'
 #' @export
 check_data_dict_missing_categories <- function(data_dict){
-
+  
   # test if enough data_dict
   as_data_dict_shape(data_dict)
-
+  
   test <- tibble(
     name_var = as.character(), 
     value = as.character(), 
     condition = as.character())
-
+  
   if(is.null(data_dict[['Categories']][['missing']])){
     warning(
-"You data dictionary contains no missing column in you categorical variables")
+      "You data dictionary contains no missing column in you categorical variables")
     return(test)}
-
+  
   missing_val <-
     data_dict[['Categories']] %>%
     select(name_var = .data$`variable`,.data$`missing`)
-
+  
   missing_val_test <-
     missing_val %>%
     select(-.data$`name_var`) %>%
@@ -260,7 +260,7 @@ check_data_dict_missing_categories <- function(data_dict){
         class(silently_run(as_any_boolean(.data$`missing`)))[1]) %>%
     dplyr::filter(.data$`value` == "try-error") %>%
     inner_join(missing_val,by = "missing")
-
+  
   test <-
     missing_val_test %>%
     select(.data$`name_var`,value = .data$`missing`) %>%
@@ -268,7 +268,7 @@ check_data_dict_missing_categories <- function(data_dict){
       condition = "[ERROR] - Value in 'missing' column is non-Boolean.")%>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
-
+  
   return(test)
 }
 
@@ -322,7 +322,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #'
 #' @noRd
 check_data_dict_taxonomy <- function(data_dict, taxonomy){
-
+  
   # check_taxo_one_col function(col, taxonomy, na_allowed = TRUE){
   #
   #   if(na_allowed) col <- col[!is.na(col[2]),]
@@ -348,20 +348,20 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #
   #   return(test)
   # }
-
+  
   # data_dict <- data_dict_list$`data_dict_example - errors`
-
+  
   # only works for mlstr_taxo
-
+  
   as_data_dict_shape(data_dict)
   as_taxonomy(taxonomy)
-
+  
   test <-
     tibble(
       name_var = as.character(),
       value = as.character(),
       condition = as.character())
-
+  
   # data_dict_elem <-
   #   data_dict[['Variables']] %>%
   #   select(.data$`name`,starts_with(unique(taxonomy$taxonomy))) %>%
@@ -519,7 +519,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   # }
   #
   # test <- bind_rows(test_valueType_names, test_valueType_cat)
-
+  
   return(test)
 }
 
@@ -576,10 +576,10 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #'
 #' @export
 check_data_dict_valueType <- function(data_dict){
-
+  
   # test if enough data_dict
   as_data_dict_shape(data_dict)
-
+  
   test <- 
     test_valueType_names <- 
     test_valueType_refined <- 
@@ -587,11 +587,11 @@ check_data_dict_valueType <- function(data_dict){
       name_var = as.character(),
       value = as.character(),
       condition = as.character())
-
+  
   if(is.null(data_dict[['Variables']][['valueType']])){
     warning("Your data dictionary contains no valueType column")
     return(test)}
-
+  
   vT_list <- madshapR::valueType_list
   test_valueType_names <-
     data_dict[['Variables']] %>%
@@ -601,9 +601,9 @@ check_data_dict_valueType <- function(data_dict){
       condition = "[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).")%>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
-
+  
   if(length(data_dict[['Categories']]) > 0){
-
+    
     vT_categorical <-
       data_dict[['Categories']] %>%
       select(name_var = "variable", "name") %>%
@@ -611,7 +611,7 @@ check_data_dict_valueType <- function(data_dict){
       inner_join(
         data_dict[['Variables']] %>%
           select(name_var = 'name','valueType'),by = "name_var")
-
+    
     # for these, find the best match
     test_valueType_refined <- 
       vT_categorical %>%
@@ -639,13 +639,13 @@ check_data_dict_valueType <- function(data_dict){
           TRUE                         ~ "[INFO] - Suggested valueType.")) %>%
       select( 'name_var', 'value' = 'valueType', 'condition','suggestion') %>%
       mutate(across(everything(), ~ as.character(.)))
-
-    }
-
+    
+  }
+  
   test <- bind_rows(
     test_valueType_names, 
     test_valueType_refined)
-
+  
   return(test)
 }
 
@@ -700,25 +700,25 @@ check_data_dict_valueType <- function(data_dict){
 #'
 #' @export
 check_dataset_variables <- function(dataset, data_dict = NULL){
-
+  
   if(is.null(data_dict)) data_dict <- data_dict_extract(dataset)
-
+  
   # test if enough data_dict or dataset
   as_data_dict_shape(data_dict)
   as_dataset(dataset) # no col_id
-
+  
   test_cat <- tibble(name_var = as.character(), condition = as.character())
-
+  
   var_names_in_data_dict <-
     data_dict[['Variables']] %>%
     select(name_var = .data$`name`) %>%
     mutate(data_dict = "data_dict")
-
+  
   var_names_in_dataset <-
     dataset %>% names %>% as_tibble() %>%
     rename(name_var = .data$`value`) %>%
     mutate(dataset = "dataset")
-
+  
   test <-
     full_join(var_names_in_dataset,var_names_in_data_dict,by = "name_var") %>%
     mutate(condition = case_when(
@@ -729,7 +729,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
     dplyr::filter(!is.na(.data$`condition`)) %>%
     select(.data$`name_var`, .data$`condition`) %>%
     distinct()
-
+  
   return(test)
 }
 
@@ -846,29 +846,29 @@ check_dataset_categories <- function(
       if(is.factor(dataset[[i]])) 
         ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i])) else
           ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i])[[1]])
-      
-      cat_in_dd_only <- as.character(dd_cat[!dd_cat %in% ds_cat])
-      cat_in_ds_only <- as.character(ds_cat[!ds_cat %in% dd_cat])
-      
-      if(length(cat_in_dd_only) > 0){
-        test <-
-          test %>%
-          bind_rows(
-            tibble(
-              name_var  = i,
-              value     = cat_in_dd_only,
-              condition =
-                "[INFO] - Variable is categorical in data dictionary but not in dataset."))}
-      
-      if(length(cat_in_ds_only) > 0){
-        test <-
-          test %>%
-          bind_rows(
-            tibble(
-              name_var  = i,
-              value     = cat_in_ds_only,
-              condition =
-                "[INFO] - Variable is categorical in dataset but not in data dictionary."))}
+        
+        cat_in_dd_only <- as.character(dd_cat[!dd_cat %in% ds_cat])
+        cat_in_ds_only <- as.character(ds_cat[!ds_cat %in% dd_cat])
+        
+        if(length(cat_in_dd_only) > 0){
+          test <-
+            test %>%
+            bind_rows(
+              tibble(
+                name_var  = i,
+                value     = cat_in_dd_only,
+                condition =
+                  "[INFO] - Variable is categorical in data dictionary but not in dataset."))}
+        
+        if(length(cat_in_ds_only) > 0){
+          test <-
+            test %>%
+            bind_rows(
+              tibble(
+                name_var  = i,
+                value     = cat_in_ds_only,
+                condition =
+                  "[INFO] - Variable is categorical in dataset but not in data dictionary."))}
     }
   }
   

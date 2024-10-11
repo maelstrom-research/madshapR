@@ -1530,19 +1530,19 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   # data dictionary is not applied to dataset, since it may come from an
   # automated datadict (text by default).
   if(suppressWarnings(check_dataset_valueType(dataset,data_dict)) %>% 
-     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
-"Valuetype in the data dictionary is not compatible with data ",
+"Valuetype in the data dictionary is not compatible with data.",
 bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) to get a full assessment of
 your dataset")}
   
   if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
-         "Names across your data dictionary differ from names across the dataset.",
-         bold("\n\nUseful tip:"),
-         " Use dataset_evaluate(dataset, data_dict) to get a full assessment of
+"Names across your data dictionary differ from names across the dataset.",
+bold("\n\nUseful tip:"),
+" Use dataset_evaluate(dataset, data_dict) to get a full assessment of
 your dataset")}
   
   # set cleaning prefix of Variables element
@@ -2107,11 +2107,11 @@ as_data_dict <- function(object){
     
     is_data_dict_mlstr <- all(
       silently_run(check_data_dict_categories(object)) %>% 
-        dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow == 0,
+        dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow == 0,
       silently_run(check_data_dict_missing_categories(object)) %>% 
-        dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow == 0,
+        dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow == 0,
       silently_run(check_data_dict_valueType(object)) %>% 
-        dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow == 0)
+        dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow == 0)
   }
   
   # test if element is enough data_dict
@@ -2119,7 +2119,7 @@ as_data_dict <- function(object){
   
   # variable names must be unique and non-null
   if(check_data_dict_variables(data_dict) %>% 
-     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
 "Variable names must exist and be unique in your data dictionary.",
 bold("\n\nUseful tip:"),
@@ -2129,7 +2129,7 @@ data dictionary")}
   # variable names must exist in categories
   if(sum(nrow(data_dict[['Categories']])) > 0){
     if(check_data_dict_categories(data_dict) %>% 
-       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Variable names in categories must exist and be unique in the data dictionary.",
 bold("\n\nUseful tip:"),
@@ -2463,18 +2463,18 @@ as_data_dict_mlstr <- function(object, name_standard = FALSE){
   
   # if valueType exists, vT must be valid
   if(suppressWarnings(check_data_dict_valueType(data_dict))  %>%
-     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
-"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).",
+"ValueType is not an accepted type (see ??valueType_list for complete list).",
 bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your
 data dictionary")}
   
   # check missing validity
   if(suppressWarnings(check_data_dict_missing_categories(data_dict)) %>% 
-     dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
     stop(call. = FALSE,
-         "\n
+"\n
 Values in 'missing' column (in Categories) are non-Boolean",
 bold("\n\nUseful tip:"),
 " Use data_dict_evaluate(data_dict) to get a full assessment of your

@@ -90,10 +90,10 @@ dataset_evaluate <- function(
   
   # future dev
   # add emptiness of the dataset in the Dataset assessment
-
+  
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
-
+  
   # check on arguments : dataset
   as_dataset(dataset) # no col_id
   
@@ -107,37 +107,37 @@ dataset_evaluate <- function(
       silently_run({data_dict_extract(
         dataset = dataset,
         as_data_dict_mlstr = TRUE)})
-
+    
     if(class(data_dict)[1] == "try-error"){
       data_dict <- 
         silently_run({data_dict_extract(
           dataset = dataset,
           as_data_dict_mlstr = FALSE)})}
   }
-
+  
   as_data_dict_shape(data_dict)
   
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     add_index(.force = TRUE)
-
+  
   data_dict <- data_dict[c('Variables','Categories')]
   data_dict <-
     data_dict[!is.na(names(data_dict))] %>%
     lapply(function(x) x %>% mutate(across(everything(),as.character)))
-
+  
   # add valueType and missing if don't exist
   if(is_data_dict_mlstr == TRUE){
-
+    
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
       bind_rows(tibble(valueType = as.character()))
-
+    
     if(sum(nrow(data_dict[['Categories']])) > 0){
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
         bind_rows(tibble(missing = as.character()))}}
-
+  
   preserve_attributes <- 
     col_id <- attributes(dataset)$`madshapR::col_id`
   
@@ -157,20 +157,20 @@ dataset_evaluate <- function(
     ifelse(!is.null(dataset_name),dataset_name,
            make_name_list(
              as.character(fargs[['dataset']]),list_elem = list(NULL)))
-
+  
   # check on argument : taxonomy
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
-
+  
   # creation of the structure of the report
   report <- 
     data_dict_evaluate(data_dict,
-      is_data_dict_mlstr = is_data_dict_mlstr) 
-
+                       is_data_dict_mlstr = is_data_dict_mlstr) 
+  
   message(
     "- DATASET ASSESSMENT: ",
     bold(dataset_name), if(nrow(dataset) == 0) " (empty dataset)",
     " --------------------------")
-
+  
   test_name_standards <-
     test_matching_variable <-
     test_duplicated_columns <-
@@ -181,7 +181,7 @@ dataset_evaluate <- function(
     test_existing_variable_category <-
     test_valueType <-
     tibble(name_var = as.character())
-
+  
   if(is_data_dict_mlstr == TRUE){
     message(
       "    Assess the standard adequacy of naming")
@@ -190,13 +190,13 @@ dataset_evaluate <- function(
   }
   
   message(
-"    Assess the presence of variable names both in dataset and data dictionary")
+    "    Assess the presence of variable names both in dataset and data dictionary")
   test_matching_variable <-
     check_dataset_variables(dataset, data_dict) %>%
     dplyr::filter(.data$`name_var` != '___mlstr_index___') %>% 
     dplyr::filter(
       str_detect(
-        .data$`condition`,"Variable only present") & !is.na(.data$`name_var`)) 
+        .data$`condition`,"Variable only present") & !is.na(.data$`name_var`))
   
   message(
     "    Assess the presence of possible duplicated variable in the dataset")
@@ -304,7 +304,7 @@ dataset_evaluate <- function(
         distinct() %>% group_by(.data$`name_var`,.data$`condition`) %>%
         reframe(
           `value` = paste0(.data$`value`, collapse = " ; "))
-      }) %>%
+    }) %>%
     dplyr::filter(!is.na(.data$`name_var`))
   
   if(is_data_dict_mlstr == TRUE){
@@ -312,8 +312,8 @@ dataset_evaluate <- function(
       "    Assess the `valueType` comparison in dataset and data dictionary")
     test_valueType <-
       check_dataset_valueType(
-       dataset = zap_dataset, 
-       data_dict = data_dict['Variables'],valueType_guess = TRUE)}
+        dataset = zap_dataset, 
+        data_dict = data_dict['Variables'],valueType_guess = TRUE)}
   
   # test_name_standards
   # test_matching_variable
@@ -347,7 +347,7 @@ dataset_evaluate <- function(
       by = 'Variable name') %>% 
     select("Index", everything()) %>%
     arrange(.data$`Index`)
-    
+  
   
   if(all(is.na(report[['Dataset assessment']][['suggestion']]))){
     report[['Dataset assessment']][['suggestion']] <- NULL}
@@ -902,20 +902,6 @@ data_dict_evaluate <- function(
         lapply(function(x) str_trunc(x, 10000)) %>%
         as_tibble()      
     })
-  
-  # # add categories labels and missing (GF : to check further [ERROR])
-  # if(is.null(report$`Data dictionary summary`[["Category codes and labels"]] |
-  #            is.null(report$`Data dictionary summary`[["Category missing codes"]]))){
-  #   
-  #   report$`Data dictionary summary`[["Category codes and labels"]] <- NA_character_
-  #   report$`Data dictionary summary`[["Category missing codes"]] <- NA_character_
-  #   
-  #   report$`Data dictionary summary` <-
-  #     report$`Data dictionary summary` %>%
-  #     select(everything(),any_of("Category codes and labels"),
-  #            any_of("Category missing codes"))
-  #   
-  # }
 
   return(report)
 }
