@@ -151,7 +151,13 @@ dataset_zap_data_dict <- function(dataset){
 
   # test input
   as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  
   preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+  categorical_variables <-
+    dataset %>%
+    reframe(across(everything(), ~ is_category(.))) %>%
+    pivot_longer(everything()) %>%
+    dplyr::filter(.data$`value`) %>% pull("name")
 
   dataset_init <- dataset # = dataset_init
 
@@ -177,6 +183,11 @@ dataset_zap_data_dict <- function(dataset){
         dataset[[vec$`index`[[i]]]] <- as_valueType(dataset[[vec$`index`[[i]]]],'text')
       })
   }
+  
+  # if categorical, replace by factor
+  dataset <- 
+    dataset %>% 
+    mutate(across(any_of(categorical_variables),as.factor))
   
   return(dataset)
 }
