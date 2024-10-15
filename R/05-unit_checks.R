@@ -59,7 +59,7 @@ check_data_dict_variables <- function(data_dict){
     data_dict[['Variables']] %>%
     add_index(.force = TRUE) %>%
     dplyr::filter(is.na(.data$`name`) | .data$`name` == "") %>%
-    mutate(name = paste0("row number: ",.data$`index`)) %>%
+    mutate(name = paste0("Row number: ",.data$`index`)) %>%
     select(.data$`name`)
   
   test <-
@@ -135,7 +135,7 @@ check_data_dict_categories <- function(data_dict){
   var_names <-
     data_dict[['Variables']] %>%
     mutate(name_var = as.character(.data$`name`)) %>%
-    select(.data$`name_var`) %>% distinct %>%
+    select("name_var") %>% distinct %>%
     dplyr::filter(!is.na(.data$`name_var`))
   
   cat_names <-
@@ -143,8 +143,8 @@ check_data_dict_categories <- function(data_dict){
     mutate(across(everything(), as.character)) %>%
     mutate(name_var = as.character(.data$`variable`)) %>%
     add_index(.force = TRUE) %>%
-    mutate(index = paste0("row number: ",.data$`index`)) %>%
-    select(value = .data$`name`,.data$`name_var`,.data$`index`) %>%
+    mutate(index = paste0("Row number: ",.data$`index`)) %>%
+    select(value = "name","name_var","index") %>%
     arrange(.data$`name_var`) %>%
     distinct
   
@@ -166,13 +166,17 @@ check_data_dict_categories <- function(data_dict){
       value = ifelse(is.na(.data$`name_var`),.data$`index`,.data$`value`)) %>%
     ungroup() %>%
     dplyr::filter(!is.na(.data$`index`)) %>%
-    select(.data$`name_var`, .data$`condition`, .data$`value`) %>%
+    group_by(.data$name_var) %>%
+    add_index("group_index") %>%
+    mutate(value = ifelse(.data$`group_index` == 1,.data$`index`,.data$`value`)) %>%
+    dplyr::filter(!is.na(.data$`value`)) %>%
+    select("name_var", "condition", "value") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
   
   cat_names_count <-
     data_dict[['Categories']] %>%
-    select(name_var = .data$`variable`,.data$`name`) %>%
+    select(name_var = "variable","name") %>%
     mutate(across(everything(), as.character)) %>%
     group_by(.data$`name_var`,.data$`name`) %>% add_count() %>% ungroup %>%
     dplyr::filter(.data$`n` > 1)
@@ -181,7 +185,7 @@ check_data_dict_categories <- function(data_dict){
     cat_names_count %>%
     mutate(
       condition = "[ERROR] - Duplicated category 'name'.")%>%
-    select(.data$`name_var`, value = .data$`name`, .data$`condition`) %>%
+    select("name_var", value = "name", "condition") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
   
@@ -1012,12 +1016,12 @@ check_dataset_valueType <- function(
           value     = data_dict_vT,
           condition = ifelse(
             condition == 'try-error',
-            "[ERROR] - valueType in data dictionary is not compatible with dataset values.",NA_character_),
+"[ERROR] - valueType in data dictionary is not compatible with dataset values.",NA_character_),
           suggestion = guess) %>% 
           mutate(
           condition = ifelse(
             data_dict_vT == 'date' & guess == 'datetime',
-            "[ERROR] - Inconsistent or ambiguous date format.",.data$`condition`),
+"[ERROR] - Inconsistent or ambiguous date format.",.data$`condition`),
           suggestion = ifelse(
             data_dict_vT == 'date' & guess == 'datetime',
             'text',.data$`suggestion`)))
@@ -1081,6 +1085,8 @@ check_dataset_valueType <- function(
 #' @export
 check_name_standards <- function(var_names){
 
+  # [GF - tested and validated]
+  
   var_names_valid <- make.names(
     paste0("X",var_names) %>% str_replace_all("-","_"))
 
