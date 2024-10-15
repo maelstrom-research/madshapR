@@ -114,7 +114,6 @@ dataset_evaluate <- function(
           dataset = dataset,
           as_data_dict_mlstr = FALSE)})}
   }
-  
   as_data_dict_shape(data_dict)
   
   data_dict[['Variables']] <-
@@ -164,7 +163,7 @@ dataset_evaluate <- function(
   # creation of the structure of the report
   report <- 
     data_dict_evaluate(data_dict,
-                       is_data_dict_mlstr = is_data_dict_mlstr) 
+                       is_data_dict_mlstr = is_data_dict_mlstr)
   
   message(
     "- DATASET ASSESSMENT: ",
@@ -584,7 +583,7 @@ data_dict_evaluate <- function(
         data_dict[['Categories']] <-
           data_dict[['Categories']] %>%
           bind_rows(tibble(label_temp = as.character())) %>%
-          rename_with(.cols = "labeld_temp", .fn =  ~ first_lab_var)
+          rename_with(.cols = "label_temp", .fn =  ~ first_lab_var)
       }
     }
   }
@@ -615,31 +614,32 @@ data_dict_evaluate <- function(
       suppressWarnings(data_dict_collapse(
         data_dict %>% data_dict_filter(filter_cat = "missing %in% 'TRUE'")))
     }
-
-    
+  
   missing_labels <-  
     missing_labels$Variables %>%
     bind_rows(tibble("Category missing codes" = as.character())) %>%
-    select("index","name","Category missing codes" = starts_with("Categories::label")) %>%
+    select("Index" = "index","Variable name" = "name","Category missing codes" = starts_with("Categories::label")) %>%
     bind_rows(tibble("temp" = as.character())) %>%
-    select("index","name","Category missing codes" = 3) %>%
+    select("Index","Variable name","Category missing codes" = 3) %>%
     dplyr::filter(!is.na(.data$`Category missing codes`))
   
   report$`Data dictionary summary` <-
     suppressWarnings(data_dict_collapse(data_dict))
   
+  
   report$`Data dictionary summary` <-
     tibble(report$`Data dictionary summary`[['Variables']]) %>%
+    bind_rows(tibble("Categories::label" = as.character())) %>%
     select(
       'Index' = 'index',
       'Variable name' = 'name',
       'Variable label' = matches(c("^label$","^label:[[:alnum:]]"))[1],
       'Variable valueType' = matches('^valueType$'),
-      "Category codes and labels" = starts_with("Categories::label")) %>%
+      "Category codes and labels" = matches(c("^Categories::label"))[1]) %>%
     bind_rows(tibble("Category codes and labels" = as.character())) %>%
-    left_join(missing_labels, by = c('Index' = "index", 'Variable name' = "name")) %>%
-    mutate(Index = as.integer(.data$`Index`))
-  
+    left_join(missing_labels, by = c('Index', 'Variable name')) %>%
+    mutate(Index = as.integer(replace_na(.data$`Index`,"0")))
+   
   # clean labels and missing
   # if(all(is.na(report$`Data dictionary summary`[["Category missing codes"]]))){
   # 
@@ -647,11 +647,10 @@ data_dict_evaluate <- function(
   #   
   #   }
 
-
   test_name_standards <-
     test_unique_variable <-
     test_duplicated_columns <-
-    # test_duplicated_rows <-
+    test_duplicated_rows <-
     test_empty_row <-
     test_empty_col <-
     test_existing_variable_category <-
@@ -659,130 +658,154 @@ data_dict_evaluate <- function(
     test_valueType <-
     test_cat_label <-
     test_missing_category <-
-    tibble(name_var = as.character())
+    tibble("Variable name" = as.character())
   
   if(is_data_dict_mlstr == TRUE){
     
+    # [GF - tested and validated]
     message("    Assess the standard adequacy of naming")
     test_name_standards  <-
       check_name_standards(data_dict[['Variables']][['name']]) %>%
-      mutate(
-        col_name = "name",
-        sheet    = "Variables") %>%
+      mutate(Sheet = "Variables", 'Column name' = "name") %>%
       bind_rows(
         if(sum(nrow(data_dict[['Categories']])) > 0 ){
           check_name_standards(data_dict[['Categories']][['variable']]) %>%
-            mutate(
-              col_name = "name",
-              sheet    = "Categories")
-        }else{tibble(name_var = as.character())})
+            mutate(Sheet = "Categories" , 'Column name' = "variable") 
+        }else{tibble("name_var" = as.character())}) %>%
+      rename("Variable name" = "name_var",
+             "Data dictionary assessment" = "condition") %>%
+      mutate(across(everything(),as.character))
   }
   
+  # [GF - tested and validated]
   message("    Assess the uniqueness of variable names")
   test_unique_variable <-
     check_data_dict_variables(data_dict) %>%
-    mutate(
-      col_name = "name",
-      sheet    = "Variables")
+    mutate(Sheet    = "Variables", 'Column name' = "name") %>%
+    rename("Variable name" = "name_var",
+           "Data dictionary assessment" = "condition")%>%
+    mutate(across(everything(),as.character))
+    
   
+  # [GF - tested and validated]
   message("    Assess the presence of possible duplicated columns")
   test_duplicated_columns <-
-    suppressWarnings(get_duplicated_cols(data_dict[['Variables']])) %>%
-    mutate(condition = as.character(ifelse(.data$`condition` == 
-      "Possible duplicated columns: name ; label",NA_character_,.data$`condition`))) %>%
+    suppressWarnings(get_duplicated_cols(
+      data_dict[['Variables']] %>% select(-"index",-"name"))) %>%
     dplyr::filter(!is.na(.data$`condition`)) %>%
-    mutate(sheet     = "Variables") %>%
-    mutate(across(everything())) %>%
+    mutate(Sheet     = "Variables") %>%
+    mutate(across(everything(),as.character)) %>%
     
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
-        suppressWarnings(get_duplicated_cols(data_dict[['Categories']])) %>%
-          mutate(condition = as.character(ifelse(.data$`condition` == 
-            "Possible duplicated columns: name ; label",NA_character_,.data$`condition`))) %>%
+        suppressWarnings(get_duplicated_cols(
+          data_dict[['Categories']] %>% select(-"name"))) %>%
           dplyr::filter(!is.na(.data$`condition`)) %>%
-          mutate(sheet    = "Categories")
+          mutate(Sheet    = "Categories")
       }else{tibble()}) %>%
-    mutate(value     = str_squish(
+    mutate(Value     = str_squish(
              str_remove(.data$`condition`,"Possible duplicated columns:")),
-           condition = "[INFO] - Possible duplicated columns.") 
+           `Variable name` = "(all)",
+           condition = "[INFO] - Possible duplicated columns.") %>%
+    rename("Column name" = "col_name",
+           "Data dictionary assessment" = "condition") %>%
+    mutate(across(everything(),as.character))
   
-  # message("    Assess the presence of duplicated variable in the dataset")
-  # test_duplicated_rows <-
-  #   get_duplicated_rows(
-  #     data_dict[['Variables']] %>%
-  #       bind_rows(data_dict[['Variables']] %>% slice(1:3)) %>%
-  #       select(-"name")) %>%
-  #   add_index("condition_index") %>%
-  #   separate_rows("row_number",sep = " ; ") %>%
-  #   mutate(index = as.integer(.data$`row_number`)) %>%
-  #   full_join(data_dict[['Variables']] %>% add_index(.force = TRUE),
-  #                                                            by = "index") %>%
-  #   dplyr::filter(!is.na(.data$`condition`)) %>%
-  #   select(col_name = "name") %>%
-  #   reframe(col_name = paste0(.data$`col_name`, collapse = " ; ")) %>%
-  #   dplyr::filter(col_name != "''") %>%
-  #   mutate(
-  #     condition = "[INFO] - Duplicated rows (excluding identifier).",
-  #     sheet    = "Variables")
   
+  # [GF - tested and validated] (no need for Categories)
+  message("    Assess the presence of duplicated rows")
+  test_duplicated_rows <-
+    data_dict[['Variables']] %>%
+    select(-"name",-"index") %>%
+    get_duplicated_rows() %>%
+    mutate("Value" = paste0("Row numbers: ",.data$`row_number`)) %>%
+    separate_rows("row_number",sep = " ; ") %>%
+    mutate(index = .data$`row_number`) %>%
+    left_join(data_dict[['Variables']], by = "index") %>%
+    select("name", "row_number", "Value") %>%
+    group_by(.data$`Value`) %>%
+    fill("name",.direction = "down") %>%
+    select("name","Value") %>%
+    mutate(
+      condition = "[INFO] - Possible duplicated rows (except for variable name).",
+      Sheet    = "Variables") %>%
+    distinct() %>%
+    rename("Variable name" = "name",
+           "Data dictionary assessment" = "condition") %>%
+    mutate(across(everything(),as.character))
+  
+  
+  # [GF - tested and validated]
   message("    Assess the presence of empty rows in the data dictionary")
   test_empty_row <-
-    data_dict[['Variables']] %>% select(-"name", everything()) %>%
+    data_dict[['Variables']] %>% 
+    bind_rows(tibble(name = as.character())) %>%
+    select(-"index",-"name") %>% 
     get_all_na_rows() %>%
+    rename("index" = "row_number") %>%
+    left_join(data_dict[['Variables']], by = "index") %>%
+    select('condition','index','name') %>%
     mutate(
-      value = paste0("row number: ", .data$`row_number`), 
-      sheet    = "Variables",
-      condition = "[INFO] - Empty row(s).",
-      sheet    = "Variables") %>% 
-    select("condition","value","sheet")
+      name = paste0("Row number: ", .data$`index`), 
+      Sheet    = "Variables",
+      condition = "[INFO] - Empty row (except for variable name).") %>% 
+    select(-"index") %>%
+    rename("Variable name" = "name",
+           "Data dictionary assessment" = "condition") %>%
+    mutate(across(everything(),as.character))
   
-  if(sum(nrow(data_dict[['Categories']])) > 0){
-    test_empty_row <-
-      test_empty_row %>%
-      bind_rows(
-        data_dict[['Categories']] %>% select(-"variable", everything()) %>%
-          get_all_na_rows() %>%
-          mutate(
-            value = paste0("row number: ", .data$`row_number`), 
-            sheet    = "Variables",
-            condition = "[INFO] - Empty row(s).",
-            sheet    = "Categories") %>% 
-          select("condition","value","sheet"))
-    }
-  
+  # [GF - tested and validated]
   message("    Assess the presence of empty column in the data dictionary")
   test_empty_col <-
-    get_all_na_cols(
-      data_dict[['Variables']] %>% select(-"name")) %>%
-    mutate(sheet    = "Variables",
+    data_dict[['Variables']] %>% 
+    get_all_na_cols() %>%
+    mutate(Sheet    = "Variables",
            condition = "[INFO] - Empty column.") %>%
     bind_rows(
       if(sum(nrow(data_dict[['Categories']])) > 0 ){
-        get_all_na_cols(
-          data_dict[['Categories']] %>% select(-"variable")) %>%
-          mutate(sheet    = "Categories",
+        data_dict[['Categories']] %>%
+          get_all_na_cols() %>%
+          mutate(Sheet    = "Categories",
                  condition = "[INFO] - Empty column.")
-      }else{tibble()})
+      }else{tibble()}) %>%
+    mutate("Variable name" = '(all)') %>%
+    rename("Column name" = "col_name",
+           "Data dictionary assessment" = "condition") %>%
+    mutate(across(everything(),as.character))
   
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
+    # [GF - tested and validated]
     message("    Assess the presence of categories not in the data dictionary")
     test_existing_variable_category <-
       suppressWarnings(check_data_dict_categories(data_dict)) %>%
       mutate(
-        col_name = "variable",
-        sheet    = "Categories")
+        "Column name" = "variable",
+        Sheet    = "Categories") %>%
+      rename("Variable name" = "name_var",
+             "Value" = "value",
+             "Data dictionary assessment" = "condition") %>%
+      mutate(across(everything(),as.character))
   }
   
   if(is_data_dict_mlstr == TRUE){
-    
+  
+    # [GF - tested and validated]  
     message("    Assess the `valueType` column in 'Variables'")
     test_valueType <-
       check_data_dict_valueType(data_dict) %>%
       mutate(
-        col_name = "valueType",
-        sheet    = "Variables")
+        "Column name" = "valueType",
+        Sheet    = "Variables") %>%
+      bind_rows(tibble("suggestion" = as.character())) %>%
+      rename("Variable name" = "name_var",
+             "Value" = "value",
+             "Data dictionary assessment" = "condition",
+             "Suggested valueType" = "suggestion") %>%
+      mutate(across(everything(),as.character))
     
+    
+    # [GF - tested and validated]  
     first_lab_var <- 
       data_dict[['Variables']] %>%
       select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
@@ -798,54 +821,66 @@ data_dict_evaluate <- function(
         names_to = "col_name",
         values_to = "value") %>%
       dplyr::filter(is.na(.data$`value`)) %>%
-      select(name_var = "name", "col_name") %>%
+      select(-"value") %>%
       mutate(
-        col_name = !! first_lab_var,
         condition =
           paste0(
-"[ERROR] - Column `",!! first_lab_var,"` does not exist or contains empty values.")) %>%
-      mutate(sheet    = "Variables")
+"[ERROR] - Column `",!! first_lab_var,"` contains empty values.")) %>%
+      mutate("Sheet"       = "Variables",
+             "col_name" = !! first_lab_var,) %>%
+      rename(
+        "Variable name"  = "name",
+        "Column name"    = "col_name",
+        "Data dictionary assessment" = "condition") %>%
+      mutate(across(everything(),as.character))
     
     if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
       test_var_label <- 
-        test_var_label %>% mutate(name_var = '(all)') %>% distinct}
+        test_var_label %>% mutate("Variable name" = '(all)') %>% distinct}
 
     if(sum(nrow(data_dict[['Categories']])) > 0){
     
+      # [GF - tested and validated]  
       message(
 "    Assess presence and completion of `",first_lab_var,"` column in 'Categories'")
       
-        
-        test_cat_label <-
-          data_dict[['Categories']] %>%
-          select(
-            "name", "label" = !! first_lab_var) %>%
-          pivot_longer(
-            cols = !"name",
-            names_to = "col_name",
-            values_to = "value") %>%
-          dplyr::filter(is.na(.data$`value`)) %>%
-          select(name_var = "name", "col_name") %>%
-          mutate(
-            col_name = first_lab_var,
-            condition =
-              paste0(
-"[ERROR] - Column `",!! first_lab_var,"` does not exist or contains empty values.")) %>%
-          mutate(sheet    = "Categories")
-        
-        if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
-          test_var_label <- 
-            test_var_label %>% mutate(name_var = '(all)') %>% distinct}
+      test_cat_label <-
+        data_dict[['Categories']] %>% 
+        select(
+          "variable", "label" = !! first_lab_var) %>%
+        pivot_longer(
+          cols = !"variable",
+          names_to = "col_name",
+          values_to = "value") %>%
+        dplyr::filter(is.na(.data$`value`)) %>%
+        select(-"value") %>%
+        mutate(
+          condition =
+            paste0(
+              "[ERROR] - Column `",!! first_lab_var,"` contains empty values.")) %>%
+        mutate("Sheet"       = "Categories",
+               "col_name" = !! first_lab_var,) %>%
+        rename(
+          "Variable name"  = "variable",
+          "Column name"    = "col_name",
+          "Data dictionary assessment" = "condition") %>%
+        mutate(across(everything(),as.character))
+      
+      if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
+        test_var_label <- 
+          test_var_label %>% mutate("Variable name" = '(all)') %>% distinct}
       
       
-        test_missing_category <- tibble()
-        if(sum(nrow(data_dict[['Categories']])) > 0){
-          message("    Assess the logical values of missing column in Categories")
-          test_missing_category <- 
-            check_data_dict_missing_categories(data_dict) %>%
-            mutate(
-              col_name = "missing",
-              sheet    = "Categories")}
+      
+      # [GF - tested and validated]  
+
+      message("    Assess the logical values of missing column in Categories")
+      test_missing_category <- 
+        suppressWarnings(check_data_dict_missing_categories(data_dict)) %>%
+        mutate(Sheet    = "Categories", "Column name" = "missing") %>%
+        rename("Variable name" = "name_var","Value" = "value",
+               "Data dictionary assessment" = "condition") %>%
+        mutate(across(everything(),as.character))
       }
   }
   
@@ -865,7 +900,7 @@ data_dict_evaluate <- function(
     test_name_standards %>%
     bind_rows(test_unique_variable) %>%
     bind_rows(test_duplicated_columns) %>%
-    # bind_rows(test_duplicated_rows) %>%
+    bind_rows(test_duplicated_rows) %>%
     bind_rows(test_empty_row) %>%
     bind_rows(test_empty_col) %>%
     bind_rows(test_existing_variable_category) %>%
@@ -873,16 +908,20 @@ data_dict_evaluate <- function(
     bind_rows(test_valueType) %>%
     bind_rows(test_cat_label) %>%
     bind_rows(test_missing_category) %>%
-    arrange(desc(.data$`sheet`),.data$`col_name`,.data$`name_var`) %>%
+    left_join(data_dict$Variables %>% select("Variable name" = "name","index"),
+              relationship = "many-to-many",by = "Variable name") %>%
+    mutate(index = as.integer(.data$`index`)) %>%
+    arrange(.data$`index`,.data$`Variable name`) %>%
     select(
-      "Sheet" = "sheet",
-      "Column name" = "col_name",
-      "Variable name" = "name_var",
-      "Quality assessment comment" = "condition",
-      "Value" = matches("value"), 
-      "Suggested valueType" = matches("suggestion")) %>%
+      "Variable name",
+      matches("Column name"),
+      matches("Data dictionary assessment"),
+      matches("Sheet"),
+      matches("Value"), 
+      matches("Suggested valueType")) %>%
     mutate(across(everything(), ~ as.character(.))) %>%
-    distinct() %>% tibble
+    distinct() %>% tibble %>% 
+    remove_empty("cols")
   
   message("    Generate report")
   
