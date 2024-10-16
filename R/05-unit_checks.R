@@ -125,6 +125,7 @@ check_data_dict_categories <- function(data_dict){
   test <- test_cat_presence <- test_cat_unique <-
     tibble(
       name_var = as.character(),
+      col_name = as.character(),
       value = as.character(),
       condition = as.character())
   
@@ -151,26 +152,34 @@ check_data_dict_categories <- function(data_dict){
   test_cat_presence <-
     anti_join(cat_names,var_names, by = "name_var") %>%
     bind_rows(tibble(
-      value = NA_character_,name_var = NA_character_,index = NA_character_)) %>%
+      value = NA_character_,name_var = NA_character_,index = NA_character_,col_name = NA_character_)) %>%
     rowwise() %>%
     mutate(
+      
+      # if the variable name in categories has not been found in the variable list,
+      # or is empty
       condition = ifelse(is.na(.data$`name_var`),
-"[ERROR] - Category has no corresponding 'variable' name.",
+"[ERROR] - Category 'variable' name is empty.",
 "[ERROR] - Category 'variable' name has no corresponding variable in 'Variables' sheet."
       ),
+      col_name = "variable",
+      name_var = ifelse(is.na(.data$`name_var`),"(empty)",.data$`name_var`),
+
+      # if the value code (name) is empty 
       condition = ifelse(is.na(.data$`value`),
 "[ERROR] - Category 'name' is empty.", .data$`condition`),
-      value = ifelse(!is.na(.data$`value`),"value",.data$`value`),
-      value = replace_na(.data$`value`,.data$`index`),
-      value = na_if(.data$`value`,"value"),
-      value = ifelse(is.na(.data$`name_var`),.data$`index`,.data$`value`)) %>%
+      col_name  = ifelse(is.na(.data$`value`), "name",.data$`col_name`),
+      value = replace_na(.data$`value`,.data$`index`)) %>%
+
+      # value = na_if(.data$`value`,"value"),
+      # value = ifelse(is.na(.data$`name_var`),.data$`index`,.data$`value`)) %>%
     ungroup() %>%
     dplyr::filter(!is.na(.data$`index`)) %>%
-    group_by(.data$name_var) %>%
+    group_by(.data$`name_var`,.data$`col_name`) %>%
     add_index("group_index") %>%
     mutate(value = ifelse(.data$`group_index` == 1,.data$`index`,.data$`value`)) %>%
-    dplyr::filter(!is.na(.data$`value`)) %>%
-    select("name_var", "condition", "value") %>%
+    dplyr::filter(.data$`value` == .data$`index`) %>%
+    select("name_var", "condition", "value","col_name") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
   
@@ -179,13 +188,14 @@ check_data_dict_categories <- function(data_dict){
     select(name_var = "variable","name") %>%
     mutate(across(everything(), as.character)) %>%
     group_by(.data$`name_var`,.data$`name`) %>% add_count() %>% ungroup %>%
-    dplyr::filter(.data$`n` > 1)
+    dplyr::filter(.data$`n` > 1) %>% distinct %>%
+    mutate(col_name = 'name')
   
   test_cat_unique <-
     cat_names_count %>%
     mutate(
       condition = "[ERROR] - Duplicated category 'name'.")%>%
-    select("name_var", value = "name", "condition") %>%
+    select("name_var", value = "name", "condition","col_name") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
   
@@ -569,7 +579,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' 
 #' # use madshapR_example provided by the package
 #'
-#' data_dict <- madshapR_example$`data_dict_example - errors`
+#' data_dict <- madshapR_example$`data_dict_example - errors with data`
 #' check_data_dict_valueType(data_dict)
 #'
 #' }
@@ -585,24 +595,30 @@ check_data_dict_valueType <- function(data_dict){
   as_data_dict_shape(data_dict)
   
   test <- 
-    test_valueType_names <- 
-    test_valueType_refined <- 
+    test_valueType_suggested <- 
     tibble(
+      index = as.character(),
       name_var = as.character(),
-      value = as.character(),
-      condition = as.character())
+      suggestion = as.character(),
+      condition2 = as.character(),
+      value2 = as.character())
   
-  if(is.null(data_dict[['Variables']][['valueType']])){
-    warning("Your data dictionary contains no valueType column")
-    return(test)}
+  if(is.null(data_dict[['Variables']][['valueType']]))
+    data_dict[['Variables']][['valueType']] <- NA_character_    
   
-  vT_list <- madshapR::valueType_list
+  vT_list <- madshapR::valueType_list[!is.na(madshapR::valueType_list[['valueType']]),]
+  var_index <- data_dict[['Variables']]['name'] %>%
+    rename (name_var = "name") %>% add_index('index')
+  
   test_valueType_names <-
     data_dict[['Variables']] %>%
     dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
     select(name_var = "name",value = "valueType") %>%
     mutate(
-      condition = "[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).")%>%
+      condition = ifelse(is.na(.data$`value`),
+"[INFO] - valueType is missing (see ??valueType_list for complete list).",
+"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).")) %>%
+    inner_join(var_index, by = "name_var") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
   
@@ -611,45 +627,57 @@ check_data_dict_valueType <- function(data_dict){
     vT_categorical <-
       data_dict[['Categories']] %>%
       select(name_var = "variable", "name") %>%
-      dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var`) %>%
+      left_join(test_valueType_names,by = "name_var") %>%
+      select(-"index") %>%
+      inner_join(var_index, by = "name_var") %>%
+      dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var` |
+                    is.na(.data$`value`)) %>%
       inner_join(
         data_dict[['Variables']] %>%
           select(name_var = 'name','valueType'),by = "name_var")
     
     # for these, find the best match
-    test_valueType_refined <- 
+    test_valueType_suggested <- 
       vT_categorical %>%
-      group_by(across(any_of(c("name_var")))) %>%
+      group_by(across(any_of(c("name_var","index")))) %>%
       reframe(
         valueType = .data$`valueType`,
         name = paste0(.data$`name`,collapse = '|')) %>%
       distinct() %>%
-      group_by(across(any_of(c("valueType", 'name')))) %>%
+      group_by(across(any_of(c("valueType", 'name',"index")))) %>%
       reframe(
         name_var = paste0(.data$`name_var`,collapse = '|')) %>%
       distinct() %>%
       separate_longer_delim(cols = 'name',delim = '|') %>%
-      group_by(across(any_of(c("name_var")))) %>%
+      group_by(across(any_of(c("name_var","index")))) %>%
       reframe(
         valueType = .data$`valueType`,
         test = class(silently_run(as_valueType(.data$`name`,.data$`valueType`[[1]])))[1],
         suggestion = valueType_guess(.data$`name`)) %>%
       separate_longer_delim(cols = 'name_var',delim = '|') %>%
       distinct %>%
-      dplyr::filter(.data$`valueType` != .data$`suggestion`) %>%
+      dplyr::filter(!.data$`valueType` %in% .data$`suggestion`) %>%
       mutate(
+        valueType = replace_na(.data$`valueType`,"(empty)"),
         condition = case_when(
           .data$`test` == 'try-error'  ~ "[ERROR] - valueType is not compatible with variable categories.",
           TRUE                         ~ "[INFO] - Suggested valueType.")) %>%
-      select( 'name_var', 'value' = 'valueType', 'condition','suggestion') %>%
+      select("index", 'name_var', 'value2' = 'valueType', "condition2" = 'condition','suggestion') %>%
       mutate(across(everything(), ~ as.character(.)))
     
   }
   
-  test <- bind_rows(
-    test_valueType_names, 
-    test_valueType_refined)
-  
+  test <- 
+    full_join(
+      test_valueType_names, 
+      test_valueType_suggested, join_by("index","name_var")) %>%
+    mutate(
+      condition = ifelse(!is.na(.data$`condition`),.data$`condition`,.data$`condition2`),
+      value = ifelse(!is.na(.data$`value2`),.data$`value2`,.data$`value`),
+      suggestion = replace_na(.data$`suggestion`,"text")) %>% 
+    select(-c("condition2","value2","index")) %>%
+    mutate(across(everything(), ~ as.character(.)))
+    
   return(test)
 }
 
@@ -715,12 +743,14 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
   
   var_names_in_data_dict <-
     data_dict[['Variables']] %>%
-    select(name_var = .data$`name`) %>%
-    mutate(data_dict = "data_dict")
+    select(name_var = "name") %>%
+    mutate(data_dict = "data_dict") %>% 
+    filter(!is.na(.data$`name_var`)) %>% 
+    distinct
   
   var_names_in_dataset <-
     dataset %>% names %>% as_tibble() %>%
-    rename(name_var = .data$`value`) %>%
+    rename(name_var = "value") %>%
     mutate(dataset = "dataset")
   
   test <-
@@ -731,7 +761,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
       TRUE ~ NA_character_)) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     dplyr::filter(!is.na(.data$`condition`)) %>%
-    select(.data$`name_var`, .data$`condition`) %>%
+    select("name_var", "condition") %>%
     distinct()
   
   return(test)
@@ -814,7 +844,7 @@ check_dataset_categories <- function(
   as_dataset(dataset) # no col_id
   as_data_dict_shape(data_dict)
   
-  #### * test_categories ####
+  ##  test_categories ##
   # category in dd but not in dataset WARNING
   # category in dataset but not in dd ERROR
   
@@ -862,7 +892,7 @@ check_dataset_categories <- function(
                 name_var  = i,
                 value     = cat_in_dd_only,
                 condition =
-                  "[INFO] - Variable is categorical in data dictionary but not in dataset."))}
+                  "[INFO] - Variable is categorical in data dictionary but not in dataset."))} # GF Question
         
         if(length(cat_in_ds_only) > 0){
           test <-
@@ -872,7 +902,7 @@ check_dataset_categories <- function(
                 name_var  = i,
                 value     = cat_in_ds_only,
                 condition =
-                  "[INFO] - Variable is categorical in dataset but not in data dictionary."))}
+                  "[INFO] - Variable is categorical in dataset but not in data dictionary."))} # GF Question
     }
   }
   
@@ -930,7 +960,7 @@ check_dataset_categories <- function(
 #' @examples
 #' {
 #'
-#' data_dict <- madshapR_example$`data_dict_example - errors with data`
+#' data_dict <- madshapR_example$`data_dict_example - errors`
 #' dataset <- madshapR_example$`dataset_example - errors with data`
 #' 
 #' check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
@@ -947,9 +977,6 @@ check_dataset_valueType <- function(
     data_dict = NULL,
     valueType_guess = FALSE){
   
-  if(is.null(data_dict)) data_dict <-
-      data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
-
   # test if enough data_dict or dataset
   as_dataset(dataset) # no col_id
   as_data_dict_shape(data_dict)
@@ -974,17 +1001,25 @@ check_dataset_valueType <- function(
   data_dict <- suppressWarnings(
     data_dict_match_dataset(dataset, data_dict, output = "data_dict"))
 
-  test <- test_vT_dataset <-
-    # test_vT_compatible <-
-    tibble(
-      name_var = as.character(),
-      value = as.character(),
-      condition = as.character(),
-      suggestion = as.character())
   
   # check if `valueType` column exists
-  if(is.null(data_dict[['Variables']][['valueType']])) return(test)
-    
+  if(is.null(data_dict[['Variables']][['valueType']]))
+    data_dict[['Variables']][['valueType']] <- NA_character_    
+  
+  vT_list <- madshapR::valueType_list[!is.na(madshapR::valueType_list[['valueType']]),]
+  var_index <- data_dict[['Variables']]['name'] %>%
+    rename (name_var = "name") %>% add_index('index')
+  
+  test_vT_data_dict <- 
+    check_data_dict_valueType(data_dict) %>%
+    left_join(var_index,by = "name_var")
+  
+  test_vT_dataset <- tibble(
+    name_var = as.character(),
+    value2 = as.character(),
+    condition2 = as.character(),
+    suggestion2 = as.character())
+  
   for(i in names(dataset)){
     # stop()}
 
@@ -997,53 +1032,66 @@ check_dataset_valueType <- function(
             data_dict[['Categories']][['variable']] == i]
     if(length(vec2) > 0) vec <- c(vec,vec2)
     
-    condition <- class(silently_run(as_valueType(vec,data_dict_vT)))[1]
+    condition2 <- class(silently_run(as_valueType(vec,data_dict_vT)))[1]
     actual    <- as.character(valueType_of(dataset[[i]]))
-    guess     <- ifelse(
-      valueType_guess == FALSE,actual,as.character(valueType_guess(vec)))
+    guess     <- ifelse(valueType_guess == FALSE,NA_character_,as.character(valueType_guess(vec)))
     
     # preserve original valueType when is NA
     if(all(is.na(vec))){
       guess     <- ifelse(
         valueType_guess == FALSE,actual,as.character(valueType_guess(dataset[[i]])))}
-    
-
+  
     test_vT_dataset <-
       rbind(
         test_vT_dataset,
         tibble(
           name_var  = i,
-          value     = data_dict_vT,
-          condition = ifelse(
-            condition == 'try-error',
+          value2     = data_dict_vT,
+          condition2 = ifelse(
+            condition2 == 'try-error',
 "[ERROR] - valueType in data dictionary is not compatible with dataset values.",NA_character_),
-          suggestion = guess) %>% 
+          suggestion2 = guess) %>% 
           mutate(
-          condition = ifelse(
+          condition2 = ifelse(
             data_dict_vT == 'date' & guess == 'datetime',
-"[ERROR] - Inconsistent or ambiguous date format.",.data$`condition`),
-          suggestion = ifelse(
+"[ERROR] - Inconsistent or ambiguous date format.",.data$`condition2`),
+          suggestion2 = ifelse(
             data_dict_vT == 'date' & guess == 'datetime',
-            'text',.data$`suggestion`)))
+            'text',.data$`suggestion2`)))
   }
-
-  test <- bind_rows(test, test_vT_dataset)
+  
+  test_vT_dataset <- 
+    test_vT_dataset %>%
+    left_join(var_index,by = "name_var") %>%
+    rowwise() %>%
+    filter(!.data$`value2` %in% .data$`suggestion2` | !is.na(.data$`condition2`))
 
   if(valueType_guess == FALSE) 
-    test <- test %>% dplyr::filter(!is.na(.data$`condition`))
+    test_vT_dataset <- 
+    test_vT_dataset %>% dplyr::filter(!is.na(.data$`condition2`))
 
   test <- 
-    test %>% 
+    full_join(
+      test_vT_data_dict, 
+      test_vT_dataset, join_by("index","name_var")) %>%
+    mutate(suggestion = .data$`suggestion2`,value = .data$`value2`) %>%
+    rowwise() %>%
+    mutate(
+      replace_suggestion = .data$`value` %in% vT_list$valueType | is.na(.data$`value`),
+      replace_suggestion = .data$`value` %in% vT_list$valueType | is.na(.data$`value`),
+      condition = ifelse(isTRUE(.data$`replace_suggestion`) & is.na(.data$`condition`), 
+                         .data$`condition2`,.data$`condition`),
+      value = replace_na(.data$`value`,"(empty)")) %>%
     mutate(
       condition = ifelse(
-        is.na(.data$`condition`) &
-          .data$`value` %in% c("text","decimal", "integer","date"),
+        is.na(.data$`condition`),
         "[INFO] - Suggested valueType.",.data$`condition`),
       condition = as.character(.data$`condition`)) %>%
-    dplyr::filter(.data$`value` != .data$`suggestion`) %>%
-    dplyr::filter(!is.na(.data$`condition`)) %>%
+    mutate(index = as.integer(.data$`index`)) %>%
+    arrange(index) %>%
+    select(-"index",-"suggestion2",-"condition2",-"value2",-"replace_suggestion") %>%
     distinct()
-
+  
   return(test)
 }
 

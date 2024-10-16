@@ -57,7 +57,7 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-data_dict <- madshapR_example$`data_dict_example - errors with data`
+data_dict <- madshapR_example$`data_dict_example - errors`
 dataset <- madshapR_example$`dataset_example - errors with data`
 
 check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
