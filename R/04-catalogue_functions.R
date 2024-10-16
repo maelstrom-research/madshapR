@@ -900,6 +900,7 @@ data dictionary")}
   if(dataType     == "as_any_date"){
 
     # x <- as.character(x)
+    # if(length(x) == 0) return(as.Date(x))
     
     date_format <-
       guess_date_format(

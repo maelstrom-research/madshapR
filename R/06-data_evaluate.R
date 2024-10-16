@@ -71,6 +71,7 @@
 #' 
 #' ###### Example 2: Any data frame can be a dataset by definition
 #' eval_iris <- dataset_evaluate(iris)
+#' 
 #' glimpse(eval_iris)
 #' 
 #' }
@@ -371,7 +372,7 @@ dataset_evaluate <- function(
       report$`Data dictionary assessment` <- 
         report$`Data dictionary assessment` %>% 
         bind_rows(tibble("Column name" = as.character())) %>%
-        dplyr::filter(!`Column name` %in% "valueType")
+        dplyr::filter(!.data$`Column name` %in% "valueType")
       
       if(sum(nrow(report[['Data dictionary assessment']])) == 0){
 

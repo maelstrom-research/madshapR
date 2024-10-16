@@ -43,7 +43,7 @@
 #' # empty dataset
 #' 
 #' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
-#' dataset <- data_extract(data_dict)
+#' dataset   <- data_extract(data_dict)
 #' 
 #' head(dataset)
 #' 

@@ -1088,7 +1088,7 @@ check_dataset_valueType <- function(
         "[INFO] - Suggested valueType.",.data$`condition`),
       condition = as.character(.data$`condition`)) %>%
     mutate(index = as.integer(.data$`index`)) %>%
-    arrange(index) %>%
+    arrange(.data$`index`) %>%
     select(-"index",-"suggestion2",-"condition2",-"value2",-"replace_suggestion") %>%
     distinct()
   

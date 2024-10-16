@@ -86,6 +86,7 @@ glimpse(eval_dataset)
 
 ###### Example 2: Any data frame can be a dataset by definition
 eval_iris <- dataset_evaluate(iris)
+
 glimpse(eval_iris)
 
 }
