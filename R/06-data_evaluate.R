@@ -63,7 +63,7 @@
 #' library(dplyr)
 #' 
 #' ###### Example 1: use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example - errors with data`)
+#' dataset <- madshapR_example$`dataset_example - errors with data`
 #' data_dict <- madshapR_example$`data_dict_example - errors with data`
 #' 
 #' eval_dataset <- dataset_evaluate(dataset, data_dict, is_data_dict_mlstr = TRUE)
