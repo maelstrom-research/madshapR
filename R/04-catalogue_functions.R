@@ -888,24 +888,18 @@ data dictionary")}
 
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
-  if(dataType     == "as_any_date")     x <- 
-    as.character(x)
-  if(dataType     == "as.POSIXct")      x <- 
-    as.character(x)
-  if(dataType     == "as_any_boolean")  x <- 
-    return(as_any_boolean(as.character.default(x)))
+  # if integer
   if(dataType     == "as_any_integer")  x <- 
     return(as_any_integer(as.character.default(x)))
-  if(class(x)[1]  == "factor")          x <- 
-    as.character.default(x)
   
+  # if boolean
+  if(dataType     == "as_any_boolean")  x <- 
+    return(as_any_boolean(as.character.default(x)))
 
-  if(dataType == "as.POSIXct"){
-    x <- as.POSIXct(x) }
-    
+  # if date
   if(dataType     == "as_any_date"){
 
-    if(length(x) == 0) return(as.Date(x))
+    # x <- as.character(x)
     
     date_format <-
       guess_date_format(
@@ -913,20 +907,29 @@ data dictionary")}
           sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20)))))
 
     if(date_format$`% values formated` == 100){
-      x_temp <- as_any_date(as.character.default(x), date_format$`Date format`)
-      }else{x_temp <- NA}
+      
+      return(as_any_date(as.character.default(x), date_format$`Date format`))
+      
+    }else{x <- NA}}
+  
+  # if none of the above
+  
+  # if datetime  
+  if(dataType == "as.POSIXct") 
+    x <- as.POSIXct(as.character(x))
+  # if factor
+  if(class(x)[1]  == "factor") 
+    x <- as.character.default(x)
+  
+  x_to_test <- do.call(dataType, list(x)) %>% unlist
 
-  }else{
-    x_temp <- do.call(dataType, list(x)) %>% unlist
-    }
+  condition <- tibble(to_test = x_to_test, original = x_init)
 
-  condition <- tibble(to_test = x_temp, original = x)
-
-  if(length(x_temp) == 0){
-    return(x_temp)}
+  if(length(x_to_test) == 0){
+    return(x_to_test)}
 
   if(valueType %in% c("text","locale","point","linestring","polygon","binary")){
-    return(x_temp)}
+    return(x_to_test)}
 
   if(!all(is.na(condition$`to_test`) == is.na(condition$`original`))){
     test_condition <- FALSE
@@ -935,33 +938,27 @@ data dictionary")}
     test_condition <-
       distinct(condition[which(!is.na(condition['original'])),])
 
-    if(valueType %in% c("integer","decimal")){
+    if(valueType %in% c("decimal")){
       test_condition <- 
         test_condition %>%
         mutate(across(everything(), ~ as.numeric(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
 
-    if(valueType %in% c("boolean")){
-      test_condition <- 
-        test_condition %>%
-        mutate(
-          across(everything(), ~ as_any_boolean(as.character.default(.)))) %>%
-        mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
-
-    if(valueType %in% c("date")){
-      test_condition <-
-        test_condition %>%
-        mutate(across(
-          "original",
-          ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
-        mutate(
-          test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
-        pull(.data$`test`) %>% all}
+    # [GF] The test seems obsolete
+    # if(valueType %in% c("date")){
+    #   test_condition <-
+    #     test_condition %>%
+    #     mutate(across(
+    #       "original",
+    #       ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
+    #     mutate(
+    #       test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
+    #     pull(.data$`test`) %>% all}
     
+    # [GF] The test seems obsolete
     if(valueType %in% c("datetime")){
-      test_condition <- 
+      test_condition <-
         test_condition %>%
         mutate(
           across(everything(), ~ as.POSIXct.default(.))) %>%
@@ -981,7 +978,7 @@ bold("\n\nUseful tip:"),
 For further investigation, you can use dataset_evaluate(dataset, data_dict).")
   }
 
-  return(x_temp)
+  return(x_to_test)
 }
 
 #' @title
