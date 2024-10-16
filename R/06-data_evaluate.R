@@ -146,7 +146,10 @@ dataset_evaluate <- function(
   if(is.null(col_id) | ncol(dataset) == 1){
     dataset <- dataset %>% add_index("madshapR::index")
     dataset <- as_dataset(dataset, names(dataset)[1])}
-  
+
+  # extract again col_id
+  col_id <- col_id(dataset)
+    
   zap_dataset <- 
     dataset_zap_data_dict(dataset) %>% 
     select(-all_of(col_id)) %>%
