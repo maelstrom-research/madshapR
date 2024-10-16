@@ -1663,7 +1663,6 @@ your dataset")}
   
   dataset <-
     dataset[names_data_dict] %>%
-    as_tibble() %>%
     as_dataset(col_id = preserve_attributes)
   
   attributes(dataset)$`madshapR::Data dictionary` <- data_dict_init
@@ -1751,7 +1750,10 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
     return(attributes(dataset)$`madshapR::Data dictionary`)
   }
   
-  dataset <- ungroup(dataset)
+  grouping_vars  <- group_vars(dataset)
+  dataset <- 
+    dataset %>% ungroup %>%
+    mutate(across(any_of(grouping_vars),as_category))
   
   data_dict <-
     list(

@@ -466,15 +466,15 @@ as_dataset <- function(object, col_id = NULL){
     # if(is.null(col_id)) col_id <- names(object)[[1]]
     # if !is.null(col_id) column must be present and completely filled
     if(class(silently_run(
-      object %>% select(!! all_of(col_id))))[1] == 'try-error')
+      ungroup(object) %>% select(!! all_of(col_id))))[1] == 'try-error')
       stop(call. = FALSE,
            "All of your id column(s) must be present in your dataset.")
 
-    if(sum(is.na(object %>% select(!! all_of(col_id)))) > 0)
+    if(sum(is.na(ungroup(object) %>% select(!! all_of(col_id)))) > 0)
       stop(call. = FALSE,
            "Your id column(s) must not contain any empty values.")
 
-    names_id <- names(object %>% select(!! all_of(col_id)))
+    names_id <- names(ungroup(object) %>% select(!! all_of(col_id)))
     if(length(names_id) == 0) names_id <- NULL
 
     object <-
@@ -482,15 +482,15 @@ as_dataset <- function(object, col_id = NULL){
     
     attributes(object)$`madshapR::class` <- "dataset"
     attributes(object)$`madshapR::col_id` <- names_id
-    # attributes(object)$`madshapR::data_dict` <- data_dict_extract(object)
+    # attributes(object)$`madshapR::Data dictionary` <- data_dict_extract(object)
 
     return(object)
   }
 
   # else
   stop(call. = FALSE,
-"\n\nThis object is not a dataset as defined by the package, which must 
-be a data frame. 
+"\n\nThis object is not a dataset as defined by the package, which must be a 
+data frame. 
 Please refer to documentation.")
 
 }

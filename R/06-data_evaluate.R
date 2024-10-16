@@ -95,12 +95,12 @@ dataset_evaluate <- function(
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
   
-  # check on arguments : dataset
-  as_dataset(dataset) # no col_id
-  
   if(!is.logical(is_data_dict_mlstr))
     stop(call. = FALSE,
          '`is_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+  
+  # check on arguments : dataset
+  as_dataset(dataset) # no col_id
   
   # check on arguments : data_dict
   if(is.null(data_dict)){
@@ -141,15 +141,11 @@ dataset_evaluate <- function(
       data_dict[['Categories']] %>%
       bind_rows(tibble(missing = as.character()))}
 
-  preserve_attributes <- 
-    col_id <- attributes(dataset)$`madshapR::col_id`
-  
+  # extract col_id, or create it if not exists.
+  col_id <- col_id(dataset)
   if(is.null(col_id) | ncol(dataset) == 1){
     dataset <- dataset %>% add_index("madshapR::index")
     dataset <- as_dataset(dataset, names(dataset)[1])}
-  
-  col_id <- attributes(dataset)$`madshapR::col_id`
-  # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
   
   zap_dataset <- 
     dataset_zap_data_dict(dataset) %>% 
