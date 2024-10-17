@@ -54,53 +54,56 @@
 #'
 #' @export
 data_extract <- function(data_dict, data_dict_apply = FALSE){
-
+  
   # tests
-  if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
-    data_dict <- as_data_dict_mlstr(data_dict)
-    }else{
-      
-      data_dict <- silently_run(as_data_dict_mlstr(data_dict))
-      if(class(data_dict)[[1]] == "try-error"){
-        data_dict <- as_data_dict_mlstr(as_data_dict_shape(data_dict))
-      }}
-
+  if(suppressWarnings(check_data_dict_valueType(data_dict)) %>% 
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
+    
+    message(
+      '[INFO] - valueType is not compatible with variable categories. The dataset 
+will begenerated with compatible valueType.')
+    
+    data_dict <- valueType_self_adjust(data_dict)
+    
+  }
+  
   if(nrow(data_dict[['Variables']]) == 0){
     dataset <- tibble(.rows = 0)
     return(dataset)}
-
+  
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
-'`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
-
-
+         '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
+  
+  
   # valueType/typeof() is needed to generate dataset, which will be all text if
   # not present
   vT_list <- madshapR::valueType_list
-
+  
   data_dict_temp <- data_dict
-
-
+  
+  
   dataset <-
     data_dict_temp[["Variables"]]  %>%
     select("name") %>%
     pivot_wider(names_from = "name", values_from = "name") %>%
     slice(0)
-
+  
   for(i in seq_len(ncol(dataset))){
     # stop()}
     dataset[i] <-
       as_valueType(dataset[i],data_dict_temp[["Variables"]]$`valueType`[i])
   }
-
+  
   if(data_dict_apply == TRUE){
     dataset <- data_dict_apply(dataset, data_dict)
     return(dataset)
   }
-
-  dataset <- as_dataset(dataset,attributes(dataset)$`madshapR::col_id`)
+  
+  dataset <- as_dataset(dataset)
   return(dataset)
 }
+
 
 #' @title
 #' Remove labels (attributes) from a data frame, leaving its unlabelled columns
