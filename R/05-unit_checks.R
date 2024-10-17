@@ -892,7 +892,7 @@ check_dataset_categories <- function(
                 name_var  = i,
                 value     = cat_in_dd_only,
                 condition =
-                  "[INFO] - Variable is categorical in data dictionary but not in dataset."))} # GF Question
+                  "[INFO] - Variable is categorical in data dictionary but not in dataset."))} # [GF] Question
         
         if(length(cat_in_ds_only) > 0){
           test <-

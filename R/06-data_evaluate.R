@@ -246,7 +246,7 @@ dataset_evaluate <- function(
         select(-all_of('madshapR::value'))
     }
     
-    test_duplicated_rows <- 
+    test_duplicated_rows <-               # [GF] question : there is no test for duplicated ID
       test_duplicated_rows %>%
       group_by(.data$`madshapR::index`) %>%
       slice(1:6) %>%
