@@ -704,6 +704,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
     
     taxonomy_i <-
       taxonomy_id[[i]] %>%
+      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
       dplyr::filter(.data$`taxonomy_id` %in% 
                       names(data_dict[['Variables']])) %>%
       select('voc_term','taxonomy_id','index_vocabulary', 
@@ -984,6 +985,7 @@ data_dict_filter <- function(
   if(!is.null(data_dict[['Categories']])){
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
+      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
       dplyr::filter(.data$`variable` %in% data_dict[['Variables']]$`name`)
     
     if(!is.null(filter_cat)){
@@ -2331,7 +2333,9 @@ data dictionary")}}
     mutate(`madshapR::valueType` = typeof_convert_to_valueType(.data$`typeof`,.data$`class`)) %>%
     ungroup %>%
     select("variable" = 'name',"madshapR::valueType") %>%
-    dplyr::filter(.data$`variable` %in% data_dict[['Categories']][["variable"]])
+    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    dplyr::filter(.data$`variable` %in% data_dict[['Categories']][["variable"]]) %>%
+    ungroup
   
   # if mlstr, for missing, turn into boolean, or create if not exists
   if(is_data_dict_mlstr){
@@ -2753,7 +2757,9 @@ investigations.")
     corres_vT <-
       data_dict[['Variables']] %>%
       select("variable" = 'name', 'madshapR::valueType' = "valueType") %>%
-      dplyr::filter(.data$`variable` %in% data_dict[['Categories']][["variable"]])
+      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+      dplyr::filter(.data$`variable` %in% data_dict[['Categories']][["variable"]]) %>%
+      ungroup
   
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%

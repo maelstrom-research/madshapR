@@ -371,7 +371,8 @@ dataset_evaluate <- function(
       report$`Data dictionary assessment` <- 
         report$`Data dictionary assessment` %>% 
         bind_rows(tibble("Column name" = as.character())) %>%
-        dplyr::filter(!.data$`Column name` %in% "valueType")
+        rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+        dplyr::filter(!.data$`Column name` %in% "valueType") %>% ungroup
       
       if(sum(nrow(report[['Data dictionary assessment']])) == 0){
 

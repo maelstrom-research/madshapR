@@ -303,22 +303,25 @@ variable_visualize <- function(
   colset_values <-
     colset %>% 
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
     dplyr::filter(.data$`temp_val` %in% 
-                    preprocess_var_values$value_var) %>%
+                    preprocess_var_values$value_var) %>% ungroup %>%
     select(-'temp_val')
   
   colset_cat_values <-
     colset %>% 
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
     dplyr::filter(.data$`temp_val` %in% 
-                    preprocess_var_cat_values$value_var) %>%
+                    preprocess_var_cat_values$value_var) %>% ungroup %>%
     select(-'temp_val')
   
   colset_cat_miss_values <-
     colset  %>% 
     mutate(temp_val = as.character(!! as.symbol(col))) %>%
+    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
     dplyr::filter(.data$`temp_val` %in% 
-                    preprocess_var_cat_miss_values$value_var) %>%
+                    preprocess_var_cat_miss_values$value_var) %>% ungroup %>%
     select(-'temp_val')
   
   # guess the generic valueType of the variable (excluding categories):
@@ -344,7 +347,8 @@ variable_visualize <- function(
     as.data.frame(t(
       
       `Variables summary (all)` %>% 
-        dplyr::filter(.data$`Variable name` %in% col) %>%
+        rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+        dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
         select(c("Number of rows":last_col()))
     ))
   
@@ -353,7 +357,8 @@ variable_visualize <- function(
       
       unique(pull(
         `Variables summary (all)` %>%
-          dplyr::filter(.data$`Variable name` %in% col) %>%
+          rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+          dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
           select(starts_with('Grouping variable:'))
       ))
     
@@ -459,7 +464,8 @@ variable_visualize <- function(
         as.data.frame(t(
           
           `Numerical variable summary` %>%
-            dplyr::filter(.data$`Variable name` %in% col) %>%
+            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
             select(-c(1:"% Non-valid values"))
           
           ))
@@ -469,7 +475,8 @@ variable_visualize <- function(
           
           unique(pull(
             `Numerical variable summary` %>%
-              dplyr::filter(.data$`Variable name` %in% col) %>%
+              rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+              dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
             
@@ -564,7 +571,8 @@ variable_visualize <- function(
         as.data.frame(t(
           
           `Text variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
+            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -574,7 +582,8 @@ variable_visualize <- function(
           
           unique(pull(
             `Text variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
+              rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -718,7 +727,8 @@ variable_visualize <- function(
         as.data.frame(t(
           
           `Datetime variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
+            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -728,7 +738,8 @@ variable_visualize <- function(
           
           unique(pull(
             `Datetime variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
+              rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -860,7 +871,8 @@ variable_visualize <- function(
         as.data.frame(t(
           
           `Date variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
+            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -870,7 +882,8 @@ variable_visualize <- function(
           
           unique(pull(
             `Date variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
+              rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -1223,13 +1236,15 @@ variable_visualize <- function(
       str_detect(names(variable_summary), "Categorical variable summary")][[1]]
     
     if(nrow(`Categorical variable summary` %>% 
-            dplyr::filter(.data$`name` %in% col)) > 0){
+            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            dplyr::filter(.data$`name` %in% col) %>% ungroup) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
           `Categorical variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
+            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
             select(-c(1:"% Missing categorical values (if applicable)"))
           
         ))
@@ -1239,7 +1254,8 @@ variable_visualize <- function(
           
           unique(pull(
             `Categorical variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
+              rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         

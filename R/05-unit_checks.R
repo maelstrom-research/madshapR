@@ -471,7 +471,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   # vT_list <- madshapR::valueType_list
   # test_valueType_names <-
   #   data_dict[['Variables']] %>%
-  #   dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
+  #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+  #   dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>% ungroup %>%
   #   select(name_var = .data$`name`,value = .data$`valueType`) %>%
   #   mutate(
   # condition = "[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).") %>%
@@ -487,7 +488,8 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   data_dict_vt <-
   #     data_dict[['Variables']] %>%
   #     select(name_var = .data$`name`,.data$`valueType`) %>%
-  #     dplyr::filter(! .data$`valueType` %in% vT_text)
+  #     rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+  #     dplyr::filter(! .data$`valueType` %in% vT_text) %>% ungroup
   #
   #   vT_names <-
   #     data_dict[['Categories']] %>%
@@ -612,7 +614,8 @@ check_data_dict_valueType <- function(data_dict){
   
   test_valueType_names <-
     data_dict[['Variables']] %>%
-    dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>%
+    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>% ungroup %>%
     select(name_var = "name",value = "valueType") %>%
     mutate(
       condition = ifelse(is.na(.data$`value`),
@@ -630,8 +633,9 @@ check_data_dict_valueType <- function(data_dict){
       left_join(test_valueType_names,by = "name_var") %>%
       select(-"index") %>%
       inner_join(var_index, by = "name_var") %>%
+      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
       dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var` |
-                    is.na(.data$`value`)) %>%
+                    is.na(.data$`value`)) %>% ungroup %>%
       inner_join(
         data_dict[['Variables']] %>%
           select(name_var = 'name','valueType'),by = "name_var")
@@ -656,7 +660,8 @@ check_data_dict_valueType <- function(data_dict){
         suggestion = valueType_guess(.data$`name`)) %>%
       separate_longer_delim(cols = 'name_var',delim = '|') %>%
       distinct %>%
-      dplyr::filter(!.data$`valueType` %in% .data$`suggestion`) %>%
+      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+      dplyr::filter(!.data$`valueType` %in% .data$`suggestion`) %>% ungroup %>%
       mutate(
         valueType = replace_na(.data$`valueType`,"(empty)"),
         condition = case_when(
@@ -1064,7 +1069,8 @@ check_dataset_valueType <- function(
     test_vT_dataset %>%
     left_join(var_index,by = "name_var") %>%
     rowwise() %>%
-    filter(!.data$`value2` %in% .data$`suggestion2` | !is.na(.data$`condition2`))
+    filter(!.data$`value2` %in% .data$`suggestion2` | !is.na(.data$`condition2`)) %>%
+    ungroup
 
   if(valueType_guess == FALSE) 
     test_vT_dataset <- 

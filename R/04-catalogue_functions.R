@@ -190,7 +190,8 @@ valueType_self_adjust <- function(...){
     #   dataset %>%
     #   reframe(across(everything(), ~ toString(class(.)))) %>%
     #   pivot_longer(everything()) %>%
-    #   dplyr::filter(.data$`value` %in% c("factor"))
+    #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup
 
     data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
     
@@ -569,7 +570,8 @@ bold("\n\nUseful tip:"),
     #   dataset %>%
     #   reframe(across(everything(), ~ toString(class(.)))) %>%
     #   pivot_longer(everything()) %>%
-    #   dplyr::filter(.data$`value` %in% c("factor"))
+    #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup 
 
     # data_dict_data[['Variables']] <-
     #   data_dict_data[['Variables']] %>%
@@ -1307,7 +1309,8 @@ valueType_convert_to_typeof <- function(valueType){
   
   vT_test <- 
     vT_list %>%
-    dplyr::filter(.data$valueType %in% !! toString(valueType)) %>%
+    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    dplyr::filter(.data$valueType %in% !! toString(valueType)) %>% ungroup %>%
     select("typeof","class") %>% distinct
   
   if(nrow(vT_test) == 0) stop(call. = FALSE,
