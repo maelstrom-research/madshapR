@@ -2284,7 +2284,7 @@ data dictionary")}}
       lapply(function(x){
         test_vT <- str_detect(x$`madshapR::valueType`[1], "\\|")
         if(test_vT) x <- x %>% mutate(
-          valueType = valueType_guess(unique(x$name)))
+          'madshapR::valueType' = valueType_guess(unique(x$name)))
         return(x) }) %>%
       bind_rows() %>%
       select(name = 'variable','madshapR::valueType') %>%
