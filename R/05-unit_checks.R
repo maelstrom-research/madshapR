@@ -815,8 +815,10 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #' # use madshapR_example provided by the package
 #' library(tidyr)
 #' 
-#' data_dict <- madshapR_example$`data_dict_example - errors with data`
-#' dataset <- madshapR_example$`dataset_example - errors with data`
+#' dataset <- 
+#'   madshapR_example$`dataset_example - errors with data` %>% 
+#'   mutate(gndr = as_category(gndr)) 
+#' data_dict <- madshapR_example$`data_dict_example - errors` 
 #' 
 #' check_dataset_categories(dataset['gndr'], data_dict)
 #' 
@@ -830,8 +832,18 @@ check_dataset_categories <- function(
     dataset, 
     data_dict = NULL){
   
+  # [GF] - question : validate tests associated to unit checks.
   
-  # check on arguments : data_dict
+  # 1  [INFO] - Variable is categorical in data dictionary but not in dataset.
+  # 2  [INFO] - Variable is categorical in dataset but not in data dictionary.
+  # 3  [INFO] - Variable has categorical values in data dictionary that are not present in dataset.
+  # 4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.
+  #        OR - Variable has categorical values in dataset that are not described among categories in data dictionary.
+  #        OR - Variable has categories in dataset that are different from categories reported in data dictionary.
+  # 5  [INFO] - Variable has a combination of categorical values and non categorical values (mix).
+  # 6 [ERROR] - Variable has categorical values in data dictionary that are not present in dataset.
+  #        OR - Variable has categorical values in data dictionary that are not categorical in dataset.
+  
   if(is.null(data_dict)){
     data_dict <-
       silently_run({data_dict_extract(
@@ -853,64 +865,169 @@ check_dataset_categories <- function(
   # category in dd but not in dataset WARNING
   # category in dataset but not in dd ERROR
   
-  # apply as_category declared in the data_dict to the variables in dataset
-  categorical_var_dataset <- dataset %>% select(where(is_category)) %>% names
+  # test as_category declared in the data_dict to the variables in dataset
+  # exclude all na variables.
   
-  categorical_var_data_dict <- c()
+  empty_cols <- 
+    dataset[vapply(X = dataset,
+                   FUN = function(x) all(is.na(x)),
+                   FUN.VALUE = logical(1))] %>% names
+  
+  categorical_var_dataset <- 
+    dataset %>% add_index("madshapR::index",.force = TRUE) %>%
+    select("madshapR::index",where(is_category)) %>% 
+    select("madshapR::index",!any_of(empty_cols)) %>% data_dict_extract()
+  
+  categorical_var_dataset <- 
+    categorical_var_dataset[['Categories']] %>%
+    bind_rows(tibble(
+      "variable" = as.character(),
+      "name" = as.character())) %>%
+    select("variable","name")
+  
+  categorical_var_data_dict <- 
+    tibble("variable" = as.character(), "name" = as.character())
+  
   if(sum(nrow(data_dict[['Categories']])) > 0){
-    categorical_var_data_dict <- unique(data_dict$`Categorie`$`variable`)
-  }else{
-    data_dict[['Categories']] <- 
-      tibble("variable" = as.character(), "name" = as.character())
+    categorical_var_data_dict <- 
+      data_dict[['Categories']] %>%
+      rowwise() %>%
+      dplyr::filter(!.data$`variable` %in% empty_cols) %>%
+      dplyr::filter(.data$`variable` %in% names(dataset)) %>%
+      ungroup() %>%
+      mutate(across(everything(), as.character)) %>%
+      select("variable","name")
   }
   
-  categorical_variables <- unique(c(categorical_var_data_dict,categorical_var_dataset))
   
-  # exclude already adressed all_na
-  categorical_variables <-
-    categorical_variables[
-      categorical_variables %in% names(dataset %>% remove_empty('cols'))]
+  test <- 
+    tibble("name_var" = as.character(),
+           "value"     = as.character(),
+           "condition" = as.character())
   
-  test <- tibble("name_var" = as.character(),
-                 "value"     = as.character(),
-                 "condition" = as.character())
-  if(length(categorical_variables) == 0){
+  cat_vars <- unique(c(categorical_var_dataset$variable,categorical_var_data_dict$variable))
+  
+  if(nrow(categorical_var_dataset) == 0 & nrow(categorical_var_data_dict) == 0){
     return(test)
   }else{
     
-    for(i in categorical_variables){
+    for(i in cat_vars){
       # stop()}
       
-      dd_cat <- data_dict$`Categories`[data_dict$`Categories`$`variable` == i,]$`name`
-      if(is.factor(dataset[[i]])) 
-        ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i])) else
-          ds_cat <- as.character(unique(dataset[!is.na(dataset[[i]]),i])[[1]])
+      test1 <- test2 <- test3 <- 
+        test4 <- test5 <- test6 <-  
+        tibble("name_var" = as.character(),
+               "value"     = as.character(),
+               "condition" = as.character())
+      dd_cat <- 
+        categorical_var_data_dict[categorical_var_data_dict$`variable` == i,]$`name`
+      
+      ds_cat <- 
+        categorical_var_dataset[categorical_var_dataset$`variable` == i,]$`name`
+      
+      ds_vals <- as.character()
+      
+      if(i %in% names(dataset)){
+        ds_vals <- if(is.factor(dataset[[i]])) 
+          as.character(unique(dataset[!is.na(dataset[[i]]),i])) else
+            as.character(unique(dataset[!is.na(dataset[[i]]),i])[[1]])
+      }
+
+      dd_is_ds_is_vals    <- dplyr::setequal(dplyr::setequal(ds_cat,ds_vals),dd_cat)
+      
+      if(!dd_is_ds_is_vals){
         
-        cat_in_dd_only <- as.character(dd_cat[!dd_cat %in% ds_cat])
-        cat_in_ds_only <- as.character(ds_cat[!ds_cat %in% dd_cat])
+        inter_dd_ds    <- dplyr::intersect(dd_cat,ds_cat)
+        outer_dd_ds    <- dplyr::symdiff(dd_cat,ds_cat)
+        dd_only        <- dplyr::setdiff(dd_cat,ds_cat)
+        ds_only        <- dplyr::setdiff(ds_cat,dd_cat)
+        ds_vals_only   <- dplyr::setdiff(ds_vals,ds_cat)
+        ds_noncat_vals <- dplyr::setdiff(dplyr::setdiff(ds_vals,dd_cat),ds_cat)
+        is_cat_dd      <- length(dd_cat) > 0
+        is_cat_ds      <- length(ds_cat) > 0
         
-        if(length(cat_in_dd_only) > 0){
-          test <-
-            test %>%
-            bind_rows(
-              tibble(
-                name_var  = i,
-                value     = cat_in_dd_only,
-                condition =
-                  "[INFO] - Variable is categorical in data dictionary but not in dataset."))} # [GF] Question
+        # 1  [INFO] - Variable is categorical in data dictionary but not in dataset.
+        if(is_cat_dd & ! is_cat_ds){
+          test1 <-
+            tibble(
+              name_var  = i,
+              value     = dd_cat,
+              condition =
+                "1 [INFO] - Variable is categorical in data dictionary but not in dataset.")
+        }
         
-        if(length(cat_in_ds_only) > 0){
-          test <-
-            test %>%
-            bind_rows(
-              tibble(
-                name_var  = i,
-                value     = cat_in_ds_only,
-                condition =
-                  "[INFO] - Variable is categorical in dataset but not in data dictionary."))} # GF Question
+        # 2  [INFO] - Variable is categorical in dataset but not in data dictionary.
+        if(! is_cat_dd & is_cat_ds){
+          test2 <-
+            tibble(
+              name_var  = i,
+              value     = ds_cat,
+              condition =
+                "2 [INFO] - Variable is categorical in dataset but not in data dictionary.")
+        }
+        
+        # 3  [INFO] - Variable has categorical values in data dictionary that are not present in dataset.
+        if(is_cat_dd & is_cat_ds & length(dd_only) > 0){
+          test3 <-
+            tibble(
+              name_var  = i,
+              value     = dd_only,
+              condition =
+                "3 [INFO] - Variable has categorical values in data dictionary that are not present in dataset.")
+        }
+        
+        # 4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.
+        #        OR - Variable has categorical values in dataset that are not described among categories in data dictionary.
+        #        OR - Variable has categories in dataset that are different from categories reported in data dictionary.
+        if(is_cat_dd & is_cat_ds & length(ds_only) > 0){
+          test4 <-
+            tibble(
+              name_var  = i,
+              value     = ds_only,
+              condition =
+                "4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.")
+        }
+        
+        # 5  [INFO] - Variable has a combination of categorical values and non categorical values (mix).
+        if(is_cat_ds & length(ds_vals_only) > 0){
+          test5 <-
+            tibble(
+              name_var  = i,
+              value     = ds_vals_only,
+              condition =
+                "5 [INFO] - Variable has a combination of categorical values and non categorical values (mix).")
+        }
+        
+        # 6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.
+        #        OR - Variable has categorical values in data dictionary that are not categorical in dataset.
+        if(is_cat_ds & is_cat_dd & length(ds_noncat_vals) > 0){
+          test6 <-
+            tibble(
+              name_var  = i,
+              value     = ds_only,
+              condition =
+                "6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.")
+        }
+      }
+      
+      test <- bind_rows(test,
+                        test1,test2,test3,test4,test5,test6)
+      
     }
   }
   
+  test <- 
+    test %>%
+    group_by(.data$`name_var`,.data$`condition`) %>%
+    add_index('madshapR::index') %>%
+    group_by(.data$`name_var`,.data$`condition`) %>%
+    slice(1:5) %>%
+    mutate(
+      value =
+        ifelse(.data$`madshapR::index` == 5 , "[...]",.data$`value`)) %>%
+    reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
+    mutate(across(everything(),as.character))
+    
   return(test)
 }
 

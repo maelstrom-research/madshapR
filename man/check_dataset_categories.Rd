@@ -48,8 +48,10 @@ handled automatically by the function.
 # use madshapR_example provided by the package
 library(tidyr)
 
-data_dict <- madshapR_example$`data_dict_example - errors with data`
-dataset <- madshapR_example$`dataset_example - errors with data`
+dataset <- 
+  madshapR_example$`dataset_example - errors with data` \%>\% 
+  mutate(gndr = as_category(gndr)) 
+data_dict <- madshapR_example$`data_dict_example - errors` 
 
 check_dataset_categories(dataset['gndr'], data_dict)
 
