@@ -832,6 +832,8 @@ check_dataset_categories <- function(
     dataset, 
     data_dict = NULL){
   
+  # [GF] - tested and validated
+  
   # [GF] - question : validate tests associated to unit checks.
   
   # 1  [INFO] - Variable is categorical in data dictionary but not in dataset.
