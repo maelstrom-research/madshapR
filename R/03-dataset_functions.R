@@ -153,11 +153,13 @@ will begenerated with compatible valueType.')
 dataset_zap_data_dict <- function(dataset){
 
   # test input
-  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
+  as_dataset(dataset, col_id(dataset))
   
-  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
   categorical_variables <-
     dataset %>%
+    ungroup() %>%
     reframe(across(everything(), ~ is_category(.))) %>%
     pivot_longer(everything()) %>%
     dplyr::filter(.data$`value`) %>% pull("name")
@@ -190,7 +192,8 @@ dataset_zap_data_dict <- function(dataset){
   # if categorical, replace by factor
   dataset <- 
     dataset %>% 
-    mutate(across(any_of(categorical_variables),as.factor))
+    mutate(across(any_of(categorical_variables),as.factor)) %>%
+    group_by(pick(any_of(preserve_group)))
   
   return(dataset)
 }
