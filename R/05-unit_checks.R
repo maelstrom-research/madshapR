@@ -953,7 +953,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = dd_cat,
               condition =
-                "1 [INFO] - Variable is categorical in data dictionary but not in dataset.")
+                "[INFO] - Variable is categorical in data dictionary but not in dataset.")
         }
         
         # 2  [INFO] - Variable is categorical in dataset but not in data dictionary.
@@ -963,7 +963,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_cat,
               condition =
-                "2 [INFO] - Variable is categorical in dataset but not in data dictionary.")
+                "[INFO] - Variable is categorical in dataset but not in data dictionary.")
         }
         
         # 3  [INFO] - Variable has categorical values in data dictionary that are not present in dataset.
@@ -973,7 +973,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = dd_only,
               condition =
-                "3 [INFO] - Variable has categorical values in data dictionary that are not present in dataset.")
+                "[INFO] - Variable has categorical values in data dictionary that are not present in dataset.")
         }
         
         # 4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.
@@ -985,7 +985,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_only,
               condition =
-                "4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.")
+                "[ERROR] - Variable has categorical values in dataset that are not present in data dictionary.")
         }
         
         # 5  [INFO] - Variable has a combination of categorical values and non categorical values (mix).
@@ -995,7 +995,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_vals_only,
               condition =
-                "5 [INFO] - Variable has a combination of categorical values and non categorical values (mix).")
+                "[INFO] - Variable has a combination of categorical values and non categorical values (mix).")
         }
         
         # 6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.
@@ -1006,7 +1006,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_only,
               condition =
-                "6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.")
+                "[ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.")
         }
       }
       
