@@ -841,7 +841,7 @@ check_dataset_categories <- function(
   #        OR - Variable has categorical values in dataset that are not described among categories in data dictionary.
   #        OR - Variable has categories in dataset that are different from categories reported in data dictionary.
   # 5  [INFO] - Variable has a combination of categorical values and non categorical values (mix).
-  # 6 [ERROR] - Variable has categorical values in data dictionary that are not present in dataset.
+  # 6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.
   #        OR - Variable has categorical values in data dictionary that are not categorical in dataset.
   
   if(is.null(data_dict)){

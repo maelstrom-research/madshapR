@@ -101,6 +101,7 @@ dataset_evaluate <- function(
   
   # check on arguments : dataset
   as_dataset(dataset) # no col_id
+  dataset <- ungroup(dataset)
   
   # check on arguments : data_dict
   if(is.null(data_dict)){
@@ -177,18 +178,19 @@ dataset_evaluate <- function(
     test_matching_variable <-
     test_duplicated_columns <-
     test_duplicated_rows <-
+    test_duplicated_identifier <-
     test_empty_row <-
     test_empty_col <-
     test_unique_value <-
     test_existing_variable_category <-
     test_valueType <-
-    tibble("Variable name" = as.character())
+    tibble("Variable name" = as.character(),"Value" = as.character())
   
   if(is_data_dict_mlstr == TRUE){
     message(
       "    Assess the standard adequacy of naming")
     test_name_standards  <- 
-      check_name_standards(names(zap_dataset))%>%
+      check_name_standards(names(zap_dataset)) %>%
       rename("Variable name" = "name_var",
              "Dataset assessment" = "condition") %>%
       mutate(across(everything(),as.character))
@@ -224,7 +226,8 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of duplicated participants in the dataset")
-  if(nrow(dataset) > 0){                                                        #icitte
+  if(nrow(dataset) > 0){                                                        
+    
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
       rename(value = "row_number") %>%
@@ -239,14 +242,14 @@ dataset_evaluate <- function(
         test_duplicated_rows %>%
         rename('madshapR::value' = 'value') %>%
         left_join(by = 'madshapR::value',
-                  dataset %>% select(all_of(col_id)) %>%
+                    dataset %>% select(all_of(col_id)) %>%
                     add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
         rename('value' = any_of(!!as.symbol('col_id'))) %>%
         select(-all_of('madshapR::value'))
     }
     
-    test_duplicated_rows <-               # [GF] question : there is no test for duplicated ID
+    test_duplicated_rows <-               
       test_duplicated_rows %>%
       group_by(.data$`madshapR::index`) %>%
       slice(1:6) %>%
@@ -263,6 +266,66 @@ dataset_evaluate <- function(
              "Dataset assessment" = "condition",
              "Value" = "value") %>%
       mutate(across(everything(),as.character))
+    
+    if(col_id != "madshapR::index"){
+    
+      test_duplicated_identifier <- 
+        get_duplicated_rows(dataset %>% select(all_of(col_id))) %>%
+        rename(value = "row_number") %>%
+        add_index('madshapR::index') %>%
+        separate_rows("value",sep = " ; ") %>%
+        group_by(.data$`madshapR::index`) %>%
+        add_index('madshapR::index2') 
+  
+      test_duplicated_identifier <- 
+        test_duplicated_identifier %>%
+        rename('madshapR::value' = 'value') %>%
+        left_join(by = 'madshapR::value',
+                  dataset %>% select(all_of(col_id)) %>%
+                    add_index('madshapR::value') %>%
+                    mutate(across(everything(), as.character))) %>%
+        rename('value' = any_of(!!as.symbol('col_id'))) %>%
+        select(-all_of('madshapR::value'))
+    
+    test_duplicated_identifier <-               
+      test_duplicated_identifier %>%
+      group_by(.data$`madshapR::index`) %>%
+      slice(1:6) %>%
+      mutate(
+        value = 
+          ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
+      reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
+      mutate(condition = "[INFO] - Duplicated participant identifier.") %>%     # [GF] validate text
+      mutate(
+        `name_var` = 
+          ifelse(col_id == "madshapR::index",'(all)', !! col_id)) %>%
+      select(-"madshapR::index") %>%
+      rename("Variable name" = "name_var",
+             "Dataset assessment" = "condition",
+             "Value" = "value") %>%
+      mutate(across(everything(),as.character))
+    
+    }
+   
+    distinct_information <- 
+      bind_rows(distinct(test_duplicated_rows['Value']),
+                distinct(test_duplicated_identifier['Value'])) %>%
+      count(.data$`Value`) %>% pull("n") %>% unique
+    
+    if(length(distinct_information) == 1 & sum(distinct_information) == 2){
+      test_duplicated_rows <- 
+        test_duplicated_rows %>% 
+        mutate(`Dataset assessment` = "[INFO] - Duplicated rows.")              # [GF] validate text
+      
+      test_duplicated_identifier <-   
+        tibble("Variable name" = as.character(),"Value" = as.character())
+    }
+    
+    if(col_id == "madshapR::index"){
+      test_duplicated_rows <- 
+        test_duplicated_rows %>% 
+        mutate(`Dataset assessment` = "[INFO] - Duplicated rows.")              # [GF] validate text
+    }
   }
   
   if(nrow(dataset) > 0){
@@ -385,6 +448,7 @@ dataset_evaluate <- function(
   # test_matching_variable
   # test_duplicated_columns
   # test_duplicated_rows
+  # test_duplicated_identifier
   # test_empty_row
   # test_empty_col
   # test_unique_value
@@ -396,6 +460,7 @@ dataset_evaluate <- function(
     bind_rows(test_matching_variable) %>%
     bind_rows(test_duplicated_columns) %>%
     bind_rows(test_duplicated_rows) %>%
+    bind_rows(test_duplicated_identifier) %>%
     bind_rows(test_empty_row) %>%
     bind_rows(test_empty_col) %>%
     bind_rows(test_unique_value) %>%
