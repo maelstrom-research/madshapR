@@ -122,6 +122,7 @@ dataset_summarize <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   
   # attempt to catch group_by from the group_vars if the dataset is grouped
+  
   if(toString(substitute(group_by)) == '') group_by <- NULL
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
@@ -158,7 +159,6 @@ dataset_summarize <- function(
     group_by <- tryCatch(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})
-    
     
     # if the group is not in the data dictionary, create it
     if(group_by != ''){
@@ -702,9 +702,11 @@ dataset_summarize <- function(
         .data$`---` == '1_Name of the dataset'                                 ~
           dataset_name %>% str_remove_all("`"),
         .data$`---` == '    1_Identifier variable'                             ~
-          toString(col_id),
+          as.character(ifelse(toString(col_id) != '',
+                              toString(col_id), "madshapR::remove")),
         .data$`---` == '    1_Grouping variable'                               ~
-          toString(group_by),  
+          as.character(ifelse(toString(group_by) != '',
+                              toString(group_by), "madshapR::remove")),
         .data$`---` == '    1_Variables'                                       ~
           " ",
         .data$`---` == '        1_Number of variables'                         ~
@@ -752,18 +754,19 @@ dataset_summarize <- function(
         `Overview` = "---",
         !! as.symbol(i) := "-----") %>% slice(-1)}
   
+  index <- Overview_group[[2]] %>%
+    add_index %>% 
+    add_index("index2",start = 0) %>%
+    mutate(
+      index = ifelse(.data$`Overview` == "    Rows", 0,.data$`index`)) %>%
+    dplyr::filter(.data$`index` == 0) %>% pull("index2")
+  
   for(i in names(Overview_group)[-1]){
-    Overview_group[[i]][c(1:13),2] <- " " 
+    Overview_group[[i]][c(1:index),2] <- " "
     Overview_group[[i]][,1] <- NULL
   }
   
   report$Overview <- bind_cols(Overview_group)
-  if(group_by == ''){
-    report$Overview   <- report$Overview %>% slice(-4) %>% select(-3)
-    # report$Overview   <- report$Overview %>% rename(" " = "(all)")
-    # report$Overview[[13,2]] <- " "
-  }
-  
   report$Overview <-
     report$Overview %>%
     dplyr::filter(!.data$`(all)` == "madshapR::remove")
@@ -847,9 +850,9 @@ dataset_summarize <- function(
 #' library(dplyr)
 #'
 #' ###### Example : a dataset list is a dossier by definition.
-#'    
-#' dataset1 <- as_dataset(madshapR_example$`dataset_example`)
-#' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+#'     
+#' dataset1 <- as_dataset(madshapR_example$`dataset_example` %>% group_by(pick('gndr')))
+#' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`, col_id = "part_id")
 #' dossier <- dossier_create(list(dataset1,dataset2))
 #' 
 #' summary_dossier <- dossier_summarize(dossier)
@@ -877,6 +880,9 @@ dossier_summarize <- function(
     stop(call. = FALSE,
          '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
   
+  if(!is.null(group_by)) 
+    dossier <- dossier %>% lapply(function(x) group_by(x, !!as.name(group_by)))
+  
   report_list <-
     vector(mode = "list", length = length(names(dossier)))
   names(report_list) <- names(dossier)
@@ -889,7 +895,6 @@ dossier_summarize <- function(
     report_list[[i]] <-
       dataset_summarize(
         dataset = dossier[[i]],
-        group_by = group_by,
         taxonomy = taxonomy,
         dataset_name = names(dossier[i]),
         valueType_guess = valueType_guess)

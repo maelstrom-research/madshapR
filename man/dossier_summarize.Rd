@@ -65,9 +65,9 @@ coerce the variable to the corresponding data type.
 library(dplyr)
 
 ###### Example : a dataset list is a dossier by definition.
-   
-dataset1 <- as_dataset(madshapR_example$`dataset_example`)
-dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+    
+dataset1 <- as_dataset(madshapR_example$`dataset_example` \%>\% group_by(pick('gndr')))
+dataset2 <- as_dataset(madshapR_example$`dataset_example - error`, col_id = "part_id")
 dossier <- dossier_create(list(dataset1,dataset2))
 
 summary_dossier <- dossier_summarize(dossier)
