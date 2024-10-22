@@ -91,10 +91,8 @@ library(dplyr)
 
 
 ###### Example 1: use madshapR_example provided by the package
-dataset <- 
-  as_dataset(madshapR_example$`dataset_example - errors with data`,col_id = "part_id") \%>\%
-    mutate(gndr = as_category(gndr))
-data_dict <- as_data_dict(madshapR_example$`data_dict_example - errors with data` )
+dataset <- as_dataset(madshapR_example$`dataset_example`,col_id = "part_id")
+data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
   
 summary_dataset <- dataset_summarize(dataset, data_dict)
 glimpse(summary_dataset)
