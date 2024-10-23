@@ -39,7 +39,7 @@ dataset <-
 is_category(dataset[['prg_ever_cat']])
 is_category(dataset[['prg_ever_no_cat']])
 
-##### Example 2: any data frame can be a dataset
+###### Example 2: any data frame can be a dataset
 iris \%>\% reframe(across(everything(), is_category))
 
 }

@@ -31,7 +31,7 @@ dataset <-
   
 head(dataset[c("prg_ever_cat","prg_ever_no_cat")])
 
-##### Example 2: any data frame can be a dataset
+###### Example 2: any data frame can be a dataset
 iris_no_cat <- 
   tibble(iris) \%>\% mutate(Species = drop_category(Species))
 

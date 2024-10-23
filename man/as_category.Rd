@@ -23,14 +23,14 @@ object and are added to an associated data dictionary (when present).
 
 library(dplyr)
 
-# use madshapR_example provided by the package
+##### Example 1: use madshapR_example provided by the package
 dataset <- 
   madshapR_example$`dataset_example` \%>\%
   mutate(prg_ever = as_category(prg_ever))
   
 head(dataset$prg_ever)
 
-##### Example 2: any data frame can be a dataset
+###### Example 2: any data frame can be a dataset
 cat_cyl <- as_category(mtcars[['cyl']])
 
 head(cat_cyl)
