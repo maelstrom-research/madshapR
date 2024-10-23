@@ -281,14 +281,13 @@ dataset_cat_as_labels <- function(
     
     if(sum(nrow(data_dict_temp[['Categories']])) > 0){
       names(col) <- '___values___'
-      label_name <- 
-        names(data_dict_temp[['Categories']] %>% 
-                select(
-                  matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1]))
+      first_lab_var <-
+        names(data_dict_temp[['Categories']] %>%
+        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
       
       cat_col <- 
         data_dict_temp$Categories %>% 
-        select('___values___' = "name", '___label___' = all_of(label_name))
+        select('___values___' = "name", '___label___' = all_of(first_lab_var))
       
       col <- 
         col %>% 
@@ -309,9 +308,9 @@ dataset_cat_as_labels <- function(
         data_dict_temp[['Categories']] %>%
         mutate(
           `___mlstr_name___` = .data$`name`,
-          name = !!as.symbol(label_name)) %>%
+          name = !!as.symbol(first_lab_var)) %>%
         mutate(across(
-          any_of(label_name), 
+          any_of(first_lab_var), 
           ~ .data$`___mlstr_name___`)) %>% 
         select(-'___mlstr_name___')
       

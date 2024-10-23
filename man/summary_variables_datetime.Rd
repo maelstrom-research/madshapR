@@ -54,7 +54,6 @@ handled automatically by the function.
 \examples{
 {
    
-# use madshapR_example provided by the package
 library(dplyr)
 library(lubridate)
 library(fabR)

@@ -548,11 +548,9 @@ dataset_evaluate <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #'
-#' ###### Example : a dataset list is a dossier by definition.
-#'    
+#' # use madshapR_example provided by the package
 #' dataset1 <- as_dataset(madshapR_example$`dataset_example`)
 #' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
 #' dossier <- dossier_create(list(dataset1,dataset2))
@@ -644,9 +642,9 @@ dossier_evaluate <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' 
+#' # use madshapR_example provided by the package
 #' data_dict <- madshapR_example$`data_dict_example - errors`
 #' eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
 #' 
@@ -694,7 +692,7 @@ data_dict_evaluate <- function(
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
       bind_rows(tibble(valueType = as.character()))
-  
+
     if(length(names(
       data_dict[['Variables']] %>%
       select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
@@ -711,8 +709,8 @@ data_dict_evaluate <- function(
         bind_rows(tibble(missing = as.character()))
       
       first_lab_var <- 
-        data_dict[['Variables']] %>%
-        select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
+        names(data_dict[['Variables']] %>%
+        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
       
       if(!first_lab_var %in% names(data_dict[['Categories']])){
         data_dict[['Categories']] <-
@@ -733,10 +731,9 @@ data_dict_evaluate <- function(
   report <- list()
   
   first_lab_var <- 
-    data_dict[['Variables']] %>%
-    select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
+    names(data_dict[['Variables']] %>%
+    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
   
-
   missing_labels <- tibble(
     "Index" = as.integer(),
     "Variable name"  = as.character(), 

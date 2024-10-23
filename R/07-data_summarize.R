@@ -148,8 +148,8 @@ dataset_summarize <- function(
   
   # catch the first variable label for documentation
   first_lab_var <- 
-    data_dict[['Variables']] %>%
-    select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
+    names(data_dict[['Variables']] %>%
+    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
   
   # if the dataset has no observations, group_by is null
   if(nrow(dataset) == 0) group_by <- NULL
@@ -1006,8 +1006,8 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
     first_lab_var <- 
-      data_dict[['Variables']] %>%
-      select(matches(c("^label$","^label:[[:alnum:]]"))[1]) %>% names
+      names(data_dict[['Variables']] %>%
+      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
     
     data_dict_cat <-
       data_dict[['Categories']] %>%
@@ -1432,7 +1432,6 @@ summary_variables_text <- function(
 #' @examples
 #' {
 #'    
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' library(fabR)
 #' 
@@ -1577,7 +1576,6 @@ summary_variables_date <- function(
 #' @examples
 #' {
 #'    
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' library(lubridate)
 #' library(fabR)
@@ -1782,7 +1780,6 @@ summary_variables_numeric <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #' library(fabR)
 #' 

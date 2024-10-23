@@ -79,9 +79,11 @@
 #' # library(dplyr)
 #' # library(fs)
 #' #  
-#' # dataset   <- madshapR_example$`dataset_example`
+#' # dataset   <- 
+#' #   madshapR_example$`dataset_example` %>% 
+#' #   group_by(pick('gndr')) %>% as_dataset(col_id = "part_id")
 #' # data_dict <- madshapR_example$`data_dict_example`
-#' # variable_summary <- madshapR_example$`summary - dataset_example`
+#' # variable_summary <- dataset_summarize(dataset,data_dict)
 #' #   
 #' # plots <- variable_visualize(
 #' #  dataset,data_dict, col = 'prg_ever',
@@ -200,8 +202,8 @@ variable_visualize <- function(
       preprocess_group <- 
       dataset_preprocess(dataset = colset[c(col,group_by)], data_dict = col_dict)
     
-    preprocess_var <- preprocess_var[preprocess_var$name == col,] 
-    preprocess_group <- preprocess_group[preprocess_group$name == group_by,] 
+    preprocess_var <- preprocess_var[preprocess_var$`Variable name` == col,] 
+    preprocess_group <- preprocess_group[preprocess_group$`Variable name` == group_by,] 
     
   } else {
     preprocess_var <- 
@@ -227,12 +229,16 @@ variable_visualize <- function(
   
   if(group_by != ''){
     
+    first_lab_var <- 
+      names(col_dict[['Variables']] %>%
+      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    
     cat_lab <- 
       col_dict[['Categories']] %>% 
       dplyr::filter(if_any('variable') == group_by) %>%
       select(
         !! group_by := 'name', 
-        `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
+        `___labels___` = !! first_lab_var) %>%
       mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
       add_index('___category_level___')
     
@@ -250,7 +256,7 @@ variable_visualize <- function(
   }
   
   # levels if group_by
-  if(group_by != '') { 
+  if(group_by != '') {
     cat_levels <- 
       colset %>% 
       arrange(.data$`___category_level___`) %>%
@@ -1019,8 +1025,7 @@ variable_visualize <- function(
       dplyr::filter(if_any('variable') == col) %>%
       select(
         !!as.symbol(col) := 'name', 
-        `___labels___` = 
-          matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
+        `___labels___` = !! first_lab_var) %>%
       mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
       add_index('___category_level___')
 
@@ -1086,10 +1091,9 @@ variable_visualize <- function(
         dplyr::filter(if_any('variable') == col) %>%
         select(
           !!as.symbol(col) := 'name', 
-          `___labels___` = 
-            matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
+          `___labels___` = !!first_lab_var) %>%
         mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-        add_index('___category_level___')      
+        add_index('___category_level___') 
       
     } else { cat_lab_miss_var <- 
       tibble(
@@ -1161,7 +1165,7 @@ variable_visualize <- function(
   
   colset_valid <-
     colset %>%
-    mutate(across(col,as.character)) %>%
+    mutate(across(all_of(col),as.character)) %>%
     left_join(preprocess_var,by = 
                 intersect(names(colset), names(preprocess_var))) %>%
     select(- !! col) %>%
@@ -1237,15 +1241,15 @@ variable_visualize <- function(
     
     if(nrow(`Categorical variable summary` %>% 
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-            dplyr::filter(.data$`name` %in% col) %>% ungroup) > 0){
+            dplyr::filter(.data$`Variable name` %in% col) %>% ungroup) > 0){
       
       summary_categories <- 
         as.data.frame(t(
           
           `Categorical variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
+            dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
+            select(-c(1:"Number of distinct values"))
           
         ))
       
@@ -1255,7 +1259,7 @@ variable_visualize <- function(
           unique(pull(
             `Categorical variable summary` %>%
               rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
+              dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -1540,21 +1544,24 @@ Please provide another name folder or delete the existing one.")}
       select(-"madshapR::index_group",-"madshapR::index_original")
   }
 
+  
+  first_lab_var <- 
+    names(data_dict_flat[['Variables']] %>%
+    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+  
   data_dict_flat <- 
     suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
     bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
     select(
       "Index" = matches("index"),
       "Variable name" = "name",
-      "Variable label" = matches(c("^label$","^label:[[:alnum:]]"))[1],
+      "Variable label" = any_of(first_lab_var),
       matches('valueType'),
-      Categories = matches(c("^Categories::labels$","^Categories::label$",
-                             "^Categories::label:[[:alnum:]]"))[1]) %>% 
+      Categories = any_of(paste0("Categories::",first_lab_var))) %>% 
     mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>")) %>%
     mutate(Categories = str_replace_all(
       .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
     
-
   bookdown_template(path_to, overwrite = FALSE)
   if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(

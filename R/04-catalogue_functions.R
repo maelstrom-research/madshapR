@@ -31,7 +31,6 @@
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
 #' dataset <- madshapR_example$`dataset_example`
 #' valueType_of(dataset[['part_id']])
 #' 
@@ -164,7 +163,7 @@ valueType_of <- function(x){
 #' dataset <- valueType_self_adjust(dataset["gndr"])
 #' head(dataset)
 #' 
-#' # any data frame can be dataset by definition
+#' ###### Example 2: Aany data frame can be dataset by definition
 #' dataset <- valueType_self_adjust(mtcars)
 #' head(dataset)
 #'
@@ -386,9 +385,9 @@ valueType_self_adjust <- function(...){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
 #' library(dplyr)
 #'  
+#' # use madshapR_example provided by the package
 #' dataset <- madshapR_example$`dataset_example`
 #' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 #' 
@@ -673,7 +672,6 @@ bold("\n\nUseful tip:"),
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
 #' dataset <- madshapR_example$`dataset_example`
 #' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
@@ -839,7 +837,6 @@ valueType_guess <- function(x){
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
 #' dataset <- madshapR_example$`dataset_example`
 #' as_valueType(head(dataset$dob),'date')
 #' 
@@ -1014,8 +1011,6 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
-#' ###### Example
 #' taxonomy <- as_taxonomy(madshapR_example$`taxonomy_example`)
 #' head(taxonomy)
 #' 
@@ -1134,7 +1129,6 @@ is_valueType <- function(object){
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
 #' is_taxonomy(madshapR_example$`taxonomy_example`)
 #' is_taxonomy(madshapR_example$`dataset_example`)
 #'

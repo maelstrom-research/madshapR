@@ -51,7 +51,6 @@ coerce the variable to the corresponding data type.
 {
 
 # use madshapR_example provided by the package
-
 dataset <- madshapR_example$`dataset_example`
 valueType_of(dataset$dob)
 valueType_guess(dataset$dob)

@@ -31,8 +31,6 @@ taxonomies are
 {
 
 # use madshapR_example provided by the package
-
-###### Example
 taxonomy <- as_taxonomy(madshapR_example$`taxonomy_example`)
 head(taxonomy)
 

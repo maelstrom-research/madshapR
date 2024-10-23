@@ -36,6 +36,7 @@ the \code{variable} and \code{name} columns, with unique combination of
 {
 
 library(dplyr)
+
 # use madshapR_example provided by the package
 ###### Example 1 : use the function to apply the attribute "data_dict" to the 
 # object. 

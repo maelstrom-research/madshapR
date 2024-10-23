@@ -31,7 +31,6 @@ the \code{variable} and \code{name} columns, with unique combination of
 {
 
 # use madshapR_example provided by the package
-
 is_data_dict(madshapR_example$`data_dict_example - errors`)
 is_data_dict(madshapR_example$`data_dict_example - errors with data`)
 is_data_dict(madshapR_example$`data_dict_example`)

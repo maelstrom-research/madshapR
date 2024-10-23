@@ -45,11 +45,14 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_example provided by the package
-library(tidyr)
+library(dplyr)
 
-dataset <- madshapR_example$`dataset_example - errors with data` \%>\% mutate(gndr = as_category(gndr))
-data_dict <- as_data_dict(madshapR_example$`data_dict_example - errors with data`)
+# use madshapR_example provided by the package
+dataset <- 
+  madshapR_example$`dataset_example - errors with data` \%>\% 
+  mutate(gndr = as_category(gndr))
+data_dict <- 
+  as_data_dict(madshapR_example$`data_dict_example - errors with data`)
 
 check_dataset_categories(dataset['gndr'] , data_dict)
 

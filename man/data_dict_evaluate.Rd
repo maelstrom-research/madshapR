@@ -51,9 +51,9 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_example provided by the package
 library(dplyr)
 
+# use madshapR_example provided by the package
 data_dict <- madshapR_example$`data_dict_example - errors`
 eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
 

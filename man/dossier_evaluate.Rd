@@ -45,11 +45,9 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_example provided by the package
 library(dplyr)
 
-###### Example : a dataset list is a dossier by definition.
-   
+# use madshapR_example provided by the package
 dataset1 <- as_dataset(madshapR_example$`dataset_example`)
 dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
 dossier <- dossier_create(list(dataset1,dataset2))

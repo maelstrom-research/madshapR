@@ -1495,7 +1495,6 @@ data_dict_ungroup <- function(data_dict){
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#' 
 #' dataset   <- madshapR_example$`dataset_example`
 #' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 #' dataset   <- data_dict_apply(dataset, data_dict)
@@ -2080,6 +2079,7 @@ Please refer to documentation.")
 #' {
 #' 
 #' library(dplyr)
+#' 
 #' # use madshapR_example provided by the package
 #' ###### Example 1 : use the function to apply the attribute "data_dict" to the 
 #' # object. 
@@ -2154,24 +2154,24 @@ data dictionary")}}
     mutate(across(everything() ,~na_if(.,"")))
 
   # add label(:xx) if not present
-  lab_name_var <-
+  first_lab_var <- 
     names(data_dict[['Variables']] %>%
-            select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
   
   # add label if does not exists
-  if(is.na(lab_name_var)){
+  if(is.na(first_lab_var)){
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
       mutate(`label` = .data$`name`) %>%
       select(1:"name","label",everything())
     
-    lab_name_var <- "label"
+    first_lab_var <- "label"
   }
   
   # fill labels if some are empty
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>% 
-    mutate(across(any_of(lab_name_var), ~ ifelse(is.na(.),.data$`name`,.)))
+    mutate(across(any_of(first_lab_var), ~ ifelse(is.na(.),.data$`name`,.)))
   
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
@@ -2184,28 +2184,28 @@ data dictionary")}}
     if(is_data_dict_mlstr){
       
       # add label(:xx) if not present
-      lab_name_var <-
+      first_lab_var <- 
         names(data_dict[['Variables']] %>%
-                select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
       
       # add label if does not exists in categories
-      if(!(lab_name_var %in%  names(data_dict[['Categories']]))){
+      if(!(first_lab_var %in% names(data_dict[['Categories']]))){
         data_dict[['Categories']] <-
           data_dict[['Categories']] %>% 
           mutate(`madshapR::label` = .data$`name`) %>%
-          rename_with(.cols = "madshapR::label",~ lab_name_var) %>%
-          select(1:"name",any_of(lab_name_var),everything())}
+          rename_with(.cols = "madshapR::label",~ first_lab_var) %>%
+          select(1:"name",any_of(first_lab_var),everything())}
       
       # fill labels if some are empty
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>% 
-        mutate(across(any_of(lab_name_var), ~ ifelse(is.na(.),.data$`name`,.)))
+        mutate(across(any_of(first_lab_var), ~ ifelse(is.na(.),.data$`name`,.)))
       
       # rename the column as 'labels'
       data_dict[['Categories']] <- 
         data_dict[['Categories']] %>%
         select(-any_of("labels")) %>%
-        rename_with(.cols = !! lab_name_var,.fn = ~ "labels")
+        rename_with(.cols = !! first_lab_var,.fn = ~ "labels")
 
     }
     
@@ -2612,28 +2612,28 @@ investigations.",
   if(sum(nrow(data_dict[['Categories']])) > 0){
     
     # addition of label(:xx) if not present
-    lab_name_var <-
+    first_lab_var <- 
       names(data_dict[['Variables']] %>%
-              select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
 # 
 #     # if label(:xx) already exists, return as it is.
-#     if(length(data_dict[['Categories']][[lab_name_var]]) > 0){
+#     if(length(data_dict[['Categories']][[first_lab_var]]) > 0){
 #       attributes(data_dict)$`madshapR::class` <- "data_dict_mlstr"
 #       return(data_dict)}
      
     # rename the column as 'labels
     
-    if(length(data_dict[['Categories']][[lab_name_var]]) > 0){
+    if(length(data_dict[['Categories']][[first_lab_var]]) > 0){
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
-        mutate(labels = !! as.name(lab_name_var)) %>%
-        select(1:any_of(lab_name_var),"labels",everything(),-any_of(lab_name_var))
+        mutate(labels = !! as.name(first_lab_var)) %>%
+        select(1:any_of(first_lab_var),"labels",everything(),-any_of(first_lab_var))
     }
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      rename_with(.cols = "labels", ~ lab_name_var) %>%
-      mutate(across(any_of(lab_name_var), ~ ifelse(is.na(.),.data$`name`,.)))
+      rename_with(.cols = "labels", ~ first_lab_var) %>%
+      mutate(across(any_of(first_lab_var), ~ ifelse(is.na(.),.data$`name`,.)))
     
     # addition of missing if not present
     # if missing already exists, return as it is.
@@ -2646,7 +2646,7 @@ investigations.",
         data_dict[['Categories']]$`missing` <- FALSE
         
       }else if(all(data_dict[['Categories']][['na_values']] ==
-                   data_dict[['Categories']][[lab_name_var]] ,na.rm = TRUE)){
+                   data_dict[['Categories']][[first_lab_var]] ,na.rm = TRUE)){
         
         data_dict[['Categories']]$`missing` <- 
           !is.na(data_dict[['Categories']]$`na_values`)
@@ -2869,7 +2869,6 @@ is_data_dict_shape <- function(object){
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#'
 #' is_data_dict(madshapR_example$`data_dict_example - errors`)
 #' is_data_dict(madshapR_example$`data_dict_example - errors with data`)
 #' is_data_dict(madshapR_example$`data_dict_example`)
@@ -2923,7 +2922,6 @@ is_data_dict <- function(object){
 #' {
 #' 
 #' # use madshapR_example provided by the package
-#' 
 #' is_data_dict_mlstr(madshapR_example$`data_dict_example - errors`)
 #' is_data_dict_mlstr(madshapR_example$`data_dict_example - errors with data`)
 #' is_data_dict_mlstr(madshapR_example$`data_dict_example`)

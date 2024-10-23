@@ -66,7 +66,7 @@ dataset <- madshapR_example$`dataset_example`
 dataset <- valueType_self_adjust(dataset["gndr"])
 head(dataset)
 
-# any data frame can be dataset by definition
+###### Example 2: Aany data frame can be dataset by definition
 dataset <- valueType_self_adjust(mtcars)
 head(dataset)
 

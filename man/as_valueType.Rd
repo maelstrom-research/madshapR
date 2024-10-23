@@ -34,7 +34,6 @@ coerce the variable to the corresponding data type.
 {
 
 # use madshapR_example provided by the package
-
 dataset <- madshapR_example$`dataset_example`
 as_valueType(head(dataset$dob),'date')
 

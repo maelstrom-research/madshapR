@@ -27,7 +27,6 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 {
 
 # use madshapR_example provided by the package
-
 names_in_data_dict <- 
   madshapR_example$`data_dict_example - errors`$Variables$name
 check_name_standards(names_in_data_dict)

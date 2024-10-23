@@ -30,7 +30,6 @@ taxonomies are
 {
 
 # use madshapR_example provided by the package
-
 is_taxonomy(madshapR_example$`taxonomy_example`)
 is_taxonomy(madshapR_example$`dataset_example`)
 

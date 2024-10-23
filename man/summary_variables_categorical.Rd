@@ -65,7 +65,6 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_example provided by the package
 library(dplyr)
 library(fabR)
 
