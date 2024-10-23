@@ -20,14 +20,14 @@
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
+#' ##### Example 1: use madshapR_example provided by the package
 #' dataset <- 
 #'   madshapR_example$`dataset_example` %>%
 #'   mutate(prg_ever = as_category(prg_ever))
 #'   
 #' head(dataset$prg_ever)
 #' 
-#' ##### Example 2: any data frame can be a dataset
+#' ###### Example 2: any data frame can be a dataset
 #' cat_cyl <- as_category(mtcars[['cyl']])
 #' 
 #' head(cat_cyl)
@@ -101,7 +101,7 @@ as_category <- function(x){
 #'   
 #' head(dataset[c("prg_ever_cat","prg_ever_no_cat")])
 #' 
-#' ##### Example 2: any data frame can be a dataset
+#' ###### Example 2: any data frame can be a dataset
 #' iris_no_cat <- 
 #'   tibble(iris) %>% mutate(Species = drop_category(Species))
 #' 
@@ -177,7 +177,7 @@ drop_category <- function(x){
 #' is_category(dataset[['prg_ever_cat']])
 #' is_category(dataset[['prg_ever_no_cat']])
 #' 
-#' ##### Example 2: any data frame can be a dataset
+#' ###### Example 2: any data frame can be a dataset
 #' iris %>% reframe(across(everything(), is_category))
 #' 
 #'}
