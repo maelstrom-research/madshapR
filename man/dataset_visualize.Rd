@@ -7,7 +7,7 @@
 dataset_visualize(
   dataset = tibble(id = as.character()),
   bookdown_path,
-  data_dict = data_dict_extract(dataset),
+  data_dict = NULL,
   group_by = NULL,
   valueType_guess = FALSE,
   taxonomy = NULL,
@@ -98,24 +98,29 @@ taxonomies are
 \examples{
 {
 
-# library(fs)
-# library(dplyr)
-# 
-# dataset <- madshapR_example$`dataset_example`
-# data_dict <- madshapR_example$`data_dict_example`
-# dataset_summary <- madshapR_example$`summary - dataset_example`
-# 
-# if(dir_exists(tempdir())) dir_delete(tempdir())
-# bookdown_path <- tempdir()
-# 
-# dataset_visualize(
-#   dataset,
-#   data_dict,
-#   dataset_summary = dataset_summary,
-#   bookdown_path = bookdown_path)
-#   
-# # To open the file in browser, open 'bookdown_path/docs/index.html'. 
-# # Or use bookdown_open(bookdown_path) function.
+library(fs)
+library(dplyr)
+ 
+# use madshapR_example provided by the package 
+dataset <- 
+  madshapR_example$`dataset_example` \%>\% 
+  group_by(pick('gndr')) \%>\% 
+  as_dataset(col_id = "part_id")
+  
+data_dict <- madshapR_example$`data_dict_example`
+dataset_summary <- dataset_summarize(dataset,data_dict)
+ 
+if(dir_exists(tempdir())) dir_delete(tempdir())
+bookdown_path <- tempdir()
+ 
+dataset_visualize(
+  dataset,
+  data_dict,
+  dataset_summary = dataset_summary,
+  bookdown_path = bookdown_path)
+  
+# To open the file in browser, open 'bookdown_path/docs/index.html'. 
+# Or use bookdown_open(bookdown_path) function.
 
 }
 

@@ -76,20 +76,23 @@
 #' @examples
 #' {
 #' 
-#' # library(dplyr)
-#' # library(fs)
-#' #  
-#' # dataset   <- 
-#' #   madshapR_example$`dataset_example` %>% 
-#' #   group_by(pick('gndr')) %>% as_dataset(col_id = "part_id")
-#' # data_dict <- madshapR_example$`data_dict_example`
-#' # variable_summary <- dataset_summarize(dataset,data_dict)
-#' #   
-#' # plots <- variable_visualize(
-#' #  dataset,data_dict, col = 'prg_ever',
-#' #  variable_summary =  variable_summary,valueType_guess = TRUE)
-#' #  
-#' # print(plots$main_values_1)
+#' library(dplyr)
+#' library(fs)
+#' 
+#' # use madshapR_example provided by the package 
+#' dataset <- 
+#'   madshapR_example$`dataset_example` %>% 
+#'   group_by(pick('gndr')) %>% 
+#'   as_dataset(col_id = "part_id")
+#'   
+#' data_dict <- madshapR_example$`data_dict_example`
+#' variable_summary <- dataset_summarize(dataset,data_dict)
+#'   
+#' plots <- variable_visualize(
+#'  dataset,data_dict, col = 'prg_ever',
+#'  variable_summary =  variable_summary,valueType_guess = TRUE)
+#'  
+#' print(plots$main_values_1)
 #'  
 #' }
 #'
@@ -225,7 +228,6 @@ variable_visualize <- function(
   preprocess_var_cat_miss_values <- 
     preprocess_var[preprocess_var$valid_class %in% 
                      c('2_Non-valid values','4_Empty values'),]
-
   
   if(group_by != ''){
     
@@ -578,8 +580,8 @@ variable_visualize <- function(
           
           `Text variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
+            dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
+            select(-c(1:"% Non-valid values"))
           
         ))
       
@@ -589,7 +591,7 @@ variable_visualize <- function(
           unique(pull(
             `Text variable summary` %>%
               rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
+              dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -734,8 +736,8 @@ variable_visualize <- function(
           
           `Datetime variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
+            dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
+            select(-c(1:"% Non-valid values"))
           
         ))
       
@@ -745,7 +747,7 @@ variable_visualize <- function(
           unique(pull(
             `Datetime variable summary` %>%
               rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
+              dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -878,8 +880,8 @@ variable_visualize <- function(
           
           `Date variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-            dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
+            dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
+            select(-c(1:"% Non-valid values"))
           
         ))
       
@@ -889,7 +891,7 @@ variable_visualize <- function(
           unique(pull(
             `Date variable summary` %>%
               rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-              dplyr::filter(.data$`name` %in% col) %>% ungroup %>%
+              dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
               select(starts_with('Grouping variable:'))
           ))
         
@@ -1019,6 +1021,10 @@ variable_visualize <- function(
 
   if(nrow(colset_cat_values) > 0){
     
+    first_lab_var <- 
+      names(col_dict[['Variables']] %>%
+      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    
     n_obs <- nrow(colset_cat_values)
     cat_lab_var <- 
       col_dict[['Categories']] %>% 
@@ -1085,6 +1091,10 @@ variable_visualize <- function(
     n_obs <- nrow(colset_cat_miss_values)
     
     if(sum(nrow(col_dict[['Categories']])) > 0){
+    
+      first_lab_var <- 
+        names(col_dict[['Variables']] %>%
+        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
       
       cat_lab_miss_var <- 
         col_dict[['Categories']] %>% 
@@ -1403,24 +1413,29 @@ variable_visualize <- function(
 #' @examples
 #' {
 #' 
-#' # library(fs)
-#' # library(dplyr)
-#' # 
-#' # dataset <- madshapR_example$`dataset_example`
-#' # data_dict <- madshapR_example$`data_dict_example`
-#' # dataset_summary <- madshapR_example$`summary - dataset_example`
-#' # 
-#' # if(dir_exists(tempdir())) dir_delete(tempdir())
-#' # bookdown_path <- tempdir()
-#' # 
-#' # dataset_visualize(
-#' #   dataset,
-#' #   data_dict,
-#' #   dataset_summary = dataset_summary,
-#' #   bookdown_path = bookdown_path)
-#' #   
-#' # # To open the file in browser, open 'bookdown_path/docs/index.html'. 
-#' # # Or use bookdown_open(bookdown_path) function.
+#' library(fs)
+#' library(dplyr)
+#'  
+#' # use madshapR_example provided by the package 
+#' dataset <- 
+#'   madshapR_example$`dataset_example` %>% 
+#'   group_by(pick('gndr')) %>% 
+#'   as_dataset(col_id = "part_id")
+#'   
+#' data_dict <- madshapR_example$`data_dict_example`
+#' dataset_summary <- dataset_summarize(dataset,data_dict)
+#'  
+#' if(dir_exists(tempdir())) dir_delete(tempdir())
+#' bookdown_path <- tempdir()
+#'  
+#' dataset_visualize(
+#'   dataset,
+#'   data_dict,
+#'   dataset_summary = dataset_summary,
+#'   bookdown_path = bookdown_path)
+#'   
+#' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
+#' # Or use bookdown_open(bookdown_path) function.
 #' 
 #' }
 #'
@@ -1432,7 +1447,7 @@ variable_visualize <- function(
 dataset_visualize <- function(
     dataset = tibble(id = as.character()),
     bookdown_path,
-    data_dict = data_dict_extract(dataset),
+    data_dict = NULL,
     group_by = NULL,
     valueType_guess = FALSE,
     taxonomy = NULL,
@@ -1468,9 +1483,17 @@ dataset_visualize <- function(
 "The path folder already exists. 
 Please provide another name folder or delete the existing one.")}
   
-  dataset <- as_dataset(dataset, col_id(dataset))
+  # test if enough dataset
+  as_dataset(dataset, col_id(dataset))
   col_id <- col_id(dataset)
   
+  # if data_dict empty
+  if(is.null(data_dict)){
+    data_dict <- 
+      data_dict_extract(dataset,as_data_dict_mlstr = TRUE) 
+  }else{
+    data_dict <- as_data_dict_mlstr(data_dict)}
+
   if(toString(substitute(group_by)) == '') group_by <- NULL
   # attempt to catch group_by from the group_vars if the dataset is grouped
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
@@ -1543,7 +1566,6 @@ Please provide another name folder or delete the existing one.")}
       arrange(.data$`madshapR::index_original`) %>%
       select(-"madshapR::index_group",-"madshapR::index_original")
   }
-
   
   first_lab_var <- 
     names(data_dict_flat[['Variables']] %>%
@@ -1705,9 +1727,19 @@ datatable(Overview,
           "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
   
+  first_lab_var <- 
+    names(data_dict$Variables %>%
+    select(matches(c('^label$','^label:[[:alnum:]]'))))[1]
+    
+  
+  
   datatable(t(
      data_dict$Variables %>%
-     dplyr::filter(`Variable name` == '",data_dict$Variables$`name`[i],"')),
+     dplyr::filter(`name` == '",data_dict$Variables$`name`[i],"') %>%
+     select(
+      'Variable name' = 'name', 
+      'Variable label' = any_of(first_lab_var), 
+      'Data dictionary valueType' = 'valueType')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
@@ -1727,8 +1759,11 @@ datatable(Overview,
   datatable(
     data_dict$Categories %>% 
       dplyr::filter(variable == '",data_dict$Variables$`name`[i],"') %>%
-    select('Variable name' = variable, name, 
-    label = matches(c('^label$','^label:[[:alnum:]]'))[1], missing) %>%
+    select(
+      'Variable name' = 'variable', 
+      'Categorie label' = any_of(first_lab_var), 
+      'Categorie code' = 'name', 
+      'missing') %>%
     mutate(across(everything(), as.character)),
     options = list(scrollX = TRUE),rownames = FALSE)                          ",
                         

@@ -92,20 +92,23 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# library(dplyr)
-# library(fs)
-#  
-# dataset   <- 
-#   madshapR_example$`dataset_example` \%>\% 
-#   group_by(pick('gndr')) \%>\% as_dataset(col_id = "part_id")
-# data_dict <- madshapR_example$`data_dict_example`
-# variable_summary <- dataset_summarize(dataset,data_dict)
-#   
-# plots <- variable_visualize(
-#  dataset,data_dict, col = 'prg_ever',
-#  variable_summary =  variable_summary,valueType_guess = TRUE)
-#  
-# print(plots$main_values_1)
+library(dplyr)
+library(fs)
+
+# use madshapR_example provided by the package 
+dataset <- 
+  madshapR_example$`dataset_example` \%>\% 
+  group_by(pick('gndr')) \%>\% 
+  as_dataset(col_id = "part_id")
+  
+data_dict <- madshapR_example$`data_dict_example`
+variable_summary <- dataset_summarize(dataset,data_dict)
+  
+plots <- variable_visualize(
+ dataset,data_dict, col = 'prg_ever',
+ variable_summary =  variable_summary,valueType_guess = TRUE)
+ 
+print(plots$main_values_1)
  
 }
 
