@@ -604,19 +604,21 @@ check_data_dict_valueType <- function(data_dict){
     data_dict[['Variables']][['valueType']] <- NA_character_    
   
   vT_list <- madshapR::valueType_list[!is.na(madshapR::valueType_list[['valueType']]),]
-  var_index <- data_dict[['Variables']]['name'] %>%
-    rename (name_var = "name") %>% add_index('index')
+  var_index <- 
+    data_dict[['Variables']]['name'] %>%
+    rename (name_var = "name") %>% 
+    add_index('index') 
   
   test_valueType_names <-
     data_dict[['Variables']] %>%
+    select(name_var = "name",value = "valueType") %>% add_index() %>%
     rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-    dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>% ungroup %>%
-    select(name_var = "name",value = "valueType") %>%
+    dplyr::filter(! .data$`value` %in% vT_list$`valueType`) %>% ungroup %>%
     mutate(
       condition = ifelse(is.na(.data$`value`),
 "[INFO] - valueType is missing (see ??valueType_list for complete list).",
 "[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).")) %>%
-    inner_join(var_index, by = "name_var") %>%
+    inner_join(var_index, by = c("name_var","index")) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
   
@@ -661,11 +663,16 @@ check_data_dict_valueType <- function(data_dict){
         valueType = replace_na(.data$`valueType`,"(empty)"),
         condition = case_when(
           .data$`test` == 'try-error'  ~ "[ERROR] - valueType is not compatible with variable categories.",
-          TRUE                         ~ "[INFO] - Suggested valueType.")) %>%
+          TRUE                         ~ NA_character_)) %>%
       select("index", 'name_var', 'value2' = 'valueType', "condition2" = 'condition','suggestion') %>%
       mutate(across(everything(), ~ as.character(.)))
     
   }
+  
+  test_valueType_names <- 
+    test_valueType_names %>%
+    mutate(
+      value = replace_na(.data$`value`,"(empty)"))
   
   test <- 
     full_join(
@@ -1080,14 +1087,14 @@ check_dataset_categories <- function(
 #' {
 #'
 #' data_dict <- madshapR_example$`data_dict_example - errors with data`
-#' dataset <- madshapR_example$`dataset_example - errors with data`
+#' dataset <- madshapR_example$`dataset_example`
 #' 
 #' check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
 #' check_dataset_valueType(dataset, data_dict, valueType_guess = FALSE)
 #'
 #' }
 #'
-#' @import dplyr tidyr stringr fabR
+#' @import dplyr tidyr stringr fabR janitor
 #' @importFrom rlang .data
 #'
 #' @export
@@ -1098,15 +1105,28 @@ check_dataset_valueType <- function(
   
   # test if enough data_dict or dataset
   as_dataset(dataset) # no col_id
-  as_data_dict_shape(data_dict)
 
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE of FALSE (FALSE by default)')
+  
+  # check on arguments : data_dict
+  if(is.null(data_dict)){
+    data_dict <-
+      silently_run({data_dict_extract(
+        dataset = dataset,
+        as_data_dict_mlstr = TRUE)})
+    if(class(data_dict)[1] == "try-error"){
+      data_dict <-
+        silently_run({data_dict_extract(
+          dataset = dataset,
+          as_data_dict_mlstr = FALSE)})}
+  }
+  
+  as_data_dict_shape(data_dict)
 
-  data_dict_init <- data_dict
   data_dict_unique_name <-
-    make.unique(replace_na(data_dict[['Variables']]$`name`,"NA"))
+    make.unique(replace_na(data_dict[['Variables']]$`name`,"(empty)"))
   
   data_dict[['Variables']]$`name` <- data_dict_unique_name
   
@@ -1126,12 +1146,10 @@ check_dataset_valueType <- function(
     data_dict[['Variables']][['valueType']] <- NA_character_    
   
   vT_list <- madshapR::valueType_list[!is.na(madshapR::valueType_list[['valueType']]),]
-  var_index <- data_dict[['Variables']]['name'] %>%
-    rename (name_var = "name") %>% add_index('index')
-  
-  test_vT_data_dict <- 
-    check_data_dict_valueType(data_dict) %>%
-    left_join(var_index,by = "name_var")
+
+  # test_vT_data_dict <- 
+  #   check_data_dict_valueType(data_dict) %>%
+  #   left_join(var_index,by = "name_var")
   
   test_vT_dataset <- tibble(
     name_var = as.character(),
@@ -1142,7 +1160,7 @@ check_dataset_valueType <- function(
   for(i in names(dataset)){
     # stop()}
 
-    data_dict_vT <-
+    data_dict_vT <- 
       data_dict[['Variables']][
         which(data_dict[['Variables']]$`name` == i),]$`valueType`
 
@@ -1151,65 +1169,95 @@ check_dataset_valueType <- function(
             data_dict[['Categories']][['variable']] == i]
     if(length(vec2) > 0) vec <- c(vec,vec2)
     
-    condition2 <- class(silently_run(as_valueType(vec,data_dict_vT)))[1]
-    actual    <- as.character(valueType_of(dataset[[i]]))
-    guess     <- ifelse(valueType_guess == FALSE,NA_character_,as.character(valueType_guess(vec)))
+    not_vT <- !is.na(data_dict_vT) & !data_dict_vT %in% vT_list$valueType
     
-    # preserve original valueType when is NA
-    if(all(is.na(vec))){
-      guess     <- ifelse(
-        valueType_guess == FALSE,actual,as.character(valueType_guess(dataset[[i]])))}
-  
+    try_class <- 
+      class(silently_run(as_valueType(vec,data_dict_vT)))[1]
+    
+    dataset_vT <- valueType_of(dataset[[i]])
+    
+    guess_vT <- if(try_class == "try-error" | valueType_guess == TRUE) 
+      valueType_guess(vec) else dataset_vT
+    
+    if(all(is.na(vec))) dataset_vT <- data_dict_vT <- guess_vT
+    
+    data_dict_vT
+    dataset_vT
+    guess_vT
+    
+    guess_vT <- 
+      if(all(data_dict_vT %in% dataset_vT, dataset_vT == guess_vT) & try_class != 'try-error') 
+        NA_character_ else guess_vT
+    
+    value <- if(isTRUE(all.equal(data_dict_vT,dataset_vT)) & is.na(guess_vT) & try_class != 'try-error') NA_character_ else data_dict_vT
+    value <- if(!isTRUE(all.equal(data_dict_vT,dataset_vT)) & !is.na(guess_vT) & try_class != 'try-error') 
+      c(data_dict_vT,dataset_vT)[c(data_dict_vT,dataset_vT) != value][1] else value
+    value <- if(is.na(data_dict_vT)) "(empty)" else value
+    
+    if(valueType_guess == FALSE)
+      guess_vT <- c(data_dict_vT,dataset_vT)[c(data_dict_vT,dataset_vT) != value][1]
+
     test_vT_dataset <-
       rbind(
         test_vT_dataset,
         tibble(
-          name_var  = i,
-          value2     = data_dict_vT,
-          condition2 = ifelse(
-            condition2 == 'try-error',
-"[ERROR] - valueType in data dictionary is not compatible with dataset values.",NA_character_),
-          suggestion2 = guess) %>% 
+          name_var      = i,
+          try_class     = try_class,
+          data_dict_vT  = data_dict_vT,
+          dataset_vT    = dataset_vT,
+          suggestion    = guess_vT,
+          value         = value) %>%
           mutate(
-          condition2 = ifelse(
-            data_dict_vT == 'date' & guess == 'datetime',
-"[ERROR] - Inconsistent or ambiguous date format.",.data$`condition2`),
-          suggestion2 = ifelse(
-            data_dict_vT == 'date' & guess == 'datetime',
-            'text',.data$`suggestion2`)))
+            
+            condition  = case_when(
+              
+              isTRUE(not_vT)                           ~ 
+"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).",
+
+          is.na(.data$`data_dict_vT`)                  ~
+"[INFO] - valueType is missing (see ??valueType_list for complete list).",
+
+          .data$`try_class` == 'try-error'             ~ 
+"[ERROR] - valueType in data dictionary is not compatible with dataset values.",
+              
+          .data$`dataset_vT` != .data$`data_dict_vT`   ~
+"[INFO] - The valueType in the data dictionary is different from the valueType in the dataset.",
+
+          .data$`value` != .data$`suggestion`        ~
+ "[INFO] - Suggested valueType.",
+
+              TRUE                                     ~ NA_character_)
+
+          ))
   }
   
-  test_vT_dataset <- 
-    test_vT_dataset %>%
-    left_join(var_index,by = "name_var") %>%
-    rowwise() %>%
-    filter(!.data$`value2` %in% .data$`suggestion2` | !is.na(.data$`condition2`)) %>%
-    ungroup
-
-  if(valueType_guess == FALSE) 
-    test_vT_dataset <- 
-    test_vT_dataset %>% dplyr::filter(!is.na(.data$`condition2`))
-
   test <- 
-    full_join(
-      test_vT_data_dict, 
-      test_vT_dataset, join_by("index","name_var")) %>%
-    mutate(suggestion = .data$`suggestion2`,value = .data$`value2`) %>%
+    test_vT_dataset %>%
     rowwise() %>%
-    mutate(
-      replace_suggestion = .data$`value` %in% vT_list$valueType | is.na(.data$`value`),
-      replace_suggestion = .data$`value` %in% vT_list$valueType | is.na(.data$`value`),
-      condition = ifelse(isTRUE(.data$`replace_suggestion`) & is.na(.data$`condition`), 
-                         .data$`condition2`,.data$`condition`),
-      value = replace_na(.data$`value`,"(empty)")) %>%
-    mutate(
-      condition = ifelse(
-        is.na(.data$`condition`),
-        "[INFO] - Suggested valueType.",.data$`condition`),
-      condition = as.character(.data$`condition`)) %>%
-    mutate(index = as.integer(.data$`index`)) %>%
-    arrange(.data$`index`) %>%
-    select(-"index",-"suggestion2",-"condition2",-"value2",-"replace_suggestion") %>%
+    filter(!is.na(.data$`condition`)) %>%
+    ungroup %>%
+    select(-'data_dict_vT',-'dataset_vT',-'try_class') %>%
+    distinct()
+  
+# condition2 = ifelse(
+#   data_dict_vT == 'date' & guess == 'datetime',
+#   "[ERROR] - Inconsistent or ambiguous date format.",.data$`condition2`),
+# suggestion2 = ifelse(
+#   data_dict_vT == 'date' & guess == 'datetime',
+#   'text',valueType_guess(vec)),
+#            condition2 = ifelse(
+#              data_dict_vT == 'date' & guess == 'datetime',
+# "[ERROR] - Inconsistent or ambiguous date format.",.data$`condition2`),
+#           suggestion2 = ifelse(
+#             data_dict_vT == 'date' & guess == 'datetime',
+#             'text',valueType_guess(vec)),
+  
+  test <- 
+    test_vT_dataset %>%
+    rowwise() %>%
+    filter(!is.na(.data$`condition`)) %>%
+    ungroup %>%
+    select(-'data_dict_vT',-'dataset_vT',-'try_class') %>%
     distinct()
   
   return(test)
