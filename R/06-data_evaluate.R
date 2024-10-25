@@ -208,6 +208,7 @@ dataset_evaluate <- function(
   
   message(
     "    Assess the presence of possible duplicated variable in the dataset")
+  
   if(nrow(dataset) > 0 & ncol(dataset %>% select(-matches('madshapR::index'))) > 1) {
     test_duplicated_columns <-
       get_duplicated_cols(
@@ -225,7 +226,7 @@ dataset_evaluate <- function(
   }
   
   message(
-    "    Assess the presence of duplicated participants in the dataset")
+    "    Assess the presence of possible duplicated participants")
   if(nrow(dataset) > 0){                                                        
     
     test_duplicated_rows <-
@@ -295,7 +296,7 @@ dataset_evaluate <- function(
         value = 
           ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
       reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-      mutate(condition = "[INFO] - Duplicated participant identifier.") %>%     # [GF] validate text
+      mutate(condition = "[INFO] - Duplicated identifier values.") %>%
       mutate(
         `name_var` = 
           ifelse(col_id == "madshapR::index",'(all)', !! col_id)) %>%
@@ -315,7 +316,7 @@ dataset_evaluate <- function(
     if(length(distinct_information) == 1 & sum(distinct_information) == 2){
       test_duplicated_rows <- 
         test_duplicated_rows %>% 
-        mutate(`Dataset assessment` = "[INFO] - Duplicated rows.")              # [GF] validate text
+        mutate(`Dataset assessment` = "[INFO] - Duplicated rows.")    
       
       test_duplicated_identifier <-   
         tibble("Variable name" = as.character(),"Value" = as.character())
@@ -324,7 +325,7 @@ dataset_evaluate <- function(
     if(col_id == "madshapR::index"){
       test_duplicated_rows <- 
         test_duplicated_rows %>% 
-        mutate(`Dataset assessment` = "[INFO] - Duplicated rows.")              # [GF] validate text
+        mutate(`Dataset assessment` = "[INFO] - Duplicated rows.")  
     }
   }
   
@@ -652,7 +653,7 @@ dossier_evaluate <- function(
 #'
 #' }
 #'
-#' @import dplyr tidyr stringr fabR
+#' @import dplyr tidyr stringr fabR janitor
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
@@ -689,36 +690,36 @@ data_dict_evaluate <- function(
   # add label, valueType and missing if don't exist
   # if(is_data_dict_mlstr == TRUE){
     
+  data_dict[['Variables']] <-
+    data_dict[['Variables']] %>%
+    bind_rows(tibble(valueType = as.character()))
+  
+  if(length(names(
+    data_dict[['Variables']] %>%
+    select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
+    
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
-      bind_rows(tibble(valueType = as.character()))
-
-    if(length(names(
-      data_dict[['Variables']] %>%
-      select(matches(c("^label$","^label:[[:alnum:]]"))))) == 0){
-      
-      data_dict[['Variables']] <-
-        data_dict[['Variables']] %>%
-        bind_rows(tibble(label = as.character()))
-    }
+      bind_rows(tibble(label = as.character()))
+  }
+  
+  if(sum(nrow(data_dict[['Categories']])) > 0){
     
-    if(sum(nrow(data_dict[['Categories']])) > 0){
+    data_dict[['Categories']] <-
+      data_dict[['Categories']] %>%
+      bind_rows(tibble(missing = as.character()))
     
+    first_lab_var <- 
+      names(data_dict[['Variables']] %>%
+              select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    
+    if(!first_lab_var %in% names(data_dict[['Categories']])){
       data_dict[['Categories']] <-
         data_dict[['Categories']] %>%
-        bind_rows(tibble(missing = as.character()))
-      
-      first_lab_var <- 
-        names(data_dict[['Variables']] %>%
-        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
-      
-      if(!first_lab_var %in% names(data_dict[['Categories']])){
-        data_dict[['Categories']] <-
-          data_dict[['Categories']] %>%
-          bind_rows(tibble(label_temp = as.character())) %>%
-          rename_with(.cols = "label_temp", .fn =  ~ first_lab_var)
-      }
+        bind_rows(tibble(label_temp = as.character())) %>%
+        rename_with(.cols = "label_temp", .fn =  ~ first_lab_var)
     }
+  }
   # }
   
   # check on arguments : taxonomy
@@ -999,10 +1000,7 @@ data_dict_evaluate <- function(
       if(all(is.na(data_dict[['Variables']][[first_lab_var]]))){
         test_var_label <- 
           test_var_label %>% mutate("Variable name" = '(all)') %>% distinct}
-      
-      
-      
-      # [GF - tested and validated]  
+    
 
       message("    Assess the logical values of missing column in Categories")
       test_missing_category <- 
@@ -1041,7 +1039,15 @@ data_dict_evaluate <- function(
     left_join(data_dict$Variables %>% select("Variable name" = "name","index"),
               relationship = "many-to-many",by = "Variable name") %>%
     mutate(index = as.integer(.data$`index`)) %>%
-    arrange(.data$`index`,.data$`Variable name`) %>%
+    # arrange elements
+    mutate(
+      index2 = case_when( 
+      
+        str_detect(.data$`Variable name`,"Row number:") ~ -3,
+        .data$`Variable name` == "(all)"                ~ -2,
+        .data$`Variable name` == "(empty)"              ~ -1,
+        TRUE                                            ~ 0)) %>%
+    arrange(.data$`index`,.data$`index2`,.data$`Variable name`,desc(.data$`Sheet`)) %>%
     select(
       "Variable name",
       matches("Column name"),

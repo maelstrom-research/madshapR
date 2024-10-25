@@ -195,21 +195,21 @@ dataset_summarize <- function(
   
   # if group contains NA, stop
   
-  # [GF] - question : now it is not mandatory that the grouping variable must
+  # [GF resolved] - question : now it is not mandatory that the grouping variable must
   # have no NA . the group is called (Empty) and works as any other group. A 
   # decision has to be made.
   
 #   if(group_by != ''){
-#     
+# 
 #     has_empty <-
 #       dataset %>%
 #       reframe(across(!! group_by, ~ !all(!is.na(.)))) %>%
 #       unlist %>% all
-#     
+# 
 #     if(has_empty){
 #       stop(call. = FALSE,
 # "Grouping variable contains empty values, and cannot be used as a grouping variable.")
-#       
+# 
 #     }
 #   }
   
@@ -283,7 +283,7 @@ dataset_summarize <- function(
       left_join(cat_lab, by = join_by(!!as.symbol(group_by))) %>%
       arrange(.data$`___category_level___`) %>% 
       pull('___labels___') %>%
-      str_replace_na('Empty Values')
+      str_replace_na('Empty value')
     
     names(dataset_group) <- name_group
     
@@ -431,7 +431,7 @@ dataset_summarize <- function(
   message("    Summarize the data type of each variable across the dataset")
   
   ### SUMMARIZE VARIABLES VALUES ###
-  # [GF] - note : handle better the id participant.
+  # [GF] - NOTE : handle better the id participant.
 
   vT <- madshapR::valueType_list
   vT_text <- vT[vT$`genericType` == 'character',][['valueType']]
@@ -626,9 +626,9 @@ dataset_summarize <- function(
       select(any_of(minimum_cols)) %>%
       mutate(
         `Quality assessment comment` = ifelse(.data$`Variable name` %in% col_id,
-        "[INFO] - Identifier variable",.data$`Quality assessment comment`),       #[GF] - validate text
+        "[INFO] - Identifier variable.",.data$`Quality assessment comment`),       
         `Quality assessment comment` = ifelse(.data$`Variable name` %in% group_by,
-        "[INFO] - Grouping variable",.data$`Quality assessment comment`))         #[GF] - validate text
+        "[INFO] - Grouping variable.",.data$`Quality assessment comment`))         
     
     report$`Text variable summary` <-
       suppressMessages(report$`Text variable summary` %>%
@@ -661,9 +661,8 @@ dataset_summarize <- function(
       select(any_of(minimum_cols),everything())  %>%
       mutate(
         `Quality assessment comment` = ifelse(.data$`Variable name` %in% group_by,
-        "[INFO] - Grouping variable",.data$`Quality assessment comment`))       #[GF] - validate text
+        "[INFO] - Grouping variable.",.data$`Quality assessment comment`))      
     }
-    # [GF] everything upper this line has been tested and validated.
     
   message("    Summarize global information (Overview)")
   
@@ -731,12 +730,11 @@ dataset_summarize <- function(
         .data$`---` == '        1_Number of numerical variables'                     ~
       as.character(ifelse(length(unique(report$`Numerical variable summary`$`Variable name`)) > 0,
                           length(unique(report$`Numerical variable summary`$`Variable name`)), "madshapR::remove")),
-        .data$`---` == '        1_Number of categorical variables'                   ~
         
-        
-      # question GF
-      as.character(ifelse(length(unique(report$`Categorical variable summary`$`Variable name`)) > 0,
-                          length(unique(report$`Categorical variable summary`$`Variable name`)), "madshapR::remove")),
+      # [GF resolved comment] Leave categorical even if empty
+      #   .data$`---` == '        1_Number of categorical variables'                   ~
+      # as.character(ifelse(length(unique(report$`Categorical variable summary`$`Variable name`)) > 0,
+      #                     length(unique(report$`Categorical variable summary`$`Variable name`)), "madshapR::remove")),
         .data$`---` == '    2_Rows'                                                  ~
           i,
         .data$`---` == '        2_Number of rows'                                    ~
