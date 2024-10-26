@@ -74,7 +74,7 @@
 #' 
 #' 
 #' ###### Example 1: use madshapR_example provided by the package
-#' dataset <- as_dataset(madshapR_example$`dataset_example`,col_id = "part_id")
+#' dataset <- as_dataset(madshapR_example$`dataset_example`)
 #' data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
 #'   
 #' summary_dataset <- dataset_summarize(dataset, data_dict)
@@ -213,7 +213,6 @@ dataset_summarize <- function(
 #     }
 #   }
   
-  
   if(group_by != ''){
     
     preprocess_group <- 
@@ -288,6 +287,8 @@ dataset_summarize <- function(
     names(dataset_group) <- name_group
     
   } else {
+    
+    name_group <- "no_group"
     dataset_group <- valueType_adjust(from = data_dict, to = dataset)
     dataset_group <- list(no_group = dataset_group)
     dataset_group$no_group <- as_dataset(dataset_group$no_group,col_id)
@@ -297,6 +298,7 @@ dataset_summarize <- function(
   # evaluate the dataset
   report <- list()
   
+  # [GF] - note : this step adds time in the process
   dataset_with_data_dict <- data_dict_apply(dataset,data_dict)
   
   report <- 
@@ -694,15 +696,15 @@ dataset_summarize <- function(
     Overview_group[[i]] <-
       Overview %>%
       mutate(`-----` = case_when(
-        .data$`---` == 'Overview'                            ~
+        .data$`---` == 'Overview'                                              ~
           " ",
-        .data$`---` == 'Date report generated'                                                  ~
+        .data$`---` == 'Date report generated'                                 ~
           as.character(Sys.Date()),
         .data$`---` == '1_Name of the dataset'                                 ~
           dataset_name %>% str_remove_all("`"),
         .data$`---` == '    1_Identifier variable'                             ~
           as.character(ifelse(toString(col_id) != '',
-                              toString(col_id), "madshapR::remove")),
+                              toString(col_id), " ")), 
         .data$`---` == '    1_Grouping variable'                               ~
           as.character(ifelse(toString(group_by) != '',
                               toString(group_by), "madshapR::remove")),
@@ -732,9 +734,9 @@ dataset_summarize <- function(
                           length(unique(report$`Numerical variable summary`$`Variable name`)), "madshapR::remove")),
         
       # [GF resolved comment] Leave categorical even if empty
-      #   .data$`---` == '        1_Number of categorical variables'                   ~
-      # as.character(ifelse(length(unique(report$`Categorical variable summary`$`Variable name`)) > 0,
-      #                     length(unique(report$`Categorical variable summary`$`Variable name`)), "madshapR::remove")),
+        .data$`---` == '        1_Number of categorical variables'                   ~
+      as.character(ifelse(length(unique(report$`Categorical variable summary`$`Variable name`)) > 0,
+                          length(unique(report$`Categorical variable summary`$`Variable name`)), " ")),
         .data$`---` == '    2_Rows'                                                  ~
           i,
         .data$`---` == '        2_Number of rows'                                    ~
@@ -767,7 +769,23 @@ dataset_summarize <- function(
   report$Overview <- bind_cols(Overview_group)
   report$Overview <-
     report$Overview %>%
-    dplyr::filter(!.data$`(all)` == "madshapR::remove")
+    dplyr::filter(!.data$`(all)` %in% "madshapR::remove")
+
+  if(group_by == '') report$Overview <- report$Overview %>% select(-"no_group")
+  
+  
+  if(all("Empty value" %in% name_group)){
+
+    qual_comment = "[INFO] - Grouping variable contains Empty values (NA)."
+
+    report[["Dataset assessment"]] <-
+      bind_rows(
+        report[["Dataset assessment"]],
+        tibble(
+          `Variable name` = group_by,
+          `Dataset assessment` = qual_comment,
+          Value = NA_character_))
+  }
 
   message("    Generate report\n")
 
@@ -783,6 +801,7 @@ dataset_summarize <- function(
     names(report)[str_detect(names(report),"variable summary")],
     names(report)[str_detect(names(report),"assessment")]
     ))]
+
 
   report <-   
     report %>%
@@ -1700,11 +1719,11 @@ summary_variables_numeric <- function(
       summary_i <-
         tibble(
           `Variable name`        =  i,
-          `Minimum`              = summary(summary_i$`value_var`)[[1]],
-          `1st quartile`         = summary(summary_i$`value_var`)[[2]],
-          `Median`               = summary(summary_i$`value_var`)[[3]],
-          `3rd quartile`         = summary(summary_i$`value_var`)[[5]],
-          `Maximum`              = summary(summary_i$`value_var`)[[6]],
+          `Minimum`              = round(summary(summary_i$`value_var`)[[1]],2),
+          `1st quartile`         = round(summary(summary_i$`value_var`)[[2]],2),
+          `Median`               = round(summary(summary_i$`value_var`)[[3]],2),
+          `3rd quartile`         = round(summary(summary_i$`value_var`)[[5]],2),
+          `Maximum`              = round(summary(summary_i$`value_var`)[[6]],2),
           `Mean`                 = round(summary(summary_i$`value_var`)[[4]],2),
           `Standard deviation`   = round(sd(summary_i$`value_var`,na.rm = TRUE),2),
           ) %>%
