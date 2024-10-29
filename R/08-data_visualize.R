@@ -357,7 +357,7 @@ variable_visualize <- function(
       `Variables summary (all)` %>% 
         rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
         dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
-        select(c("Number of rows":last_col()))
+        select(-("Index":"Categories in data dictionary"))
     ))
   
   if(group_by != ''){
