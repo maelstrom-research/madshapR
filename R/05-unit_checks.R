@@ -833,20 +833,15 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 check_dataset_categories <- function(
     dataset, 
     data_dict = NULL){
-  
-  # [GF] - tested and validated
-  
+
   # [GF] - question : validate tests associated to unit checks.
   
-  # 1  [INFO] - Variable is categorical in data dictionary but not in dataset.
-  # 2  [INFO] - Variable is categorical in dataset but not in data dictionary.
-  # 3  [INFO] - Variable has categorical values in data dictionary that are not present in dataset.
-  # 4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.
-  #        OR - Variable has categorical values in dataset that are not described among categories in data dictionary.
-  #        OR - Variable has categories in dataset that are different from categories reported in data dictionary.
-  # 5  [INFO] - Variable has a combination of categorical values and non categorical values (mix).
-  # 6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.
-  #        OR - Variable has categorical values in data dictionary that are not categorical in dataset.
+  # 1  [INFO] - Variable is defined as categorical in data dictionary but not in dataset.
+  # 2  [INFO] - Variable is defined as categorical in dataset but not in data dictionary.
+  # 3  [INFO] - Variable is categorical and has values defined in data dictionary that are not present in dataset.
+  # 4 [ERROR] - Variable is categorical and has values in dataset that are not defined in data dictionary.
+  # 5  [INFO] - Variable has both categorical and non-categorical values (some values in dataset are defined as categories and others are not).
+  # 6 [ERROR] - Variable has both categorical and non-categorical values, but some values defined as categorical in data dictionary are non-categorical in dataset.
   
   if(is.null(data_dict)){
     data_dict <-
@@ -950,73 +945,69 @@ check_dataset_categories <- function(
         is_cat_dd      <- length(dd_cat) > 0
         is_cat_ds      <- length(ds_cat) > 0
         
-        # 1  [INFO] - Variable is categorical in data dictionary but not in dataset.
+        # 1  [INFO] - Variable is defined as categorical in data dictionary but not in dataset.
         if(is_cat_dd & ! is_cat_ds){
           test1 <-
             tibble(
               name_var  = i,
               value     = dd_cat,
               condition =
-                "[INFO] - Variable is categorical in data dictionary but not in dataset.")
+"[INFO] - Variable is defined as categorical in data dictionary but not in dataset.")
         }
         
-        # 2  [INFO] - Variable is categorical in dataset but not in data dictionary.
+        # 2  [INFO] - Variable is defined as categorical in dataset but not in data dictionary.
         if(! is_cat_dd & is_cat_ds){
           test2 <-
             tibble(
               name_var  = i,
               value     = ds_cat,
               condition =
-                "[INFO] - Variable is categorical in dataset but not in data dictionary.")
+"[INFO] - Variable is defined as categorical in dataset but not in data dictionary.")
         }
         
-        # 3  [INFO] - Variable has categorical values in data dictionary that are not present in dataset.
+        # 3  [INFO] - Variable is categorical and has values defined in data dictionary that are not present in dataset.
         if(is_cat_dd & is_cat_ds & length(dd_only) > 0){
           test3 <-
             tibble(
               name_var  = i,
               value     = dd_only,
               condition =
-                "[INFO] - Variable has categorical values in data dictionary that are not present in dataset.")
+"[INFO] - Variable is categorical and has values defined in data dictionary that are not present in dataset.")
         }
         
-        # 4 [ERROR] - Variable has categorical values in dataset that are not present in data dictionary.
-        #        OR - Variable has categorical values in dataset that are not described among categories in data dictionary.
-        #        OR - Variable has categories in dataset that are different from categories reported in data dictionary.
+        # 4 [ERROR] - Variable is categorical and has values in dataset that are not defined in data dictionary.
         if(is_cat_dd & is_cat_ds & length(ds_only) > 0){
           test4 <-
             tibble(
               name_var  = i,
               value     = ds_only,
               condition =
-                "[ERROR] - Variable has categorical values in dataset that are not present in data dictionary.")
+"[ERROR] - Variable is categorical and has values in dataset that are not defined in data dictionary.")
         }
         
-        # 5  [INFO] - Variable has a combination of categorical values and non categorical values (mix).
+        # 5  [INFO] - Variable has both categorical and non-categorical values (some values in dataset are defined as categories and others are not).
         if(is_cat_ds & length(ds_vals_only) > 0){
           test5 <-
             tibble(
               name_var  = i,
               value     = ds_vals_only,
               condition =
-                "[INFO] - Variable has a combination of categorical values and non categorical values (mix).")
+"[INFO] - Variable has both categorical and non-categorical values (some values in dataset are defined as categories and others are not).")
         }
         
-        # 6 [ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.
-        #        OR - Variable has categorical values in data dictionary that are not categorical in dataset.
+        # 6 [ERROR] - Variable has both categorical and non-categorical values, but some values defined as categorical in data dictionary are non-categorical in dataset.
         if(is_cat_ds & is_cat_dd & length(ds_noncat_vals) > 0){
           test6 <-
             tibble(
               name_var  = i,
               value     = ds_only,
               condition =
-                "[ERROR] - Variable has categorical values in data dictionary that are non categorical values in dataset.")
+"6 [ERROR] - Variable has both categorical and non-categorical values, but some values defined as categorical in data dictionary are non-categorical in dataset.")
         }
       }
       
       test <- bind_rows(test,
                         test1,test2,test3,test4,test5,test6)
-      
     }
   }
   
