@@ -696,9 +696,9 @@ variable_visualize <- function(
       #### plot_2 character ####      
       
       if(nrow(colset_values_main_word) == 0){
-        
+
         plot_2 = NULL
-        
+
       }else{
         
         n_obs <- nrow(colset_values)
@@ -734,11 +734,8 @@ variable_visualize <- function(
             coord_flip()
           
           if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
+        
         }
-      
-      
-      
-      
     }
     
     if(vT_col$`genericType` == "datetime"){
