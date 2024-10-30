@@ -151,22 +151,38 @@ variable_visualize <- function(
     expr  = {dataset[toString(substitute(group_by))]},
     error = function(cond){return(dataset[group_by])})
   
-  
   if(toString(names(colset_temp_1)) == toString(names(colset_temp_2))){
-    colset <- colset_temp_1
+    
+    colset <- colset_temp_1 
+    
+    if(!is_category(colset$Species)){
+      colset <- colset %>% mutate(across(everything(),as_category))
+      col_dict <- data_dict_extract(colset)
+      
+      plots <- suppressMessages(
+        variable_visualize(
+          dataset = colset,
+          data_dict = col_dict,
+          col = names(colset),
+          valueType_guess = valueType_guess))
+      
+      return(plots)      
+    }
+    
   } else {
     colset <- bind_cols(colset_temp_1,colset_temp_2)}
+  
   
   if(ncol(colset)== 1){col <- names(colset)[1] ; group_by <- ''}
   if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
   
   if(group_by != ''){
     
-    if(!is_category(colset[[group_by]])) 
+    if(!is_category(colset[[group_by]]))
       colset <- as_dataset(colset) %>% 
         mutate(across(all_of(group_by), as_category))
   }
-
+  
   if(!is.null(data_dict)){
     
       tryCatch(
@@ -273,7 +289,7 @@ variable_visualize <- function(
   if(sum(preprocess_var$index_in_dataset,na.rm = TRUE)*2 / 
      sum(!is.na(preprocess_var$index_in_dataset))-1 != 
      max(preprocess_var$index_in_dataset,na.rm = TRUE)){
-    stop("error in the function variable_visualize(). Contact Maintainer")
+    stop("error in the function variable_visualize(). ERROR 102")
   }
   
   colset[[1]] <- 
@@ -1516,7 +1532,7 @@ Please provide another name folder or delete the existing one.")}
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})    
     
-    if(! group_by %in% data_dict[['Categories']][['variable']]) group_by <- ''
+    # if(! group_by %in% data_dict[['Categories']][['variable']]) group_by <- ''
     
   }else{ group_by <- ''}
   
@@ -1777,7 +1793,7 @@ if(nrow(n_cat) > 20){
   col = '", names(dataset[i]),"',
   data_dict = data_dict, 
   group_by = '", group_by, "',
-  valueType_guess = '", valueType_guess, "',
+  valueType_guess = ", valueType_guess, ",
   variable_summary = dataset_summary)       
         
   if(!is.null(plots$summary_table))      plots$summary_table                  ",
