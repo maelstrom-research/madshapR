@@ -281,9 +281,8 @@ dataset_cat_as_labels <- function(
   
     if(has_categories(data_dict_temp)){
       names(col) <- '___values___'
-      first_lab_var <-
-        names(data_dict_temp[['Categories']] %>%
-        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+      
+      first_lab_var <- first_label_get(data_dict_temp)[['Categories']]
       
       cat_col <- 
         data_dict_temp$`Categories` %>% 

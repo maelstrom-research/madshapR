@@ -243,9 +243,7 @@ variable_visualize <- function(
   
   if(group_by != ''){
     
-    first_lab_var <- 
-      names(col_dict[['Variables']] %>%
-      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    first_lab_var <- first_label_get(col_dict)[['Variables']]
     
     cat_lab <- 
       col_dict[['Categories']] %>% 
@@ -1030,9 +1028,7 @@ variable_visualize <- function(
 
   if(nrow(colset_cat_values) > 0){
     
-    first_lab_var <- 
-      names(col_dict[['Variables']] %>%
-      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    first_lab_var <- first_label_get(col_dict)[['Variables']]
     
     n_obs <- nrow(colset_cat_values)
     cat_lab_var <- 
@@ -1102,9 +1098,7 @@ variable_visualize <- function(
     
     if(has_categories(col_dict)){
     
-      first_lab_var <- 
-        names(col_dict[['Variables']] %>%
-        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+      first_lab_var <- first_label_get(col_dict)[['Variables']]
       
       cat_lab_miss_var <- 
         col_dict[['Categories']] %>% 
@@ -1578,11 +1572,9 @@ Please provide another name folder or delete the existing one.")}
       select(-"madshapR::index_group",-"madshapR::index_original")
   }
   
-  first_lab_var <- 
-    names(data_dict_flat[['Variables']] %>%
-    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+  first_lab_var <- first_label_get(data_dict_flat)[['Variables']]
   
-  if(is.na(first_lab_var)) first_lab_var <- "label"
+  if(first_lab_var == "") first_lab_var <- "label"
   
   data_dict_flat <- 
     suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
@@ -1706,9 +1698,7 @@ datatable(Overview,
           "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
   
-  first_lab_var <- 
-    names(data_dict$`Variables` %>%
-    select(matches(c('^label$','^label:[[:alnum:]]'))))[1]
+  first_lab_var <- first_label_get(data_dict)[['Variables']]
     
   datatable(t(
      data_dict$`Variables` %>%

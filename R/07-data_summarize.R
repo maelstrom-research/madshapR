@@ -147,9 +147,7 @@ dataset_summarize <- function(
         as_data_dict_mlstr()})
   
   # catch the first variable label for documentation
-  first_lab_var <- 
-    names(data_dict[['Variables']] %>%
-    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+  first_lab_var <- first_label_get(data_dict)[['Variables']]
   
   # if the dataset has no observations, group_by is null
   if(nrow(dataset) == 0) group_by <- NULL
@@ -1022,9 +1020,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   
   if(has_categories(data_dict)){
     
-    first_lab_var <- 
-      names(data_dict[['Variables']] %>%
-      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    first_lab_var <- first_label_get(data_dict)[['Variables']]
     
     data_dict_cat <-
       data_dict[['Categories']] %>%

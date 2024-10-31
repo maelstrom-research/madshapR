@@ -709,9 +709,7 @@ data_dict_evaluate <- function(
       data_dict[['Categories']] %>%
       bind_rows(tibble(missing = as.character()))
     
-    first_lab_var <- 
-      names(data_dict[['Variables']] %>%
-              select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    first_lab_var <- first_label_get(data_dict)[['Variables']]
     
     if(!first_lab_var %in% names(data_dict[['Categories']])){
       data_dict[['Categories']] <-
@@ -731,9 +729,7 @@ data_dict_evaluate <- function(
   # creation of the structure of the report
   report <- list()
   
-  first_lab_var <- 
-    names(data_dict[['Variables']] %>%
-    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+  first_lab_var <- first_label_get(data_dict)[['Variables']]
   
   missing_labels <- tibble(
     "Index" = as.integer(),

@@ -2155,12 +2155,10 @@ data dictionary")}}
     mutate(across(everything() ,~na_if(.,"")))
 
   # add label(:xx) if not present
-  first_lab_var <- 
-    names(data_dict[['Variables']] %>%
-    select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+  first_lab_var <- first_label_get(data_dict)[['Variables']]
   
   # add label if does not exists
-  if(is.na(first_lab_var)){
+  if(first_lab_var == ""){
     data_dict[['Variables']] <-
       data_dict[['Variables']] %>%
       mutate(`label` = .data$`name`) %>%
@@ -2185,9 +2183,7 @@ data dictionary")}}
     if(is_data_dict_mlstr){
       
       # add label(:xx) if not present
-      first_lab_var <- 
-        names(data_dict[['Variables']] %>%
-        select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+      first_lab_var <- first_label_get(data_dict)[['Variables']]
       
       # add label if does not exists in categories
       if(!(first_lab_var %in% names(data_dict[['Categories']]))){
@@ -2613,9 +2609,7 @@ investigations.",
   if(has_categories(data_dict)){
     
     # addition of label(:xx) if not present
-    first_lab_var <- 
-      names(data_dict[['Variables']] %>%
-      select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
+    first_lab_var <- first_label_get(data_dict)[['Variables']]
 # 
 #     # if label(:xx) already exists, return as it is.
 #     if(length(data_dict[['Categories']][[first_lab_var]]) > 0){
