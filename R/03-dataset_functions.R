@@ -269,7 +269,7 @@ dataset_cat_as_labels <- function(
       })
     }
 
-  if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
+  if(!has_categories(data_dict)) return(dataset)
   
   for(i in col_names){
     # stop()}
@@ -278,15 +278,15 @@ dataset_cat_as_labels <- function(
     col <- dataset_zap_data_dict(as_dataset(dataset[i]))
     data_dict_temp <- suppressWarnings({
       data_dict_match_dataset(col,data_dict)$data_dict})
-    
-    if(sum(nrow(data_dict_temp[['Categories']])) > 0){
+  
+    if(has_categories(data_dict_temp)){
       names(col) <- '___values___'
       first_lab_var <-
         names(data_dict_temp[['Categories']] %>%
         select(matches(c("^label$","^label:[[:alnum:]]"))))[1]
       
       cat_col <- 
-        data_dict_temp$Categories %>% 
+        data_dict_temp$`Categories` %>% 
         select('___values___' = "name", '___label___' = all_of(first_lab_var))
       
       col <- 
@@ -316,10 +316,10 @@ dataset_cat_as_labels <- function(
       
       names(col) <- i 
       
-      vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$Categories$name)))
+      vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$`Categories`$`name`)))
     
       col[[1]] <- as_valueType(col[[1]], vT_final)
-      data_dict_temp$Variables$valueType <- vT_final
+      data_dict_temp$`Variables`$valueType <- vT_final
       dataset[i] <- data_dict_apply(col, data_dict_temp)
     }
   }

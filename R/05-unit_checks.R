@@ -127,7 +127,7 @@ check_data_dict_categories <- function(data_dict){
       value = as.character(),
       condition = as.character())
   
-  if(sum(nrow(data_dict[['Categories']])) == 0){
+  if(!has_categories(data_dict)){
     warning("You data dictionary contains no categorical variables")
     return(test)}
   
@@ -475,7 +475,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   mutate(across(everything(), ~as.character(.))) %>%
   #   distinct()
   #
-  # if(length(data_dict[['Categories']]) > 0){
+  # if(has_categories(data_dict)){
   #
   #   vT_text <-
   #     vT_list %>%
@@ -515,7 +515,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #             data_dict,
   #             paste0("name %in% c('",
   #             paste0(unique(
-  #             test_valueType_cat$name_var),collapse = "','"),"')")
+  #             test_valueType_cat$`name_var`),collapse = "','"),"')")
   #           ))[['Variables']]) %>%
   #         select(name_var = .data$`name`, suggestion = .data$`valueType`),
   #       by = "name_var")
@@ -622,7 +622,7 @@ check_data_dict_valueType <- function(data_dict){
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
   
-  if(length(data_dict[['Categories']]) > 0){
+  if(has_categories(data_dict)){
     
     vT_categorical <-
       data_dict[['Categories']] %>%
@@ -887,7 +887,7 @@ check_dataset_categories <- function(
   categorical_var_data_dict <- 
     tibble("variable" = as.character(), "name" = as.character())
   
-  if(sum(nrow(data_dict[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     categorical_var_data_dict <- 
       data_dict[['Categories']] %>%
       rowwise() %>%
@@ -1279,7 +1279,7 @@ check_dataset_valueType <- function(
 #' 
 #' # use madshapR_example provided by the package
 #' names_in_data_dict <- 
-#'   madshapR_example$`data_dict_example - errors`$Variables$name
+#'   madshapR_example$`data_dict_example - errors`$`Variables`$`name`
 #' check_name_standards(names_in_data_dict)
 #' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 #'

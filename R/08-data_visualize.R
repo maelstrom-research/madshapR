@@ -207,7 +207,7 @@ variable_visualize <- function(
     col_dict[['Categories']] <- 
       bind_rows(
         col_dict[['Categories']], 
-        col_dict_group_by$Categories)
+        col_dict_group_by$`Categories`)
   }
   
   
@@ -1100,7 +1100,7 @@ variable_visualize <- function(
     
     n_obs <- nrow(colset_cat_miss_values)
     
-    if(sum(nrow(col_dict[['Categories']])) > 0){
+    if(has_categories(col_dict)){
     
       first_lab_var <- 
         names(col_dict[['Variables']] %>%
@@ -1557,13 +1557,13 @@ Please provide another name folder or delete the existing one.")}
       taxonomy = taxonomy,
       dataset_name = dataset_name)}
 
-  data_dict$Variables <- 
-    data_dict$Variables %>% add_index(.force = TRUE)
+  data_dict$`Variables` <- 
+    data_dict$`Variables` %>% add_index(.force = TRUE)
   
   data_dict_flat <- data_dict
-  data_dict_flat[['Variables']] <- data_dict$Variables
+  data_dict_flat[['Variables']] <- data_dict$`Variables`
   
-  if(sum(nrow(data_dict_flat[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     data_dict_flat[['Categories']] <- 
       data_dict[['Categories']] %>% 
       add_index("madshapR::index_original",.force = TRUE) %>%
@@ -1680,20 +1680,20 @@ datatable(Overview,
   ##### CONTENT ##########
   
   increment <-
-    paste0(rep(0,nchar(nrow(data_dict$Variables))) %>% paste(collapse = ""))
+    paste0(rep(0,nchar(nrow(data_dict$`Variables`))) %>% paste(collapse = ""))
   
-  for(i in seq_len(nrow(data_dict$Variables))){
+  for(i in seq_len(nrow(data_dict$`Variables`))){
     # stop()}
     
     rmd_file_name <-
       paste0(path_to,"/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
-             make.names(data_dict$Variables$name[i]),".Rmd")
+             make.names(data_dict$`Variables`$`name`[i]),".Rmd")
     file.create(rmd_file_name)
     
     paste0(
       "# ", 
-      data_dict$Variables$`name`[i] %>%
+      data_dict$`Variables`$`name`[i] %>%
       str_replace_all("(?=[^A-Za-z0-9])", "\\\\"),
       "{.unnumbered #var",i,"}\n\n") %>%
       
@@ -1707,12 +1707,12 @@ datatable(Overview,
         "\n
   
   first_lab_var <- 
-    names(data_dict$Variables %>%
+    names(data_dict$`Variables` %>%
     select(matches(c('^label$','^label:[[:alnum:]]'))))[1]
     
   datatable(t(
-     data_dict$Variables %>%
-     dplyr::filter(`name` == '",data_dict$Variables$`name`[i],"') %>%
+     data_dict$`Variables` %>%
+     dplyr::filter(`name` == '",data_dict$`Variables`$`name`[i],"') %>%
      select(
       'Variable name' = 'name', 
       'Variable label' = any_of(first_lab_var), 
@@ -1726,7 +1726,7 @@ datatable(Overview,
       paste0(ifelse(
         sum(nrow(
           data_dict[['Categories']][data_dict[['Categories']][['variable']] == 
-                                      data_dict$Variables$`name`[i],])) > 0,
+                                      data_dict$`Variables`$`name`[i],])) > 0,
         paste0("\n<p style= \"font-size: 140%;\"> **Categories**: </p>","\n\n") %>%
           paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
           paste0(
@@ -1734,14 +1734,14 @@ datatable(Overview,
 "\n
 
 
-    n_cat <- data_dict$Categories %>% 
-      dplyr::filter(variable == '",data_dict$Variables$`name`[i],"')
+    n_cat <- data_dict$`Categories` %>% 
+      dplyr::filter(variable == '",data_dict$`Variables`$`name`[i],"')
 
 if(nrow(n_cat) > 20){
 
   datatable(
-    data_dict$Categories %>% 
-      dplyr::filter(variable == '",data_dict$Variables$`name`[i],"') %>%
+    data_dict$`Categories` %>% 
+      dplyr::filter(variable == '",data_dict$`Variables`$`name`[i],"') %>%
     select(
       'Variable name' = 'variable', 
       'Categorie label' = any_of(first_lab_var), 
@@ -1753,8 +1753,8 @@ if(nrow(n_cat) > 20){
 }else{
 
   datatable(
-    data_dict$Categories %>% 
-      dplyr::filter(variable == '",data_dict$Variables$`name`[i],"') %>%
+    data_dict$`Categories` %>% 
+      dplyr::filter(variable == '",data_dict$`Variables`$`name`[i],"') %>%
     select(
       'Variable name' = 'variable', 
       'Categorie label' = any_of(first_lab_var), 

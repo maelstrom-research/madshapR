@@ -208,7 +208,7 @@ valueType_self_adjust <- function(...){
     #   dataset[[i]] <-
     #     as_valueType(
     #       x = dataset[[i]],
-    #       valueType = vT$value[vT$name == i])}
+    #       valueType = vT$value[vT$`name` == i])}
     # data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
     data_dict[['Variables']][['valueType']] <- vT$value
 
@@ -228,7 +228,7 @@ valueType_self_adjust <- function(...){
     
     if(nrow(data_dict[['Variables']]) == 0) return(data_dict)
 
-    if(sum(nrow(data_dict[['Categories']])) == 0){
+    if(!has_categories(data_dict)){
       # warning("Your data dictionary contains no categorical variables.")
       return(data_dict)
 
@@ -257,7 +257,7 @@ valueType_self_adjust <- function(...){
         lapply(function(x){
           test_vT <- str_detect(x$valueType[1], "\\|")
           if(test_vT) x <-
-              x %>% mutate(valueType = valueType_guess(unique(x$name)))
+              x %>% mutate(valueType = valueType_guess(unique(x$`name`)))
           return(x)
         }) %>%
         bind_rows() %>%
@@ -444,7 +444,7 @@ bold("\n\nUseful tip:"),
       # category values in the data dictionary : check the data dictionary vT, 
       # the dataset vT, and the combination of the two of them (categories in 
       # the data dict but not in the dataset). 
-      data_dict_cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$`name`
+      data_dict_cat_i <- data_dict$`Categories`[data_dict$`Categories`[['variable']] == i,'name']$`name`
       dataset_value_i <- unique(dataset[[i]])
       vT_dataset_i <- valueType_of(dataset_value_i)
       vec_i <- unique(c(as.character(data_dict_cat_i),as.character(dataset_value_i)))

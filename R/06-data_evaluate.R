@@ -136,7 +136,7 @@ dataset_evaluate <- function(
     data_dict[['Variables']] %>%
     bind_rows(tibble(valueType = as.character()))
   
-  if(sum(nrow(data_dict[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
@@ -703,7 +703,7 @@ data_dict_evaluate <- function(
       bind_rows(tibble(label = as.character()))
   }
   
-  if(sum(nrow(data_dict[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
@@ -740,7 +740,7 @@ data_dict_evaluate <- function(
     "Variable name"  = as.character(), 
     "Category missing codes" = as.character())
 
-  if(length(data_dict[["Categories"]] > 0)){
+  if(has_categories(data_dict)){
 
     missing_labels <-
       suppressWarnings(data_dict_collapse(
@@ -802,7 +802,7 @@ data_dict_evaluate <- function(
       check_name_standards(data_dict[['Variables']][['name']]) %>%
       mutate(Sheet = "Variables", 'Column name' = "name") %>%
       bind_rows(
-        if(sum(nrow(data_dict[['Categories']])) > 0 ){
+        if(has_categories(data_dict) ){
           check_name_standards(data_dict[['Categories']][['variable']]) %>%
             mutate(Sheet = "Categories" , 'Column name' = "variable") 
         }else{tibble("name_var" = as.character())}) %>%
@@ -831,7 +831,7 @@ data_dict_evaluate <- function(
     mutate(across(everything(),as.character)) %>%
     
     bind_rows(
-      if(sum(nrow(data_dict[['Categories']])) > 0 ){
+      if(has_categories(data_dict) ){
         suppressWarnings(get_duplicated_cols(
           data_dict[['Categories']] %>% select(-"name"))) %>%
           dplyr::filter(!is.na(.data$`condition`)) %>%
@@ -896,7 +896,7 @@ data_dict_evaluate <- function(
     mutate(Sheet    = "Variables",
            condition = "[INFO] - Empty column.") %>%
     bind_rows(
-      if(sum(nrow(data_dict[['Categories']])) > 0 ){
+      if(has_categories(data_dict) ){
         data_dict[['Categories']] %>%
           get_all_na_cols() %>%
           mutate(Sheet    = "Categories",
@@ -907,7 +907,7 @@ data_dict_evaluate <- function(
            "Data dictionary assessment" = "condition") %>%
     mutate(across(everything(),as.character))
   
-  if(sum(nrow(data_dict[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     
     # [GF - tested and validated]
     message("    Assess the presence of categories not in the data dictionary")
@@ -969,7 +969,7 @@ data_dict_evaluate <- function(
       test_var_label <- 
         test_var_label %>% mutate("Variable name" = '(all)') %>% distinct}
 
-    if(sum(nrow(data_dict[['Categories']])) > 0){
+    if(has_categories(data_dict)){
     
       # [GF - tested and validated]  
       message(
@@ -1036,7 +1036,7 @@ data_dict_evaluate <- function(
     bind_rows(test_valueType) %>%
     bind_rows(test_cat_label) %>%
     bind_rows(test_missing_category) %>%
-    left_join(data_dict$Variables %>% select("Variable name" = "name","index"),
+    left_join(data_dict$`Variables` %>% select("Variable name" = "name","index"),
               relationship = "many-to-many",by = "Variable name") %>%
     mutate(index = as.integer(.data$`index`)) %>%
     # arrange elements

@@ -185,7 +185,7 @@ dataset_summarize <- function(
           group_cat_lab[['Categories']],
           data_dict_group_by) %>%
         add_index(.force = TRUE) %>%
-        group_by(.data$variable,.data$name) %>% slice(1) %>%
+        group_by(.data$variable,.data$`name`) %>% slice(1) %>%
         ungroup %>% arrange(.data$`index`) %>% select(-"index")
       
       data_dict <- as_data_dict_mlstr(data_dict)
@@ -378,7 +378,7 @@ dataset_summarize <- function(
   # always treat id col as text
 
   ## categories
-  if(sum(nrow(data_dict[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     
     label <- str_subset(names(data_dict[['Categories']]),"label")[1]
     
@@ -1020,7 +1020,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     mutate(`Categorical variable` = NA_character_) %>%
     add_index("Index")
   
-  if(sum(nrow(data_dict[['Categories']])) > 0){
+  if(has_categories(data_dict)){
     
     first_lab_var <- 
       names(data_dict[['Variables']] %>%

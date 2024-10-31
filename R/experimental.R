@@ -428,8 +428,8 @@ data_dict_add_labels_short <- function(
   labs <- first_label_get(data_dict)  
   
   # labels for Variables
-  data_dict$Variables <- 
-    data_dict$Variables %>%
+  data_dict$`Variables` <- 
+    data_dict$`Variables` %>%
     mutate(across(c('name', !! labs[['Categories']]), ~ as.character(.))) %>%
     mutate(across(c('name', !! labs[['Variables']]),  ~ replace_na(.,"{Empty}"))) %>%
     rowwise() %>%
@@ -458,8 +458,8 @@ data_dict_add_labels_short <- function(
   # labels for Cariables
   if(has_categories(data_dict)){
     
-    data_dict$Categories <- 
-      data_dict$Categories %>%
+    data_dict$`Categories` <- 
+      data_dict$`Categories` %>%
       mutate(across(c('name', !! labs[['Categories']]), ~as.character(.))) %>%
       mutate(across(c('name', !! labs[['Categories']]), ~replace_na(.,"{Empty}"))) %>%
       rowwise() %>%
