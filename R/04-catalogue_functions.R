@@ -316,7 +316,7 @@ valueType_self_adjust <- function(...){
     return(data_dict)
   }
 
-  message("The argument is neither a dataset or a data dictionary.")
+  message("The argument is neither a dataset nor a data dictionary.")
   message("\nTesting dataset :")
   try(as_dataset(...))
   
