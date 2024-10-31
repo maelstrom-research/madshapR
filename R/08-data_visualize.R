@@ -115,19 +115,15 @@ variable_visualize <- function(
     .summary_var = NULL){
   
   if(toString(col_id(dataset)) == col) {
-    warning(call. = FALSE,'Your column is identifier. It will not be analysed.')
+    warning(call. = FALSE,'Your column is identifier. No figure is generated.')
     return(ggplot())}
-  
-  # dataset <- 
-  #   as_dataset(dataset) %>%
-  #   mutate(across(where(is.character),tolower))
   
   if(nrow(dataset) == 0) {
-    warning(call. = FALSE,'Your column has no observation.')
+    warning(call. = FALSE,'The dataset has 0 rows.')
     return(ggplot())}
   
-  if(toString(substitute(group_by)) == '') group_by <- NULL
   # attempt to catch group_by from the group_vars if the dataset is grouped
+  if(toString(substitute(group_by)) == '') group_by <- NULL
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
   }
@@ -155,7 +151,7 @@ variable_visualize <- function(
     
     colset <- colset_temp_1 
     
-    if(!is_category(colset$Species)){
+    if(!is_category(colset %>% pull(1))){
       colset <- colset %>% mutate(across(everything(),as_category))
       col_dict <- data_dict_extract(colset)
       
@@ -490,7 +486,7 @@ variable_visualize <- function(
           `Numerical variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
             dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Non-valid values"))
+            select(-c(1:"% Empty values"))
           
           ))
     
@@ -597,7 +593,7 @@ variable_visualize <- function(
           `Text variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
             dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Non-valid values"))
+            select(-c(1:"% Empty values"))
           
         ))
       
@@ -750,7 +746,7 @@ variable_visualize <- function(
           `Datetime variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
             dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Non-valid values"))
+            select(-c(1:"% Empty values"))
           
         ))
       
@@ -894,7 +890,7 @@ variable_visualize <- function(
           `Date variable summary` %>%
             rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
             dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
-            select(-c(1:"% Non-valid values"))
+            select(-c(1:"% Empty values"))
           
         ))
       
@@ -1098,8 +1094,9 @@ variable_visualize <- function(
     }
 
   plot_4 <- NULL
-  if(nrow(colset_cat_miss_values[col]) > 0 & 
-     nrow(unique(colset_cat_miss_values[col])) > 1){
+  if(nrow(colset_cat_miss_values[col]) > 0 
+     # & nrow(unique(colset_cat_miss_values[col])) > 1
+     ){
     
     n_obs <- nrow(colset_cat_miss_values)
     
@@ -1203,7 +1200,8 @@ variable_visualize <- function(
   
   plot_5 <- NULL
   
-  if(length(unique(colset_valid[[col]])) > 1){
+  if(length(unique(colset_valid[[col]])) > 0){
+  # if(length(unique(colset_valid[[col]])) > 1){
     
     #### plot_5 pie_values ####    
     n_obs <- nrow(colset)
