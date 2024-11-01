@@ -146,9 +146,6 @@ dataset_summarize <- function(
         output = 'data_dict') %>%
         as_data_dict_mlstr()})
   
-  # evaluate the dataset
-  report <- list()
-  
   # [GF] - note : this step adds time in the process
   # dataset_with_data_dict <- data_dict_apply(dataset,data_dict)
   
@@ -297,6 +294,9 @@ dataset_summarize <- function(
     attributes(dataset_group$no_group)$`madshapR::Data dictionary` <- data_dict
   }
   
+  # evaluate the dataset
+  report <- list()
+  
   report <- 
     dataset_evaluate(
       dataset,
@@ -380,8 +380,7 @@ your dataset")}
 
   ## categories
   if(has_categories(data_dict)){
-
-        
+    
     first_lab_cat <- first_labs[['Categories']]
     
     data_dict_cat <-
@@ -992,7 +991,8 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
       `value_var` = as.character(),
       `index_value` = as.integer(),
       `cat_index` = as.integer(),
-      `cat_label` = as.character())
+      `cat_label` = as.character(),
+      `madshapR::label_short_cat` = as.character())
   
   # handle atomics
   if(is.atomic(dataset) & length(dataset) == 0){return(summary_tbl)}
@@ -1010,11 +1010,13 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   }else{
     data_dict <- as_data_dict_mlstr(data_dict)}
   
+  data_dict <- data_dict_add_labels_short(data_dict)
   data_dict_var  <-
     data_dict[['Variables']] %>%
     select("Variable name" = 'name') %>%
     mutate(`Categorical variable` = NA_character_) %>%
     add_index("Index")
+  
   
   if(has_categories(data_dict)){
     
@@ -1026,6 +1028,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
         "Variable name" = "variable", 
         value_var = "name",
         cat_label = !!first_lab_var,
+        "madshapR::label_short_cat" = "madshapR::label_short_cat",
         valid_class = "missing") %>%
       group_by(.data$`Variable name`, .data$`valid_class`) %>%
       add_index('cat_index') %>%
@@ -1043,6 +1046,7 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
              'Variable name' = as.character(),
              value_var = as.character(),
              cat_label = as.character(),
+             "madshapR::label_short_cat" = as.character(),
              valid_class = as.character())}
   
   data_dict_var  <-
@@ -1841,19 +1845,21 @@ summary_variables_categorical <- function(
       # slice(1:4,8) %>%
       mutate(
         cat_order = .data$`cat_index`,
-        cat_index = 
-          ifelse(
-            .data$`value_var` == .data$`cat_label`,
-            .data$`cat_label`,
-            paste0('[',.data$`value_var`,'] - ',.data$`cat_label`)),
-        
-        cat_index = 
-          ifelse(nchar(.data$`cat_index`) > 40,
-                 paste0(str_sub(.data$`cat_index`,1,40),' [...]'),
-                 .data$`cat_index`),
-        cat_index = 
-          ifelse(
-            is.na(.data$`cat_label`),NA,.data$`cat_index`)) %>%
+        cat_index = .data$`madshapR::label_short_cat`
+        # cat_index =
+        #   ifelse(
+        #     .data$`value_var` == .data$`cat_label`,
+        #     .data$`cat_label`,
+        #     paste0('[',.data$`value_var`,'] - ',.data$`cat_label`)),
+        # 
+        # cat_index =
+        #   ifelse(nchar(.data$`cat_index`) > 40,
+        #          paste0(str_sub(.data$`cat_index`,1,40),' [...]'),
+        #          .data$`cat_index`),
+        # cat_index =
+        #   ifelse(
+        #     is.na(.data$`cat_label`),NA,.data$`cat_index`)
+        ) %>%
       
       ungroup %>%
       select("valid_class","cat_index","cat_order","value_var","n") %>%
