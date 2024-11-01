@@ -155,6 +155,10 @@ dataset_summarize <- function(
   # if the dataset has no participant, group_by is null
   if(nrow(dataset) == 0) group_by <- NULL
   
+  # catch first label
+  first_labs <- first_label_get(data_dict)
+  first_lab_var <- first_labs[['Variables']]
+  
   # attempt to catch group_by
   if(toString(substitute(group_by)) != ''){
     group_by <- tryCatch(
@@ -356,9 +360,6 @@ your dataset")}
 
   }
   ## variables
-  first_labs <- first_label_get(data_dict)
-  first_lab_var <- first_labs[['Variables']]
-
   data_dict_var <-
     data_dict[['Variables']] %>%
     select(-matches("^madshapR::variable_name$")) %>%
