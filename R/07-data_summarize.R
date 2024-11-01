@@ -74,7 +74,7 @@
 #' 
 #' 
 #' ###### Example 1: use madshapR_example provided by the package
-#' dataset <- as_dataset(madshapR_example$`dataset_example`)
+#' dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = 'part_id')
 #' data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
 #'   
 #' summary_dataset <- dataset_summarize(dataset, data_dict)
@@ -292,7 +292,6 @@ dataset_summarize <- function(
     dataset_group$no_group <- as_dataset(dataset_group$no_group,col_id)
     attributes(dataset_group$no_group)$`madshapR::Data dictionary` <- data_dict
   }
-  
   
   report <- 
     dataset_evaluate(
