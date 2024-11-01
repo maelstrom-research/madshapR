@@ -146,10 +146,13 @@ dataset_summarize <- function(
         output = 'data_dict') %>%
         as_data_dict_mlstr()})
   
-  # catch the first variable label for documentation
-  first_lab_var <- first_label_get(data_dict)[['Variables']]
+  # evaluate the dataset
+  report <- list()
   
-  # if the dataset has no observations, group_by is null
+  # [GF] - note : this step adds time in the process
+  # dataset_with_data_dict <- data_dict_apply(dataset,data_dict)
+  
+  # if the dataset has no participant, group_by is null
   if(nrow(dataset) == 0) group_by <- NULL
   
   # attempt to catch group_by
@@ -158,7 +161,8 @@ dataset_summarize <- function(
       expr  = {toString(names(dataset[toString(substitute(group_by))]))},
       error = function(cond){return(toString(names(dataset[group_by])))})
     
-    # if the group is not in the data dictionary, create it
+    # if the group is not in the data dictionary, create it. Adds the 
+    # group values that are in the dataset but not present in the data dictionary
     if(group_by != ''){
       
       data_dict_group_by <- 
@@ -177,6 +181,7 @@ dataset_summarize <- function(
       group_cat_lab <- data_dict_filter(
         data_dict,filter_cat = paste0("variable %in% '", group_by,"'"))
       
+      data_dict <- data_dict
       data_dict[['Categories']] <- 
         bind_rows(
           anti_group_cat_lab[['Categories']],
@@ -190,8 +195,6 @@ dataset_summarize <- function(
     }
     
   }else{ group_by <- ''}
-  
-  # if group contains NA, stop
   
   # [GF resolved] - question : now it is not mandatory that the grouping variable must
   # have no NA . the group is called (Empty) and works as any other group. A 
@@ -211,6 +214,9 @@ dataset_summarize <- function(
 #     }
 #   }
   
+  # catch variable labels for documentation
+  data_dict_labels <- data_dict_add_labels_short(data_dict,.keep_columns = TRUE)
+  
   if(group_by != ''){
     
     preprocess_group <- 
@@ -219,34 +225,29 @@ dataset_summarize <- function(
         data_dict = data_dict)
     
     cat_lab <- data_dict_filter(
-      data_dict,filter_cat = paste0("variable == '", group_by,"'"))
+      data_dict_labels,filter_cat = paste0("variable == '", group_by,"'"))
 
     cat_lab <- 
       cat_lab[['Categories']] %>% 
-      select(
-        !! group_by := 'name', 
-        "___labels___" = all_of(first_lab_var)) %>%
+      select("name",'madshapR::label_short_cat') %>%
+      rename(
+        !! group_by := 'name') %>%
       mutate(across(everything(),as.character)) %>%
-      add_index('___category_level___') %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(group_by) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite('___labels___',c(all_of(group_by),'___labels___'),sep = '', 
-            remove = FALSE,na.rm = TRUE)
+      add_index('madshapR::category_level')
 
     # adjust the valueType of the dataset(s) according to the data dictionary
-    dataset_group <- valueType_adjust(from = data_dict, to = dataset)
+    # dataset_group <- valueType_adjust(from = data_dict, to = dataset)
       
     # create group
-    dataset_group <- dataset_group %>%
+    dataset_group <- 
+      dataset %>%
       group_by(!! as.symbol(group_by))
       
     name_group <- 
       group_keys(dataset_group) %>% 
       mutate(across(everything(),as.character)) %>%
       mutate(across(!! as.symbol(group_by), ~ replace_na(.,"Empty Values")))
+    
     dataset_group <- group_split(dataset_group)
     names(dataset_group) <- as.character(name_group[[1]])
     
@@ -254,9 +255,8 @@ dataset_summarize <- function(
     dataset_group <- 
       dataset_group[unique(
         c(intersect(cat_lab[[group_by]],names(dataset_group)),
-          names(dataset_group)[length(names(dataset_group))]))]
-    
-    dataset_group <- as.list(dataset_group)
+          names(dataset_group)[length(names(dataset_group))]))] %>%
+      as.list()
     
     # create data dictionary per group
     for(i in names(dataset_group)){
@@ -278,8 +278,8 @@ dataset_summarize <- function(
       name_group %>%
       mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
       left_join(cat_lab, by = join_by(!!as.symbol(group_by))) %>%
-      arrange(.data$`___category_level___`) %>% 
-      pull('___labels___') %>%
+      arrange(.data$`madshapR::category_level`) %>% 
+      pull('madshapR::label_short_cat') %>%
       str_replace_na('Empty value')
     
     names(dataset_group) <- name_group
@@ -287,43 +287,42 @@ dataset_summarize <- function(
   } else {
     
     name_group <- "no_group"
-    dataset_group <- valueType_adjust(from = data_dict, to = dataset)
+    # dataset_group <- valueType_adjust(from = data_dict, to = dataset)
     dataset_group <- list(no_group = dataset_group)
     dataset_group$no_group <- as_dataset(dataset_group$no_group,col_id)
     attributes(dataset_group$no_group)$`madshapR::Data dictionary` <- data_dict
   } 
-
-  # evaluate the dataset
-  report <- list()
   
-  # [GF] - note : this step adds time in the process
-  dataset_with_data_dict <- data_dict_apply(dataset,data_dict)
   
   report <- 
     dataset_evaluate(
-      dataset_with_data_dict,
+      dataset,
+      data_dict,
       taxonomy = taxonomy,
       dataset_name = dataset_name,
       is_data_dict_mlstr = TRUE)
-
+  
+  if(as_tibble(report[['Dataset assessment']]) %>% 
+     bind_rows(tibble(`Dataset assessment` = as.character())) %>%
+     dplyr::filter(str_detect(.data$`Dataset assessment`,"\\[ERROR\\]")) %>% nrow > 0){
+    stop(call. = FALSE,
+"The dataset and/or the data dictionary contain errors.",
+bold("\n\nUseful tip:"),
+" Use dataset_evaluate(dataset, data_dict) to get a full assessment of
+your dataset")}
+  
+  
   message(
     "- DATASET SUMMARIZE: ",
     bold(dataset_name), if(dataset %>% nrow == 0) " (empty dataset)",
     " --------------------------")
 
-  # if(is.null(col_id) | ncol(dataset) == 1){
-  #   dataset <- madshapR::dataset %>% add_index("___mlstr_index___")
-  #   dataset <-   as_dataset(dataset, names(dataset)[1])}
-  # 
-  # if(!is.null(preserve_attributes)) col_id <- preserve_attributes
-
-  # exclude id col if is the index
   dataset_valueType <- tibble(
-      `___name_var___` = as.character(),
+      `madshapR::variable_name` = as.character(),
       `Dataset valueType` = as.character())
   
   suggested_valueType <- tibble(
-    `___name_var___` = as.character(),
+    `madshapR::variable_name` = as.character(),
     `Suggested valueType` = as.character())
   
   if(ncol(dataset) > 0){
@@ -335,7 +334,7 @@ dataset_summarize <- function(
         ~ valueType_of(.))) %>%
       pivot_longer(cols = everything()) %>%
       rename(
-        `___name_var___` = "name",
+        `madshapR::variable_name` = "name",
         `Dataset valueType` = "value")
 
     if(valueType_guess == TRUE){
@@ -347,44 +346,49 @@ dataset_summarize <- function(
           ~ valueType_guess(.))) %>%
         pivot_longer(cols = everything()) %>%
         rename(
-          `___name_var___` = "name",
+          `madshapR::variable_name` = "name",
           `Suggested valueType` = "value")
     }else{
       suggested_valueType <-
         dataset_valueType %>%
         select(
-          "___name_var___",
+          "madshapR::variable_name",
           `Suggested valueType` = "Dataset valueType")}
 
   }
   ## variables
+  first_labs <- first_label_get(data_dict)
+  first_lab_var <- first_labs[['Variables']]
+
   data_dict_var <-
     data_dict[['Variables']] %>%
-    select(-matches("^___name_var___$")) %>%
-    rename(`___name_var___` = "name") %>%
+    select(-matches("^madshapR::variable_name$")) %>%
+    rename(`madshapR::variable_name` = "name") %>%
     mutate(across(everything(),as.character)) %>%
     add_index("Index", .force = TRUE) %>%
-    select("Index", "___name_var___",
+    select("Index", "madshapR::variable_name",
            "Variable label" = !! first_lab_var,
            "Data dictionary valueType" = "valueType") %>%
-    full_join(dataset_valueType, by = "___name_var___") %>%
-    full_join(suggested_valueType, by = "___name_var___") %>%
+    full_join(dataset_valueType, by = "madshapR::variable_name") %>%
+    full_join(suggested_valueType, by = "madshapR::variable_name") %>%
     mutate(`Suggested valueType` = ifelse(
-      .data$`Dataset valueType` == .data$`Data dictionary valueType`,NA_character_,.data$`Suggested valueType`))
+      .data$`Dataset valueType` == .data$`Data dictionary valueType`,NA_character_,
+      .data$`Suggested valueType`))
   # %>% remove_empty('cols')
   
   # always treat id col as text
 
   ## categories
   if(has_categories(data_dict)){
-    
-    label <- str_subset(names(data_dict[['Categories']]),"label")[1]
+
+        
+    first_lab_cat <- first_labs[['Categories']]
     
     data_dict_cat <-
-      data_dict[['Categories']] %>% 
-      select(-matches("^___name_var___$")) %>%
-      rename("___name_var___" = "variable") %>%
-      select("___name_var___","name",!! label, 
+      data_dict_labels[['Categories']] %>%
+      select(-matches("^madshapR::variable_name$")) %>%
+      rename("madshapR::variable_name" = "variable") %>%
+      select("madshapR::variable_name",'madshapR::label_short_cat', 
              "missing") %>%
       mutate(
         missing =
@@ -392,23 +396,17 @@ dataset_summarize <- function(
             .data$`missing` == TRUE,
             "Non-valid values:",
             "Valid values:")) %>%
-      mutate(
-        !!as_any_symbol(label) := ifelse(.data$`name` == !!as_any_symbol(label),NA,!!as_any_symbol(label))) %>%
-      unite(
-        "Categories in data dictionary",
-        c("name",!! label),
-        sep = " = ",na.rm = TRUE, remove = TRUE) %>%
-      group_by(pick(c(-"Categories in data dictionary"))) %>%
-      reframe(across(c("Categories in data dictionary"),
+      group_by(pick(c(-"madshapR::label_short_cat"))) %>%
+      reframe(across(c("madshapR::label_short_cat"),
                        ~ paste0(.,collapse = "\n"))) %>%
-      arrange(.data$`___name_var___`,desc(.data$`missing`)) %>%
+      arrange(.data$`madshapR::variable_name`,desc(.data$`missing`)) %>%
       unite("Categories in data dictionary",
-            c("missing","Categories in data dictionary"),
+            c("missing","madshapR::label_short_cat"),
             sep = "\n",remove = TRUE) %>%
       group_by(pick(c(-"Categories in data dictionary"))) %>%
       reframe(across(c("Categories in data dictionary"),
                        ~ paste0(.,collapse = "\n\n"))) %>%
-      select("___name_var___","Categories in data dictionary")
+      select("madshapR::variable_name","Categories in data dictionary")
     
   }else{
     data_dict[['Categories']] <-
@@ -419,13 +417,13 @@ dataset_summarize <- function(
 
     data_dict_cat <-
       tibble(
-        `___name_var___` = as.character(),
+        `madshapR::variable_name` = as.character(),
         `Categories in data dictionary` = as.character())}
 
   report$`Variables summary (all)` <-
     data_dict_var %>%
-    left_join(data_dict_cat, by = "___name_var___") %>%
-    rename('Variable name' = "___name_var___") %>%
+    left_join(data_dict_cat, by = "madshapR::variable_name") %>%
+    rename('Variable name' = "madshapR::variable_name") %>%
     tibble
 
   message("    Summarize the data type of each variable across the dataset")
@@ -771,7 +769,6 @@ dataset_summarize <- function(
 
   if(group_by == '') report$Overview <- report$Overview %>% select(-"no_group")
   
-  
   if(all("Empty value" %in% name_group)){
 
     qual_comment = "[INFO] - Grouping variable contains Empty values (NA)."
@@ -811,6 +808,7 @@ dataset_summarize <- function(
   
   return(report)
 }
+
 
 #' @title
 #' Generate an assessment report and summary of a dossier
