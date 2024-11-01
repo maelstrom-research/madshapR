@@ -384,16 +384,18 @@ first_label_get <- function(data_dict){
 #' the `variable` and `name` columns, with unique combination of 
 #' `variable` and `name`.
 #'
-#' @param data_dict A data dictionary, typically a list containing 'Variables' and 
-#'   'Categories' data frames.
-#' @param max_length_name_var An integer specifying the maximum length for variable names 
-#'   (default is 10).
-#' @param max_length_total_var An integer specifying the maximum total length for variable 
-#'   names and labels combined (default is 25).
-#' @param max_length_name_cat An integer specifying the maximum length for category names 
-#'   (default is 10).
-#' @param max_length_total_cat An integer specifying the maximum total length for category 
-#'   names and labels combined (default is 15).
+#' @param data_dict A data dictionary, typically a list containing 'Variables' 
+#' and 'Categories' data frames.
+#' @param max_length_name_var An integer specifying the maximum length for 
+#' variable names (default is 10).
+#' @param max_length_total_var An integer specifying the maximum total length 
+#' for variable names and labels combined (default is 25).
+#' @param max_length_name_cat An integer specifying the maximum length for 
+#' category names (default is 10).
+#' @param max_length_total_cat An integer specifying the maximum total length 
+#' for category names and labels combined (default is 15).
+#' @param .keep_columns An boolean specifying if the output preserves the other 
+#' columns of the dataset.
 #'
 #' @return A modified data dictionary with additional columns for shortened labels:
 #'   - `madshapR::label_short_var`: Shortened variable labels.
@@ -403,14 +405,13 @@ first_label_get <- function(data_dict){
 #' 
 #'  # use madshapR_example provided by the package
 #'  data_dict <- madshapR_example$`data_dict_example`
-#'  data_dict_with_short_labels <- data_dict_add_labels_short(data_dict,10,25,10,16)
+#'  data_dict_with_short_labels <- data_dict_add_labels_short(data_dict)
 #'  
 #'  attributes(data_dict_with_short_labels)
 #' 
 #' }
 #' 
-#' 
-#' @import dplyr stringr
+#' @import dplyr stringr fabR
 #' @importFrom rlang .data
 #'
 #' @export
@@ -419,7 +420,8 @@ data_dict_add_labels_short <- function(
     max_length_name_var = 10,
     max_length_total_var = 25,
     max_length_name_cat = 10,
-    max_length_total_cat = 15){
+    max_length_total_cat = 15,
+    .keep_columns = TRUE){
   
   # test input
   as_data_dict_shape(data_dict)
@@ -430,7 +432,7 @@ data_dict_add_labels_short <- function(
   # labels for Variables
   data_dict$`Variables` <- 
     data_dict$`Variables` %>%
-    mutate(across(c('name', !! labs[['Categories']]), ~ as.character(.))) %>%
+    mutate(across(c('name', !! labs[['Variables']]), ~ as.character(.))) %>%
     mutate(across(c('name', !! labs[['Variables']]),  ~ replace_na(.,"{Empty}"))) %>%
     rowwise() %>%
     mutate(
@@ -450,14 +452,18 @@ data_dict_add_labels_short <- function(
       'madshapR::label_short_var' = 
         ifelse(.data$`name` == !!as.symbol(labs[['Variables']]),
                .data$`name_short`, 
-               paste0(.data$`name_short`,' (',.data$`label_short`,')'))) %>%
-    ungroup %>%
+               paste0(.data$`name_short`,' (',.data$`label_short`,')')))  %>%
+    group_by(.data$`madshapR::label_short_var`) %>% 
+    add_index("count_short_lab",.force = TRUE) %>%
+    mutate(
+      "count_short_lab"= ifelse(.data$`count_short_lab` == 1,"",paste0(".",.data$`count_short_lab`)),
+      'madshapR::label_short_var' = paste0(.data$`madshapR::label_short_var`,.data$`count_short_lab`)) %>%
     mutate(across(c('name', !! labs[['Variables']]), ~na_if(.,"{Empty}"))) %>%
-    select(1:!!labs[['Variables']],'madshapR::label_short_var',everything()) 
+    select(1:!!labs[['Variables']],'madshapR::label_short_var',everything()) %>%
+    ungroup 
   
   # labels for Cariables
   if(has_categories(data_dict)){
-    
     data_dict$`Categories` <- 
       data_dict$`Categories` %>%
       mutate(across(c('name', !! labs[['Categories']]), ~as.character(.))) %>%
@@ -473,22 +479,44 @@ data_dict_add_labels_short <- function(
           .data$`name` == '{Empty}', "Empty", 
           str_trunc(.data$`name`,width = max(.data$`max_length_name`,3), ellipsis = '...')),
         label_short = ifelse(
-          !! as.name(labs[['Variables']]) == '{Empty}', "Empty", 
+          !! as.name(labs[['Categories']]) == '{Empty}', "Empty", 
           str_trunc(!!as.symbol(labs[['Categories']]),
                     width = max(.data$`remain_length_lab`,3), ellipsis = '...')),
         'madshapR::label_short_cat' = 
           ifelse(.data$`name` == !!as.symbol(labs[['Categories']]),
                  paste0('[',.data$`name_short`,']'), 
                  paste0('[',.data$`name_short`,'] ',.data$`label_short`))) %>%
-      ungroup %>%
-      mutate(across(c('name', !! labs[['Variables']]), ~na_if(.,"{Empty}"))) %>%
-      select(1:!!labs[['Categories']],'madshapR::label_short_cat',everything())
+      group_by(.data$`variable`,.data$`madshapR::label_short_cat`) %>% 
+      add_index("count_short_lab",.force = TRUE) %>%
+      mutate(
+        "count_short_lab"= ifelse(.data$`count_short_lab` == 1,"",paste0(".",.data$`count_short_lab`)),
+        'madshapR::label_short_cat' = paste0(.data$`madshapR::label_short_cat`,.data$`count_short_lab`)) %>%
+      mutate(across(c('name', !! labs[['Categories']]), ~na_if(.,"{Empty}"))) %>%
+      select(1:!!labs[['Categories']],'madshapR::label_short_cat',everything()) %>%
+      ungroup
     
   }
   
   data_dict <- 
     data_dict %>% lapply(function(x) 
       select(x,-c('length_name','length_label','max_length_name',
-                  'remain_length_lab','name_short','label_short')))
+                  'remain_length_lab','name_short','label_short',
+                  'count_short_lab')))
+  
+  if(.keep_columns == FALSE){
+    
+    data_dict$`Variables` <- 
+      data_dict$`Variables` %>%
+      select("name","madshapR::label_short_var") 
+    
+    if(has_categories(data_dict)){
+      
+      data_dict$`Categories` <- 
+        data_dict$`Categories` %>%
+        select("variable", "name","madshapR::label_short_cat")
+      
+    }
+  }
+  
   return(data_dict)
 }

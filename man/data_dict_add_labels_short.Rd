@@ -9,24 +9,28 @@ data_dict_add_labels_short(
   max_length_name_var = 10,
   max_length_total_var = 25,
   max_length_name_cat = 10,
-  max_length_total_cat = 15
+  max_length_total_cat = 15,
+  .keep_columns = TRUE
 )
 }
 \arguments{
-\item{data_dict}{A data dictionary, typically a list containing 'Variables' and
-'Categories' data frames.}
+\item{data_dict}{A data dictionary, typically a list containing 'Variables'
+and 'Categories' data frames.}
 
-\item{max_length_name_var}{An integer specifying the maximum length for variable names
-(default is 10).}
+\item{max_length_name_var}{An integer specifying the maximum length for
+variable names (default is 10).}
 
-\item{max_length_total_var}{An integer specifying the maximum total length for variable
-names and labels combined (default is 25).}
+\item{max_length_total_var}{An integer specifying the maximum total length
+for variable names and labels combined (default is 25).}
 
-\item{max_length_name_cat}{An integer specifying the maximum length for category names
-(default is 10).}
+\item{max_length_name_cat}{An integer specifying the maximum length for
+category names (default is 10).}
 
-\item{max_length_total_cat}{An integer specifying the maximum total length for category
-names and labels combined (default is 15).}
+\item{max_length_total_cat}{An integer specifying the maximum total length
+for category names and labels combined (default is 15).}
+
+\item{.keep_columns}{An boolean specifying if the output preserves the other
+columns of the dataset.}
 }
 \value{
 A modified data dictionary with additional columns for shortened labels:
@@ -61,11 +65,10 @@ the \code{variable} and \code{name} columns, with unique combination of
 
  # use madshapR_example provided by the package
  data_dict <- madshapR_example$`data_dict_example`
- data_dict_with_short_labels <- data_dict_add_labels_short(data_dict,10,25,10,16)
+ data_dict_with_short_labels <- data_dict_add_labels_short(data_dict)
  
  attributes(data_dict_with_short_labels)
 
 }
-
 
 }
