@@ -288,10 +288,10 @@ dataset_summarize <- function(
     
     name_group <- "no_group"
     # dataset_group <- valueType_adjust(from = data_dict, to = dataset)
-    dataset_group <- list(no_group = dataset_group)
+    dataset_group <- list(no_group = dataset)
     dataset_group$no_group <- as_dataset(dataset_group$no_group,col_id)
     attributes(dataset_group$no_group)$`madshapR::Data dictionary` <- data_dict
-  } 
+  }
   
   
   report <- 
