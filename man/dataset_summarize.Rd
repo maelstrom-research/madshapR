@@ -92,8 +92,8 @@ library(dplyr)
 
 ###### Example 1: use madshapR_example provided by the package
 dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = 'part_id')
-data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
-  
+data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+
 summary_dataset <- dataset_summarize(dataset, data_dict)
 glimpse(summary_dataset)
 

@@ -75,8 +75,8 @@
 #' 
 #' ###### Example 1: use madshapR_example provided by the package
 #' dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = 'part_id')
-#' data_dict <- as_data_dict(madshapR_example$`data_dict_example`)
-#'   
+#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' 
 #' summary_dataset <- dataset_summarize(dataset, data_dict)
 #' glimpse(summary_dataset)
 #' 
@@ -247,10 +247,24 @@ dataset_summarize <- function(
       group_keys(dataset_group) %>% 
       mutate(across(everything(),as.character)) %>%
       mutate(across(!! as.symbol(group_by), ~ replace_na(.,"Empty Values")))
-    
+      
     dataset_group <- group_split(dataset_group)
     names(dataset_group) <- as.character(name_group[[1]])
     
+    # add groups that are empty
+    missing_categories <-
+      cat_lab %>%
+      rowwise() %>%
+      dplyr::filter(!(!!as.name(group_by) %in% names(dataset_group))) %>%
+      pull(!!group_by)
+    
+    for(i in seq_along(missing_categories)){
+      missing_group <- 
+        list(dataset %>% slice(0)) %>% setNames(missing_categories[i])
+      
+      dataset_group <- c(dataset_group,missing_group)
+    }
+
     # arrange group
     dataset_group <- 
       dataset_group[unique(
@@ -275,8 +289,7 @@ dataset_summarize <- function(
     
     # rename group and data dict group
     name_group <- 
-      name_group %>%
-      mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
+      tibble(!!as.name(group_by) := names(dataset_group)) %>%
       left_join(cat_lab, by = join_by(!!as.symbol(group_by))) %>%
       arrange(.data$`madshapR::category_level`) %>% 
       pull('madshapR::label_short_cat') %>%
@@ -492,12 +505,24 @@ your dataset")}
       lapply(dataset_group,function(x){
         dataset_preprocess(x)})
 
+    vars_x <- 
+      bind_rows(dataset_preprocess) %>% 
+      select("Index","Variable name","Categorical variable") %>% distinct() %>%
+      group_by(pick("Index","Variable name")) %>%
+      reframe(`Categorical variable` = paste0(.data$`Categorical variable`,collapse = '|')) %>%
+      mutate(`Categorical variable` = ifelse(str_detect(.data$`Categorical variable`,"mix"),"mix",.data$`Categorical variable`)) %>%
+      arrange(pick('Index'))
+    
     summary_var <- 
       lapply(dataset_preprocess,function(x){
-        summary_variables(dataset_preprocess = x)})
-    
+        x = summary_variables(dataset_preprocess = x)
+        x = full_join(x, vars_x, by = 'Variable name') %>%
+          select("Variable name",everything(),-"Index")
+        return(x)})
+
     if(group_by != ''){
-      summary_group <- summary_variables(dataset_preprocess = preprocess_group)
+      summary_group <- 
+        summary_variables(dataset_preprocess = preprocess_group)
       summary_var <- 
         lapply(summary_var,function(x){
           x %>% dplyr::filter(.data$`Variable name` != group_by) %>%
@@ -510,9 +535,18 @@ your dataset")}
     summary_num <-
       lapply(dataset_preprocess_num,function(x){
         summary_variables_numeric(dataset_preprocess = x)})
-    if(nrow(bind_rows(summary_num)) > 0)
-    message("    Summarize information for numerical variables")
-    
+    if(nrow(bind_rows(summary_num)) > 0){
+      vars_x <- 
+        bind_rows(dataset_preprocess_num) %>% 
+        select("Index","Variable name") %>% distinct() 
+      summary_num <- 
+        lapply(summary_num,function(x){
+          x = full_join(x, vars_x, by = 'Variable name') %>% 
+            select("Variable name",everything(),-'Index')
+          return(x) })
+      message("    Summarize information for numerical variables")     
+    }
+ 
     dataset_preprocess_text <-
       lapply(dataset_preprocess,function(x){
         x[x$`Variable name` %in% report$`Text variable summary`$`Variable name`,] %>%
@@ -520,8 +554,17 @@ your dataset")}
     summary_text <-
       lapply(dataset_preprocess_text,function(x){
         summary_variables_text(dataset_preprocess = x)})
-    if(nrow(bind_rows(summary_text)) > 0)
+    if(nrow(bind_rows(summary_text)) > 0){
+      vars_x <- 
+        bind_rows(dataset_preprocess_text) %>% 
+        select("Index","Variable name") %>% distinct() 
+      summary_text <- 
+        lapply(summary_text,function(x){
+          x = full_join(x, vars_x, by = 'Variable name') %>% 
+            select("Variable name",everything(),-'Index')
+          return(x) })
     message("    Summarize information for text variables")
+    }
 
     dataset_preprocess_date <-
       lapply(dataset_preprocess,function(x){
@@ -530,8 +573,18 @@ your dataset")}
     summary_date <-
       lapply(dataset_preprocess_date,function(x){
         summary_variables_date(dataset_preprocess = x)})
-    if(nrow(bind_rows(summary_date)) > 0)
-    message("    Summarize information for date variables")
+    if(nrow(bind_rows(summary_date)) > 0){
+      vars_x <- 
+        bind_rows(dataset_preprocess_date) %>% 
+        select("Index","Variable name") %>% distinct() 
+      summary_date <- 
+        lapply(summary_date,function(x){
+          x = full_join(x, vars_x, by = 'Variable name') %>% 
+            select("Variable name",everything(),-'Index')
+          return(x) })
+      message("    Summarize information for date variables")
+      
+    }
     
     dataset_preprocess_datetime <-
       lapply(dataset_preprocess,function(x){
@@ -541,9 +594,18 @@ your dataset")}
       lapply(dataset_preprocess_datetime,function(x){
         summary_variables_datetime(dataset_preprocess = x)})
     
-    if(nrow(bind_rows(summary_datetime)) > 0)
-    message("    Summarize information for datetime variables")
-    
+    if(nrow(bind_rows(summary_datetime)) > 0){
+      vars_x <- 
+        bind_rows(dataset_preprocess_datetime) %>% 
+        select("Index","Variable name") %>% distinct() 
+      summary_datetime <- 
+        lapply(summary_datetime,function(x){
+          x = full_join(x, vars_x, by = 'Variable name') %>% 
+            select("Variable name",everything(),-'Index')
+          return(x) })
+      message("    Summarize information for datetime variables")
+    }      
+      
     dataset_preprocess_cat <-
       lapply(dataset_preprocess,function(x){
         x[x$`Variable name` %in% report$`Categorical variable summary`$`Variable name`,] %>%
@@ -551,8 +613,17 @@ your dataset")}
     summary_cat <-
       lapply(dataset_preprocess_cat,function(x){
         summary_variables_categorical(dataset_preprocess = x)}) 
-    if(nrow(bind_rows(summary_cat)) > 0)
-    message("    Summarize information for categorical variables")
+    if(nrow(bind_rows(summary_cat)) > 0){
+      vars_x <- 
+        bind_rows(dataset_preprocess_cat) %>% 
+        select("Index","Variable name") %>% distinct() 
+      summary_cat <- 
+        lapply(summary_cat,function(x){
+          x = full_join(x, vars_x, by = 'Variable name') %>% 
+            select("Variable name",everything(),-'Index')
+          return(x) })
+      message("    Summarize information for categorical variables")
+      }
     
     if(group_by != ''){
       summary_group_cat <- 
@@ -625,16 +696,18 @@ your dataset")}
       select(any_of(minimum_cols)) %>%
       mutate(
         `Quality assessment comment` = ifelse(.data$`Variable name` %in% col_id,
-        "[INFO] - Identifier variable.",.data$`Quality assessment comment`),       
+        "[INFO] - Identifier variable.",.data$`Quality assessment comment`),
         `Quality assessment comment` = ifelse(.data$`Variable name` %in% group_by,
-        "[INFO] - Grouping variable.",.data$`Quality assessment comment`))         
+        "[INFO] - Grouping variable.",.data$`Quality assessment comment`),
+        `Quality assessment comment` = ifelse(is.na(.data$`Number of rows`),
+        "[INFO] - The group is empty.",.data$`Quality assessment comment`))     # [GF] - to validate (OR no participant in this group ?)
     
     report$`Text variable summary` <-
       suppressMessages(report$`Text variable summary` %>%
       inner_join(summary_var , by = "Variable name", multiple = "all") %>%
       inner_join(summary_text, multiple = "all")) %>%
-      select(any_of(minimum_cols),everything())
-
+      select(any_of(minimum_cols),everything()) 
+    
     report$`Date variable summary` <-
       suppressMessages(report$`Date variable summary` %>%
       inner_join(summary_var , by = "Variable name", multiple = "all") %>%
@@ -657,10 +730,54 @@ your dataset")}
       suppressMessages(report$`Categorical variable summary` %>%
       inner_join(summary_var , by = "Variable name", multiple = "all") %>%
       inner_join(summary_cat, multiple = "all")) %>%
-      select(any_of(minimum_cols),everything())  %>%
+      select(any_of(minimum_cols),everything()) %>%
       mutate(
         `Quality assessment comment` = ifelse(.data$`Variable name` %in% group_by,
-        "[INFO] - Grouping variable.",.data$`Quality assessment comment`))      
+        "[INFO] - Grouping variable.",.data$`Quality assessment comment`))
+    }
+  
+    if(group_by != ''){
+      empty_groups <- 
+        report$`Variables summary (all)` %>% 
+        rowwise() %>%
+        dplyr::filter(`Quality assessment comment` %in% "[INFO] - The group is empty.") %>%
+        select(group = starts_with('Grouping variable: ')) %>%
+        pull("group") %>% unique
+      
+      report$`Text variable summary` <-
+        report$`Text variable summary` %>%
+        mutate(
+          `Quality assessment comment` = 
+            ifelse(!! as.name(paste0('Grouping variable: ', group_by)) %in% empty_groups,
+                   "[INFO] - The group is empty.",.data$`Quality assessment comment`))
+      
+      report$`Date variable summary` <-
+        report$`Date variable summary` %>%
+        mutate(
+          `Quality assessment comment` = 
+            ifelse(!! as.name(paste0('Grouping variable: ', group_by)) %in% empty_groups,
+                   "[INFO] - The group is empty.",.data$`Quality assessment comment`))
+      
+      report$`Datetime variable summary` <-
+        report$`Datetime variable summary` %>%
+        mutate(
+          `Quality assessment comment` = 
+            ifelse(!! as.name(paste0('Grouping variable: ', group_by)) %in% empty_groups,
+                   "[INFO] - The group is empty.",.data$`Quality assessment comment`))
+      
+      report$`Numerical variable summary` <-
+        report$`Numerical variable summary` %>%
+        mutate(
+          `Quality assessment comment` = 
+            ifelse(!! as.name(paste0('Grouping variable: ', group_by)) %in% empty_groups,
+                   "[INFO] - The group is empty.",.data$`Quality assessment comment`))
+      
+      report$`Categorical variable summary` <-
+        report$`Categorical variable summary` %>%
+        mutate(
+          `Quality assessment comment` = 
+            ifelse(!! as.name(paste0('Grouping variable: ', group_by)) %in% empty_groups,
+                   "[INFO] - The group is empty.",.data$`Quality assessment comment`))
     }
     
   message("    Summarize global information (Overview)")
@@ -1134,7 +1251,9 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
     mutate(
       value_var = ifelse(
         .data$`valid_class` == "3_Valid other values",
-        tolower(.data$`value_var`),.data$`value_var`))
+        tolower(.data$`value_var`),.data$`value_var`),
+      value_var = as.character(.data$`value_var`),) %>%
+    mutate()
   
   return(final_resume)
   
