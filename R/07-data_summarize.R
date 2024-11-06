@@ -854,10 +854,12 @@ your dataset")}
         .data$`---` == '    2_Rows'                                                  ~
           i,
         .data$`---` == '        2_Number of rows'                                    ~
-      as.character(nrow(Overview_group[[i]])),
+        ifelse(as.character(nrow(Overview_group[[i]])) == "0" ,"(empty)",
+               as.character(nrow(Overview_group[[i]]))),
         .data$`---` == '        2_Number of distinct identifier variable values'     ~
+        ifelse(as.character(nrow(Overview_group[[i]])) == "0" ,"(empty)",
         ifelse(is.null(col_id),as.character(nrow(Overview_group[[i]])),
-        as.character(nrow(distinct(Overview_group[[i]][col_id])))),
+        as.character(nrow(distinct(Overview_group[[i]][col_id]))))),
         TRUE                                                                         ~
           "EMPTY",
       )) %>%
