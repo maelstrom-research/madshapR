@@ -122,7 +122,6 @@ dataset_summarize <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   
   # attempt to catch group_by from the group_vars if the dataset is grouped
-  
   if(toString(substitute(group_by)) == '') group_by <- NULL
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
     group_by <- group_vars(dataset)
@@ -293,6 +292,9 @@ dataset_summarize <- function(
     dataset_group$no_group <- as_dataset(dataset_group$no_group,col_id)
     attributes(dataset_group$no_group)$`madshapR::Data dictionary` <- data_dict
   }
+  
+  # catch first label (after addtion of categorical grouping variable)
+  first_labs <- first_label_get(data_dict)
   
   # evaluate the dataset
   report <- list()
