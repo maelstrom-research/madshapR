@@ -8,6 +8,10 @@
 #' object and are added to an associated data dictionary (when present).
 #'
 #' @param x A vector object to be coerced to categorical.
+#' @param levels an optional vector of the unique values (as character strings) 
+#' that x might have taken. The default is the unique set of values taken by 
+#' as.character(x), sorted into increasing order of x. Note that this set can be 
+#' specified as smaller than sort(unique(x)).
 #'
 #' @seealso
 #' [haven::labelled()]
