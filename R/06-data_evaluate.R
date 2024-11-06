@@ -205,11 +205,11 @@ dataset_evaluate <- function(
            "Dataset assessment" = "condition") %>%
     mutate(across(everything(),as.character))
   
-  
-  message(
-    "    Assess the presence of possible duplicated variable in the dataset")
-  
   if(nrow(dataset) > 0 & ncol(dataset %>% select(-matches('madshapR::index'))) > 1) {
+    
+    message(
+      "    Assess the presence of possible duplicated variable in the dataset")
+    
     test_duplicated_columns <-
       get_duplicated_cols(
         dataset %>% select(-matches('madshapR::index'))) %>%
@@ -225,9 +225,10 @@ dataset_evaluate <- function(
       mutate(across(everything(),as.character))
   }
   
-  message(
-    "    Assess the presence of possible duplicated participants")
   if(nrow(dataset) > 0){                                                        
+    
+    message(
+      "    Assess the presence of possible duplicated participants")
     
     test_duplicated_rows <-
       get_duplicated_rows(zap_dataset) %>%
@@ -247,8 +248,7 @@ dataset_evaluate <- function(
                     add_index('madshapR::value') %>%
                     mutate(across(everything(), as.character))) %>%
         rename('value' = any_of(!!as.symbol('col_id'))) %>%
-        select(-all_of('madshapR::value'))
-    }
+        select(-all_of('madshapR::value'))}
     
     test_duplicated_rows <-               
       test_duplicated_rows %>%
@@ -330,7 +330,9 @@ dataset_evaluate <- function(
   }
   
   if(nrow(dataset) > 0){
-    message("    Assess the presence of unique value columns in dataset")
+    message(
+      "    Assess the presence of unique value columns in dataset")
+    
     test_unique_value <-
       get_unique_value_cols(zap_dataset) %>%
       mutate(condition = "[INFO] - Variable has a constant value.") %>%
@@ -341,92 +343,102 @@ dataset_evaluate <- function(
       mutate(across(everything(),as.character))
   }
   
-  message(
-    "    Assess the presence of empty rows in the dataset")
-  test_empty_row <-
-    get_all_na_rows(zap_dataset) %>%
-    rename('value' = "row_number") %>%
-    mutate(
-      name_var = "(all)",
-      condition =
-        "[INFO] - Empty row (except for participant identifier variable).")
   
-  if(col_id != "madshapR::index"){
+  if(nrow(dataset) > 0){
+    message(
+      "    Assess the presence of empty rows in the dataset")
+    test_empty_row <-
+      get_all_na_rows(zap_dataset) %>%
+      rename('value' = "row_number") %>%
+      mutate(
+        name_var = "(all)",
+        condition =
+          "[INFO] - Empty row (except for participant identifier variable).")
+    
+    if(col_id != "madshapR::index"){
+      
+      test_empty_row <- 
+        test_empty_row %>%
+        rename('madshapR::value' = 'value') %>%
+        left_join(by = 'madshapR::value',
+                  dataset %>% select(all_of(col_id)) %>% 
+                    add_index('madshapR::value') %>%
+                    mutate(across(everything(), as.character))) %>%
+        rename('value' = !!as.symbol(col_id)) %>%
+        select(-'madshapR::value')
+    }
     
     test_empty_row <- 
       test_empty_row %>%
-      rename('madshapR::value' = 'value') %>%
-      left_join(by = 'madshapR::value',
-                dataset %>% select(all_of(col_id)) %>% 
-                  add_index('madshapR::value') %>%
-                  mutate(across(everything(), as.character))) %>%
-      rename('value' = !!as.symbol(col_id)) %>%
-      select(-'madshapR::value')
-  }
-  
-  test_empty_row <- 
-    test_empty_row %>%
-    rename("Variable name" = "name_var",
-           "Dataset assessment" = "condition",
-           "Value" = "value") %>%
-    mutate(across(everything(),as.character))
-  
-  message(
-    "    Assess the presence all empty variable in the dataset")
-  test_empty_col <-
-    get_all_na_cols(dataset) %>%
-    mutate(
-      value = "(empty)",
-      condition = "[INFO] - Empty variable.") %>%
-    rename(`name_var` = "col_name") %>%
-    rename("Variable name" = "name_var",
-           "Dataset assessment" = "condition",
-           "Value" = "value") %>%
-    mutate(across(everything(),as.character))
-  
-  message(
-    "    Assess the presence of categories not in the data dictionary")
-  
-  test_existing_variable_category <-
-    silently_run({
-      check_dataset_categories(dataset,data_dict) %>%
-        dplyr::filter(!is.na(.data$`value`)) %>%
-        distinct() %>% group_by(.data$`name_var`,.data$`condition`) %>%
-        reframe(
-          `value` = paste0(.data$`value`, collapse = " ; "))}) %>%
-    dplyr::filter(!is.na(.data$`name_var`))
-  
-  test_existing_variable_category <-  
-    test_existing_variable_category %>%
-    add_index('madshapR::index') %>%
-    separate_rows("value",sep = " ; ") %>%
-    group_by(.data$`madshapR::index`) %>%
-    add_index('madshapR::index2') %>%
-    group_by(.data$`madshapR::index`,.data$`name_var`,.data$`condition`) %>%
-    slice(1:6) %>%
-    mutate(
-      value =
-        ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
-    reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
-    select(-"madshapR::index") %>%
-    rename("Variable name" = "name_var",
-           "Dataset assessment" = "condition",
-           "Value" = "value") %>%
-    mutate(across(everything(),as.character))
-  
-  if(is_data_dict_mlstr == TRUE){
-    message(
-      "    Assess the `valueType` comparison in dataset and data dictionary")
-    test_valueType <-
-      check_dataset_valueType(
-        dataset = zap_dataset, 
-        data_dict = data_dict['Variables'],valueType_guess = TRUE) %>%
       rename("Variable name" = "name_var",
              "Dataset assessment" = "condition",
-             "Value" = "value",
-             "Suggested valueType" = "suggestion") %>%
+             "Value" = "value") %>%
       mutate(across(everything(),as.character))
+  }
+  
+  if(nrow(dataset) > 0){
+    message(
+      "    Assess the presence all empty variable in the dataset")
+    test_empty_col <-
+      get_all_na_cols(dataset) %>%
+      mutate(
+        value = "(empty)",
+        condition = "[INFO] - Empty variable.") %>%
+      rename(`name_var` = "col_name") %>%
+      rename("Variable name" = "name_var",
+             "Dataset assessment" = "condition",
+             "Value" = "value") %>%
+      mutate(across(everything(),as.character))
+  }
+  
+  
+  if(nrow(dataset) > 0){
+    message(
+      "    Assess the presence of categories not in the data dictionary")
     
+    test_existing_variable_category <-
+      silently_run({
+        check_dataset_categories(dataset,data_dict) %>%
+          dplyr::filter(!is.na(.data$`value`)) %>%
+          distinct() %>% group_by(.data$`name_var`,.data$`condition`) %>%
+          reframe(
+            `value` = paste0(.data$`value`, collapse = " ; "))}) %>%
+      dplyr::filter(!is.na(.data$`name_var`))
+    
+    test_existing_variable_category <-  
+      test_existing_variable_category %>%
+      add_index('madshapR::index') %>%
+      separate_rows("value",sep = " ; ") %>%
+      group_by(.data$`madshapR::index`) %>%
+      add_index('madshapR::index2') %>%
+      group_by(.data$`madshapR::index`,.data$`name_var`,.data$`condition`) %>%
+      slice(1:6) %>%
+      mutate(
+        value =
+          ifelse(.data$`madshapR::index2` == 6 , "[...]",.data$`value`)) %>%
+      reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
+      select(-"madshapR::index") %>%
+      rename("Variable name" = "name_var",
+             "Dataset assessment" = "condition",
+             "Value" = "value") %>%
+      mutate(across(everything(),as.character))
+  }
+  
+  if(is_data_dict_mlstr == TRUE){
+    
+    if(nrow(dataset) > 0){
+      message(
+        "    Assess the `valueType` comparison in dataset and data dictionary")
+      test_valueType <-
+        check_dataset_valueType(
+          dataset = zap_dataset, 
+          data_dict = data_dict['Variables'],valueType_guess = TRUE) %>%
+        rename("Variable name" = "name_var",
+               "Dataset assessment" = "condition",
+               "Value" = "value",
+               "Suggested valueType" = "suggestion") %>%
+        mutate(across(everything(),as.character))
+    }
     
     # replace elements in the data dictionary assessment concerning the valueType
     
@@ -482,6 +494,14 @@ dataset_evaluate <- function(
     arrange(.data$`Index`) %>%
     select(-"Index")
   
+  
+  if(nrow(report$`Dataset assessment`) == 0){
+    message("\n    The dataset has 0 rows.")
+    report$`Dataset assessment` <-
+      tibble(
+        'Variable name' = '(all)',
+        'Dataset assessment' = "[INFO] - The dataset has 0 rows.")
+  }
   
   if(all(is.na(report[['Dataset assessment']][['Suggested valueType']]))){
     report[['Dataset assessment']][['Suggested valueType']] <- NULL}

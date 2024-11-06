@@ -875,7 +875,8 @@ check_dataset_categories <- function(
   categorical_var_dataset <- 
     dataset %>% add_index("madshapR::index",.force = TRUE) %>%
     select("madshapR::index",where(is_category)) %>% 
-    select("madshapR::index",!any_of(empty_cols)) %>% data_dict_extract()
+    select("madshapR::index",!any_of(empty_cols)) %>% 
+    data_dict_extract()
   
   categorical_var_dataset <- 
     categorical_var_dataset[['Categories']] %>%
@@ -883,6 +884,17 @@ check_dataset_categories <- function(
       "variable" = as.character(),
       "name" = as.character())) %>%
     select("variable","name")
+
+  # filter out the categories in the dataset data dictionary that are not in the
+  # dataset 
+  for(i in unique(categorical_var_dataset[['variable']])){
+    # stop()}
+    
+    categorical_var_dataset <- 
+      categorical_var_dataset %>%
+      filter(!(
+        .data$`variable` == !!i & !(.data$`name` %in% unique(c(na.omit(as.character(dataset[[i]])))))))
+  }
   
   categorical_var_data_dict <- 
     tibble("variable" = as.character(), "name" = as.character())
