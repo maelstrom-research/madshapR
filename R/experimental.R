@@ -38,7 +38,7 @@
 #' @importFrom rlang .data
 #'
 #' @export
-as_category <- function(x){
+as_category <- function(x, levels = c(na.omit(unique(x)))){
   
   # check if the col is a vector
   if(is.list(x)) stop("'list' object cannot be coerced to a category")
@@ -54,14 +54,10 @@ as_category <- function(x){
     x <- as.character(x)}
   
   x_init <- x
-  x <- as.factor(x)
-  fct_att <- attributes(x)
-  
-  fct_att$labels <- fct_att$levels
+  # x <- as.factor(x)
+  fct_att <- list(labels = levels, class = "factor")
   names(fct_att$labels) <-  fct_att$labels
-  fct_att$levels <- NULL
-  
-  
+
   vT_list <- madshapR::valueType_list
   fct_att$`class` <-
     c("haven_labelled","vctrs_vctr",
