@@ -127,6 +127,8 @@ will begenerated with compatible valueType.')
 #' [haven::zap_labels()].
 #'
 #' @param dataset A dataset object.
+#' @param zap_factor Whether the factor column should be coerced with its 
+#' corresponding valueType. FALSE by default.
 #'
 #' @returns
 #' A data frame identifying a dataset.
@@ -150,9 +152,13 @@ will begenerated with compatible valueType.')
 #' @importFrom lubridate is.Date
 #'
 #' @export
-dataset_zap_data_dict <- function(dataset){
+dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
 
   # test input
+  if(!is.logical(zap_factor))
+    stop(call. = FALSE,
+         '`zap_factor` must be TRUE or FALSE (FALSE by default)')
+
   as_dataset(dataset, col_id(dataset))
   
   preserve_attributes <- col_id(dataset)
@@ -190,9 +196,13 @@ dataset_zap_data_dict <- function(dataset){
   }
   
   # if categorical, replace by factor
+  if(zap_factor == FALSE){
   dataset <- 
     dataset %>% 
-    mutate(across(any_of(categorical_variables),as.factor)) %>%
+    mutate(across(any_of(categorical_variables),as.factor))}
+  
+  dataset <- 
+    dataset %>% 
     group_by(pick(any_of(preserve_group)))
   
   return(dataset)
@@ -478,11 +488,11 @@ as_dataset <- function(object, col_id = NULL){
     if(class(silently_run(
       ungroup(object) %>% select(!! all_of(col_id))))[1] == 'try-error')
       stop(call. = FALSE,
-           "All of your id column(s) must be present in your dataset.")
+           paste0("`",col_id,"` identifier column must be present in your dataset."))
 
     if(sum(is.na(ungroup(object) %>% select(!! all_of(col_id)))) > 0)
       stop(call. = FALSE,
-           "Your id column(s) must not contain any empty values.")
+           paste0("`",col_id,"` identifier column must not contain any empty values."))
 
     names_id <- names(ungroup(object) %>% select(!! all_of(col_id)))
     if(length(names_id) == 0) names_id <- NULL

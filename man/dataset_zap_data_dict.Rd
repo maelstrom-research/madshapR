@@ -4,10 +4,13 @@
 \alias{dataset_zap_data_dict}
 \title{Remove labels (attributes) from a data frame, leaving its unlabelled columns}
 \usage{
-dataset_zap_data_dict(dataset)
+dataset_zap_data_dict(dataset, zap_factor = FALSE)
 }
 \arguments{
 \item{dataset}{A dataset object.}
+
+\item{zap_factor}{Whether the factor column should be coerced with its
+corresponding valueType. FALSE by default.}
 }
 \value{
 A data frame identifying a dataset.
