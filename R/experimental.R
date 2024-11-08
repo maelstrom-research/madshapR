@@ -8,10 +8,13 @@
 #' object and are added to an associated data dictionary (when present).
 #'
 #' @param x A vector object to be coerced to categorical.
-#' @param levels an optional vector of the unique values (as character strings) 
+#' @param labels An optional vector of the unique values (as character strings) 
 #' that x might have taken. The default is the unique set of values taken by 
 #' as.character(x), sorted into increasing order of x. Note that this set can be 
 #' specified as smaller than sort(unique(x)).
+#' @param na_values An optional vector of the unique values (as character strings) 
+#' among labels, for which the value is considered as missing. The default 
+#' is NULL. Note that this set can be specified as smaller than labels
 #'
 #' @seealso
 #' [haven::labelled()]
@@ -42,13 +45,13 @@
 #' @importFrom rlang .data
 #'
 #' @export
-as_category <- function(x, levels = c(na.omit(unique(x)))){
+as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
   
   # check if the col is a vector
   if(is.list(x)) stop("'list' object cannot be coerced to a category")
   
-  # check if the col is already a category
-  if(is_category(x)) return(x)
+  # # check if the col is already a category
+  # if(is_category(x)) return(x)
   
   att <- attributes(x)
   
@@ -59,15 +62,23 @@ as_category <- function(x, levels = c(na.omit(unique(x)))){
   
   x_init <- x
   # x <- as.factor(x)
-  fct_att <- list(labels = levels, class = "factor")
-  names(fct_att$labels) <-  fct_att$labels
+  fct_att <- list(labels = labels, class = "factor")
+  if(all(is.null(names(fct_att$labels))))
+    names(fct_att$labels) <-  fct_att$labels
+  
+  if(!is.null(na_values)){
+    na_att <- suppressWarnings(list(na_values = fct_att$labels[na_values == fct_att$labels]))
+    if(sum(is.na(na_att)) > 0){
+      stop(call. = "`na_values` must be taken from labels.")
+    }}else(na_att = NULL)
 
   vT_list <- madshapR::valueType_list
   fct_att$`class` <-
     c("haven_labelled","vctrs_vctr",
       vT_list[[which(vT_list$`valueType` == valueType_of(x)),"explicit_class"]])
   
-  attributes(x_init) <-  c(fct_att['labels'],fct_att['class'],att)
+  attributes(x_init) <-  
+    c(fct_att['labels'],na_att['na_values'], fct_att['class'],att)
   
   return(x_init)
   
