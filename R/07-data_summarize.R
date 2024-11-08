@@ -260,7 +260,8 @@ dataset_summarize <- function(
     
     for(i in seq_along(missing_categories)){
       missing_group <- 
-        list(dataset %>% slice(0)) %>% setNames(missing_categories[i])
+        list(dataset %>% slice(0)) 
+      names(missing_group) <- missing_categories[i]
       
       dataset_group <- c(dataset_group,missing_group)
     }
@@ -740,7 +741,7 @@ your dataset")}
       empty_groups <- 
         report$`Variables summary (all)` %>% 
         rowwise() %>%
-        dplyr::filter(`Quality assessment comment` %in% "[INFO] - The group is empty.") %>%
+        dplyr::filter(.data$`Quality assessment comment` %in% "[INFO] - The group is empty.") %>%
         select(group = starts_with('Grouping variable: ')) %>%
         pull("group") %>% unique
       
