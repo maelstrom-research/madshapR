@@ -114,8 +114,10 @@ variable_visualize <- function(
     variable_summary = .summary_var,
     .summary_var = NULL){
   
+  return(ggplot())
+  
   if(toString(col_id(dataset)) == col) {
-    warning(call. = FALSE,'Your column is identifier. No figure is generated.')
+    warning(call. = FALSE,'The column is identifier. No figure is generated.')
     return(ggplot())}
   
   if(nrow(dataset) == 0) {
@@ -128,7 +130,8 @@ variable_visualize <- function(
     group_by <- group_vars(dataset)
   }
 
-  dataset <- as_dataset(ungroup(dataset))
+  col_id <- col_id(dataset)
+  dataset <- as_dataset(ungroup(dataset),col_id)
   
   ## future dev
   # theme_minimal() + 
@@ -147,10 +150,13 @@ variable_visualize <- function(
     expr  = {dataset[toString(substitute(group_by))]},
     error = function(cond){return(dataset[group_by])})
   
+  # if col == group_by
   if(toString(names(colset_temp_1)) == toString(names(colset_temp_2))){
     
-    colset <- colset_temp_1 
+    colset <- colset_temp_1
     
+    # if the group is not a category in the data dictionary, turn it into
+    # a category and reprocess
     if(!is_category(colset %>% pull(1))){
       colset <- colset %>% mutate(across(everything(),as_category))
       col_dict <- data_dict_extract(colset)
@@ -172,13 +178,17 @@ variable_visualize <- function(
   if(ncol(colset)== 1){col <- names(colset)[1] ; group_by <- ''}
   if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
   
-  if(group_by != ''){
+  # at that moment, group_by is either "" or "xxx"
+  has_group <- group_by != ''
+  
+  if(has_group){
     
     if(!is_category(colset[[group_by]]))
       colset <- as_dataset(colset) %>% 
         mutate(across(all_of(group_by), as_category))
   }
   
+  # subset the data_dictionary to take only the colset (col + group_by if any)
   if(!is.null(data_dict)){
     
       tryCatch(
@@ -198,20 +208,35 @@ variable_visualize <- function(
       data_dict_extract(colset,as_data_dict_mlstr = TRUE)
   }
   
-  if(! group_by %in% col_dict[['Categories']][['variable']] & group_by != ''){
+  
+  if(! group_by %in% col_dict[['Categories']][['variable']] & has_group){
     
-    col_dict_group_by <- 
+    # catch first label
+    first_labs <- first_label_get(col_dict)
+    
+    first_lab_cat <- 
+    if(is.na(first_labs['Categories'])[[1]]) 
+      first_labs[['Variables']] else first_labs[['Categories']]
+    
+    data_dict_group_by <- 
       as_dataset(colset) %>% 
-      select(all_of(group_by)) %>% data_dict_extract()
+      select(all_of(group_by)) %>% 
+      data_dict_extract(as_data_dict_mlstr = TRUE)
+    
+    data_dict_group_by <- 
+      data_dict_group_by[['Categories']] %>%
+      rename_with(~ case_when(. == "label" ~ first_lab_cat, TRUE ~ .))
     
     col_dict[['Categories']] <- 
-      bind_rows(
-        col_dict[['Categories']], 
-        col_dict_group_by$`Categories`)
+      bind_rows(col_dict[['Categories']], data_dict_group_by)
   }
   
   
-  if(group_by != ''){
+  colset <- as_dataset(dataset_zap_data_dict(colset))
+  col_dict <- data_dict_add_labels_short(col_dict)
+  first_lab_var <- first_label_get(col_dict)[['Variables']]
+  
+  if(has_group){
     
     preprocess_var <- 
       preprocess_group <- 
@@ -225,8 +250,6 @@ variable_visualize <- function(
       dataset_preprocess(dataset = colset[col], data_dict = col_dict)
   }
   
-  colset <- as_dataset(dataset_zap_data_dict(colset))
-
   # if(group_by != ''){
   #   if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
   #      c('mix','no'))
@@ -240,44 +263,35 @@ variable_visualize <- function(
   preprocess_var_cat_miss_values <- 
     preprocess_var[preprocess_var$valid_class %in% 
                      c('2_Non-valid values','4_Empty values'),]
-  
-  if(group_by != ''){
-    
-    first_lab_var <- first_label_get(col_dict)[['Variables']]
+
+  if(has_group){
     
     cat_lab <- 
       col_dict[['Categories']] %>% 
       dplyr::filter(if_any('variable') == group_by) %>%
       select(
         !! group_by := 'name', 
-        `___labels___` = !! first_lab_var) %>%
+        "madshapR::label_short_cat") %>%
       mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
-      add_index('___category_level___')
+      add_index('madshapR::category_level')
     
     colset <-  
       colset %>%
       mutate(!! group_by := as.character(!!as.symbol(group_by))) %>%
       left_join(cat_lab,by = group_by) %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(group_by) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite(!! group_by,c(!! group_by,'___labels___'),sep = '', 
-            remove = TRUE,na.rm = TRUE)
+      mutate(!! group_by := .data$`madshapR::label_short_cat`) %>%
+      select(-"madshapR::label_short_cat")
+
   }
   
   # levels if group_by
-  if(group_by != '') {
-    cat_levels <- 
-      colset %>% 
-      arrange(.data$`___category_level___`) %>%
-      pull(group_by) %>% unique
+  if(has_group) {
     
+    cat_levels <- cat_lab$`madshapR::label_short_cat`
     colset <- 
       colset %>% 
       mutate(across(!! group_by, ~ factor(.,levels=c(cat_levels)))) %>%
-      select(-'___category_level___')
+      select(-'madshapR::category_level') 
   }
   
   if(sum(preprocess_var$index_in_dataset,na.rm = TRUE)*2 / 
@@ -286,11 +300,11 @@ variable_visualize <- function(
     stop("error in the function variable_visualize(). ERROR 102")
   }
   
-  colset[[1]] <- 
-    preprocess_var %>%
-    arrange(.data$`index_in_dataset`) %>%
-    dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
-    pull('value_var') %>% as_valueType(valueType = valueType_of(colset[[1]]))
+  # colset[[1]] <-
+  #   preprocess_var %>%
+  #   dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
+  #   arrange(.data$`index_in_dataset`) %>%
+  #   pull('value_var') %>% as_valueType(valueType = valueType_of(colset[[1]]))
     
     # colset <- 
     # colset %>%
@@ -324,7 +338,7 @@ variable_visualize <- function(
     rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
     dplyr::filter(.data$`temp_val` %in% 
                     preprocess_var_values$value_var) %>% ungroup %>%
-    select(-'temp_val')
+    select(-'temp_val') 
   
   colset_cat_values <-
     colset %>% 
@@ -350,27 +364,27 @@ variable_visualize <- function(
         madshapR::valueType_list$valueType %in% 
           valueType_guess(dataset[[col]]),]    
   }else{
-
       madshapR::valueType_list[
         madshapR::valueType_list$valueType %in% 
           valueType_of(dataset[[col]]),] 
   }
   
+  # number of participant
   n_part <- nrow(colset)
   
   `Variables summary (all)` <- variable_summary[
     str_detect(names(variable_summary), "Variables summary \\(all\\)")][[1]]
   
+  #### summary_1 ####
   summary_1 <- 
     as.data.frame(t(
       
       `Variables summary (all)` %>% 
         rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
         dplyr::filter(.data$`Variable name` %in% col) %>% ungroup %>%
-        select(-("Index":"Categories in data dictionary"))
-    ))
+        select(-("Index":"Categories in data dictionary"))))
   
-  if(group_by != ''){
+  if(has_group){
     names(summary_1) <- 
       
       unique(pull(
@@ -382,8 +396,6 @@ variable_visualize <- function(
     
   } else { names(summary_1) <- col}
   
-  
-  #### summary_1 ####
   summary_1 <-
     summary_1 %>% 
     mutate(col = row.names(summary_1)) %>%
@@ -1036,25 +1048,20 @@ variable_visualize <- function(
       dplyr::filter(if_any('variable') == col) %>%
       select(
         !!as.symbol(col) := 'name', 
-        `___labels___` = !! first_lab_var) %>%
+        "madshapR::label_short_cat") %>%
       mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-      add_index('___category_level___')
+      add_index('madshapR::category_level')
 
     colset_cat_values <-  
       colset_cat_values %>%
       mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
       left_join(cat_lab_var,by = col) %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(col) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite(!! col,c(col,'___labels___'),sep='', remove = TRUE,na.rm = TRUE) %>%
-      mutate(across(all_of(col), ~ na_if(.,'')))
+      mutate(!! group_by := .data$`madshapR::label_short_cat`) %>%
+      select(-"madshapR::label_short_cat")
     
     cat_var_levels <- 
       colset_cat_values %>% 
-      arrange(.data$`___category_level___`) %>%
+      arrange(.data$`madshapR::category_level`) %>%
       dplyr::filter(!is.na(!!as.symbol(col))) %>%
       pull(col) %>% unique 
     
@@ -1064,7 +1071,7 @@ variable_visualize <- function(
     colset_cat_values <- 
       colset_cat_values %>% 
       mutate(across(!! as.symbol(col), ~factor(.,levels=c(cat_var_levels)))) %>%
-      select(-'___category_level___')
+      select(-'madshapR::category_level')
     
     title <- paste0(' representation of categorical values in ',col,
                     ' (N obs. : ',n_obs,')')
@@ -1105,33 +1112,28 @@ variable_visualize <- function(
         dplyr::filter(if_any('variable') == col) %>%
         select(
           !!as.symbol(col) := 'name', 
-          `___labels___` = !!first_lab_var) %>%
+          "madshapR::label_short_cat") %>%
         mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-        add_index('___category_level___') 
+        add_index('madshapR::category_level')
       
     } else { cat_lab_miss_var <- 
       tibble(
         col = as.character(),
-        `___labels___` = as.character(),
-        `___category_level___` = as.character()) %>%
+        `madshapR::label_short_cat` = as.character(),
+        `madshapR::category_level` = as.character()) %>%
       rename(!!as.symbol(col) := col)}
 
     colset_cat_miss_values <-  
       colset_cat_miss_values %>%
       mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
+      # mutate(across(!! as.symbol(col),~ replace_na(.,"Empty values"))) %>%
       left_join(cat_lab_miss_var,by = col) %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(col) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite(!! col,c(any_of(col),'___labels___'),sep = '', 
-            remove = TRUE,na.rm = TRUE) %>%
-      mutate(across(all_of(col), ~ na_if(.,'')))
+      mutate(!! group_by := .data$`madshapR::label_short_cat`) %>%
+      select(-"madshapR::label_short_cat")
     
     cat_var_levels <- 
       colset_cat_miss_values %>% 
-      arrange(.data$`___category_level___`) %>%
+      arrange(.data$`madshapR::category_level`) %>%
       dplyr::filter(!is.na(!!as.symbol(col))) %>%
       pull(col) %>% unique 
     
@@ -1140,7 +1142,7 @@ variable_visualize <- function(
     colset_cat_miss_values <- 
       colset_cat_miss_values %>% 
       mutate(across(!! as.symbol(col), ~factor(.,levels=c(cat_var_levels)))) %>%
-      select(-'___category_level___')
+      select(-'madshapR::category_level') 
     
     # a ameliorer
     names(palette_missing) <- levels(colset_cat_miss_values[[col]])
@@ -1554,45 +1556,45 @@ Please provide another name folder or delete the existing one.")}
   data_dict$`Variables` <- 
     data_dict$`Variables` %>% add_index(.force = TRUE)
   
-  data_dict_flat <- data_dict
-  data_dict_flat[['Variables']] <- data_dict$`Variables`
-  
-  if(has_categories(data_dict)){
-    data_dict_flat[['Categories']] <- 
-      data_dict[['Categories']] %>% 
-      add_index("madshapR::index_original",.force = TRUE) %>%
-      group_by(.data$`variable`) %>%
-      slice(1:6) %>%
-      add_index("madshapR::index_group",.force = TRUE) %>%
-      mutate(across(
-        -c("variable","madshapR::index_group","madshapR::index_original"), ~ 
-        ifelse(.data$`madshapR::index_group` == 6,'[...]',.) )) %>%
-      ungroup() %>%
-      arrange(.data$`madshapR::index_original`) %>%
-      select(-"madshapR::index_group",-"madshapR::index_original")
-  }
-  
-  first_lab_var <- first_label_get(data_dict_flat)[['Variables']]
-  
-  if(first_lab_var == "") first_lab_var <- "label"
-  
-  data_dict_flat <- 
-    suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
-    bind_rows(tibble("Categories::label" = as.character())) %>%
-    select(
-      "Index" = matches("index"),
-      "Variable name" = "name",
-      "Variable label" = any_of(first_lab_var),
-      matches('valueType'),
-      Categories = any_of(paste0("Categories::",first_lab_var))) %>% 
-    mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>")) %>%
-    mutate(Categories = str_replace_all(
-      .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
+  # data_dict_flat <- data_dict
+  # data_dict_flat[['Variables']] <- data_dict$`Variables`
+  # 
+  # if(has_categories(data_dict)){
+  #   data_dict_flat[['Categories']] <- 
+  #     data_dict[['Categories']] %>% 
+  #     add_index("madshapR::index_original",.force = TRUE) %>%
+  #     group_by(.data$`variable`) %>%
+  #     slice(1:6) %>%
+  #     add_index("madshapR::index_group",.force = TRUE) %>%
+  #     mutate(across(
+  #       -c("variable","madshapR::index_group","madshapR::index_original"), ~ 
+  #       ifelse(.data$`madshapR::index_group` == 6,'[...]',.) )) %>%
+  #     ungroup() %>%
+  #     arrange(.data$`madshapR::index_original`) %>%
+  #     select(-"madshapR::index_group",-"madshapR::index_original")
+  # }
+  # 
+  # first_lab_var <- first_label_get(data_dict_flat)[['Variables']]
+  # 
+  # if(first_lab_var == "") first_lab_var <- "label"
+  # 
+  # View(data_dict_flat) <- 
+  #   suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
+  #   bind_rows(tibble("Categories::label" = as.character())) %>%
+  #   select(
+  #     "Index" = matches("index"),
+  #     "Variable name" = "name",
+  #     "Variable label" = any_of(first_lab_var),
+  #     matches('valueType'),
+  #     Categories = any_of(paste0("Categories::",first_lab_var))) %>% 
+  #   mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>")) %>%
+  #   mutate(Categories = str_replace_all(
+  #     .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
     
   bookdown_template(path_to, overwrite = FALSE)
   if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(
-    path_to,dataset, data_dict, group_by,data_dict_flat, dataset_summary,col_id,
+    path_to,dataset, data_dict, group_by, dataset_summary,col_id, # data_dict_flat,
     valueType_guess,
     file = paste0(path_to,"/src/r_env.RData"))
   
