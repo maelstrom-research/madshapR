@@ -356,24 +356,15 @@ your dataset")}
         `madshapR::variable_name` = "name",
         `Dataset valueType` = "value")
 
-    if(valueType_guess == TRUE){
+    if(sum(nrow(report[["Dataset assessment"]])) > 0){
       suggested_valueType <-
-        dataset %>%
-        # select(-matches("^___mlstr_index___$")) %>%
-        reframe(across(
-          everything(),
-          ~ valueType_guess(.))) %>%
-        pivot_longer(cols = everything()) %>%
-        rename(
-          `madshapR::variable_name` = "name",
-          `Suggested valueType` = "value")
-    }else{
-      suggested_valueType <-
-        dataset_valueType %>%
-        select(
-          "madshapR::variable_name",
-          `Suggested valueType` = "Dataset valueType")}
+        report[["Dataset assessment"]] %>%
+        rename("madshapR::variable_name" = "Variable name") %>%
+        bind_rows(suggested_valueType) %>%
+        dplyr::filter(!is.na(.data$`Suggested valueType`)) %>%
+        select("madshapR::variable_name" , "Suggested valueType")
 
+    }
   }
   ## variables
   data_dict_var <-
@@ -386,10 +377,8 @@ your dataset")}
            "Variable label" = !! first_lab_var,
            "Data dictionary valueType" = "valueType") %>%
     full_join(dataset_valueType, by = "madshapR::variable_name") %>%
-    full_join(suggested_valueType, by = "madshapR::variable_name") %>%
-    mutate(`Suggested valueType` = ifelse(
-      .data$`Dataset valueType` == .data$`Data dictionary valueType`,NA_character_,
-      .data$`Suggested valueType`))
+    full_join(suggested_valueType, by = "madshapR::variable_name")
+
   # %>% remove_empty('cols')
   
   # always treat id col as text
