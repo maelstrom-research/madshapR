@@ -1149,120 +1149,104 @@ check_dataset_valueType <- function(
     data_dict[['Variables']][['valueType']] <- NA_character_    
   
   vT_list <- madshapR::valueType_list[!is.na(madshapR::valueType_list[['valueType']]),]
-
-  # test_vT_data_dict <- 
-  #   check_data_dict_valueType(data_dict) %>%
-  #   left_join(var_index,by = "name_var")
-  
   test_vT_dataset <- tibble(
-    name_var = as.character(),
-    value2 = as.character(),
-    condition2 = as.character(),
-    suggestion2 = as.character())
+    name_var   = as.character(),
+    value      = as.character(),
+    condition  = as.character(),
+    suggestion = as.character())
   
   for(i in names(dataset)){
     # stop()}
 
-    data_dict_vT <- 
-      data_dict[['Variables']][
-        which(data_dict[['Variables']]$`name` == i),]$`valueType`
 
-    vec <- as.character(c(dataset[[i]]))
-    vec2 <- data_dict[['Categories']][['name']][
-            data_dict[['Categories']][['variable']] == i]
-    if(length(vec2) > 0) vec <- c(vec,vec2)
-    
-    not_vT <- !is.na(data_dict_vT) & !data_dict_vT %in% vT_list$valueType
-    
-    try_class <- 
-      class(silently_run(as_valueType(vec,data_dict_vT)))[1]
-    
+    # what is the valueType of the dataset ?
     dataset_vT <- valueType_of(dataset[[i]])
     
-    guess_vT <- if(try_class == "try-error" | valueType_guess == TRUE) 
-      valueType_guess(vec) else dataset_vT
+    # what is the valueType of the vector total of values ? dataset by default
+    vector_vT <- dataset_vT
+    vec <- as.character(c(dataset[[i]]))
+    vec2 <- data_dict[['Categories']][['name']][
+      data_dict[['Categories']][['variable']] == i]
+    if(length(vec2) > 0) vec <- c(vec,vec2)
+      
+    # if valueType_guess, guess it, else do nothing.
+    if(isTRUE(valueType_guess)) vector_vT <- valueType_guess(vec)
     
-    if(all(is.na(vec))) dataset_vT <- data_dict_vT <- guess_vT
+    # what is the value Type in the data dict ?
+    data_dict_vT <-
+      data_dict[['Variables']][
+        which(data_dict[['Variables']]$`name` == i),]$`valueType`
     
-    data_dict_vT
-    dataset_vT
-    guess_vT
+    # is the valueType of data dict empty ?
+    # is the valueType of data dict error because it is not in the accepted vT ?
+    # is the valueType of data dict wrong because it is not in the accepted vT ?
+    # is valueType any of it ? 
+    data_dict_vT_err   <- !is.na(data_dict_vT) & !data_dict_vT %in% vT_list$valueType
+    data_dict_vT_empty <- is.na(data_dict_vT)
+    data_dict_vT_wrong <- class(silently_run(as_valueType(vec,data_dict_vT)))[1] == "try-error"
+    data_dict_vT_warn <- data_dict_vT_err  | data_dict_vT_empty | data_dict_vT_wrong
+    data_dict_vT       <- if(data_dict_vT_empty) '(empty)' else data_dict_vT
     
-    guess_vT <- 
-      if(all(data_dict_vT %in% dataset_vT, dataset_vT == guess_vT) & try_class != 'try-error') 
-        NA_character_ else guess_vT
-    
-    value <- if(isTRUE(all.equal(data_dict_vT,dataset_vT)) & is.na(guess_vT) & try_class != 'try-error') NA_character_ else data_dict_vT
-    value <- if(!isTRUE(all.equal(data_dict_vT,dataset_vT)) & !is.na(guess_vT) & try_class != 'try-error') 
-      c(data_dict_vT,dataset_vT)[c(data_dict_vT,dataset_vT) != value][1] else value
-    value <- if(is.na(data_dict_vT)) "(empty)" else value
-    
-    if(valueType_guess == FALSE)
-      guess_vT <- c(data_dict_vT,dataset_vT)[c(data_dict_vT,dataset_vT) != value][1]
-
     test_vT_dataset <-
       rbind(
         test_vT_dataset,
         tibble(
           name_var      = i,
-          try_class     = try_class,
-          data_dict_vT  = data_dict_vT,
-          dataset_vT    = dataset_vT,
-          suggestion    = guess_vT,
-          value         = value) %>%
+          data_dict_vT       = data_dict_vT,
+          data_dict_vT_err   = data_dict_vT_err,
+          data_dict_vT_empty = data_dict_vT_empty,
+          data_dict_vT_wrong = data_dict_vT_wrong,
+          data_dict_vT_warn  = data_dict_vT_warn,
+          dataset_vT         = dataset_vT,
+          vector_vT          = vector_vT,
+          valueType_guess    = valueType_guess) %>%
           mutate(
             
-            condition  = case_when(
+      value = case_when(
+              .data$data_dict_vT == .data$dataset_vT & .data$dataset_vT == .data$vector_vT    ~ NA_character_,
+              .data$data_dict_vT_warn == TRUE                               ~ .data$data_dict_vT,
+              .data$valueType_guess   == FALSE | 
+                (.data$data_dict_vT == .data$vector_vT & .data$data_dict_vT != .data$dataset_vT)                         
+                                                                      ~ .data$dataset_vT,
+               TRUE                                                   ~ .data$data_dict_vT),
+            
+            
+      suggestion = case_when(
+              (.data$data_dict_vT == .data$dataset_vT & .data$dataset_vT == .data$vector_vT) |
+                (.data$dataset_vT %in% .data$value & .data$dataset_vT == .data$vector_vT)     ~ NA_character_,
+              TRUE                                                    ~ .data$vector_vT),
+            
+      condition  = case_when(
               
-              isTRUE(not_vT)                           ~ 
-"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).",
-
-          is.na(.data$`data_dict_vT`)                  ~
-"[INFO] - valueType is missing (see ??valueType_list for complete list).",
-
-          .data$`try_class` == 'try-error'             ~ 
-"[ERROR] - valueType in data dictionary is not compatible with dataset values.",
-              
-          .data$`dataset_vT` != .data$`data_dict_vT`   ~
+              is.na(.data$value)             ~ NA_character_,
+              is.na(.data$suggestion)        ~  
 "[INFO] - The valueType in the data dictionary is different from the valueType in the dataset.",
+           
+              .data$data_dict_vT_err == TRUE ~ 
+"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).",
+              
+              
+              .data$data_dict_vT_empty == TRUE ~ 
+"[INFO] - valueType is missing (see ??valueType_list for complete list).",
+              
+              
+              .data$data_dict_vT_wrong == TRUE ~ 
+"[ERROR] - valueType in data dictionary is not compatible with dataset values.",
 
-          .data$`value` != .data$`suggestion`        ~
- "[INFO] - Suggested valueType.",
-
-              TRUE                                     ~ NA_character_)
+              TRUE                       ~ "[INFO] - Suggested valueType.")
 
           ))
-  }
+    }
   
   test <- 
     test_vT_dataset %>%
     rowwise() %>%
     filter(!is.na(.data$`condition`)) %>%
     ungroup %>%
-    select(-'data_dict_vT',-'dataset_vT',-'try_class') %>%
+    select("name_var","value","condition", "suggestion" ) %>%
     distinct()
   
-# condition2 = ifelse(
-#   data_dict_vT == 'date' & guess == 'datetime',
-#   "[ERROR] - Inconsistent or ambiguous date format.",.data$`condition2`),
-# suggestion2 = ifelse(
-#   data_dict_vT == 'date' & guess == 'datetime',
-#   'text',valueType_guess(vec)),
-#            condition2 = ifelse(
-#              data_dict_vT == 'date' & guess == 'datetime',
-# "[ERROR] - Inconsistent or ambiguous date format.",.data$`condition2`),
-#           suggestion2 = ifelse(
-#             data_dict_vT == 'date' & guess == 'datetime',
-#             'text',valueType_guess(vec)),
-  
-  test <- 
-    test_vT_dataset %>%
-    rowwise() %>%
-    filter(!is.na(.data$`condition`)) %>%
-    ungroup %>%
-    select(-'data_dict_vT',-'dataset_vT',-'try_class') %>%
-    distinct()
-  
+  if(all(is.na(test[["suggestion"]]))) test[["suggestion"]] <- NULL
   return(test)
 }
 
