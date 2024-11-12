@@ -270,7 +270,7 @@ dataset_summarize <- function(
     dataset_group <- 
       dataset_group[unique(
         c(intersect(cat_lab[[group_by]],names(dataset_group)),
-          names(dataset_group)[length(names(dataset_group))]))] %>%
+          names(dataset_group)[names(dataset_group)=="Empty Values"]))] %>%
       as.list()
     
     # create data dictionary per group
@@ -294,7 +294,7 @@ dataset_summarize <- function(
       left_join(cat_lab, by = join_by(!!as.symbol(group_by))) %>%
       arrange(.data$`madshapR::category_level`) %>% 
       pull('madshapR::label_short_cat') %>%
-      str_replace_na('Empty value')
+      str_replace_na('Empty Values')
     
     names(dataset_group) <- name_group
     
@@ -879,7 +879,7 @@ your dataset")}
 
   if(group_by == '') report$Overview <- report$Overview %>% select(-"no_group")
   
-  if(all("Empty value" %in% name_group)){
+  if(all("Empty Values" %in% name_group)){
 
     qual_comment = "[INFO] - Grouping variable contains Empty values (NA)."
 
