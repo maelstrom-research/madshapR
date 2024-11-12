@@ -1246,7 +1246,6 @@ check_dataset_valueType <- function(
     select("name_var","value","condition", "suggestion" ) %>%
     distinct()
   
-  if(all(is.na(test[["suggestion"]]))) test[["suggestion"]] <- NULL
   return(test)
 }
 
