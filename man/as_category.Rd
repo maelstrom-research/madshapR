@@ -16,7 +16,7 @@ specified as smaller than sort(unique(x)).}
 
 \item{na_values}{An optional vector of the unique values (as character strings)
 among labels, for which the value is considered as missing. The default
-is NULL. Note that this set can be specified as smaller than labels}
+is NULL. Note that this set can be specified as smaller than labels.}
 }
 \value{
 A vector with class haven_labelled.
@@ -24,8 +24,7 @@ A vector with class haven_labelled.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Converts a vector object to a categorical object, typically a column in a
-data frame. The categories come from valid values present in the
-object and are added to an associated data dictionary (when present).
+data frame.
 }
 \examples{
 {
@@ -33,7 +32,7 @@ object and are added to an associated data dictionary (when present).
 library(dplyr)
 
 ##### Example 1: use madshapR_example provided by the package
-dataset <- 
+dataset <-
   madshapR_example$`dataset_example` \%>\%
   mutate(prg_ever = as_category(prg_ever))
   

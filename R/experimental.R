@@ -4,8 +4,7 @@
 #' @description
 #' `r lifecycle::badge("experimental")`
 #' Converts a vector object to a categorical object, typically a column in a 
-#' data frame. The categories come from valid values present in the 
-#' object and are added to an associated data dictionary (when present).
+#' data frame.
 #'
 #' @param x A vector object to be coerced to categorical.
 #' @param labels An optional vector of the unique values (as character strings) 
@@ -14,7 +13,7 @@
 #' specified as smaller than sort(unique(x)).
 #' @param na_values An optional vector of the unique values (as character strings) 
 #' among labels, for which the value is considered as missing. The default 
-#' is NULL. Note that this set can be specified as smaller than labels
+#' is NULL. Note that this set can be specified as smaller than labels.
 #'
 #' @seealso
 #' [haven::labelled()]
@@ -28,7 +27,7 @@
 #' library(dplyr)
 #' 
 #' ##### Example 1: use madshapR_example provided by the package
-#' dataset <- 
+#' dataset <-
 #'   madshapR_example$`dataset_example` %>%
 #'   mutate(prg_ever = as_category(prg_ever))
 #'   
@@ -47,43 +46,89 @@
 #' @export
 as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
   
+  # check if x is a column 
+  if(is.list(x) & nrow(x) %>% sum <= 1)
+    return(as_category(x = x[[1]],labels,na_values))
+  
   # check if the col is a vector
   if(is.list(x)) stop("'list' object cannot be coerced to a category")
   
-  # # check if the col is already a category
-  # if(is_category(x)) return(x)
-  
   att <- attributes(x)
   
-  # if column has a specific class, it first will be cast as a character
-  if(!is.null(attributes(x)[['class']][1])) {
-    att[['class']] <- NULL
-    x <- as.character(x)}
+  if(is.factor(x)){
+    x <- as_valueType(x,valueType_of(x))
+    att$labels <- att$levels
+    names(att$labels) <- att$levels
+    att['levels'] <- NULL
+    att['class'] <- NULL
+  }
   
-  x_init <- x
-  # x <- as.factor(x)
-  fct_att <- list(labels = labels, class = "factor")
-  if(all(is.null(names(fct_att$labels))))
-    names(fct_att$labels) <-  fct_att$labels
+  att_names_old <-
+    tibble(
+      labels = as.character(att$labels), 
+      labels_old = as.character(att$labels), 
+      names_old = names(att$labels)) %>%
+    bind_rows(tibble(names_old = as.character()))
+  
+  att_na_old <-
+    tibble(
+      labels = as.character(att$na_values), 
+      na_names_old = names(att$na_values)) %>%
+    bind_rows(tibble(na_names_old = as.character()))
+  
+  att_names_new <- 
+    tibble(
+      labels = as.character(!!labels), 
+      labels_new = as.character(!!labels),
+      names_new = names(!!labels)) %>%
+    bind_rows(tibble(names_new = as.character())) 
   
   if(!is.null(na_values)){
-    na_att <- suppressWarnings(list(na_values = fct_att$labels[na_values == fct_att$labels]))
-    if(sum(is.na(na_att)) > 0){
-      stop(call. = "`na_values` must be taken from labels.")
-    }}else(na_att = NULL)
+    if(!all(unname(na_values) %in% unname(labels)))
+      stop(call. = FALSE,
+           "`na_values` must be taken from labels.")}
 
+  na_values <- labels[na_values == labels]
+  att_na_new <-
+    tibble(
+      labels = as.character(!!na_values), 
+      na_names_new = as.character(!! na_values)) %>%
+    bind_rows(tibble(na_names_new = as.character())) 
+  
+  att_new <-
+    att_names_old %>%
+    full_join(att_na_old, by = "labels") %>%
+    full_join(att_names_new, by = "labels") %>%
+    full_join(att_na_new, by = "labels") %>%
+    mutate(
+      names_new = ifelse(is.na(.data$names_new),.data$names_old,.data$names_new),
+      labels_new = ifelse(is.na(.data$labels_new),.data$labels_old,.data$labels_new),
+      na_names_new = ifelse(is.na(.data$na_names_new),.data$na_names_old,.data$na_names_new)) %>%
+    mutate(names_new = ifelse(is.na(.data$names_new),.data$labels_new,.data$names_new)) %>%
+    mutate(across(everything(),as.character))
+  
+  new_labels <- att_new$labels_new
+  names(new_labels) <- att_new$names_new
+  new_na_values <- att_new[!is.na(att_new$na_names_new),]$na_names_new
+  names(new_na_values) <- att_new[!is.na(att_new$na_names_new),]$names_new
+  
+  att$labels <- new_labels
+  att$na_values <- new_na_values
+  
+  if(length(att[['labels']] ) == 0) att[['labels']] <- NULL 
+  if(length(att[['na_values']]) == 0) att[['na_values']] <- NULL 
+  
   vT_list <- madshapR::valueType_list
-  fct_att$`class` <-
+  att$`class` <-
     c("haven_labelled","vctrs_vctr",
       vT_list[[which(vT_list$`valueType` == valueType_of(x)),"explicit_class"]])
   
-  attributes(x_init) <-  
-    c(fct_att['labels'],na_att['na_values'], fct_att['class'],att)
+  attributes(x) <-  
+    att[unique(c(na.omit(names(c(att['labels'],att["na_values"],att["class"],att[names(att)])))))]
   
-  return(x_init)
+  return(x)
   
 }
-
 
 #' @title
 #' Validate and coerce any object as a non-categorical variable.
