@@ -881,7 +881,7 @@ your dataset")}
   
   if(all("Empty Values" %in% name_group)){
 
-    qual_comment = "[INFO] - Grouping variable contains Empty values (NA)."
+    qual_comment = "[INFO] - Grouping variable contains empty values (NA)."
 
     report[["Dataset assessment"]] <-
       bind_rows(
@@ -891,9 +891,31 @@ your dataset")}
           `Dataset assessment` = qual_comment,
           Value = NA_character_))
   }
-
+  
+  report[['Dataset assessment']] <- 
+    report[['Dataset assessment']] %>%
+    mutate(
+      'Dataset assessment' = 
+        ifelse(.data$`Variable name` %in% !! group_by & str_detect(
+          .data$`Dataset assessment` , "Variable is categorical and has"),
+"[INFO] - Grouping variable has empty group (no participant).",                 # [GF] to validate
+          .data$`Dataset assessment`))
+  
+  report[['Dataset assessment']] <- 
+    right_join(
+      data_dict[["Variables"]] %>% select('Variable name' = "name"),
+      report[['Dataset assessment']], by = 'Variable name')
+  
+  if(nrow(report[['Dataset assessment']]) == 0){
+    report[['Dataset assessment']] <- 
+      report[['Dataset assessment']] %>% 
+      mutate(
+        'Variable name' = "(all)", 
+        'Dataset assessment' = "[INFO] - No error/warning detected.")           # [GF] to validate
+  }
+  
   message("    Generate report\n")
-
+  
   # create report structure
 
   report$`Data dictionary summary`       <- NULL
