@@ -45,7 +45,7 @@
 #' @export
 valueType_of <- function(x){
 
-  # check if the col is empty
+  # check if x is a column
   if(is.list(x) & sum(nrow(x)) <= 1)
     return(as_valueType(x = x[[1]], valueType))
 
@@ -688,7 +688,7 @@ bold("\n\nUseful tip:"),
 #' @export
 valueType_guess <- function(x){
 
-  # check if the col is empty
+  # check if x is a column
   if(is.list(x) & sum(nrow(x)) <= 1)
     return(valueType_guess(x = x[[1]]))
   
@@ -857,8 +857,9 @@ valueType_guess <- function(x){
 #' @export
 as_valueType <- function(x, valueType = 'text'){
 
-  # check if the col is empty
-  if(is.list(x) & sum(nrow(x)) <= 1) return(as_valueType(x = x[[1]], valueType))
+  # check if x is a column
+  if(is.list(x) & sum(nrow(x)) <= 1) 
+    return(as_valueType(x = x[[1]], valueType))
 
   # check if the col is a vector
   if(is.list(x))
@@ -1197,7 +1198,7 @@ is_taxonomy <- function(object){
 #' @export
 typeof_convert_to_valueType <- function(typeof, class = NA_character_){
   
-  # check if the col is empty
+  # check if params are a column
   if((is.list(typeof) & sum(nrow(typeof)) <= 1) & 
      (is.list(class) & sum(nrow(class)) <= 1))
     return(typeof_convert_to_valueType(typeof = typeof[[1]], class[[1]]))
@@ -1283,8 +1284,7 @@ documentation or print(madshapR::valueType_list)")
 #' @export
 valueType_convert_to_typeof <- function(valueType){
   
-  
-  # check if the col is empty
+  # check if valueType is a column
   if(is.list(valueType) & sum(nrow(valueType)) <= 1)
     return(valueType_convert_to_typeof(valueType = valueType[[1]]))
   
