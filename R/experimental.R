@@ -46,6 +46,8 @@
 #' @export
 as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
   
+  if(all(is.null(labels))) return(drop_category(x))
+  
   # check if x is a column 
   if(is.list(x) & nrow(x) %>% sum <= 1)
     return(as_category(x = x[[1]],labels,na_values))
@@ -54,9 +56,10 @@ as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
   if(is.list(x)) stop("'list' object cannot be coerced to a category")
   
   att <- attributes(x)
+  vT_x <- valueType_of(x)
   
   if(is.factor(x)){
-    x <- as_valueType(x,valueType_of(x))
+    x <- as_valueType(x,vT_x)
     att$labels <- att$levels
     names(att$labels) <- att$levels
     att['levels'] <- NULL
@@ -73,7 +76,7 @@ as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
   att_na_old <-
     tibble(
       labels = as.character(att$na_values), 
-      na_names_old = names(att$na_values)) %>%
+      na_names_old = as.character(att$na_values)) %>%
     bind_rows(tibble(na_names_old = as.character()))
   
   att_names_new <- 
@@ -105,11 +108,12 @@ as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
       labels_new = ifelse(is.na(.data$labels_new),.data$labels_old,.data$labels_new),
       na_names_new = ifelse(is.na(.data$na_names_new),.data$na_names_old,.data$na_names_new)) %>%
     mutate(names_new = ifelse(is.na(.data$names_new),.data$labels_new,.data$names_new)) %>%
-    mutate(across(everything(),as.character))
+    mutate(across(everything(),as.character)) %>%
+    dplyr::filter(names_new != "NULL")
   
-  new_labels <- att_new$labels_new
+  new_labels <- as_valueType(att_new$labels_new,vT_x)
   names(new_labels) <- att_new$names_new
-  new_na_values <- att_new[!is.na(att_new$na_names_new),]$na_names_new
+  new_na_values <- as_valueType(att_new[!is.na(att_new$na_names_new),]$na_names_new,vT_x)
   names(new_na_values) <- att_new[!is.na(att_new$na_names_new),]$names_new
   
   att$labels <- new_labels
