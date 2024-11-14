@@ -112,38 +112,29 @@ dataset_summarize <- function(
   
   # check on arguments : data_dict. 
   as_data_dict_shape(data_dict)
-  
-  dataset_name <- 
-    ifelse(!is.null(dataset_name),dataset_name,
-           make_name_list(
-             as.character(fargs[['dataset']]),list_elem = list(NULL)))
-  
+
   # check on argument : taxonomy
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   
   # attempt to catch group_by from the group_vars if the dataset is grouped
   if(toString(substitute(group_by)) == '') group_by <- NULL
   if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
-    group_by <- group_vars(dataset)
-  }
+    group_by <- group_vars(dataset)}
   
+  # catch the col_id if exists  
   col_id <- col_id(dataset)
   dataset <- as_dataset(ungroup(dataset),col_id)
-    
-  dataset <-
-    suppressWarnings({
-    data_dict_match_dataset(
-      dataset,
-      data_dict,
-      output = 'dataset') %>%
-    as_dataset(col_id)})
   
-  data_dict <- 
+  # match dataset and data_dict
+  match_input_objects <- 
     suppressWarnings({
       data_dict_match_dataset(
-        dataset,data_dict,
-        output = 'data_dict') %>%
-        as_data_dict_mlstr()})
+        dataset,
+        data_dict, 
+        data_dict_apply = TRUE)})
+    
+  dataset <- as_dataset(match_input_objects$dataset,col_id)
+  data_dict <- as_data_dict_mlstr(match_input_objects$data_dict)
   
   # [GF] - note : this step adds time in the process
   # dataset_with_data_dict <- data_dict_apply(dataset,data_dict)
@@ -167,7 +158,7 @@ dataset_summarize <- function(
       
       data_dict_group_by <- 
         dataset_zap_data_dict(dataset) %>% 
-        mutate(across(!!group_by, as_category)) %>%
+        mutate(!!as.symbol(group_by) := as_category(!!as.name(group_by))) %>%
         select(all_of(group_by)) %>% data_dict_extract(as_data_dict_mlstr = TRUE)
       
       data_dict_group_by <- 
@@ -195,24 +186,6 @@ dataset_summarize <- function(
     }
     
   }else{ group_by <- ''}
-  
-  # [GF resolved] - question : now it is not mandatory that the grouping variable must
-  # have no NA . the group is called (Empty) and works as any other group. A 
-  # decision has to be made.
-  
-#   if(group_by != ''){
-# 
-#     has_empty <-
-#       dataset %>%
-#       reframe(across(!! group_by, ~ !all(!is.na(.)))) %>%
-#       unlist %>% all
-# 
-#     if(has_empty){
-#       stop(call. = FALSE,
-# "Grouping variable contains empty values, and cannot be used as a grouping variable.")
-# 
-#     }
-#   }
   
   # catch variable labels for documentation
   data_dict_labels <- data_dict_add_labels_short(data_dict,.keep_columns = TRUE)
@@ -306,6 +279,12 @@ dataset_summarize <- function(
     dataset_group$no_group <- as_dataset(dataset_group$no_group,col_id)
     attributes(dataset_group$no_group)$`madshapR::Data dictionary` <- data_dict
   }
+  
+  # catch name
+  dataset_name <- 
+    ifelse(!is.null(dataset_name),dataset_name,
+           make_name_list(
+             as.character(fargs[['dataset']]),list_elem = list(NULL)))
   
   # catch first label (after addtion of categorical grouping variable)
   first_labs <- first_label_get(data_dict)
@@ -897,7 +876,8 @@ your dataset")}
     mutate(
       'Dataset assessment' = 
         ifelse(.data$`Variable name` %in% !! group_by & str_detect(
-          .data$`Dataset assessment` , "Variable is categorical and has"),
+          .data$`Dataset assessment` , 
+"\\[INFO\\] - Variable is defined as categorical in data dictionary but not in dataset\\."),
 "[INFO] - Grouping variable has empty group (no participant).",                 # [GF] to validate
           .data$`Dataset assessment`))
   
@@ -1136,6 +1116,9 @@ dataset_preprocess <- function(dataset, data_dict = NULL){
   
   # tests
   as_dataset(dataset)
+  
+  # preserve dataset
+  dataset <- as_dataset(ungroup(dataset))
   
   # if no data_dict
   if(is.null(data_dict)){

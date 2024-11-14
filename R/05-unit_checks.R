@@ -745,6 +745,12 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
   as_data_dict_shape(data_dict)
   as_dataset(dataset) # no col_id
   
+  # preserve dataset
+  as_dataset(dataset, col_id(dataset))
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
   test_cat <- tibble(name_var = as.character(), condition = as.character())
   
   var_names_in_data_dict <-
@@ -859,6 +865,9 @@ check_dataset_categories <- function(
   # test if enough data_dict or dataset
   as_dataset(dataset) # no col_id
   as_data_dict_shape(data_dict)
+  
+  # preserve dataset
+  dataset <- as_dataset(ungroup(dataset))
   
   ##  test_categories ##
   # category in dd but not in dataset WARNING
@@ -1108,6 +1117,9 @@ check_dataset_valueType <- function(
   
   # test if enough data_dict or dataset
   as_dataset(dataset) # no col_id
+  
+  # preserve dataset
+  dataset <- as_dataset(ungroup(dataset))
 
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,

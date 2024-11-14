@@ -4,7 +4,7 @@
 \alias{as_category}
 \title{Validate and coerce any object as a categorical variable.}
 \usage{
-as_category(x, labels = c(na.omit(unique(x))), na_values = NULL)
+as_category(x, labels = as.vector(c(na.omit(unique(x)))), na_values = NULL)
 }
 \arguments{
 \item{x}{A vector object to be coerced to categorical.}

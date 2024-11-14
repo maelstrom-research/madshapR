@@ -265,7 +265,6 @@ dataset_cat_as_labels <- function(
     data_dict = NULL,
     col_names = names(dataset)){
   
-  
   # preserve dataset
   as_dataset(dataset, col_id(dataset))
   preserve_attributes <- col_id(dataset)

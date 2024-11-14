@@ -1759,7 +1759,7 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
   grouping_vars  <- group_vars(dataset)
   dataset <- 
     dataset %>% ungroup %>%
-    mutate(across(any_of(grouping_vars),as_category))
+    mutate(across(any_of(grouping_vars), as_category))
   
   data_dict <-
     list(
@@ -1929,7 +1929,8 @@ data_dict_match_dataset <- function(
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
          '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
-  
+
+  # preserve dataset
   as_dataset(dataset) # no col_id
   preserve_attributes <- col_id(dataset)
   preserve_group <- group_vars(dataset)

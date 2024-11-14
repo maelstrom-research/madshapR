@@ -44,7 +44,7 @@
 #' @importFrom rlang .data
 #'
 #' @export
-as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
+as_category <- function(x, labels = as.vector(c(na.omit(unique(x)))), na_values = NULL){
   
   if(all(is.null(labels))) return(drop_category(x))
   
@@ -91,7 +91,7 @@ as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
       stop(call. = FALSE,
            "`na_values` must be taken from labels.")}
 
-  na_values <- labels[na_values == labels]
+  na_values <- labels[unname(na_values) %in% unname(labels)]
   att_na_new <-
     tibble(
       labels = as.character(!!na_values), 
@@ -109,7 +109,7 @@ as_category <- function(x, labels = c(na.omit(unique(x))), na_values = NULL){
       na_names_new = ifelse(is.na(.data$na_names_new),.data$na_names_old,.data$na_names_new)) %>%
     mutate(names_new = ifelse(is.na(.data$names_new),.data$labels_new,.data$names_new)) %>%
     mutate(across(everything(),as.character)) %>%
-    dplyr::filter(names_new != "NULL")
+    dplyr::filter(.data$names_new != "NULL")
   
   new_labels <- as_valueType(att_new$labels_new,vT_x)
   names(new_labels) <- att_new$names_new
