@@ -179,44 +179,50 @@ valueType_self_adjust <- function(...){
   if(is_dataset(...) & !is_data_dict(...)){
     
     dataset <- as_dataset(...,col_id = col_id(...))
-    {
-    if(ncol(dataset) == 0) return(dataset)
-    if(nrow(dataset) == 0) return(dataset)
     
+    # preserve dataset
     preserve_attributes <- col_id(dataset)
-
-    # is_factor <-
-    #   dataset %>%
-    #   reframe(across(everything(), ~ toString(class(.)))) %>%
-    #   pivot_longer(everything()) %>%
-    #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-    #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup
-
-    data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
+    preserve_group <- group_vars(dataset)
+    dataset <- as_dataset(ungroup(dataset))
     
-    data_dict[['Categories']] <-
-      bind_rows(
-        Categories = tibble(name = as.character(),variable = as.character()),
-        data_dict[['Categories']])
-
-    vT <- 
+    if(ncol(dataset) > 0 & nrow(dataset) > 0){
+    
+      # is_factor <-
+      #   dataset %>%
+      #   reframe(across(everything(), ~ toString(class(.)))) %>%
+      #   pivot_longer(everything()) %>%
+      #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+      #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup
+      
+      data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
+      
+      data_dict[['Categories']] <-
+        bind_rows(
+          Categories = tibble(name = as.character(),variable = as.character()),
+          data_dict[['Categories']])
+      
+      vT <- 
+        dataset %>%
+        reframe(across(everything(),~ valueType_guess(.))) %>%
+        pivot_longer(everything())
+      
+      # for(i in names(dataset)) {
+      #   dataset[[i]] <-
+      #     as_valueType(
+      #       x = dataset[[i]],
+      #       valueType = vT$value[vT$`name` == i])}
+      # data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
+      
+      data_dict[['Variables']][['valueType']] <- vT$value
+      dataset <- data_dict_apply(dataset, data_dict)
+      
+    }
+    
+    dataset <- 
       dataset %>%
-      reframe(across(everything(),~ valueType_guess(.))) %>%
-      pivot_longer(everything())
-    
-    # for(i in names(dataset)) {
-    #   dataset[[i]] <-
-    #     as_valueType(
-    #       x = dataset[[i]],
-    #       valueType = vT$value[vT$`name` == i])}
-    # data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
-    data_dict[['Variables']][['valueType']] <- vT$value
-
-    dataset <-
-      data_dict_apply(dataset, data_dict) %>%
-      # mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
+      group_by(pick(any_of(preserve_group))) %>% 
       as_dataset(col_id = preserve_attributes)
-}
+    
     return(dataset)
   }
 
@@ -546,9 +552,11 @@ bold("\n\nUseful tip:"),
       warning = function(cond){
         stop(call. = FALSE,cond)})
 
-    # test dataset
-    dataset <- as_dataset(to,col_id = attributes(to)$`madshapR::col_id`)
-    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+    # preserve dataset
+    as_dataset(dataset, col_id(dataset))
+    preserve_attributes <- col_id(dataset)
+    preserve_group <- group_vars(dataset)
+    dataset <- as_dataset(ungroup(dataset))
 
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
@@ -559,7 +567,7 @@ bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
 )}
 
-    if(ncol(dataset) == 0) return(dataset)
+    if(ncol(dataset) > 0){
     
     # data_dict_data <-
     #   data_dict_extract(dataset) %>%
@@ -578,18 +586,23 @@ bold("\n\nUseful tip:"),
     #   left_join(data_dict[['Variables']] %>%
     #               select("name", "valueType"),by = "name")
 
-    for(i in names(dataset)){
-      dataset[[i]] <-
-        as_valueType(
-          x = dataset[[i]],
-          valueType = data_dict[['Variables']][[
-            which(data_dict[['Variables']]$`name` == i),
-            'valueType']])}
+      for(i in names(dataset)){
+        dataset[[i]] <-
+          as_valueType(
+            x = dataset[[i]],
+            valueType = data_dict[['Variables']][[
+              which(data_dict[['Variables']]$`name` == i),
+              'valueType']])}
+      
+      dataset <- data_dict_apply(dataset, data_dict)
 
+    } 
+    
     dataset <- 
-      data_dict_apply(dataset, data_dict) %>%
+      dataset %>%
+      group_by(pick(any_of(preserve_group))) %>% 
       as_dataset(col_id = preserve_attributes)
-
+    
     return(dataset)
   }
 

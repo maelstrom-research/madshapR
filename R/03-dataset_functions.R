@@ -82,7 +82,6 @@ will begenerated with compatible valueType.')
   
   data_dict_temp <- data_dict
   
-  
   dataset <-
     data_dict_temp[["Variables"]]  %>%
     select("name") %>%
@@ -159,10 +158,12 @@ dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
     stop(call. = FALSE,
          '`zap_factor` must be TRUE or FALSE (FALSE by default)')
 
+  # preserve dataset
   as_dataset(dataset, col_id(dataset))
-  
   preserve_attributes <- col_id(dataset)
   preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
   categorical_variables <-
     dataset %>%
     ungroup() %>%
@@ -181,8 +182,7 @@ dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
     vec <- vec %>% add_row(index = i, valueType = vT_init)}
   
   dataset <- 
-    dataset %>% lapply(as.vector) %>% as_tibble() %>%
-    as_dataset(col_id = preserve_attributes)
+    as_tibble(dataset %>% lapply(as.vector))
   
   for(i in seq_len(nrow(vec))){
     # stop()}
@@ -202,8 +202,11 @@ dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
     mutate(across(any_of(categorical_variables),as.factor))}
   
   dataset <- 
-    dataset %>% 
-    group_by(pick(any_of(preserve_group)))
+    dataset %>%
+    group_by(pick(any_of(preserve_group))) 
+  
+  # [GF] attribute such as col_id may not be preserved here.
+  # %>% as_dataset(col_id = preserve_attributes) 
   
   return(dataset)
 }
@@ -262,10 +265,15 @@ dataset_cat_as_labels <- function(
     data_dict = NULL,
     col_names = names(dataset)){
   
+  
+  # preserve dataset
+  as_dataset(dataset, col_id(dataset))
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
   # tests
-  dataset <- as_dataset(dataset) # no col_id
   dataset[col_names]
-  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   
   # if data_dict empty
   if(is.null(data_dict)){
@@ -279,68 +287,67 @@ dataset_cat_as_labels <- function(
       })
     }
 
-  if(!has_categories(data_dict)) return(dataset)
+  if(has_categories(data_dict)){
   
-  for(i in col_names){
-    # stop()}
-    
-    message(paste0('Processing of : ',i))
-    col <- dataset_zap_data_dict(as_dataset(dataset[i]))
-    data_dict_temp <- suppressWarnings({
-      data_dict_match_dataset(col,data_dict)$data_dict})
   
-    if(has_categories(data_dict_temp)){
-      names(col) <- '___values___'
+    for(i in col_names){
+      # stop()}
       
-      first_lab_var <- first_label_get(data_dict_temp)[['Categories']]
+      message(paste0('Processing of : ',i))
+      col <- dataset_zap_data_dict(as_dataset(dataset[i]))
+      data_dict_temp <- suppressWarnings({
+        data_dict_match_dataset(col,data_dict)$data_dict})
       
-      cat_col <- 
-        data_dict_temp$`Categories` %>% 
-        select('___values___' = "name", '___label___' = all_of(first_lab_var))
-      
-      col <- 
-        col %>% 
-        mutate(across(everything(), ~ str_squish(as.character(.)))) %>%
-        left_join(
-          cat_col %>% mutate(across(everything(),~str_squish(as.character(.)))),
-          by = intersect(names(col),names(cat_col))) %>%
-        mutate(
-          `___label___` = 
+      if(has_categories(data_dict_temp)){
+        names(col) <- '___values___'
+        
+        first_lab_var <- first_label_get(data_dict_temp)[['Categories']]
+        
+        cat_col <- 
+          data_dict_temp$`Categories` %>% 
+          select('___values___' = "name", '___label___' = all_of(first_lab_var))
+        
+        col <- 
+          col %>% 
+          mutate(across(everything(), ~ str_squish(as.character(.)))) %>%
+          left_join(
+            cat_col %>% mutate(across(everything(),~str_squish(as.character(.)))),
+            by = intersect(names(col),names(cat_col))) %>%
+          mutate(
+            `___label___` = 
             ifelse(is.na(.data$`___label___`),
                    .data$`___values___`,
                    .data$`___label___`)) %>%
-        select("___label___")
-    
-      # variable_names <- data_dict_temp[['Categories']]['name']
-      
-      data_dict_temp[['Categories']] <- 
-        data_dict_temp[['Categories']] %>%
-        mutate(
-          `___mlstr_name___` = .data$`name`,
-          name = !!as.symbol(first_lab_var)) %>%
-        mutate(across(
-          any_of(first_lab_var), 
-          ~ .data$`___mlstr_name___`)) %>% 
-        select(-'___mlstr_name___')
-      
-      names(col) <- i 
-      
-      vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$`Categories`$`name`)))
-    
-      col[[1]] <- as_valueType(col[[1]], vT_final)
-      data_dict_temp$`Variables`$valueType <- vT_final
-      dataset[i] <- data_dict_apply(col, data_dict_temp)
+          select("___label___")
+        
+        # variable_names <- data_dict_temp[['Categories']]['name']
+        
+        data_dict_temp[['Categories']] <- 
+          data_dict_temp[['Categories']] %>%
+          mutate(
+            `___mlstr_name___` = .data$`name`,
+            name = !!as.symbol(first_lab_var)) %>%
+          mutate(across(
+            any_of(first_lab_var), 
+            ~ .data$`___mlstr_name___`)) %>% 
+          select(-'___mlstr_name___')
+        
+        names(col) <- i 
+        
+        vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$`Categories`$`name`)))
+        
+        col[[1]] <- as_valueType(col[[1]], vT_final)
+        data_dict_temp$`Variables`$valueType <- vT_final
+        dataset[i] <- data_dict_apply(col, data_dict_temp)
+      }
     }
   }
-  
+    
   dataset <- 
-    tibble(dataset) %>%
+    dataset %>%
+    group_by(pick(any_of(preserve_group))) %>% 
     as_dataset(col_id = preserve_attributes)
   
-  # if(preserve_data_dict == TRUE){
-  #   data_dict <- valueType_adjust(from = dataset,to = data_dict)
-  #   dataset <- data_dict_apply(dataset,data_dict)}
-  # 
   return(dataset)
 }
 

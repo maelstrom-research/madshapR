@@ -1516,9 +1516,12 @@ data_dict_apply <- function(dataset, data_dict = NULL){
   
   vT_list <- madshapR::valueType_list
   
-  # test
-  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
-  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+  # preserve dataset
+  as_dataset(dataset, col_id(dataset))
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
   if(toString(attributes(data_dict)$`madshapR::class`) == 'data_dict_mlstr'){
     data_dict_init <- data_dict
     data_dict <- 
@@ -1663,11 +1666,12 @@ your dataset")}
     
   }
   
-  dataset <-
-    dataset[names_data_dict] %>%
-    as_dataset(col_id = preserve_attributes)
-  
   attributes(dataset)$`madshapR::Data dictionary` <- data_dict_init
+  
+  dataset <- 
+    dataset %>%
+    group_by(pick(any_of(preserve_group))) %>% 
+    as_dataset(col_id = preserve_attributes)
   
   return(dataset)
 }
@@ -1922,15 +1926,18 @@ data_dict_match_dataset <- function(
   
   # test
   as_data_dict_shape(data_dict)
-  as_dataset(dataset) # no col_id
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
          '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
   
+  as_dataset(dataset) # no col_id
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
   names_data <-
     paste0("name %in% c('",paste0(names(dataset),collapse = "','"),"')")
   data_dict <- data_dict_filter(data_dict, filter_var = names_data)
-  
   dataset <- dataset %>% select(data_dict[['Variables']]$`name`)
   
   if(length(dataset) == 0)
@@ -1947,7 +1954,10 @@ data_dict_match_dataset <- function(
     dataset <- data_dict_apply(dataset, data_dict)
   }
 
-    
+  dataset <- 
+    dataset %>%
+    group_by(pick(any_of(preserve_group))) %>% 
+    as_dataset(col_id = preserve_attributes)
   
   if(all(output[2:1] %in% c("dataset","data_dict")))
     return(list(dataset = dataset, data_dict = data_dict))
