@@ -14,13 +14,6 @@ summary_variables_numeric(
 \arguments{
 \item{dataset_preprocess}{A data frame which provides summary of the
 variables (for internal processes and programming).}
-
-\item{dataset}{A dataset object.}
-
-\item{data_dict}{A list of data frame(s) representing metadata of the input
-dataset. Automatically generated if not provided.}
-
-\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A data frame providing statistical description of 'numerical' variables

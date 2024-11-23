@@ -4,7 +4,11 @@
 \alias{dataset_preprocess}
 \title{Generate an evaluation of all variable values in a dataset}
 \usage{
-dataset_preprocess(dataset, data_dict = NULL)
+dataset_preprocess(
+  dataset,
+  data_dict = data_dict_extract(dataset),
+  group_by = group_vars(dataset)
+)
 }
 \arguments{
 \item{dataset}{A dataset object.}

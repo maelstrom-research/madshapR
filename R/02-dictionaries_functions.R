@@ -986,7 +986,7 @@ data_dict_filter <- function(
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
       rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
-      dplyr::filter(.data$`variable` %in% data_dict[['Variables']]$`name`)
+      dplyr::filter(.data$`variable` %in% data_dict[['Variables']]$`name`) %>% ungroup
     
     if(!is.null(filter_cat)){
       data_dict[['Categories']] <-
@@ -1094,12 +1094,12 @@ using data_dict_group_by(data_dict, col)")
   
   if(names_var != names_cat){
     stop(call. = FALSE,
-"Grouping column must be the same in 'Variables' and 'Categories'.")}
+         "Grouping column must be the same in 'Variables' and 'Categories'.")}
   
   group_names_cat <- pull(group_keys(data_dict[['Categories']]))
   
   if(!all(group_names_cat %in% group_names_var)) stop(call. = FALSE,
-"\nThese data dictionaries contain group of variables in 'Categories' which
+                                                      "\nThese data dictionaries contain group of variables in 'Categories' which
 cannot be found accross the variables declared in 'Variables'.")
   
   # if(length(group_names_var) == 1) return(data_dict)
@@ -1243,7 +1243,7 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
               select(.data$`name_list_group`) %>%
               rename_with(.cols = .data$`name_list_group`,~ name_group))
         
-
+        
         if(has_categories(data_dict_list[[i]])){
           name_group_col_cat <-
             bind_rows(

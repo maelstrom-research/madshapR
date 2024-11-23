@@ -44,7 +44,10 @@
 #' @importFrom rlang .data
 #'
 #' @export
-as_category <- function(x, labels = as.vector(c(na.omit(unique(x)))), na_values = NULL){
+as_category <- function(
+    x, 
+    labels = as.vector(c(na.omit(unique(x)))), 
+    na_values = NULL){
   
   if(all(is.null(labels))) return(drop_category(x))
   
@@ -63,8 +66,7 @@ as_category <- function(x, labels = as.vector(c(na.omit(unique(x)))), na_values 
     att$labels <- att$levels
     names(att$labels) <- att$levels
     att['levels'] <- NULL
-    att['class'] <- NULL
-  }
+    att['class'] <- NULL}
   
   att_names_old <-
     tibble(
@@ -87,11 +89,11 @@ as_category <- function(x, labels = as.vector(c(na.omit(unique(x)))), na_values 
     bind_rows(tibble(names_new = as.character())) 
   
   if(!is.null(na_values)){
-    if(!all(unname(na_values) %in% unname(labels)))
+    if(!all(unname(na_values) %in% c(unname(att$labels),unname(labels))))
       stop(call. = FALSE,
            "`na_values` must be taken from labels.")}
 
-  na_values <- labels[unname(na_values) %in% unname(labels)]
+  na_values <- na_values[unname(na_values) %in% c(unname(att$labels),unname(labels))]
   att_na_new <-
     tibble(
       labels = as.character(!!na_values), 
@@ -396,7 +398,8 @@ first_label_get <- function(data_dict){
               select(matches(c(
                 !! paste0("^",first_lab_var,"$"),
                 "^labels$",
-                "^label$","^label:[[:alnum:]]"))))[1] 
+                "^label$","^label:[[:alnum:]]"))))[1] %>%
+        replace_na("")
     }else{ NULL }
   
   `madshapR::class` <-
@@ -458,14 +461,14 @@ first_label_get <- function(data_dict){
 #' columns of the dataset.
 #'
 #' @return A modified data dictionary with additional columns for shortened labels:
-#'   - `madshapR::label_short_var`: Shortened variable labels.
-#'   - `madshapR::label_short_cat`: Shortened category labels (if categories are present).
+#'   - `madshapR::label_var_short`: Shortened variable labels.
+#'   - `madshapR::label_cat_long`: Shortened category labels (if categories are present).
 #'
 #' @examples{
 #' 
 #'  # use madshapR_example provided by the package
-#'  data_dict <- madshapR_example$`data_dict_example`
-#'  data_dict_with_short_labels <- data_dict_add_labels_short(data_dict)
+#'  data_dict <- madshapR_example$`data_dict_example - errors`
+#'  data_dict_with_short_labels <- data_dict_trim_labels(data_dict)
 #'  
 #'  attributes(data_dict_with_short_labels)
 #' 
@@ -475,108 +478,360 @@ first_label_get <- function(data_dict){
 #' @importFrom rlang .data
 #'
 #' @export
-data_dict_add_labels_short <- function(
+data_dict_trim_labels <- function(
     data_dict, 
-    max_length_name_var = 10,
-    max_length_total_var = 25,
-    max_length_name_cat = 10,
-    max_length_total_cat = 15,
+    max_length_var_name = 31,
+    max_length_var_label = 255, 
+    max_length_cat_name = 15,
+    max_length_cat_label_short = 63,
+    max_length_cat_label_long = 31,
     .keep_columns = TRUE){
   
   # test input
   as_data_dict_shape(data_dict)
   
   # extract labels
-  labs <- first_label_get(data_dict)  
+  labs <- first_label_get(data_dict)
   
   # labels for Variables
   data_dict$`Variables` <- 
     data_dict$`Variables` %>%
-    mutate(across(c('name', !! labs[['Variables']]), ~ as.character(.))) %>%
-    mutate(across(c('name', !! labs[['Variables']]),  ~ replace_na(.,"{Empty}"))) %>%
+    select(-any_of(c('Variable name','Variable label'))) %>%
+    mutate('var_name' =  .data$`name`,
+           'var_lab' =  !! as.symbol(labs[['Variables']])) %>%
+    mutate(across(c('var_name', 'var_lab'), ~ as.character(.))) %>%
+    mutate(across(c('var_name'),  ~ replace_na(.,"[unnamed variable]"))) %>%
+    mutate(across(c('var_lab'),  ~ replace_na(.,"[unlabelled variable]"))) %>%
+    mutate(across(c('var_lab'),  ~ ifelse(
+      .data$`var_name`    == "[unnamed variable]" & 
+      .data$`var_lab` == "[unlabelled variable]","[unnamed variable]",.data$`var_lab`))) %>% 
     rowwise() %>%
     mutate(
-      length_name = nchar(.data$`name`),
-      length_label = nchar(!!as.name(labs[['Variables']])),
-      max_length_name = min(max_length_name_var,.data$`length_name`),
-      remain_length_lab = min(
-        max_length_total_var - .data$`max_length_name`,
-        .data$`length_label`),
-      name_short = ifelse(
-        .data$`name` == '{Empty}', "Empty",
-        str_trunc(.data$`name`,width = max(.data$`max_length_name`,3), ellipsis = '...')),
-      label_short = ifelse(
-        !! as.name(labs[['Variables']]) == '{Empty}', "Empty", 
-        str_trunc(!!as.symbol(labs[['Variables']]),
-                  width = max(.data$`remain_length_lab`,3), ellipsis = '...')),
-      'madshapR::label_short_var' = 
-        ifelse(.data$`name` == !!as.symbol(labs[['Variables']]),
-               .data$`name_short`, 
-               paste0(.data$`name_short`,' (',.data$`label_short`,')')))  %>%
-    group_by(.data$`madshapR::label_short_var`) %>% 
+      length_name = nchar(.data$`var_name`),
+      length_label = nchar(.data$`var_lab`),
+      max_length_name = min(max_length_var_name,.data$`length_name`),
+      max_length_label = min(max_length_var_label,.data$`length_label`),
+      "madshapR::Variable name" = 
+        str_trunc(.data$`var_name`,
+                  width = max(.data$`max_length_name`,3), ellipsis = '...'),
+      "madshapR::Variable label" = 
+        str_trunc(.data$`var_lab`,
+                  width = max(.data$`max_length_label`,3), ellipsis = '...')) %>%
+    
+    group_by(.data$`madshapR::Variable name`) %>% 
+    add_index("count_short_name",.force = TRUE) %>%
+    mutate(
+      "count_short_name"= ifelse(.data$`count_short_name` == 1,"",paste0(".",.data$`count_short_name`)),
+      'madshapR::Variable name' = paste0(.data$`madshapR::Variable name`,.data$`count_short_name`)) %>%
+    ungroup %>%
+    group_by(.data$`madshapR::Variable label`) %>% 
     add_index("count_short_lab",.force = TRUE) %>%
     mutate(
       "count_short_lab"= ifelse(.data$`count_short_lab` == 1,"",paste0(".",.data$`count_short_lab`)),
-      'madshapR::label_short_var' = paste0(.data$`madshapR::label_short_var`,.data$`count_short_lab`)) %>%
-    mutate(across(c('name', !! labs[['Variables']]), ~na_if(.,"{Empty}"))) %>%
-    select(1:!!labs[['Variables']],'madshapR::label_short_var',everything()) %>%
-    ungroup 
-  
+      'madshapR::Variable label' = paste0(.data$`madshapR::Variable label`,.data$`count_short_lab`)) %>%
+    ungroup %>%
+    rename(
+      'Variable name' = 'madshapR::Variable name',
+      'Variable label' = 'madshapR::Variable label')
+        
   # labels for Cariables
   if(has_categories(data_dict)){
+    
+    
+    if(is.null(data_dict[['Categories']][['missing']])){
+      
+      data_dict[['Categories']][['missing']] <- FALSE
+      
+    }
+    
     data_dict$`Categories` <- 
       data_dict$`Categories` %>%
-      mutate(across(c('name', !! labs[['Categories']]), ~as.character(.))) %>%
-      mutate(across(c('name', !! labs[['Categories']]), ~replace_na(.,"{Empty}"))) %>%
+      select(-any_of(
+        c('Category codes and labels short',
+          'Category codes and labels long',
+          'Category missing codes short',
+          'Category missing codes long'))) %>%
+      mutate('var_name' =  .data$`variable`,
+             'cat_name' =  .data$`name`, 
+             'cat_lab' = !! as.symbol(labs[['Categories']]),
+             'cat_miss'  = .data$`missing`) %>%
+      mutate(across(c('var_name', 'cat_name', 'cat_lab','cat_miss') , ~ as.character(.))) %>%
+      mutate(across(c('var_name'),  ~ replace_na(.,"[unnamed variable]"))) %>%
+      mutate(across(c('cat_name'),  ~ replace_na(.,"[unnamed category]"))) %>%
+      mutate(across(c('cat_lab') ,  ~ replace_na(.,"[unlabelled category]"))) %>%
+      mutate(across(c('cat_lab'),   ~ ifelse(
+        .data$`var_name` == "[unnamed category]" & 
+        .data$`cat_lab` == "[unlabelled category]", "[unnamed category]",.data$`cat_lab`))) %>% 
       rowwise() %>%
       mutate(
-        length_name = nchar(.data$`name`),
-        length_label = nchar(!!as.name(labs[['Categories']])),
-        max_length_name = min(max_length_name_cat,.data$`length_name`),
-        remain_length_lab = min(max_length_total_cat - .data$`max_length_name`,
-                                .data$`length_label`),
-        name_short = ifelse(
-          .data$`name` == '{Empty}', "Empty", 
-          str_trunc(.data$`name`,width = max(.data$`max_length_name`,3), ellipsis = '...')),
-        label_short = ifelse(
-          !! as.name(labs[['Categories']]) == '{Empty}', "Empty", 
-          str_trunc(!!as.symbol(labs[['Categories']]),
-                    width = max(.data$`remain_length_lab`,3), ellipsis = '...')),
-        'madshapR::label_short_cat' = 
-          ifelse(.data$`name` == !!as.symbol(labs[['Categories']]),
+        length_name = nchar(.data$`cat_name`),
+        length_label = nchar(.data$`cat_lab`),
+        max_length_name = min(max_length_cat_name,.data$`length_name`),
+        max_length_label_short = min(max_length_cat_label_short,.data$`length_label`),
+        max_length_label_long = min(max_length_cat_label_long,.data$`length_label`),
+        "name_short" = 
+          str_trunc(.data$`cat_name`,
+                    width = max(.data$`max_length_name`,3), ellipsis = '...'),
+        "label_short" = 
+          str_trunc(.data$`cat_lab`,
+                    width = max(.data$`max_length_label_short`,3), ellipsis = '...'),
+        
+        "label_long" = 
+          str_trunc(.data$`cat_lab`,
+                    width = max(.data$`max_length_label_long`,3), ellipsis = '...'),
+        
+        'code_lab_short' = 
+          ifelse(.data$`cat_name` == .data$`cat_lab`,
                  paste0('[',.data$`name_short`,']'), 
-                 paste0('[',.data$`name_short`,'] ',.data$`label_short`))) %>%
-      group_by(.data$`variable`,.data$`madshapR::label_short_cat`) %>% 
+                 paste0('[',.data$`name_short`,'] ',.data$`label_short`)),
+        
+        'code_lab_long' = 
+          ifelse(.data$`cat_name` == .data$`cat_lab`,
+                 paste0('[',.data$`name_short`,']'), 
+                 paste0('[',.data$`name_short`,'] ',.data$`label_long`)))  %>%
+      group_by(.data$`var_name`,.data$`code_lab_short`) %>% 
       add_index("count_short_lab",.force = TRUE) %>%
       mutate(
         "count_short_lab"= ifelse(.data$`count_short_lab` == 1,"",paste0(".",.data$`count_short_lab`)),
-        'madshapR::label_short_cat' = paste0(.data$`madshapR::label_short_cat`,.data$`count_short_lab`)) %>%
-      mutate(across(c('name', !! labs[['Categories']]), ~na_if(.,"{Empty}"))) %>%
-      select(1:!!labs[['Categories']],'madshapR::label_short_cat',everything()) %>%
+        'code_lab_short' = paste0(.data$`code_lab_short`,.data$`count_short_lab`)) %>%
+      ungroup %>%
+      group_by(.data$`var_name`,.data$`code_lab_long`) %>% 
+      add_index("count_long_lab",.force = TRUE) %>%
+      mutate(
+        "count_long_lab"= ifelse(.data$`count_long_lab` == 1,"",paste0(".",.data$`count_long_lab`)),
+        'code_lab_long' = paste0(.data$`code_lab_long`,.data$`count_long_lab`)) %>%
+      ungroup %>%
+      rowwise() %>%
+      mutate(
+        'code_missing_short' = 
+          ifelse(isTRUE(silently_run(as_any_boolean(.data$cat_miss))) & 
+                   class(silently_run(as_any_boolean(data_dict[['Categories']][['missing']]))) != 'try-error',
+                 .data$`code_lab_short`,NA_character_),
+        'code_missing_long' = 
+          ifelse(isTRUE(silently_run(as_any_boolean(.data$cat_miss))) & 
+                   class(silently_run(as_any_boolean(data_dict[['Categories']][['missing']]))) != 'try-error',
+                 .data$`code_lab_long`,NA_character_)) %>%
+      rename('Category codes and labels short' = 'code_lab_short',
+             'Category codes and labels long' = 'code_lab_long',
+             'Category missing codes short' = 'code_missing_short',
+             'Category missing codes long' = 'code_missing_long') %>%
       ungroup
+     
     
+  }else{
+    
+    
+    if(!is.null(data_dict[['Categories']])){
+
+      data_dict[['Categories']] <-     
+        data_dict[['Categories']] %>%
+        bind_rows(
+          tibble(
+          "variable" = as.character(),
+          "name" = as.character(),
+          "Category codes and labels short" = as.character(),
+          "Category codes and labels long" = as.character(),
+          "Category missing codes short" = as.character(),
+          "Category missing codes long" = as.character()))
+    }
   }
   
   data_dict <- 
     data_dict %>% lapply(function(x) 
-      select(x,-c('length_name','length_label','max_length_name',
-                  'remain_length_lab','name_short','label_short',
-                  'count_short_lab')))
+      select(x,-any_of(c(
+        'var_name','var_lab','cat_name','cat_lab',
+        'length_name','length_label','max_length_name','max_length_label',
+        'max_length_label_short','max_length_label_long',
+        'name_short','label_short','label_long',"cat_miss",
+        'count_short_name','count_short_lab','count_long_lab'))))
+  
+  if(has_categories(data_dict)){
+    
+    data_dict$Variables <-
+      data_dict$Variables %>%
+      left_join(
+        data_dict$Categories %>%
+          select(-name) %>%
+          dplyr::filter(!is.na(.data$`variable`)) %>%
+          group_by(name = .data$`variable`) %>%
+          mutate(across(
+            c('Category codes and labels short',
+              'Category codes and labels long',
+              'Category missing codes short',
+              'Category missing codes long'), ~ replace_na(.,""))) %>%
+          reframe(across(
+            c('Category codes and labels short',
+              'Category codes and labels long',
+              'Category missing codes short',
+              'Category missing codes long'), ~ paste0(.,collapse = '\n'))) %>%
+          mutate(
+            'Category missing codes short' = 
+              ifelse(str_squish(.data$`Category missing codes short`) == "",
+                     NA_character_,.data$`Category missing codes short`)) %>%
+          mutate(
+            'Category missing codes long' = 
+              ifelse(str_squish(.data$`Category missing codes long`) == "",
+                     NA_character_,.data$`Category missing codes long`)),
+        by = 'name') 
+    
+  }else{
+    
+    data_dict$Variables <-
+      data_dict$Variables %>%
+      bind_rows(
+        tibble(
+          "Category codes and labels short" = as.character(),
+          "Category codes and labels long" = as.character(),
+          "Category missing codes short" = as.character(),
+          "Category missing codes long" = as.character()))
+  }
+    
   
   if(.keep_columns == FALSE){
     
     data_dict$`Variables` <- 
       data_dict$`Variables` %>%
-      select("name","madshapR::label_short_var") 
+      select("name", 
+             "Variable name", 
+             "Variable label",
+             "Category codes and labels short",
+             "Category codes and labels short",
+             "Category missing codes short",
+             "Category missing codes long")
     
     if(has_categories(data_dict)){
-      
       data_dict$`Categories` <- 
         data_dict$`Categories` %>%
-        select("variable", "name","madshapR::label_short_cat")
+        select("variable", "name",
+               "Category codes and labels short",
+               "Category codes and labels long",
+               "Category missing codes short",
+               "Category missing codes long")
       
     }
   }
   
   return(data_dict)
 }
+
+
+
+#' @title
+#' Update a data dictionary from a dataset
+#'
+#' @description
+#' Updates a data dictionary from a dataset, creating a new data dictionary with
+#' updated content, from variables selected in the dataset. Any previous other
+#' meta data will be preserved. The new data dictionary can be applied to the 
+#' dataset using [data_dict_apply()].
+#'
+#' @details
+#' A dataset is a data table containing variables. A dataset object is a 
+#' data frame and can be associated with a data dictionary. If no 
+#' data dictionary is provided with a dataset, a minimum workable 
+#' data dictionary will be generated as needed within relevant functions.
+#' Identifier variable(s) for indexing can be specified by the user. 
+#' The id values must be non-missing and will be used in functions that 
+#' require it. If no identifier variable is specified, indexing is 
+#' handled automatically by the function.
+#'
+#' A data dictionary contains the list of variables in a dataset and metadata 
+#' about the variables and can be associated with a dataset. A data dictionary 
+#' object is a list of data frame(s) named 'Variables' (required) and 
+#' 'Categories' (if any). To be usable in any function, the data frame 
+#' 'Variables' must contain at least the `name` column, with all unique and 
+#' non-missing entries, and the data frame 'Categories' must contain at least 
+#' the `variable` and `name` columns, with unique combination of 
+#' `variable` and `name`.
+#'
+#' @seealso
+#' [data_dict_apply(), data_dict_extract()]
+#'
+#' @param dataset A dataset object.
+#' @param data_dict A list of data frame(s) representing metadata of the input 
+#' dataset. Automatically generated if not provided.
+#' @param cols An optional character string specifying the name(s) or 
+#' position(s) of the column(s) for which meta data will be updated. All by 
+#' default.
+#'
+#' @returns
+#' A list of data frame(s) identifying a data dictionary.
+#'
+#' @examples
+#' {
+#' 
+#' library(dplyr)
+#' 
+#' # use madshapR_example provided by the package
+#' dataset   <- madshapR_example$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' dataset <- data_dict_apply(dataset,data_dict)
+#' 
+#' # the data dictionary contains no categorical variable.
+#' 
+#' # create a category in the dataset
+#' dataset   <- dataset %>% mutate(gndr = as_category(gndr, labels = c("coucou" = 1),na_values = 2))
+#' new_data_dict <- data_dict_update(data_dict, dataset, "gndr")
+#' 
+#' head(dataset)
+#' 
+#' }
+#'
+#' @import dplyr tidyr stringr haven
+#' @importFrom crayon bold
+#' @importFrom rlang .data
+#'
+#' @export
+data_dict_update <- function(
+    data_dict = NULL,
+    dataset, 
+    cols = names(dataset)){
+
+  attributes(dataset)[["madshapR::Data dictionary"]]   <- NULL
+  
+  if(is.null(data_dict)){
+    data_dict <- data_dict_extract(dataset)
+    return(data_dict)
+  }
+
+  dataset <- 
+    as_dataset(dataset) %>% 
+    select(all_of(cols)) %>% 
+    ungroup
+
+  data_dict_to_udpate <- 
+    dataset %>% 
+    data_dict_extract() %>% 
+    as_data_dict_mlstr()
+  
+  data_dict[['Variables']] <- 
+    data_dict[['Variables']] %>%
+    add_index("madshapR::index")
+  
+  data_dict_to_udpate[['Variables']] <- 
+    data_dict_to_udpate[['Variables']] %>%
+    left_join(data_dict[['Variables']][c('name','madshapR::index')], 
+              by = 'name')
+
+  data_dict[['Variables']] <-   
+    data_dict[['Variables']] %>%
+    dplyr::filter(!.data$`name` %in% cols) %>% 
+    bind_rows(data_dict_to_udpate[['Variables']]) %>%
+    arrange("madshapR::index") %>% select(-"madshapR::index")
+    
+  if(has_categories(data_dict_to_udpate)){
+    
+    data_dict[['Categories']] <- 
+      data_dict[['Categories']] %>%
+      bind_rows(tibble(
+        'variable' = as.character(),
+        'name' = as.character())) %>%
+      dplyr::filter(!.data$`variable` %in% cols) %>% 
+      bind_rows(data_dict_to_udpate[['Categories']])
+  }
+  
+  data_dict <- as_data_dict_mlstr(data_dict)
+  return(data_dict)
+  
+}
+  

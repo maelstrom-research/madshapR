@@ -7,7 +7,7 @@
 dataset_summarize(
   dataset,
   data_dict = data_dict_extract(dataset),
-  group_by = NULL,
+  group_by = group_vars(dataset),
   taxonomy = NULL,
   dataset_name = .dataset_name,
   valueType_guess = TRUE,
@@ -94,7 +94,7 @@ library(dplyr)
 dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = 'part_id')
 data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
 
-summary_dataset <- dataset_summarize(dataset, data_dict)
+summary_dataset <- dataset_summarize(dataset, data_dict,group_by = "gndr")
 glimpse(summary_dataset)
 
 ###### Example 2: Any data frame can be a dataset by definition

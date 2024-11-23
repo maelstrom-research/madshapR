@@ -54,22 +54,24 @@ check_data_dict_variables <- function(data_dict){
     mutate(across(everything(), ~as.character(.))) %>%
     distinct
   
-  var_NA <-
-    data_dict[['Variables']] %>%
-    add_index(.force = TRUE) %>%
-    dplyr::filter(is.na(.data$`name`) | .data$`name` == "") %>%
-    mutate(name = paste0("Row number: ",.data$`index`)) %>%
-    select(.data$`name`)
+  # var_NA <-
+  #   data_dict[['Variables']] %>%
+  #   add_index(.force = TRUE) %>%
+  #   dplyr::filter(is.na(.data$`name`) | .data$`name` == "") %>%
+  #   mutate(name = paste0("Row number: ",.data$`index`)) %>%
+  #   select(.data$`name`)
   
-  test <-
-    test %>% bind_rows(
-      var_NA %>%
-        mutate(
-          condition = "[ERROR] - Missing variable name.") %>%
-        select(name_var = .data$`name`, .data$`condition`) %>%
-        mutate(across(everything(), ~as.character(.)))) %>%
-    dplyr::filter(!is.na(.data$`name_var`)) %>%
-    distinct
+  # [GF] - j'ai remplacé ce qui est ici dans check_name_standards(). A voir si 
+  # fonctionne
+  # test <-
+  #   test %>% bind_rows(
+  #     var_NA %>%
+  #       mutate(
+  #         condition = "[ERROR] - Missing variable name.") %>%
+  #       select(name_var = .data$`name`, .data$`condition`) %>%
+  #       mutate(across(everything(), ~as.character(.)))) %>%
+  #   dplyr::filter(!is.na(.data$`name_var`)) %>%
+  #   distinct
   
   return(test)
 }
@@ -157,20 +159,20 @@ check_data_dict_categories <- function(data_dict){
       # if the variable name in categories has not been found in the variable list,
       # or is empty
       condition = ifelse(is.na(.data$`name_var`),
-"[ERROR] - Category 'variable' name is empty.",
-"[ERROR] - Category 'variable' name has no corresponding variable in 'Variables' sheet."
+                         "[ERROR] - Category 'variable' name is empty.",
+                         "[ERROR] - Category 'variable' name has no corresponding variable in 'Variables' sheet."
       ),
       col_name = "variable",
       name_var = ifelse(is.na(.data$`name_var`),"(empty)",.data$`name_var`),
-
+      
       # if the value code (name) is empty 
       condition = ifelse(is.na(.data$`value`),
-"[ERROR] - Category 'name' is empty.", .data$`condition`),
+                         "[ERROR] - Category 'name' is empty.", .data$`condition`),
       col_name  = ifelse(is.na(.data$`value`), "name",.data$`col_name`),
       value = replace_na(.data$`value`,.data$`index`)) %>%
-
-      # value = na_if(.data$`value`,"value"),
-      # value = ifelse(is.na(.data$`name_var`),.data$`index`,.data$`value`)) %>%
+    
+    # value = na_if(.data$`value`,"value"),
+    # value = ifelse(is.na(.data$`name_var`),.data$`index`,.data$`value`)) %>%
     ungroup() %>%
     dplyr::filter(!is.na(.data$`index`)) %>%
     group_by(.data$`name_var`,.data$`col_name`) %>%
@@ -587,7 +589,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #'
 #' @export
 check_data_dict_valueType <- function(data_dict){
-  
+
   # test if enough data_dict
   as_data_dict_shape(data_dict)
   
@@ -616,8 +618,8 @@ check_data_dict_valueType <- function(data_dict){
     dplyr::filter(! .data$`value` %in% vT_list$`valueType`) %>% ungroup %>%
     mutate(
       condition = ifelse(is.na(.data$`value`),
-"[INFO] - valueType is missing (see ??valueType_list for complete list).",
-"[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).")) %>%
+                         "[INFO] - valueType is missing (see ??valueType_list for complete list).",
+                         "[ERROR] - valueType is not an accepted type (see ??valueType_list for complete list).")) %>%
     inner_join(var_index, by = c("name_var","index")) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
@@ -632,7 +634,7 @@ check_data_dict_valueType <- function(data_dict){
       inner_join(var_index, by = "name_var") %>%
       rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
       dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var` |
-                    is.na(.data$`value`)) %>% ungroup %>%
+                      is.na(.data$`value`)) %>% ungroup %>%
       inner_join(
         data_dict[['Variables']] %>%
           select(name_var = 'name','valueType'),by = "name_var")
@@ -665,6 +667,7 @@ check_data_dict_valueType <- function(data_dict){
           .data$`test` == 'try-error'  ~ "[ERROR] - valueType is not compatible with variable categories.",
           TRUE                         ~ NA_character_)) %>%
       select("index", 'name_var', 'value2' = 'valueType', "condition2" = 'condition','suggestion') %>%
+      dplyr::filter(!is.na(.data$`condition2`)) %>%
       mutate(across(everything(), ~ as.character(.)))
     
   }
@@ -684,7 +687,7 @@ check_data_dict_valueType <- function(data_dict){
       suggestion = replace_na(.data$`suggestion`,"text")) %>% 
     select(-c("condition2","value2","index")) %>%
     mutate(across(everything(), ~ as.character(.)))
-    
+  
   return(test)
 }
 
@@ -839,7 +842,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 check_dataset_categories <- function(
     dataset, 
     data_dict = NULL){
-
+  
   # [GF] - question : validate tests associated to unit checks.
   
   # 1  [INFO] - Variable is defined as categorical in data dictionary but not in dataset.
@@ -893,7 +896,7 @@ check_dataset_categories <- function(
       "variable" = as.character(),
       "name" = as.character())) %>%
     select("variable","name")
-
+  
   # filter out the categories in the dataset data dictionary that are not in the
   # dataset 
   for(i in unique(categorical_var_dataset[['variable']])){
@@ -947,13 +950,11 @@ check_dataset_categories <- function(
       
       ds_vals <- as.character()
       
-      if(i %in% names(dataset)){
-        ds_vals <- if(is.factor(dataset[[i]])) 
-          as.character(unique(dataset[!is.na(dataset[[i]]),i])) else
-            as.character(unique(dataset[!is.na(dataset[[i]]),i])[[1]])
-      }
-
-      dd_is_ds_is_vals    <- dplyr::setequal(dplyr::setequal(ds_cat,ds_vals),dd_cat)
+      if(i %in% names(dataset))
+        ds_vals <- as.character(unique(dataset[!is.na(dataset[[i]]),i])[[1]]) 
+      
+      dd_is_ds_is_vals <- 
+        length(c(symdiff(dd_cat , ds_vals) , symdiff(dd_cat , ds_cat ) , symdiff(ds_cat , ds_vals))) == 0
       
       if(!dd_is_ds_is_vals){
         
@@ -973,7 +974,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = dd_cat,
               condition =
-"[INFO] - Variable is defined as categorical in data dictionary but not in dataset.")
+                "[INFO] - Variable is defined as categorical in data dictionary but not in dataset.")
         }
         
         # 2  [INFO] - Variable is defined as categorical in dataset but not in data dictionary.
@@ -983,7 +984,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_cat,
               condition =
-"[INFO] - Variable is defined as categorical in dataset but not in data dictionary.")
+                "[INFO] - Variable is defined as categorical in dataset but not in data dictionary.")
         }
         
         # 3  [INFO] - Variable is categorical and has values defined in data dictionary that are not present in dataset.
@@ -993,7 +994,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = dd_only,
               condition =
-"[INFO] - Variable is categorical and has values defined in data dictionary that are not present in dataset.")
+                "[INFO] - Variable is categorical and has values defined in data dictionary that are not present in dataset.")
         }
         
         # 4 [ERROR] - Variable is categorical and has values in dataset that are not defined in data dictionary.
@@ -1003,7 +1004,7 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_only,
               condition =
-"[ERROR] - Variable is categorical and has values in dataset that are not defined in data dictionary.")
+                "[ERROR] - Variable is categorical and has values in dataset that are not defined in data dictionary.")
         }
         
         # 5  [INFO] - Variable has both categorical and non-categorical values (some values in dataset are defined as categories and others are not).
@@ -1013,22 +1014,20 @@ check_dataset_categories <- function(
               name_var  = i,
               value     = ds_vals_only,
               condition =
-"[INFO] - Variable has both categorical and non-categorical values (some values in dataset are defined as categories and others are not).")
+                "[INFO] - Variable has both categorical and non-categorical values (some values in dataset are defined as categories and others are not).")
         }
         
         # 6 [ERROR] - Variable has both categorical and non-categorical values, but some values defined as categorical in data dictionary are non-categorical in dataset.
-        if(is_cat_ds & is_cat_dd & length(ds_noncat_vals) > 0){
+        if(is_cat_ds & is_cat_dd & !all(ds_noncat_vals == ds_vals_only)){
           test6 <-
             tibble(
               name_var  = i,
               value     = ds_only,
               condition =
-"6 [ERROR] - Variable has both categorical and non-categorical values, but some values defined as categorical in data dictionary are non-categorical in dataset.")
-        }
-      }
+                "6 [ERROR] - Variable has both categorical and non-categorical values, but some values defined as categorical in data dictionary are non-categorical in dataset.")
+        }}
       
-      test <- bind_rows(test,
-                        test1,test2,test3,test4,test5,test6)
+      test <- bind_rows(test,test1,test2,test3,test4,test5,test6)
     }
   }
   
@@ -1043,7 +1042,7 @@ check_dataset_categories <- function(
         ifelse(.data$`madshapR::index` == 5 , "[...]",.data$`value`)) %>%
     reframe(`value` = paste0(.data$`value`, collapse = " ; ")) %>%
     mutate(across(everything(),as.character))
-    
+  
   return(test)
 }
 
@@ -1120,7 +1119,7 @@ check_dataset_valueType <- function(
   
   # preserve dataset
   dataset <- as_dataset(ungroup(dataset))
-
+  
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE of FALSE (FALSE by default)')
@@ -1139,7 +1138,7 @@ check_dataset_valueType <- function(
   }
   
   as_data_dict_shape(data_dict)
-
+  
   data_dict_unique_name <-
     make.unique(replace_na(data_dict[['Variables']]$`name`,"(empty)"))
   
@@ -1148,13 +1147,13 @@ check_dataset_valueType <- function(
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     mutate(across(everything(),as.character))
-
+  
   dataset <- suppressWarnings(
     data_dict_match_dataset(dataset, data_dict, output = "dataset"))
   
   data_dict <- suppressWarnings(
     data_dict_match_dataset(dataset, data_dict, output = "data_dict"))
-
+  
   
   # check if `valueType` column exists
   if(is.null(data_dict[['Variables']][['valueType']]))
@@ -1169,8 +1168,8 @@ check_dataset_valueType <- function(
   
   for(i in names(dataset)){
     # stop()}
-
-
+    
+    
     # what is the valueType of the dataset ?
     dataset_vT <- valueType_of(dataset[[i]])
     
@@ -1303,15 +1302,29 @@ check_name_standards <- function(var_names){
   var_names_valid <- make.names(
     paste0("X",var_names) %>% str_replace_all("-","_"))
 
-  test <-
+  test_valid <-
     var_names[paste0("X",var_names)%>%
                 str_replace_all("-","_") != var_names_valid] %>%
-    as_tibble() %>% rename(name_var = .data$`value`) %>%
+    as_tibble() %>% rename(name_var = "value") %>%
     mutate(
       condition =
 "[INFO] - Variable names contain special characters, contain spaces, or begin with a number.") %>%
     mutate(across(everything(), ~as.character(.))) %>%
     distinct()
+  
+  var_name_empty <- which(is.na(c(var_names)))
+  
+  test_empty <-
+    var_name_empty %>%
+    as_tibble() %>% rename(name_var = "value") %>%
+    mutate(
+      name_var = paste0("Row number: ",.data$`name_var`),
+      condition =
+        "[ERROR] - Variable name is empty.") %>%
+    mutate(across(everything(), ~as.character(.))) %>%
+    distinct()
+  
+  test <- bind_rows(test_valid,test_empty)
 
   return(test)
 }

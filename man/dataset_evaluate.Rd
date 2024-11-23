@@ -81,7 +81,7 @@ library(dplyr)
 dataset <- madshapR_example$`dataset_example - errors with data`
 data_dict <- madshapR_example$`data_dict_example - errors with data`
 
-eval_dataset <- dataset_evaluate(dataset, data_dict, is_data_dict_mlstr = TRUE)
+eval_dataset <- dataset_evaluate(dataset, data_dict)
 glimpse(eval_dataset)
 
 ###### Example 2: Any data frame can be a dataset by definition
