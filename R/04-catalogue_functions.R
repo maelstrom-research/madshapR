@@ -553,10 +553,10 @@ bold("\n\nUseful tip:"),
         stop(call. = FALSE,cond)})
 
     # preserve dataset
-    as_dataset(dataset, col_id(dataset))
-    preserve_attributes <- col_id(dataset)
-    preserve_group <- group_vars(dataset)
-    dataset <- as_dataset(ungroup(dataset))
+    as_dataset(to, col_id(to))
+    preserve_attributes <- col_id(to)
+    preserve_group <- group_vars(to)
+    dataset <- as_dataset(ungroup(to))
 
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 

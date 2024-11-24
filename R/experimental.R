@@ -480,11 +480,11 @@ first_label_get <- function(data_dict){
 #' @export
 data_dict_trim_labels <- function(
     data_dict, 
-    max_length_var_name = 31,
-    max_length_var_label = 255, 
-    max_length_cat_name = 15,
-    max_length_cat_label_short = 63,
-    max_length_cat_label_long = 31,
+    max_length_var_name = 5, #31,
+    max_length_var_label = 5, # 255, 
+    max_length_cat_name = 5, # 15,
+    max_length_cat_label_short = 5, # 63,
+    max_length_cat_label_long = 5, # 31,
     .keep_columns = TRUE){
   
   # test input
@@ -500,11 +500,11 @@ data_dict_trim_labels <- function(
     mutate('var_name' =  .data$`name`,
            'var_lab' =  !! as.symbol(labs[['Variables']])) %>%
     mutate(across(c('var_name', 'var_lab'), ~ as.character(.))) %>%
-    mutate(across(c('var_name'),  ~ replace_na(.,"[unnamed variable]"))) %>%
+    mutate(across(c('var_name'),  ~ replace_na(.,"[Unnamed variable]"))) %>%
     mutate(across(c('var_lab'),  ~ replace_na(.,"[unlabelled variable]"))) %>%
     mutate(across(c('var_lab'),  ~ ifelse(
-      .data$`var_name`    == "[unnamed variable]" & 
-      .data$`var_lab` == "[unlabelled variable]","[unnamed variable]",.data$`var_lab`))) %>% 
+      .data$`var_name`    == "[Unnamed variable]" & 
+      .data$`var_lab` == "[Unlabelled variable]","[Unnamed variable]",.data$`var_lab`))) %>% 
     rowwise() %>%
     mutate(
       length_name = nchar(.data$`var_name`),
@@ -556,12 +556,12 @@ data_dict_trim_labels <- function(
              'cat_lab' = !! as.symbol(labs[['Categories']]),
              'cat_miss'  = .data$`missing`) %>%
       mutate(across(c('var_name', 'cat_name', 'cat_lab','cat_miss') , ~ as.character(.))) %>%
-      mutate(across(c('var_name'),  ~ replace_na(.,"[unnamed variable]"))) %>%
-      mutate(across(c('cat_name'),  ~ replace_na(.,"[unnamed category]"))) %>%
+      mutate(across(c('var_name'),  ~ replace_na(.,"[Unnamed variable]"))) %>%
+      mutate(across(c('cat_name'),  ~ replace_na(.,"[Unnamed category]"))) %>%
       mutate(across(c('cat_lab') ,  ~ replace_na(.,"[unlabelled category]"))) %>%
       mutate(across(c('cat_lab'),   ~ ifelse(
-        .data$`var_name` == "[unnamed category]" & 
-        .data$`cat_lab` == "[unlabelled category]", "[unnamed category]",.data$`cat_lab`))) %>% 
+        .data$`var_name` == "[Unnamed category]" & 
+        .data$`cat_lab` == "[unlabelled category]", "[Unnamed category]",.data$`cat_lab`))) %>% 
       rowwise() %>%
       mutate(
         length_name = nchar(.data$`cat_name`),

@@ -506,13 +506,9 @@ dataset_evaluate <- function(
       "Dataset assessment" , 
       matches("Value"), 
       matches("Suggested valueType")) %>%
-    mutate(across(everything(), ~ as.character(.))) %>%
     distinct() %>% tibble %>%
-    mutate("Index" = replace_na(.data$`Index`,'NA_index')) %>%
-    remove_empty("cols") %>%
-    mutate("Index" = na_if(.data$`Index`,'NA_index')) %>%
-    mutate('Index' = as.integer(.data$`Index`)) %>%
-    arrange(.data$`Index`)
+    arrange(.data$`Index`) %>%
+    mutate(across(everything(), ~ as.character(.)))
 
   if(nrow(dataset) == 0){
     message("\n    The dataset has 0 rows.")

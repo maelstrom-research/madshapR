@@ -7,9 +7,9 @@
 variable_visualize(
   dataset = tibble(id = as.character()),
   col,
-  data_dict = NULL,
-  group_by = NULL,
-  valueType_guess = FALSE,
+  data_dict = data_dict_extract(dataset),
+  group_by = group_vars(dataset),
+  valueType_guess = TRUE,
   variable_summary = .summary_var,
   .summary_var = NULL
 )
@@ -27,7 +27,7 @@ to use as a grouping variable. Elements will be grouped by this
 column.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
+valueType that could be applied to the dataset. TRUE by default.}
 
 \item{variable_summary}{A summary list which is the summary of the variables.}
 

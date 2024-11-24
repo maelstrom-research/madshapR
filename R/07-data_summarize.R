@@ -54,7 +54,7 @@
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
 #' @param valueType_guess Whether the output should include a more accurate 
-#' valueType that could be applied to the dataset. FALSE by default.
+#' valueType that could be applied to the dataset. TRUE by default.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset
@@ -106,14 +106,14 @@ dataset_summarize <- function(
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
          '`valueType_guess` must be TRUE or FALSE (FALSE by default)')
-
+  
   # check on arguments : dataset
   as_dataset(dataset,col_id(dataset)) %>% 
     group_by(pick(all_of(group_by)))
   
   # check on arguments : data_dict. 
   as_data_dict_shape(data_dict)
-
+  
   # check on argument : taxonomy
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   
@@ -127,7 +127,7 @@ dataset_summarize <- function(
       data_dict_match_dataset(
         dataset,
         data_dict)})
-    
+  
   dataset <- as_dataset(match_input_objects$dataset,col_id)
   attributes(dataset)[["madshapR::Data dictionary"]] <- NULL
   
@@ -136,7 +136,7 @@ dataset_summarize <- function(
   
   # catch group_by as a variable name.
   group_var <- names(dataset %>% select(all_of(group_by)))
-    
+  
   # catch name
   dataset_name <- 
     ifelse(!is.null(dataset_name),dataset_name,
@@ -735,25 +735,7 @@ dataset_preprocess <- function(
     data_dict = data_dict_extract(dataset), 
     group_by = group_vars(dataset)){
   
-  summary_tbl <-
-    tibble(
-      "Index" = as.integer(),
-      "name_var" = as.character(),
-      "Variable name" = as.character(),
-      "valueType" = as.character(),
-      "Categorical variable" = as.character(),
-      "index_value" = as.integer(),
-      "value_var long" = as.character(),
-      "value_var short" = as.character(),
-      "value_var_occur" = as.integer(),
-      "valid_class" = as.character(),
-      "cat_index" = as.integer(),
-      "madshapR::group_label long" = as.character(),
-      "madshapR::group_label short" = as.character(),
-      "madshapR::group_occurence" = as.integer()
-    )
 
-  
   # handle atomics
   # if(is.atomic(dataset) & length(dataset) == 0) return(summary_tbl) 
   if(is.atomic(dataset))
@@ -877,11 +859,10 @@ dataset_preprocess <- function(
       ~ ifelse(.data$`name` %in% c("[Unlabelled group]","[No group]"),.data$`name`,.))) %>%
     mutate(across(
       c("name"),
-      ~ ifelse(.data$`name` %in% c("[Unlabelled group]","[No group]"),NA,.))) %>%
+      ~ ifelse(.data$`name` %in% c("[Unlabelled group]"),NA,.))) %>%
     mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
     select(
       "madshapR::group_index",
-      # "Variable name" = "variable",
       "madshapR::grouping_var" = "name",
       "madshapR::group_label long"  = "Category codes and labels long",
       "madshapR::group_label short" = "Category codes and labels short",
@@ -904,6 +885,23 @@ dataset_preprocess <- function(
            "madshapR::missing","Category codes and labels long",
            "Category codes and labels short")
 
+  summary_tbl <-
+    tibble(
+      "Index" = as.integer(),
+      "name_var" = as.character(),
+      "Variable name" = as.character(),
+      "valueType" = as.character(),
+      "Categorical variable" = as.character(),
+      "index_value" = as.integer(),
+      "value_var long" = as.character(),
+      "value_var short" = as.character(),
+      "value_var_occur" = as.integer(),
+      "valid_class" = as.character(),
+      "cat_index" = as.integer(),
+      "madshapR::group_label long" = as.character(),
+      "madshapR::group_label short" = as.character(),
+      "madshapR::group_occurence" = as.integer())
+  
   for(i in names(select(dataset_pps, -"index_value"))){
     # stop()}
     
@@ -943,15 +941,20 @@ dataset_preprocess <- function(
                       "[Empty value]",
                       ifelse(!is.na(.data$`Category codes and labels short`),
                              .data$`Category codes and labels short`,
-                             as.character(!!as.name(i))))) %>%
+                             as.character(!!as.name(i)))))
+    
+    col_set <- 
+      col_set %>% 
       mutate(
         "valid_class" = case_when(
+          
+          `Variable name` == toString(col_id) & !is.na(.data$`index_value`)  ~ "0_Col id",
           `Variable name` == toString(col_id) & !is.na(.data$`index_value`)  ~ "0_Col id",
           `madshapR::missing` == FALSE                                       ~ "1_Valid values",
           `madshapR::missing` == TRUE                                        ~ "2_Non-valid values",
           ! is.na(!!as.name(i)) &   is.na(`Category codes and labels long`)  ~ "3_Valid other values",
           is.na(!!as.name(i)) & !is.na(`index_value`)                        ~ "4_Empty values",
-          TRUE                                                               ~ "5_Empty dataset")) %>%
+          TRUE                                                               ~ NA_character_)) %>%
       dplyr::filter(!is.na(.data$`valid_class`)) %>% 
       arrange(pick("index_value"))
     
@@ -1020,8 +1023,7 @@ dataset_preprocess <- function(
         final_resume[[p]] %>%  
         dplyr::filter(.data$`name_var` != group_var) %>% 
         mutate("madshapR::group_occurence" = replace_na(.data$`madshapR::group_occurence`,0)) %>%
-        mutate(!! paste0('Grouping variable: ', group_var) := p) 
-        # select(-contains("group")) 
+        mutate(!! paste0('Grouping variable: ', group_var) := p)
     
     }else if(p == "madshapR::grouping_var"){
       

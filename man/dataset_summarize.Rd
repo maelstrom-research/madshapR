@@ -31,7 +31,7 @@ schema.}
 (internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 
 \item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
+valueType that could be applied to the dataset. TRUE by default.}
 
 \item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
