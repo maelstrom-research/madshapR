@@ -115,7 +115,7 @@ variable_visualize <- function(
   plot_categories <- function(x){
   
     levels <- 
-      unique(x %>%                                                     # [GF] patch, mais ici il y a une erreur
+      unique(x %>%                                                              # [GF] patch, mais ici il y a une erreur. a vérifier
       select("cat_index","value_var short") %>% distinct() %>%
       arrange(pick("cat_index")) %>% pull("value_var short"))
     
@@ -184,7 +184,7 @@ variable_visualize <- function(
       reframe(sum_var_occur = sum(value_var_occur)) %>%
       group_by(pick(c("group_label"))) %>%
       mutate(
-        prop = round(.data$`sum_var_occur`/sum(sum_var_occur),4),
+        prop = 10000*round(.data$`sum_var_occur`/sum(sum_var_occur),4),
         prop = ifelse(is.na(prop),0,prop))
     
     # handle total < 1
@@ -193,7 +193,7 @@ variable_visualize <- function(
       x_sum %>%
       group_by(pick("group_label")) %>% group_split() %>%
       lapply(function(x){
-        x$prop[[nrow(x)]] <- 1 - sum(x$prop[-nrow(x)])
+        x$prop[[nrow(x)]] <- 10000 - sum(x$prop[-nrow(x)])
         return(x)})}
         
     x_sum <- 
@@ -204,7 +204,10 @@ variable_visualize <- function(
         csum = cumsum(.data$`prop`),
         pos = .data$`prop`/2 + lag(.data$`csum`, 1),
         pos = ifelse(is.na(.data$`pos`),.data$`prop`/2,.data$`pos`),
-        label = paste0(prop*100,"%"))
+        label = paste0(floor(prop)/100,"%"),
+        prop = prop/10000,
+        pos = pos/10000,
+        csum = csum/10000)
 
     aes <- 
       aes(
@@ -260,7 +263,7 @@ variable_visualize <- function(
         x = !! as.symbol("value_var short"),
         # y = !! as.symbol("value_var short"),
         fill =  !! as.symbol("group_label"))
-    x <<- x
+   
     plot_histogramm <-    
       ggplot(x) + aes +
       geom_histogram(aes(y = after_stat(count)), color = "black") + 
@@ -536,7 +539,7 @@ variable_visualize <- function(
   summary_1 <- 
     as.data.frame(t(
       summary_1 %>% 
-        rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+        rowwise() %>%                                                           # [GF] rowwise
         dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
         select(-("Index":"Category missing codes")))) 
   
@@ -555,7 +558,7 @@ variable_visualize <- function(
   summary_2 <- col_summary[
       str_detect(names(col_summary), "variable summary")]
   
-  if(length(summary_2) > 0 & toString(group_var) != col_var){ # [GF] verifier si on a bien les categories dans le datatable
+  if(length(summary_2) > 0 & toString(group_var) != col_var){ 
 
     summary_2 <- col_summary[
       str_detect(names(col_summary), "variable summary")][[1]]
@@ -564,7 +567,7 @@ variable_visualize <- function(
       summary_2 <- 
         as.data.frame(t(
           summary_2 %>%
-            rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+            rowwise() %>%                                                       # [GF] rowwise
             dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
             select(-c(1:"Number of distinct values")))) 
       
@@ -726,7 +729,7 @@ variable_visualize <- function(
   plot_pie_values <- NULL 
   # missing values
   if(length(preprocess_valid_class) > 0)
-    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class)) # [GF] mieux gérer celui là.
+    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class))              # [GF] mieux gérer celui là.
   
   #### gather ####
   plots <- list(
