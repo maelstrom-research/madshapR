@@ -143,7 +143,7 @@ dataset_evaluate <- function(
   # extract col_id, or create it if not exists.
   col_id <- col_id(dataset)
   if(is.null(col_id) | ncol(dataset) == 1){
-    dataset <- dataset %>% add_index("madshapR::index")
+    dataset <- dataset %>% add_index("madshapR::index", .force = TRUE)
     dataset <- as_dataset(dataset, names(dataset)[1])}
   
   # extract again col_id

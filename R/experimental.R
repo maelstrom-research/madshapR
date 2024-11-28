@@ -838,7 +838,7 @@ data_dict_update <- function(
   
   data_dict[['Variables']] <- 
     data_dict[['Variables']] %>%
-    add_index("madshapR::index")
+    add_index("madshapR::index", .force = TRUE)
   
   data_dict_to_udpate[['Variables']] <- 
     data_dict_to_udpate[['Variables']] %>%

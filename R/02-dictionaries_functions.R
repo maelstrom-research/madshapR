@@ -2363,7 +2363,7 @@ data dictionary")}}
   # for categories, reoder elements according list of variables declared
   data_dict[['Categories']] <-
     data_dict[['Categories']] %>%
-    left_join(corres_vT %>% add_index("madshapR::index"),by = "variable") %>%
+    left_join(corres_vT %>% add_index("madshapR::index", .force = TRUE),by = "variable") %>%
     group_by(.data$`madshapR::valueType`) %>% group_split() %>% as.list %>%
     lapply(function(x) {
       test_name <- as_valueType(x$`name`, unique(x$`madshapR::valueType`))
@@ -2769,7 +2769,7 @@ investigations.")
   
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      left_join(corres_vT %>% add_index("madshapR::index"),by = "variable") %>%
+      left_join(corres_vT %>% add_index("madshapR::index", .force = TRUE),by = "variable") %>%
       group_by(.data$`madshapR::valueType`) %>% group_split() %>% as.list %>%
       lapply(function(x) {
         test_name <- as_valueType(x$`name`, unique(x$`madshapR::valueType`))
