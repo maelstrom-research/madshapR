@@ -1080,7 +1080,7 @@ datatable(Overview,
         sum(nrow(
           data_dict[['Categories']][data_dict[['Categories']][['variable']] == 
                                       data_dict$`Variables`$`name`[i],])) > 0,
-        paste0("\n<p style= \"font-size: 140%;\"> **Categories**: </p>","\n\n") %>%
+        paste0("\n<p style= \"font-size: 140%;\"> **Categories** </p>","\n\n") %>%
           paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
           paste0(
 "\n```{r echo = FALSE, message = FALSE, warning = FALSE}",
