@@ -263,7 +263,7 @@ variable_visualize <- function(
     
     plot_histogramm <-    
       ggplot(x) + aes +
-      geom_histogram(aes(y = after_stat(count)), color = "black", bins = binwidth) + 
+      geom_histogram(aes(y = after_stat(count)), color = "black") + 
       facet_wrap(~group_label) + # Facet by species
       geom_density(color = "red", linewidth = 0.5) + 
       theme_minimal() +
