@@ -512,11 +512,11 @@ first_label_get <- function(data_dict){
 #' @export
 data_dict_trim_labels <- function(
     data_dict, 
-    max_length_var_name = 5, #31,
-    max_length_var_label = 5, # 255, 
-    max_length_cat_name = 5, # 15,
-    max_length_cat_label_short = 5, # 63,
-    max_length_cat_label_long = 8, # 31,
+    max_length_var_name = 31,
+    max_length_var_label = 255, 
+    max_length_cat_name = 15,
+    max_length_cat_label_short = 63,
+    max_length_cat_label_long = 31,
     .keep_columns = TRUE){
   
   # test input

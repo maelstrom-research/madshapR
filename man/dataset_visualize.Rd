@@ -11,7 +11,8 @@ dataset_visualize(
   group_by = group_vars(dataset),
   valueType_guess = FALSE,
   taxonomy = NULL,
-  dataset_summary = NULL
+  dataset_summary = NULL,
+  dataset_name = NULL
 )
 }
 \arguments{

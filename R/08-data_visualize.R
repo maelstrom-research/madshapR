@@ -451,6 +451,8 @@ variable_visualize <- function(
   # anchor
 
   #### Catch elements ####
+  if(toString(group_by) == "") group_by <- as.character()
+  
   group_var    <- names(as_dataset(dataset) %>% select(all_of(group_by)))
   col_id       <- col_id(dataset)
   dataset      <- ungroup(dataset) %>% as_dataset(col_id)
@@ -860,7 +862,8 @@ dataset_visualize <- function(
     group_by = group_vars(dataset),
     valueType_guess = FALSE,
     taxonomy = NULL,
-    dataset_summary = NULL){
+    dataset_summary = NULL,
+    dataset_name = NULL){
   
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))

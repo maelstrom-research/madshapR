@@ -213,7 +213,8 @@ your dataset")}
       relationship = "many-to-many",
       by = "Variable name") %>%
     full_join(dataset_valueType, by = "name_var") %>%
-    full_join(suggested_valueType, by = "Variable name")
+    full_join(suggested_valueType, by = "Variable name") %>%
+    mutate("Categories in data dictionary" = `Category codes and labels`) 
 
   message("    Summarize the data type of each variable across the dataset")
   
@@ -294,7 +295,7 @@ your dataset")}
     "Categorical variable",
     "Category codes and labels",
     "Category missing codes",
-    # "Categories in data dictionary",                                          # [GF] appeler ca "Category codes and labels", rajouter "Category missing codes"
+    "Categories in data dictionary",                                          # [GF] appeler ca "Category codes and labels", rajouter "Category missing codes"
     "Number of rows",
     "Number of valid values",
     "Number of non-valid values",
@@ -329,7 +330,7 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      # -any_of("Categories in data dictionary")
+      -any_of("Categories in data dictionary"),
       -any_of("Category codes and labels"),
       -any_of("Category missing codes")) %>%
     inner_join(
@@ -343,7 +344,7 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      # -any_of("Categories in data dictionary")
+      -any_of("Categories in data dictionary"),
       -any_of("Category codes and labels"),
       -any_of("Category missing codes")) %>%
     inner_join(
@@ -357,7 +358,7 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      # -any_of("Categories in data dictionary")
+      -any_of("Categories in data dictionary"),
       -any_of("Category codes and labels"),
       -any_of("Category missing codes")) %>%
     inner_join(
@@ -371,7 +372,7 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      # -any_of("Categories in data dictionary")
+      -any_of("Categories in data dictionary"),
       -any_of("Category codes and labels"),
       -any_of("Category missing codes")) %>%
     inner_join(
