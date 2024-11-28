@@ -115,7 +115,7 @@ variable_visualize <- function(
   plot_categories <- function(x){
   
     levels <- 
-      unique(x %>%                                                              # [GF] patch, mais ici il y a une erreur. a vérifier
+      unique(x %>%                                                              # [GF] NOTE : patch, mais ici il y a une erreur. a vérifier
       select("cat_index","value_var short") %>% distinct() %>%
       arrange(pick("cat_index")) %>% pull("value_var short"))
     
@@ -538,7 +538,7 @@ variable_visualize <- function(
   summary_1 <- 
     as.data.frame(t(
       summary_1 %>% 
-        rowwise() %>%                                                           # [GF] rowwise
+        rowwise() %>%                                                           # [GF] NOTE : rowwise
         dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
         select(-("Index":"Category missing codes")))) 
   
@@ -566,7 +566,7 @@ variable_visualize <- function(
       summary_2 <- 
         as.data.frame(t(
           summary_2 %>%
-            rowwise() %>%                                                       # [GF] rowwise
+            rowwise() %>%                                                       # [GF] NOTE : rowwise
             dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
             select(-c(1:"Number of distinct values")))) 
       
@@ -728,7 +728,7 @@ variable_visualize <- function(
   plot_pie_values <- NULL 
   # missing values
   if(length(preprocess_valid_class) > 0)
-    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class))              # [GF] mieux gérer celui là.
+    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class))
   
   #### gather ####
   plots <- list(

@@ -205,7 +205,7 @@ dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
     dataset %>%
     group_by(pick(any_of(preserve_group))) 
   
-  # [GF] attribute such as col_id may not be preserved here.
+  # [GF] NOTE : attribute such as col_id may not be preserved here.
   # %>% as_dataset(col_id = preserve_attributes) 
   
   return(dataset)

@@ -295,7 +295,7 @@ your dataset")}
     "Categorical variable",
     "Category codes and labels",
     "Category missing codes",
-    "Categories in data dictionary",  # [GF] doublon avec "Category codes and labels"
+    "Categories in data dictionary",  # [GF] QUESTION :doublon avec "Category codes and labels"
     "Number of rows",
     "Number of valid values",
     "Number of non-valid values",
@@ -319,9 +319,9 @@ your dataset")}
     select(any_of(minimum_cols)) %>%
     mutate(
       `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "col id",
-      "[INFO] - Identifier variable.",.data$`Quality assessment comment`),      # [GF] wording to validate
+      "[INFO] - Identifier variable.",.data$`Quality assessment comment`),      # [GF] QUESTION :wording to validate
       `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "group", 
-      "[INFO] - Grouping variable.",.data$`Quality assessment comment`))        # [GF] wording to validate
+      "[INFO] - Grouping variable.",.data$`Quality assessment comment`))        # [GF] QUESTION :wording to validate
   
   # anchor
   report$`Text variable summary` <-
@@ -408,7 +408,7 @@ your dataset")}
       '        1_Number of datetime variables'                                 ,
       '        1_Number of numerical variables'                                ,
       '        1_Number of categorical variables'                              ,
-      '    2_Rows'                                                             , # [GF] on devrait l'appeler by group pour match avec le visual report?
+      '    2_Rows'                                                             , # [GF] QUESTION :on devrait l'appeler by group pour match avec le visual report?
       '        2_Number of rows'                                               ,
       '        2_Number of empty variables'                                    ,
       '        2_Number of distinct identifier variable values'                ))
@@ -522,14 +522,14 @@ your dataset")}
 #         ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
 #           .data$`Dataset assessment` , 
 # "Variable is categorical and has values defined in data dictionary that are not present in dataset"),
-# "[INFO] - Grouping variable has empty group (no participant).",                 # [GF] wording to validate
+# "[INFO] - Grouping variable has empty group (no participant).",                 # [GF] QUESTION : wording to validate
 #           .data$`Dataset assessment`),
 # 
 #       'Dataset assessment' = 
 #         ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
 #           .data$`Dataset assessment` , 
 # "Variable is defined as categorical in data dictionary but not in dataset"),
-# "[INFO] - Grouping variable is not defined as categorical in data dictionary.", # [GF] to validate
+# "[INFO] - Grouping variable is not defined as categorical in data dictionary.", # [GF] QUESTION : to validate
 #         .data$`Dataset assessment`))
  
   message("    Generate report\n")
@@ -1086,7 +1086,7 @@ dataset_preprocess <- function(
   
   final_resume <- rep(list(summary_tbl), nrow(group_tibble) + 2)
   names(final_resume) <- 
-    c(group_tibble$`madshapR::group_label long`,'(all)', "madshapR::grouping_var")  # [GF] long label
+    c(group_tibble$`madshapR::group_label long`,'(all)', "madshapR::grouping_var")  # [GF] NOTE : long label
   
   if(group_var == "madshapR::no_group"){
     final_resume <- final_resume["(all)"]}
@@ -1114,7 +1114,7 @@ dataset_preprocess <- function(
         mutate("value_var short" = .data$`madshapR::group_label short`) %>%
         mutate("valid_class" = ifelse(.data$`valid_class` == "4_Empty values","2_Non-valid values", .data$`valid_class`)) %>% 
         mutate("cat_index" = ifelse(is.na(.data$`cat_index`), 1 + max(0,.data$`cat_index`,na.rm = TRUE),.data$`cat_index`)) %>% 
-        mutate(!! paste0('Grouping variable: ', group_name_short) := .data$`value_var long`)  # [GF] long label
+        mutate(!! paste0('Grouping variable: ', group_name_short) := .data$`value_var long`)  # [GF] NOTE : long label
 
     }else{
       final_resume[[p]] <- 
@@ -1122,7 +1122,7 @@ dataset_preprocess <- function(
         dplyr::filter(.data$`name_var` != group_var) %>%
         mutate(
           "value_var_occur" = 
-            ifelse(.data$`madshapR::group_label long` %in% p ,                    # [GF] long label
+            ifelse(.data$`madshapR::group_label long` %in% p ,                    # [GF] NOTE : long label
                    .data$`value_var_occur`,0)) %>%
         mutate(
           !! paste0('Grouping variable: ', group_name_short) := p)
@@ -1417,7 +1417,7 @@ summary_variables_text <- function(
     
     summary_i <- 
       summary %>% dplyr::filter(.data$`name_var` == i) %>%
-      mutate(value_var = ifelse(value_var_occur == 0,NA_character_,.data$`value_var long`))   # [GF] long label
+      mutate(value_var = ifelse(value_var_occur == 0,NA_character_,.data$`value_var long`))   # [GF] NOTE : long label
     
     summary_i$`value_var` <- 
       as_valueType(summary_i$`value_var`,unique(summary_i$`valueType`))

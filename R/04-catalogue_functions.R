@@ -191,7 +191,7 @@ valueType_self_adjust <- function(...){
       #   dataset %>%
       #   reframe(across(everything(), ~ toString(class(.)))) %>%
       #   pivot_longer(everything()) %>%
-      #   rowwise() %>%                # [GF] rowwise
+      #   rowwise() %>%                # [GF] NOTE : rowwise
       #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup
       
       data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
@@ -577,7 +577,7 @@ bold("\n\nUseful tip:"),
     #   dataset %>%
     #   reframe(across(everything(), ~ toString(class(.)))) %>%
     #   pivot_longer(everything()) %>%
-    #   rowwise() %>%                # [GF] rowwise
+    #   rowwise() %>%                # [GF] NOTE : rowwise
     #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup 
 
     # data_dict_data[['Variables']] <-
@@ -959,7 +959,7 @@ data dictionary")}
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull(.data$`test`) %>% all}
 
-    # [GF] The test seems obsolete
+    # [GF] NOTE : The test seems obsolete
     # if(valueType %in% c("date")){
     #   test_condition <-
     #     test_condition %>%
@@ -970,7 +970,7 @@ data dictionary")}
     #       test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
     #     pull(.data$`test`) %>% all}
     
-    # [GF] The test seems obsolete
+    # [GF] NOTE : The test seems obsolete
     # if(valueType %in% c("datetime")){
     #   test_condition <-
     #     test_condition %>%
@@ -1317,7 +1317,7 @@ valueType_convert_to_typeof <- function(valueType){
   
   vT_test <- 
     vT_list %>%
-    rowwise() %>%                # [GF] rowwise 
+    rowwise() %>%                # [GF] NOTE : rowwise 
     dplyr::filter(.data$valueType %in% !! toString(valueType)) %>% ungroup %>%
     select("typeof","class") %>% distinct
   
