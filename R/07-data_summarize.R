@@ -95,7 +95,8 @@ dataset_summarize <- function(
     data_dict = data_dict_extract(dataset),
     group_by = group_vars(dataset),
     taxonomy = NULL,
-    valueType_guess = TRUE){ # must be the same in variable_visualize
+    valueType_guess = TRUE,
+    dataset_name = NULL){ # must be the same in variable_visualize
 
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))

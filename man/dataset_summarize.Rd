@@ -9,7 +9,8 @@ dataset_summarize(
   data_dict = data_dict_extract(dataset),
   group_by = group_vars(dataset),
   taxonomy = NULL,
-  valueType_guess = TRUE
+  valueType_guess = TRUE,
+  dataset_name = NULL
 )
 }
 \arguments{
