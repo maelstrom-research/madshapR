@@ -470,7 +470,7 @@ variable_visualize <- function(
     silently_run(data_dict_match_dataset(col_set[group_var],data_dict,output = "data_dict") %>%
     data_dict_trim_labels())
   
-  if(group_var == col_var) col_set_pps[['(all)']] <-  col_set_pps[['madshapR::grouping_var']]
+  if(toString(group_var) == col_var) col_set_pps[['(all)']] <-  col_set_pps[['madshapR::grouping_var']]
   
   col_name_short <- unique(col_set_pps[['(all)']][["Variable name"]])
   
@@ -478,7 +478,7 @@ variable_visualize <- function(
   group_col_short  <- "Grouping variable: "
   group_cat_short  <- "(all)"
   group_cat_long  <- "(all)"
-  if(length(group_var) > 0 & group_var != col_var){
+  if(length(group_var) > 0 & toString(group_var) != col_var){
     group_name_short <- 
       unique(col_set_pps[['madshapR::grouping_var']][["Variable name"]])
     group_col_short <- paste0("Grouping variable: ",group_name_short)
@@ -549,13 +549,13 @@ variable_visualize <- function(
     mutate(across(everything(),as.character)) 
   
   names(summary_1) <- 
-  if(length(group_var) == 0 | group_var == col_var) group_cat_short else group_cat_short[-1]
+  if(length(group_var) == 0 | toString(group_var) == col_var) group_cat_short else group_cat_short[-1]
       
   #### summary_2 ####
   summary_2 <- col_summary[
       str_detect(names(col_summary), "variable summary")]
   
-  if(length(summary_2) > 0 & group_var != col_var){ # [GF] verifier si on a bien les categories dans le datatable
+  if(length(summary_2) > 0 & toString(group_var) != col_var){ # [GF] verifier si on a bien les categories dans le datatable
 
     summary_2 <- col_summary[
       str_detect(names(col_summary), "variable summary")][[1]]
@@ -569,7 +569,7 @@ variable_visualize <- function(
             select(-c(1:"Number of distinct values")))) 
       
       names(summary_2) <- 
-        if(length(group_var) == 0 | group_var == col_var) group_cat_short else group_cat_short[-1]
+        if(length(group_var) == 0 | toString(group_var) == col_var) group_cat_short else group_cat_short[-1]
     }
     
   }else{summary_2 <- NULL}
@@ -608,7 +608,7 @@ variable_visualize <- function(
         select(-"index",-"group_cat_long",-c(1:"Number of distinct values")))) 
     
   names(summary_categories) <- 
-    if(length(group_var) == 0 | group_var == col_var) group_cat_short else group_cat_short[-1]
+    if(length(group_var) == 0 | toString(group_var) == col_var) group_cat_short else group_cat_short[-1]
     
   summary_categories <-
     summary_categories %>% 
