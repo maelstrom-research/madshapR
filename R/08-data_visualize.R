@@ -338,7 +338,7 @@ variable_visualize <- function(
     return(plot_x)  
   }
   plot_character  <- function(x){
-    plot_x <- ggplot() + theme_void()
+    plot_x <- NULL
     return(plot_x)
   }
   plot_date       <- function(x){
@@ -442,16 +442,15 @@ variable_visualize <- function(
     # 
     # if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
     
-    plot_x <- ggplot() + theme_void()
+    plot_x <- NULL
 
     return(plot_x)
   } 
   plot_datetime   <- function(x){
-    plot_x <- ggplot() + theme_void()
+    plot_x <- NULL
+    
     return(plot_x)
   }
-
-  # anchor
 
   #### Catch elements ####
   if(toString(group_by) == "") group_by <- as.character()
