@@ -49,7 +49,6 @@
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset 
 #' (used internally in the function [dossier_evaluate()]).
-#' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [dossier_evaluate()]
@@ -86,8 +85,7 @@ dataset_evaluate <- function(
     data_dict = NULL,
     is_data_dict_mlstr = TRUE,
     taxonomy = NULL,
-    dataset_name = .dataset_name,
-    .dataset_name = NULL){
+    dataset_name = NULL){
   
   # future dev
   # add emptiness of the dataset in the Dataset assessment

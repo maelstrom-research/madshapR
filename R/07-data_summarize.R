@@ -59,7 +59,6 @@
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset
 #' (internally used in the function [dossier_evaluate()]).
-#' @param .dataset_name `r lifecycle::badge("deprecated")`
 #'
 #' @seealso
 #' [dossier_evaluate()]
@@ -96,10 +95,8 @@ dataset_summarize <- function(
     data_dict = data_dict_extract(dataset),
     group_by = group_vars(dataset),
     taxonomy = NULL,
-    dataset_name = .dataset_name,
-    valueType_guess = TRUE,
-    .dataset_name = NULL){
-  
+    valueType_guess = TRUE){ # must be the same in variable_visualize
+
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
   
@@ -843,14 +840,18 @@ dataset_preprocess <- function(
     mutate("madshapR::group_occurence" = replace_na(.data$`madshapR::group_occurence`,0)) %>%
     mutate("madshapR::grouping_var" = replace_na(.data$`madshapR::grouping_var`,"[Unlabelled group]")) %>%
     add_index("madshapR::group_index",.force = TRUE) %>%
-    select("name" = "madshapR::grouping_var", 
-           "variable","madshapR::group_index",
-           "label", "madshapR::group_occurence") 
+    select(
+      "name" = "madshapR::grouping_var", 
+      "variable","madshapR::group_index",
+      "label", "madshapR::group_occurence") 
   
   group_tibble <- 
-    list(Variables = data_dict_pps$Variables %>% slice(1),
+    list(Variables = data_dict_pps$Variables %>% 
+           filter(name == group_var),
          Categories = group_tibble) %>%
     data_dict_trim_labels()
+  
+  group_name_short <- group_tibble$Variables$`Variable name`
   
   group_tibble <-
     group_tibble[["Categories"]] %>%
@@ -867,7 +868,38 @@ dataset_preprocess <- function(
       "madshapR::group_label long"  = "Category codes and labels long",
       "madshapR::group_label short" = "Category codes and labels short",
       "madshapR::group_occurence")
+  
+  # add color palette to the group
+  col_palette <- madshapR::color_palette_maelstrom
+  nb_group <- max(group_tibble[["madshapR::group_index"]])
 
+  col_palette_group <- 
+    col_palette %>% 
+    filter(str_detect(.data$`values`,"group") & !str_detect(.data$`values`,"empty|total")) %>% 
+    pull(color_palette)
+
+  col_palette_group <-
+  rep(col_palette_group,ceiling(nb_group/length(col_palette_group)))[seq_along(1:nb_group)]
+  names(col_palette_group) <- paste0("group_",seq_along(1:nb_group))
+  
+  col_palette_group <-
+    tibble(
+      name_palette_group  = names(col_palette_group),
+      color_palette_group = col_palette_group) %>%
+    bind_rows(
+      col_palette %>% 
+        filter(str_detect(.data$`values`,"group_empty|group_total")) %>% 
+        rename(
+          "name_palette_group" = "values",
+          "color_palette_group"  = "color_palette"))
+
+  group_tibble <-
+    group_tibble %>%
+    mutate("name_palette_group" = ifelse(
+      .data$`madshapR::group_occurence` == 0,
+      "group_empty",paste0("group_",.data$`madshapR::group_index`))) %>%
+    left_join(col_palette_group,by = "name_palette_group")
+    
   data_dict_pps <- 
     data_dict_trim_labels(data_dict_pps)
   
@@ -884,24 +916,32 @@ dataset_preprocess <- function(
     select("cat_index", "name_var","madshapR::code",
            "madshapR::missing","Category codes and labels long",
            "Category codes and labels short")
-
-  summary_tbl <-
-    tibble(
-      "Index" = as.integer(),
-      "name_var" = as.character(),
-      "Variable name" = as.character(),
-      "valueType" = as.character(),
-      "Categorical variable" = as.character(),
-      "index_value" = as.integer(),
-      "value_var long" = as.character(),
-      "value_var short" = as.character(),
-      "value_var_occur" = as.integer(),
-      "valid_class" = as.character(),
-      "cat_index" = as.integer(),
-      "madshapR::group_label long" = as.character(),
-      "madshapR::group_label short" = as.character(),
-      "madshapR::group_occurence" = as.integer())
   
+  # add color palette to the group
+  nb_cat <- max(0,data_dict_pps[['Categories']] %>% group_by(pick("name_var")) %>% group_size())
+  
+  col_palette_cat <- 
+    col_palette %>% 
+    filter(str_detect(.data$`values`,"cat")) %>% 
+    pull(color_palette)
+  
+  col_palette_cat <-
+    rep(col_palette_cat,ceiling(nb_group/length(col_palette_cat)))[seq_along(1:nb_cat)]
+  
+  names(col_palette_cat) <- paste0("cat_",seq_along(1:nb_cat))
+  
+  col_palette_cat <-
+    tibble(
+      name_palette_valid_class  = names(col_palette_cat),
+      color_palette_valid_class = col_palette_cat)
+  
+  data_dict_pps[['Categories']] <-
+    data_dict_pps[['Categories']] %>%
+    mutate("name_palette_valid_class" = paste0("cat_",.data$`cat_index`)) %>%
+    left_join(col_palette_cat,by = "name_palette_valid_class")
+
+  summary_tbl <- tibble()
+
   for(i in names(select(dataset_pps, -"index_value"))){
     # stop()}
     
@@ -909,26 +949,49 @@ dataset_preprocess <- function(
       dataset_pps %>% 
       select("index_value", "madshapR::var" = all_of(i),
              "madshapR::grouping_var" = all_of(group_var)) %>%
-      rename(!!i := "madshapR::var") %>%
-      mutate("name_var" = i) %>%
-      full_join(
-        group_tibble[c("madshapR::grouping_var",
-                       "madshapR::group_label long",
-                       "madshapR::group_label short")], 
-        by = "madshapR::grouping_var") %>%
-      select(-"madshapR::grouping_var") %>%
-      mutate('name_var' = i) %>% 
+      mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)) %>%
+      rename(!!i := "madshapR::var") %>% 
+      mutate('name_var' = i) %>%  
       full_join(
         data_dict_pps$Categories %>% 
           dplyr::filter(data_dict_pps$Categories$`name_var` == i) %>% 
           mutate(`madshapR::code` = as_valueType(`madshapR::code`,valueType_of(dataset_pps[[c(i)]]))) %>%
           rename(!!i := "madshapR::code"),
-        by = c(i, "name_var")) %>% 
+        by = c(i, "name_var")) %>%
+      mutate("name_var" = i) %>%
+      mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`))
+    
+    no_col_set <- 
+      col_set %>% 
+      filter(.data$`index_value` == 0) %>%
+      select(-"madshapR::grouping_var") %>%
+      cross_join(
+        group_tibble %>% 
+          select("madshapR::grouping_var")) %>%
+      mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`))
+      
+    
+    col_set <- 
+      col_set %>%
+      filter(.data$`index_value` != 0) %>%
+      bind_rows(no_col_set) %>%
+      mutate("value_var_occur" = ifelse(.data$`index_value` == 0,0,1)) %>% 
+      full_join(
+        group_tibble[c("madshapR::grouping_var",
+                       "madshapR::group_label long",
+                       "madshapR::group_label short",
+                       "madshapR::group_occurence")] %>%
+          mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)),
+        by = "madshapR::grouping_var") %>% 
+      select(-"madshapR::grouping_var") %>%
       full_join(data_dict_pps$Variables[data_dict_pps$Variables$`name_var` == i,], 
                 by = c("name_var")) %>%
-      full_join(group_tibble, by = c("madshapR::group_label long","madshapR::group_label short")) %>% 
-      mutate(`value_var_occur` = ifelse(is.na(`index_value`),0,1)) %>% 
-      mutate(`index_value` = ifelse(is.na(`madshapR::group_label long`),0,`index_value`)) %>% 
+      full_join(group_tibble %>% select(
+        -c("madshapR::group_occurence", 
+           "name_palette_group",
+           "color_palette_group")), by = c("madshapR::group_label long","madshapR::group_label short")) %>% 
+      mutate(`value_var_occur` = ifelse(is.na(`madshapR::group_label long`),0,`value_var_occur`)) %>% 
+      # mutate(`value_var_occur` = ifelse(`index_value` == 0,1)) %>% 
       select(`value_var_occur`,everything()) %>%  
       mutate(`value_var long` = 
                ifelse(is.na(!!as.name(i)) & !is.na(`index_value`),
@@ -941,7 +1004,7 @@ dataset_preprocess <- function(
                       "[Empty value]",
                       ifelse(!is.na(.data$`Category codes and labels short`),
                              .data$`Category codes and labels short`,
-                             as.character(!!as.name(i)))))
+                             as.character(!!as.name(i))))) 
     
     col_set <- 
       col_set %>% 
@@ -955,8 +1018,18 @@ dataset_preprocess <- function(
           ! is.na(!!as.name(i)) &   is.na(`Category codes and labels long`)  ~ "3_Valid other values",
           is.na(!!as.name(i)) & !is.na(`index_value`)                        ~ "4_Empty values",
           TRUE                                                               ~ NA_character_)) %>%
-      dplyr::filter(!is.na(.data$`valid_class`)) %>% 
       arrange(pick("index_value"))
+    
+    # add the rest of the palette
+    col_set <-
+      col_set %>%
+      left_join(
+        col_palette %>% rename(valid_class = values),by = "valid_class") %>%
+      mutate(color_palette_valid_class =
+               ifelse(is.na(.data$`color_palette_valid_class`),
+                      .data$`color_palette`,
+                      .data$`color_palette_valid_class`)) %>%
+      select(-"color_palette")
     
     categorical_status <- 
       c(na.omit(unique(
@@ -999,8 +1072,10 @@ dataset_preprocess <- function(
         "cat_index",
         "madshapR::group_label long",
         "madshapR::group_label short",
-        "madshapR::group_occurence") 
-    
+        "madshapR::group_occurence",
+        "name_palette_valid_class",
+        "color_palette_valid_class")
+
     summary_tbl <- 
       summary_tbl %>%
       bind_rows(col_set)
@@ -1022,22 +1097,23 @@ dataset_preprocess <- function(
       final_resume[[p]] <- 
         final_resume[[p]] %>%  
         dplyr::filter(.data$`name_var` != group_var) %>% 
-        mutate("madshapR::group_occurence" = replace_na(.data$`madshapR::group_occurence`,0)) %>%
-        mutate(!! paste0('Grouping variable: ', group_var) := p)
+        mutate(
+          !! paste0('Grouping variable: ', group_name_short) := p,
+          "madshapR::group_label short" = p,
+          "madshapR::group_label long" = p) %>%
+        mutate("madshapR::group_occurence" = 1) 
     
     }else if(p == "madshapR::grouping_var"){
       
-      final_resume[[p]] <- 
+      final_resume[[p]] <-  
         final_resume[[p]] %>%  
-        dplyr::filter(.data$`name_var` == group_var) %>%
-        mutate("value_var long" = ifelse(is.na(`madshapR::group_label long`),.data$`value_var long`,.data$`madshapR::group_label long`)) %>%
-        mutate("value_var short" = ifelse(is.na(`madshapR::group_label short`),.data$`value_var short`,.data$`madshapR::group_label short`)) %>%
-        mutate("valid_class" = ifelse(.data$`valid_class` == "4_Empty values","2_Non-valid values", .data$`valid_class`)) %>%
+        dplyr::filter(.data$`name_var` == group_var) %>% 
+        mutate("value_var long" = .data$`madshapR::group_label long`) %>%
+        mutate("value_var short" = .data$`madshapR::group_label short`) %>%
+        mutate("valid_class" = ifelse(.data$`valid_class` == "4_Empty values","2_Non-valid values", .data$`valid_class`)) %>% 
         mutate("cat_index" = ifelse(is.na(.data$`cat_index`), 1 + max(0,.data$`cat_index`,na.rm = TRUE),.data$`cat_index`)) %>% 
-        mutate(
-          "madshapR::group_occurence" = replace_na(.data$`madshapR::group_occurence`,0)) %>% 
-        mutate(!! paste0('Grouping variable: ', group_var) := .data$`value_var long`) # [GF] here long has been chosen
-      
+        mutate(!! paste0('Grouping variable: ', group_name_short) := .data$`value_var long`) # [GF] here long has been chosen
+
     }else{
       final_resume[[p]] <- 
         final_resume[[p]] %>% 
@@ -1045,24 +1121,38 @@ dataset_preprocess <- function(
         mutate(
           "value_var_occur" = 
             ifelse(.data$`madshapR::group_label long` %in% p ,                  # [GF] here long has been chosen
-                   .data$`value_var_occur`,0),
-          "madshapR::group_occurence" = group_tibble %>% 
-            dplyr::filter(.data$`madshapR::group_label long` %in% p) %>% pull("madshapR::group_occurence")) %>%  # [GF] here long has been chosen
-        mutate(!! paste0('Grouping variable: ', group_var) := p)
+                   .data$`value_var_occur`,0)) %>%
+        mutate(
+          !! paste0('Grouping variable: ', group_name_short) := p)
       
     }}
   
   vT_list <- madshapR::valueType_list
   
   final_resume <-
-    final_resume %>% 
+    final_resume %>%
     lapply(function(x){
+      
       x %>% 
         left_join(vT_list[c("valueType","genericType")], by = "valueType") %>%
         mutate(
           "genericType" = ifelse(
             `Categorical variable` %in% c("yes","no","mix"),`genericType`,
-            `Categorical variable`)) %>% select("Index":"valueType","genericType",everything())
+            `Categorical variable`)) %>% select("Index":"valueType","genericType",everything()) %>%
+        left_join(
+          group_tibble %>% 
+            select(!! paste0('Grouping variable: ', group_name_short) := "madshapR::group_label long",
+                   "name_palette_group","color_palette_group", "madshapR::group_index") %>%
+            bind_rows(tibble(
+              !! paste0('Grouping variable: ', group_name_short) := "(all)",
+              "name_palette_group"    = col_palette %>% filter(values == "group_total") %>% pull(values),
+              "color_palette_group"   = col_palette %>% filter(values == "group_total") %>% pull(color_palette),
+              )) %>% add_index("madshapR::group_index",.force = TRUE),
+          by = paste0('Grouping variable: ', group_name_short)) %>%
+        mutate("genericType" = as.character(.data$`genericType`))
+      # mutate(
+      #   "color_palette_group"       = ifelse(.data$`madshapR::group_occurence` == 0, '#FFFFFF',.data$`color_palette_group`),
+      #   "color_palette_valid_class" = ifelse(.data$`value_var_occur` == 0, '#FFFFFF',.data$`color_palette_valid_class`))
     })
   
   return(final_resume)
@@ -1729,20 +1819,27 @@ summary_variables_numeric <- function(
     summary_i$`value_var` <- 
       as_valueType(summary_i$`value_var`,unique(summary_i$`valueType`))
     
+    summary_i$`value_var` <- 
+      if(unique(summary_i$`valueType`) == "boolean"){
+        as_valueType(summary_i$`value_var`,"integer")      
+      }else{
+        as_valueType(summary_i$`value_var`,unique(summary_i$`valueType`))
+      }
+
     # turn the output to be readable
+
     summary_i <-
       tibble(
         `Variable name`        = unique(summary_i$`Variable name`),
-        `Minimum`              = round(summary(summary_i$`value_var`)[[1]],2),
-        `1st quartile`         = round(summary(summary_i$`value_var`)[[2]],2),
-        `Median`               = round(summary(summary_i$`value_var`)[[3]],2),
-        `3rd quartile`         = round(summary(summary_i$`value_var`)[[5]],2),
-        `Maximum`              = round(summary(summary_i$`value_var`)[[6]],2),
-        `Mean`                 = round(summary(summary_i$`value_var`)[[4]],2),
-        `Standard deviation`   = round(sd(summary_i$`value_var`,na.rm = TRUE),2),
+        `Minimum`              = ifelse(all(is.na(summary_i$`value_var`)),NA,round(summary(summary_i$`value_var`)[[1]],2)),
+        `1st quartile`         = ifelse(all(is.na(summary_i$`value_var`)),NA,round(summary(summary_i$`value_var`)[[2]],2)),
+        `Median`               = ifelse(all(is.na(summary_i$`value_var`)),NA,round(summary(summary_i$`value_var`)[[3]],2)),
+        `3rd quartile`         = ifelse(all(is.na(summary_i$`value_var`)),NA,round(summary(summary_i$`value_var`)[[5]],2)),
+        `Maximum`              = ifelse(all(is.na(summary_i$`value_var`)),NA,round(summary(summary_i$`value_var`)[[6]],2)),
+        `Mean`                 = ifelse(all(is.na(summary_i$`value_var`)),NA,round(summary(summary_i$`value_var`)[[4]],2)),
+        `Standard deviation`   = ifelse(all(is.na(summary_i$`value_var`)),NA,round(sd(summary_i$`value_var`,na.rm = TRUE),2)),
       ) %>%
       mutate(
-        `Mean`                 = ifelse(is.na(Mean),NA,Mean),
         `Standard deviation`   = ifelse(is.na(Mean),NA,replace_na(.data$`Standard deviation`,0)))
     
     summary_tbl <- bind_rows(summary_tbl, summary_i)

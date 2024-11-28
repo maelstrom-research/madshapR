@@ -9,9 +9,7 @@ dataset_summarize(
   data_dict = data_dict_extract(dataset),
   group_by = group_vars(dataset),
   taxonomy = NULL,
-  dataset_name = .dataset_name,
-  valueType_guess = TRUE,
-  .dataset_name = NULL
+  valueType_guess = TRUE
 )
 }
 \arguments{
@@ -27,13 +25,11 @@ column.}
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
-\item{dataset_name}{A character string specifying the name of the dataset
-(internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
 \item{valueType_guess}{Whether the output should include a more accurate
 valueType that could be applied to the dataset. TRUE by default.}
 
-\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+\item{dataset_name}{A character string specifying the name of the dataset
+(internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 }
 \value{
 A list of data frames containing assessment reports and summaries.

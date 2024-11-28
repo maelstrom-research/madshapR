@@ -9,8 +9,7 @@ dataset_evaluate(
   data_dict = NULL,
   is_data_dict_mlstr = TRUE,
   taxonomy = NULL,
-  dataset_name = .dataset_name,
-  .dataset_name = NULL
+  dataset_name = NULL
 )
 }
 \arguments{
@@ -28,8 +27,6 @@ schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
 (used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
-\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A list of data frames containing assessment reports.

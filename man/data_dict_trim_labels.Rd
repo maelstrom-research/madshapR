@@ -10,7 +10,7 @@ data_dict_trim_labels(
   max_length_var_label = 5,
   max_length_cat_name = 5,
   max_length_cat_label_short = 5,
-  max_length_cat_label_long = 5,
+  max_length_cat_label_long = 8,
   .keep_columns = TRUE
 )
 }

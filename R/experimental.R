@@ -14,6 +14,9 @@
 #' @param na_values An optional vector of the unique values (as character strings) 
 #' among labels, for which the value is considered as missing. The default 
 #' is NULL. Note that this set can be specified as smaller than labels.
+#' @param as_factor Whether the output is a categorical variable (haven labelled
+#' object) or is a factor (labels and na_values will be lost, but the order of
+#' the levels will be preserved). FALSE by default.
 #'
 #' @seealso
 #' [haven::labelled()]
@@ -47,8 +50,15 @@
 as_category <- function(
     x, 
     labels = as.vector(c(na.omit(unique(x)))), 
-    na_values = NULL){
+    na_values = NULL,
+    as_factor = FALSE){
   
+  # # x = c('A','B','A','D','C','C')
+  # # labels = c("premier" = "B","second" = "A", "troisieme" = "C", "dernier" = "D")
+  # # na_values = c("second" = "A", "dernier" = "D")
+  # 
+  # attributes(x)[["coucou"]] <- "coup"
+    
   if(all(is.null(labels))) return(drop_category(x))
   
   # check if x is a column 
@@ -132,6 +142,28 @@ as_category <- function(
   attributes(x) <-  
     att[unique(c(na.omit(names(c(att['labels'],att["na_values"],att["class"],att[names(att)])))))]
   
+  
+  
+
+  if(as_factor == TRUE){
+    
+    
+    labels    <- attributes(x)[['labels']]
+    na_values <- attributes(x)[['na_values']]
+    
+    att_x = attributes(drop_category(x))
+    att_x['class'] <- NULL
+    
+    x_txt <- as.character(x)
+    x_fct <- factor(x_txt, levels = unname(labels))
+    att_x_fct <- attributes(x_fct)
+    
+    attributes(x_fct) <- 
+      c(att_x_fct, att_x)
+    x <- x_fct
+    
+    }
+
   return(x)
   
 }
@@ -484,7 +516,7 @@ data_dict_trim_labels <- function(
     max_length_var_label = 5, # 255, 
     max_length_cat_name = 5, # 15,
     max_length_cat_label_short = 5, # 63,
-    max_length_cat_label_long = 5, # 31,
+    max_length_cat_label_long = 8, # 31,
     .keep_columns = TRUE){
   
   # test input

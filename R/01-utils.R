@@ -110,3 +110,26 @@ madshapR_website <- function(){
 #'
 #' }
 "madshapR_example"
+
+
+#' @title
+#' Built-in data frame of colors used in the graphs and charts.
+#'
+#' @description
+#' Provides a built-in data frame of the colors used in the graphs and charts.
+#'
+#' @format ## `data.frame`
+#' A data frame with 51 rows and 2 columns:
+#' \describe{
+#'   \item{values}{possible class value in a dataset.}
+#'   \item{color_palette}{associated color}
+#'   ...
+#' }
+#'
+#' @examples
+#' {
+#'
+#' head(color_palette_maelstrom)
+#'
+#' }
+"color_palette_maelstrom"

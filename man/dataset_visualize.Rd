@@ -7,14 +7,11 @@
 dataset_visualize(
   dataset = tibble(id = as.character()),
   bookdown_path,
-  data_dict = NULL,
-  group_by = NULL,
+  data_dict = data_dict_extract(dataset),
+  group_by = group_vars(dataset),
   valueType_guess = FALSE,
   taxonomy = NULL,
-  dataset_name = .dataset_name,
-  dataset_summary = .summary_var,
-  .summary_var = NULL,
-  .dataset_name = NULL
+  dataset_summary = NULL
 )
 }
 \arguments{
@@ -36,16 +33,12 @@ valueType that could be applied to the dataset. FALSE by default.}
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
-\item{dataset_name}{A character string specifying the name of the dataset
-(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
 \item{dataset_summary}{A list which identifies an existing
 summary produced by \code{\link[=dataset_summarize]{dataset_summarize()}} of the dataset.
 Using this parameter can save time in generating the visual report.}
 
-\item{.summary_var}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
-
-\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+\item{dataset_name}{A character string specifying the name of the dataset
+(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 }
 \value{
 A folder containing files for the bookdown site. To open the bookdown site
@@ -107,7 +100,8 @@ dataset <-
   group_by(gndr) \%>\%
   as_dataset(col_id = "part_id")
   
-data_dict <- madshapR_example$`data_dict_example`
+data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+dataset <- data_dict_apply(dataset,data_dict)
 dataset_summary <- dataset_summarize(dataset,data_dict)
  
 if(dir_exists(tempdir())) dir_delete(tempdir())

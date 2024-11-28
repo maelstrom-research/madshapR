@@ -4,7 +4,12 @@
 \alias{as_category}
 \title{Validate and coerce any object as a categorical variable.}
 \usage{
-as_category(x, labels = as.vector(c(na.omit(unique(x)))), na_values = NULL)
+as_category(
+  x,
+  labels = as.vector(c(na.omit(unique(x)))),
+  na_values = NULL,
+  as_factor = FALSE
+)
 }
 \arguments{
 \item{x}{A vector object to be coerced to categorical.}
@@ -17,6 +22,10 @@ specified as smaller than sort(unique(x)).}
 \item{na_values}{An optional vector of the unique values (as character strings)
 among labels, for which the value is considered as missing. The default
 is NULL. Note that this set can be specified as smaller than labels.}
+
+\item{as_factor}{Whether the output is a categorical variable (haven labelled
+object) or is a factor (labels and na_values will be lost, but the order of
+the levels will be preserved). FALSE by default.}
 }
 \value{
 A vector with class haven_labelled.
