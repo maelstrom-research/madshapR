@@ -1294,8 +1294,6 @@ check_dataset_valueType <- function(
 #'
 #' @export
 check_name_standards <- function(var_names){
-
-  # [GF - tested and validated]
   
   var_names_valid <- make.names(
     paste0("X",var_names) %>% str_replace_all("-","_"))

@@ -778,7 +778,7 @@ data_dict_evaluate <- function(
   
   if(is_data_dict_mlstr == TRUE){
     
-    # [GF - tested and validated]
+    # 
     message("    Assess the standard adequacy of naming")
     test_name_standards  <-
       check_name_standards(data_dict[['Variables']][['name']]) %>%
@@ -795,7 +795,7 @@ data_dict_evaluate <- function(
       mutate(across(everything(),as.character))
   }
   
-  # [GF - tested and validated]
+  # 
   message("    Assess the uniqueness and presence of variable names")
   test_unique_variable <-
     check_data_dict_variables(data_dict) %>%
@@ -807,7 +807,7 @@ data_dict_evaluate <- function(
     mutate(across(everything(),as.character))
   
   
-  # [GF - tested and validated]
+  # 
   message("    Assess the presence of possible duplicated columns")
   test_duplicated_columns <-
     suppressWarnings(get_duplicated_cols(
@@ -835,7 +835,7 @@ data_dict_evaluate <- function(
     mutate(across(everything(),as.character))
   
   
-  # [GF - tested and validated] (no need for Categories)
+  #  
   message("    Assess the presence of duplicated rows")
   test_duplicated_rows <-
     data_dict[['Variables']] %>%
@@ -861,7 +861,7 @@ data_dict_evaluate <- function(
     mutate(across(everything(),as.character))
   
   
-  # [GF - tested and validated]
+  # 
   message("    Assess the presence of empty rows in the data dictionary")
   test_empty_row <-
     data_dict[['Variables']] %>% 
@@ -881,7 +881,7 @@ data_dict_evaluate <- function(
       "Data dictionary assessment" = "condition") %>%
     mutate(across(everything(),as.character))
   
-  # [GF - tested and validated]
+  # 
   message("    Assess the presence of empty column in the data dictionary")
   test_empty_col <-
     data_dict[['Variables']] %>% 
@@ -906,7 +906,7 @@ data_dict_evaluate <- function(
   
   if(has_categories(data_dict)){
     
-    # [GF - tested and validated]
+    # 
     message("    Assess the presence of categories not in the data dictionary")
     test_existing_variable_category <-
       suppressWarnings(check_data_dict_categories(data_dict)) %>%
@@ -923,7 +923,7 @@ data_dict_evaluate <- function(
   
   if(is_data_dict_mlstr == TRUE){
     
-    # [GF - tested and validated]  
+    #   
     message("    Assess the `valueType` column in 'Variables'")
     test_valueType <-
       check_data_dict_valueType(data_dict) %>%
@@ -940,7 +940,7 @@ data_dict_evaluate <- function(
       mutate(across(everything(),as.character))
     
     
-    # [GF - tested and validated] 
+    #  
     
     message(
       "    Assess the completion of `",first_lab_var,"` column in 'Variables'")
@@ -976,7 +976,7 @@ data_dict_evaluate <- function(
     
     if(has_categories(data_dict)){
       
-      # [GF - tested and validated]  
+      #   
       message(
         "    Assess presence and completion of `",first_lab_var,"` column in 'Categories'")
       

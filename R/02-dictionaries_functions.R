@@ -744,8 +744,6 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
           distinct()
       }, silent = TRUE)
       
-      
-      
       group_max_size <- data_dict_temp %>% group_size() %>% max()
       arrange_taxonomy <-
         paste0(i,"::",rep(1:group_max_size,2) %>% sort(),c("",".term"))

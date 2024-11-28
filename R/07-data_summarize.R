@@ -319,9 +319,9 @@ your dataset")}
     select(any_of(minimum_cols)) %>%
     mutate(
       `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "col id",
-      "[INFO] - Identifier variable.",.data$`Quality assessment comment`),
-      `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "group",
-      "[INFO] - Grouping variable.",.data$`Quality assessment comment`))
+      "[INFO] - Identifier variable.",.data$`Quality assessment comment`),      # [GF] wording to validate
+      `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "group", 
+      "[INFO] - Grouping variable.",.data$`Quality assessment comment`))        # [GF] wording to validate
   
   # anchor
   report$`Text variable summary` <-
@@ -522,7 +522,7 @@ your dataset")}
 #         ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
 #           .data$`Dataset assessment` , 
 # "Variable is categorical and has values defined in data dictionary that are not present in dataset"),
-# "[INFO] - Grouping variable has empty group (no participant).",                 # [GF] to validate wording
+# "[INFO] - Grouping variable has empty group (no participant).",                 # [GF] wording to validate
 #           .data$`Dataset assessment`),
 # 
 #       'Dataset assessment' = 
