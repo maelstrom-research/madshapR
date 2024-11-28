@@ -191,7 +191,7 @@ valueType_self_adjust <- function(...){
       #   dataset %>%
       #   reframe(across(everything(), ~ toString(class(.)))) %>%
       #   pivot_longer(everything()) %>%
-      #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+      #   rowwise() %>%                # [GF] rowwise
       #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup
       
       data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
@@ -577,7 +577,7 @@ bold("\n\nUseful tip:"),
     #   dataset %>%
     #   reframe(across(everything(), ~ toString(class(.)))) %>%
     #   pivot_longer(everything()) %>%
-    #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    #   rowwise() %>%                # [GF] rowwise
     #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup 
 
     # data_dict_data[['Variables']] <-
@@ -971,13 +971,14 @@ data dictionary")}
     #     pull(.data$`test`) %>% all}
     
     # [GF] The test seems obsolete
-    if(valueType %in% c("datetime")){
-      test_condition <-
-        test_condition %>%
-        mutate(
-          across(everything(), ~ as.POSIXct.default(.))) %>%
-        mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
+    # if(valueType %in% c("datetime")){
+    #   test_condition <-
+    #     test_condition %>%
+    #     mutate(
+    #       across(everything(), ~ as.POSIXct.default(.))) %>%
+    #     mutate(test = .data$`to_test` == .data$`original`) %>%
+    #     pull(.data$`test`) %>% all}
+    
     }
 
   # test if dataset and data_dict content match
@@ -1316,7 +1317,7 @@ valueType_convert_to_typeof <- function(valueType){
   
   vT_test <- 
     vT_list %>%
-    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    rowwise() %>%                # [GF] rowwise 
     dplyr::filter(.data$valueType %in% !! toString(valueType)) %>% ungroup %>%
     select("typeof","class") %>% distinct
   

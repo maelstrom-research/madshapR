@@ -61,8 +61,8 @@ check_data_dict_variables <- function(data_dict){
   #   mutate(name = paste0("Row number: ",.data$`index`)) %>%
   #   select(.data$`name`)
   
-  # [GF] - j'ai remplacé ce qui est ici dans check_name_standards(). A voir si 
-  # fonctionne
+  # [GF] - j'ai remplacé ce qui est ici dans check_name_standards(). A voir si fonctionne
+  
   # test <-
   #   test %>% bind_rows(
   #     var_NA %>%
@@ -469,7 +469,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   # vT_list <- madshapR::valueType_list
   # test_valueType_names <-
   #   data_dict[['Variables']] %>%
-  #   rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+  #   rowwise() %>%                # [GF] rowwise
   #   dplyr::filter(! .data$`valueType` %in% vT_list$`valueType`) %>% ungroup %>%
   #   select(name_var = .data$`name`,value = .data$`valueType`) %>%
   #   mutate(
@@ -486,7 +486,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   data_dict_vt <-
   #     data_dict[['Variables']] %>%
   #     select(name_var = .data$`name`,.data$`valueType`) %>%
-  #     rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+  #     rowwise() %>%                # [GF] rowwise
   #     dplyr::filter(! .data$`valueType` %in% vT_text) %>% ungroup
   #
   #   vT_names <-
@@ -614,7 +614,7 @@ check_data_dict_valueType <- function(data_dict){
   test_valueType_names <-
     data_dict[['Variables']] %>%
     select(name_var = "name",value = "valueType") %>% add_index() %>%
-    rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+    rowwise() %>%                # [GF] rowwise
     dplyr::filter(! .data$`value` %in% vT_list$`valueType`) %>% ungroup %>%
     mutate(
       condition = ifelse(is.na(.data$`value`),
@@ -632,7 +632,7 @@ check_data_dict_valueType <- function(data_dict){
       left_join(test_valueType_names,by = "name_var") %>%
       select(-"index") %>%
       inner_join(var_index, by = "name_var") %>%
-      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+      rowwise() %>%                # [GF] rowwise
       dplyr::filter(!.data$`name_var` %in% test_valueType_names$`name_var` |
                       is.na(.data$`value`)) %>% ungroup %>%
       inner_join(
@@ -659,7 +659,7 @@ check_data_dict_valueType <- function(data_dict){
         suggestion = valueType_guess(.data$`name`)) %>%
       separate_longer_delim(cols = 'name_var',delim = '|') %>%
       distinct %>%
-      rowwise() %>%                # [GF] to test. rowwise seems mandatory when using filter + %in% 
+      rowwise() %>%                # [GF] rowwise
       dplyr::filter(!.data$`valueType` %in% .data$`suggestion`) %>% ungroup %>%
       mutate(
         valueType = replace_na(.data$`valueType`,"(empty)"),
@@ -842,8 +842,6 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 check_dataset_categories <- function(
     dataset, 
     data_dict = NULL){
-  
-  # [GF] - question : validate tests associated to unit checks.
   
   # 1  [INFO] - Variable is defined as categorical in data dictionary but not in dataset.
   # 2  [INFO] - Variable is defined as categorical in dataset but not in data dictionary.
