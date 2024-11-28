@@ -260,12 +260,12 @@ variable_visualize <- function(
         x = !! as.symbol("value_var short"),
         # y = !! as.symbol("value_var short"),
         fill =  !! as.symbol("group_label"))
-    
+    x <<- x
     plot_histogramm <-    
       ggplot(x) + aes +
       geom_histogram(aes(y = after_stat(count)), color = "black") + 
+      geom_density(alpha = 0.8, color = "red", linewidth = 0.5) + 
       facet_wrap(~group_label) + # Facet by species
-      geom_density(color = "red", linewidth = 0.5) + 
       theme_minimal() +
       theme(legend.position = "none") +
       scale_fill_manual(values = 
