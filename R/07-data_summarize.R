@@ -334,7 +334,7 @@ your dataset")}
       -any_of("Category missing codes")) %>%
     inner_join(
       summary_text, 
-      by = intersect(minimum_cols, names(summary_text))) %>%
+      by = intersect(minimum_cols[minimum_cols != grouping_col], names(summary_text))) %>%
     select(any_of(minimum_cols), everything())
   
   report$`Numerical variable summary` <-
@@ -348,7 +348,7 @@ your dataset")}
       -any_of("Category missing codes")) %>%
     inner_join(
       summary_num, 
-      by = intersect(minimum_cols, names(summary_num))) %>%
+      by = intersect(minimum_cols[minimum_cols != grouping_col], names(summary_num))) %>%
     select(any_of(minimum_cols), everything())
   
   report$`Date variable summary` <-
@@ -362,7 +362,7 @@ your dataset")}
       -any_of("Category missing codes")) %>%
     inner_join(
       summary_date, 
-      by = intersect(minimum_cols, names(summary_date))) %>%
+      by = intersect(minimum_cols[minimum_cols != grouping_col], names(summary_date))) %>%
     select(any_of(minimum_cols), everything()) 
   
   report$`Datetime variable summary` <-
@@ -376,7 +376,7 @@ your dataset")}
       -any_of("Category missing codes")) %>%
     inner_join(
       summary_datetime, 
-      by = intersect(minimum_cols, names(summary_datetime))) %>%
+      by = intersect(minimum_cols[minimum_cols != grouping_col], names(summary_datetime))) %>%
     select(any_of(minimum_cols), everything()) 
   
   report$`Categorical variable summary` <-
@@ -387,8 +387,8 @@ your dataset")}
       -any_of("Suggested valueType")) %>%
     inner_join(
       summary_category, 
-      by = intersect(minimum_cols, names(summary_category))) %>%
-    select(any_of(minimum_cols), everything()) 
+      by = intersect(minimum_cols[minimum_cols != grouping_col], names(summary_category))) %>%
+    select(any_of(minimum_cols), everything())
     
   message("    Summarize global information (Overview)")
   
