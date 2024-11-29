@@ -501,19 +501,19 @@ your dataset")}
     report$Overview %>%
     dplyr::filter(!.data$`(all)` %in% "madshapR::remove")
   
-  if("[Unlabelled group]" %in% names(Overview_group)){
-
-    qual_comment = "[INFO] - Grouping variable contains empty values (NA)."
-
-    report[["Dataset assessment"]] <-
-      bind_rows(
-        report[["Dataset assessment"]],
-        tibble(
-          `Index` = Index_group_short,
-          `Variable name` = name_group_short,
-          `Dataset assessment` = qual_comment,
-          Value = '[Unlabelled group]')) %>% arrange(pick("Index"))
-  }
+  # if("[Unlabelled group]" %in% names(Overview_group)){                        # [GF] QUESTION : to validate
+  # 
+  #   qual_comment = "[INFO] - Grouping variable contains empty values (NA)."
+  # 
+  #   report[["Dataset assessment"]] <-
+  #     bind_rows(
+  #       report[["Dataset assessment"]],
+  #       tibble(
+  #         `Index` = Index_group_short,
+  #         `Variable name` = name_group_short,
+  #         `Dataset assessment` = qual_comment,
+  #         Value = '[Unlabelled group]')) %>% arrange(pick("Index"))
+  # }
   
 #   report[['Dataset assessment']] <- 
 #     report[['Dataset assessment']] %>%
