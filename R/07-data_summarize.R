@@ -313,17 +313,16 @@ your dataset")}
     nrow(report$`Variables summary (all)` %>%
     full_join(summary_var, by = "Variable name"))) stop('ERROR 104')
   
-  report$`Variables summary (all)` <-
-    report$`Variables summary (all)` %>%
-    inner_join(summary_var, by = "Variable name") %>% 
-    select(any_of(minimum_cols)) %>%
-    mutate(
-      `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "col id",
-      "[INFO] - Identifier variable.",.data$`Quality assessment comment`),      # [GF] QUESTION :wording to validate
-      `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "group", 
-      "[INFO] - Grouping variable.",.data$`Quality assessment comment`))        # [GF] QUESTION :wording to validate
+  # report$`Variables summary (all)` <-
+  #   report$`Variables summary (all)` %>%
+  #   inner_join(summary_var, by = "Variable name") %>% 
+  #   select(any_of(minimum_cols)) %>%
+  #   mutate(
+  #     `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "col id",
+  #     "[INFO] - Identifier variable.",.data$`Quality assessment comment`),      # [GF] QUESTION :wording to validate
+  #     `Quality assessment comment` = ifelse(.data$`Categorical variable` %in% "group", 
+  #     "[INFO] - Grouping variable.",.data$`Quality assessment comment`))        # [GF] QUESTION :wording to validate
   
-  # anchor
   report$`Text variable summary` <-
     report$`Variables summary (all)` %>%
     select(any_of(minimum_cols)) %>%
