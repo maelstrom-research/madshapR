@@ -61,7 +61,7 @@ check_data_dict_variables <- function(data_dict){
   #   mutate(name = paste0("Row number: ",.data$`index`)) %>%
   #   select(.data$`name`)
   
-  # [GF] NOTE : The test seems obsoletej'ai remplacé ce qui est ici dans check_name_standards(). A voir si fonctionne
+  # [GF] NOTE : j'ai remplacé ce qui est ici dans check_name_standards(). A voir si fonctionne
   
   # test <-
   #   test %>% bind_rows(

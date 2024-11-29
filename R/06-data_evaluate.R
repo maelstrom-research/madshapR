@@ -792,7 +792,8 @@ data_dict_evaluate <- function(
         # "Variable name" = "name_var",
         "name_var" = "name_var",
         "Data dictionary assessment" = "condition") %>%
-      mutate(across(everything(),as.character))
+      mutate(across(everything(),as.character)) %>%
+      group_by(pick("name_var")) %>% add_index() %>% slice(1) %>% ungroup
   }
   
   # 
