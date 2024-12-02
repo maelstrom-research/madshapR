@@ -9,8 +9,8 @@ data_dict_trim_labels(
   max_length_var_name = 31,
   max_length_var_label = 255,
   max_length_cat_name = 15,
-  max_length_cat_label_short = 63,
-  max_length_cat_label_long = 31,
+  max_length_cat_label_short = 5,
+  max_length_cat_label_long = 63,
   .keep_columns = TRUE
 )
 }
@@ -18,8 +18,8 @@ data_dict_trim_labels(
 \item{data_dict}{A data dictionary, typically a list containing 'Variables'
 and 'Categories' data frames.}
 
-\item{.keep_columns}{An boolean specifying if the output preserves the other
-columns of the dataset.}
+\item{.keep_columns}{A boolean specifying if the output preserves the other
+columns of the data dictionary or not.}
 
 \item{max_length_name_var}{An integer specifying the maximum length for
 variable names (default is 10).}

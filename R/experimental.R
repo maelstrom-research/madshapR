@@ -489,8 +489,8 @@ first_label_get <- function(data_dict){
 #' category names (default is 10).
 #' @param max_length_total_cat An integer specifying the maximum total length 
 #' for category names and labels combined (default is 15).
-#' @param .keep_columns An boolean specifying if the output preserves the other 
-#' columns of the dataset.
+#' @param .keep_columns A boolean specifying if the output preserves the other 
+#' columns of the data dictionary or not.
 #'
 #' @return A modified data dictionary with additional columns for shortened labels:
 #'   - `madshapR::label_var_short`: Shortened variable labels.
@@ -515,9 +515,20 @@ data_dict_trim_labels <- function(
     max_length_var_name = 31,
     max_length_var_label = 255, 
     max_length_cat_name = 15,
-    max_length_cat_label_short = 63,
-    max_length_cat_label_long = 31,
+    max_length_cat_label_short = 5,#31,
+    max_length_cat_label_long = 63,
     .keep_columns = TRUE){
+  
+  
+  
+  # if already contain labels, return the data dictionary as is.                [GF] check if this test is necessary.
+  
+    if(data_dict$`Variables` %>%
+        select(
+          any_of(c('Variable name','Variable label')),
+          starts_with(c('Category codes and labels','Category missing codes'))) %>%
+      ncol == 6) return(data_dict)
+  
   
   # test input
   as_data_dict_shape(data_dict)
@@ -529,6 +540,7 @@ data_dict_trim_labels <- function(
   data_dict$`Variables` <- 
     data_dict$`Variables` %>%
     select(-any_of(c('Variable name','Variable label'))) %>%
+    select(-starts_with(c('Category codes and labels','Category missing codes'))) %>%
     mutate('var_name' =  .data$`name`,
            'var_lab' =  !! as.symbol(labs[['Variables']])) %>%
     mutate(across(c('var_name', 'var_lab'), ~ as.character(.))) %>%
@@ -553,13 +565,13 @@ data_dict_trim_labels <- function(
     group_by(.data$`madshapR::Variable name`) %>% 
     add_index("count_short_name",.force = TRUE) %>%
     mutate(
-      "count_short_name"= ifelse(.data$`count_short_name` == 1,"",paste0(".",.data$`count_short_name`)),
+      "count_short_name"= ifelse(.data$`count_short_name` == 1,"",paste0("_",.data$`count_short_name`)),
       'madshapR::Variable name' = paste0(.data$`madshapR::Variable name`,.data$`count_short_name`)) %>%
     ungroup %>%
     group_by(.data$`madshapR::Variable label`) %>% 
     add_index("count_short_lab",.force = TRUE) %>%
     mutate(
-      "count_short_lab"= ifelse(.data$`count_short_lab` == 1,"",paste0(".",.data$`count_short_lab`)),
+      "count_short_lab"= ifelse(.data$`count_short_lab` == 1,"",paste0("_",.data$`count_short_lab`)),
       'madshapR::Variable label' = paste0(.data$`madshapR::Variable label`,.data$`count_short_lab`)) %>%
     ungroup %>%
     rename(
@@ -578,11 +590,7 @@ data_dict_trim_labels <- function(
     
     data_dict$`Categories` <- 
       data_dict$`Categories` %>%
-      select(-any_of(
-        c('Category codes and labels short',
-          'Category codes and labels long',
-          'Category missing codes short',
-          'Category missing codes long'))) %>%
+      select(-starts_with(c('Category codes and labels','Category missing codes'))) %>%
       mutate('var_name' =  .data$`variable`,
              'cat_name' =  .data$`name`, 
              'cat_lab' = !! as.symbol(labs[['Categories']]),
@@ -752,6 +760,7 @@ data_dict_trim_labels <- function(
 #' Update a data dictionary from a dataset
 #'
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' Updates a data dictionary from a dataset, creating a new data dictionary with
 #' updated content, from variables selected in the dataset. Any previous other
 #' meta data will be preserved. The new data dictionary can be applied to the 
