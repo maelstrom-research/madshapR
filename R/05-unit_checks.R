@@ -772,7 +772,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
     full_join(var_names_in_dataset,var_names_in_data_dict,by = "name_var") %>%
     mutate(condition = case_when(
       is.na(data_dict) ~ "[ERROR] - Variable present in dataset but not in data dictionary.",
-      is.na(dataset)   ~ "[ERROR] - Variable present in data dictionary but not in dataset.",
+      is.na(dataset)   ~ "[INFO] - Variable present in data dictionary but not in dataset.",
       TRUE ~ NA_character_)) %>%
     mutate(across(everything(), ~as.character(.))) %>%
     dplyr::filter(!is.na(.data$`condition`)) %>%
