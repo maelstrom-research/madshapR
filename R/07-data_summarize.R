@@ -1088,14 +1088,14 @@ dataset_preprocess <- function(
     categorical_status <- 
       case_when(
         
-        i %in% col_id                                          ~ "col id",
-        i %in% group_var                                       ~ "group" ,
+        i %in% col_id                                                                ~ "col id",
+        i %in% group_var                                                             ~ "group" ,
+                              
+        categorical_status == ""                                                     ~ "no"    ,
+        toString(categorical_status) == "3_Valid other values"                       ~ "no"    ,
         
-        categorical_status == ""                               ~ "no"    ,
-        toString(categorical_status) == "3_Valid other values" ~ "no"    ,
-        
-        str_detect(toString(categorical_status),"3_")          ~ "mix"   ,
-        str_detect(toString(categorical_status),"2_|1_")       ~ "yes"   ,
+        str_detect(toString(categorical_status),"3_Valid other values")              ~ "mix"   ,
+        str_detect(toString(categorical_status),"2_Non-valid values|1_Valid values") ~ "yes"   ,
         TRUE  ~ "ERROR")
     
     if(categorical_status == "ERROR") 
