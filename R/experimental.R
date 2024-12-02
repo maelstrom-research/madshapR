@@ -515,7 +515,7 @@ data_dict_trim_labels <- function(
     max_length_var_name = 31,
     max_length_var_label = 255, 
     max_length_cat_name = 15,
-    max_length_cat_label_short = 5,#31,
+    max_length_cat_label_short = 31,
     max_length_cat_label_long = 63,
     .keep_columns = TRUE){
   
