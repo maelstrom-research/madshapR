@@ -731,6 +731,7 @@ data_dict_evaluate <- function(
   #   bind_rows(tibble(valueType = as.character()))
   
   first_lab_var <- first_label_get(data_dict)[['Variables']]
+  data_dict_labels <- data_dict_trim_labels(data_dict)
   
   if(nchar(first_lab_var) == 0){
     
@@ -776,9 +777,15 @@ data_dict_evaluate <- function(
     test_missing_category <-
     tibble("name_var" = as.character())
   
+
+  # suppress labels
+  data_dict <- 
+    data_dict %>% lapply(function(x) x %>% select(
+      -any_of(c('Variable name','Variable label')),
+      -starts_with(c('Category codes and labels','Category missing codes'))))
+  
   if(is_data_dict_mlstr == TRUE){
     
-    # 
     message("    Assess the standard adequacy of naming")
     test_name_standards  <-
       check_name_standards(data_dict[['Variables']][['name']]) %>%
@@ -1027,7 +1034,7 @@ data_dict_evaluate <- function(
   
   
   # catch first label (after addtion of categorical grouping variable)
-  data_dict_labels <- data_dict_trim_labels(data_dict)
+  # data_dict_labels <- data_dict_trim_labels(data_dict)
   
   report$`Data dictionary summary` <- 
     data_dict_labels[['Variables']] %>%
