@@ -8,7 +8,7 @@ dataset_visualize(
   dataset = tibble(id = as.character()),
   bookdown_path,
   data_dict = data_dict_extract(dataset),
-  group_by = group_vars(dataset),
+  group_by = attributes(dataset_summary)[["madshapR_group::group_by"]],
   valueType_guess = FALSE,
   taxonomy = NULL,
   dataset_summary = NULL,

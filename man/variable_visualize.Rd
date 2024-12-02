@@ -8,7 +8,7 @@ variable_visualize(
   dataset,
   col,
   data_dict = data_dict_extract(dataset),
-  group_by = group_vars(dataset),
+  group_by = attributes(variable_summary)[["madshapR_group::group_by"]],
   variable_summary = NULL,
   valueType_guess = TRUE
 )
