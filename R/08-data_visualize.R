@@ -165,15 +165,18 @@ variable_visualize <- function(
       facet_wrap(~ group_label_short,ncol = 3)
 
     return(plot_x)
-
   }
   plot_pie        <- function(x){
-    
-    levels <- 
-      x %>% 
-      select("valid_class") %>% distinct() %>%
-      arrange(pick("valid_class")) %>% pull("valid_class")
   
+    # levels <- 
+    #   x %>% 
+    #   select("valid_class") %>% distinct() %>%
+    #   arrange(desc(pick("valid_class"))) %>% pull("valid_class") 
+    # 
+    # names(levels) <- levels %>% str_remove_all("1 - |2 - |3 - |4 - ")
+    # 
+    # levels <- factor(levels)
+
     x_sum <- 
       x %>% 
       select(-any_of("color_palette")) %>%
@@ -185,6 +188,7 @@ variable_visualize <- function(
       group_by(pick(c("group_label_short","valid_class","color_palette"))) %>%
       reframe(sum_var_occur = sum(value_var_occur)) %>%
       group_by(pick(c("group_label_short"))) %>%
+      arrange(pick(c("group_label_short","valid_class"))) %>%
       mutate(
         prop = 10000*round(.data$`sum_var_occur`/sum(sum_var_occur),4),
         prop = ifelse(is.na(prop),0,prop))
@@ -198,15 +202,16 @@ variable_visualize <- function(
         x$prop[[nrow(x)]] <- 10000 - sum(x$prop[-nrow(x)])
         return(x)})}
         
-    x_sum <- 
+    x_pie <- 
       bind_rows(x_sum) %>%
       group_by(pick("group_label_short")) %>%
       arrange(desc('valid_class')) %>%
+      mutate(valid_class = factor(valid_class %>% str_remove_all("1 - |2 - |3 - |4 - "))) %>%
       mutate(
         csum = cumsum(.data$`prop`),
         pos = .data$`prop`/2 + lag(.data$`csum`, 1),
         pos = ifelse(is.na(.data$`pos`),.data$`prop`/2,.data$`pos`),
-        label = paste0(floor(prop)/100,"%"),
+        label = ifelse(floor(prop)/100 == 0 , "",paste0(floor(prop)/100,"%")),
         prop = prop/10000,
         pos = pos/10000,
         csum = csum/10000)
@@ -215,10 +220,12 @@ variable_visualize <- function(
       aes(
         x = "",
         y = !! as.symbol('sum_var_occur'), 
-        fill = fct_rev(as_factor(!! as.symbol("valid_class"))))
+        fill = !! as.symbol("valid_class"))
       
-    plot_x_sum <-
-      ggplot(x_sum) + aes +
+    plot_x_pie <-
+      ggplot(x_pie) + aes +
+      facet_wrap(
+        ~ group_label_short,ncol = 3) +
       geom_bar(stat='identity',width = 1,position = position_fill()) +
       theme_void() +
       theme(
@@ -226,24 +233,22 @@ variable_visualize <- function(
         legend.title = element_blank(),
         plot.title = element_text(size = 8,face = "bold")) +
       geom_segment(
-        aes(x = 1.550,
-            xend = 1.450,
+        aes(x = ifelse(abs(!! as.symbol('pos')) == 0, NA, 1.550),
+            xend = ifelse(abs(!! as.symbol('pos')) == 0, NA, 1.450),
             y = abs(!! as.symbol('pos')),
             yend = abs(!! as.symbol('pos'))),
         color = "black", linewidth = 1) +
       scale_fill_manual(
         guide = guide_legend(reverse = TRUE),
-        values = x_sum$color_palette %>%
-                 setNames(x_sum$`valid_class`)) +
+        values = x_pie$color_palette %>%
+                 setNames(x_pie$`valid_class`)) + 
       geom_text(
         cex = 2.5,
-        aes(x = 1.8,label = !! as.symbol('label')),
+        aes(x = 1.8, label = !! as.symbol('label')),
         position = position_fill(vjust = 0.5)) +
-      coord_polar('y', start = 0) +
-      facet_wrap(
-        ~ group_label_short,ncol = 3)
+      coord_polar('y', start = 0)
     
-    return(plot_x_sum)
+    return(plot_x_pie)
 
   }
   plot_numeric    <- function(x){
@@ -527,7 +532,7 @@ variable_visualize <- function(
     if(valueType_guess == TRUE){
       vT_list[vT_list$valueType %in% 
                 valueType_guess(
-                  col_set_pps[col_set_pps$valid_class == '3_Valid other values',] %>% 
+                  col_set_pps[col_set_pps$valid_class == '1 - Valid non categorical values',] %>% 
                     pull(`value_var short`)),c('valueType','genericType')]
     }else{
       unique(col_set_pps %>% select(c('valueType','genericType')))}
@@ -658,7 +663,7 @@ variable_visualize <- function(
   
   #### preprocess elements ####
   preprocess_var_values <- 
-    col_set_pps[col_set_pps$valid_class == '3_Valid other values',] %>% 
+    col_set_pps[col_set_pps$valid_class == '1 - Valid non categorical values',] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))
@@ -670,7 +675,7 @@ variable_visualize <- function(
 
   # preprocess elements : categorical values
   preprocess_cat_values <- 
-    col_set_pps[col_set_pps$valid_class == '1_Valid values',] %>%
+    col_set_pps[col_set_pps$valid_class == '2 - Valid categorical values',] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))
@@ -683,7 +688,7 @@ variable_visualize <- function(
   # preprocess elements : missing values  
 
   preprocess_miss_values <- 
-    col_set_pps[col_set_pps$valid_class %in% c('2_Non-valid values','4_Empty values'),] %>% 
+    col_set_pps[col_set_pps$valid_class %in% c('3 - Missing categorical value','4 - Empty values'),] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))

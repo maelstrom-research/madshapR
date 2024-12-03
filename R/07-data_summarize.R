@@ -1057,12 +1057,11 @@ dataset_preprocess <- function(
       mutate(
         "valid_class" = case_when(
           
-          `Variable name` == toString(col_id) & !is.na(.data$`index_value`)  ~ "0_Col id",
-          `Variable name` == toString(col_id) & !is.na(.data$`index_value`)  ~ "0_Col id",
-          `madshapR::missing` == FALSE                                       ~ "1_Valid values",
-          `madshapR::missing` == TRUE                                        ~ "2_Non-valid values",
-          ! is.na(!!as.name(i)) &   is.na(`Category codes and labels long`)  ~ "3_Valid other values",
-          is.na(!!as.name(i)) & !is.na(`index_value`)                        ~ "4_Empty values",
+          `Variable name` == toString(col_id) & !is.na(.data$`index_value`)  ~ "0 - Col id",
+          `madshapR::missing` == FALSE                                       ~ "2 - Valid categorical values",
+          `madshapR::missing` == TRUE                                        ~ "3 - Missing categorical value",
+          ! is.na(!!as.name(i)) &   is.na(`Category codes and labels long`)  ~ "1 - Valid non categorical values",
+          is.na(!!as.name(i)) & !is.na(`index_value`)                        ~ "4 - Empty values",
           TRUE                                                               ~ NA_character_)) %>%
       arrange(pick("index_value"))
     
@@ -1082,7 +1081,7 @@ dataset_preprocess <- function(
         col_set %>%
           dplyr::filter(
             .data$`valid_class` %in%
-              c("1_Valid values","2_Non-valid values","3_Valid other values")) %>%
+              c("2 - Valid categorical values","3 - Missing categorical value","1 - Valid non categorical values")) %>%
           pull("valid_class")))) %>% toString
     
     categorical_status <- 
@@ -1092,10 +1091,10 @@ dataset_preprocess <- function(
         i %in% group_var                                                             ~ "group" ,
                               
         categorical_status == ""                                                     ~ "no"    ,
-        toString(categorical_status) == "3_Valid other values"                       ~ "no"    ,
+        toString(categorical_status) == "1 - Valid non categorical values"                       ~ "no"    ,
         
-        str_detect(toString(categorical_status),"3_Valid other values")              ~ "mix"   ,
-        str_detect(toString(categorical_status),"2_Non-valid values|1_Valid values") ~ "yes"   ,
+        str_detect(toString(categorical_status),"1 - Valid non categorical values")              ~ "mix"   ,
+        str_detect(toString(categorical_status),"3 - Missing categorical value|2 - Valid categorical values") ~ "yes"   ,
         TRUE  ~ "ERROR")
     
     if(categorical_status == "ERROR") 
@@ -1154,7 +1153,7 @@ dataset_preprocess <- function(
       final_resume[[p]] <-  
         final_resume[[p]] %>%
         dplyr::filter(.data$`name_var` == group_var) %>% 
-        mutate("valid_class" = "1_Valid values") %>%
+        mutate("valid_class" = "2 - Valid categorical values") %>%
         mutate("madshapR::group_label long" = '(all)') %>%
         mutate("madshapR::group_label short" = '(all)') %>%
         mutate(across(c("value_var long","value_var short"),
@@ -1308,17 +1307,17 @@ summary_variables <- function(
           `Number of valid values` =
             sum(summary_i[
               summary_i$`valid_class` %in%
-                c("0_Col id","1_Valid values","3_Valid other values"),]$`value_var_occur`),
+                c("0 - Col id","2 - Valid categorical values","1 - Valid non categorical values"),]$`value_var_occur`),
           
           `Number of non-valid values` =
             sum(summary_i[
               summary_i$`valid_class` %in%
-                c("2_Non-valid values"),]$`value_var_occur`),
+                c("3 - Missing categorical value"),]$`value_var_occur`),
           
           `Number of empty values` =  
             sum(summary_i[
               summary_i$`valid_class` %in%
-                c("4_Empty values"),]$`value_var_occur`),
+                c("4 - Empty values"),]$`value_var_occur`),
           
           `% Valid values` = ifelse(.data$`Number of rows` == 0,0,
                                     round(100*(.data$`Number of valid values`/.data$`Number of rows`),2)),
@@ -1333,7 +1332,7 @@ summary_variables <- function(
             length(unique(summary_i[
               summary_i$`value_var_occur` == 1 &
                 !(summary_i$`valid_class` %in%
-                    c("4_Empty values")),]$`value_var long`)),
+                    c("4 - Empty values")),]$`value_var long`)),
         )
       
       summary_tbl <- bind_rows(summary_tbl, summary_i)
@@ -1445,7 +1444,7 @@ summary_variables_text <- function(
   # init
   summary <-
     dataset_preprocess %>%
-    dplyr::filter(.data$`valid_class`  == "3_Valid other values") %>%
+    dplyr::filter(.data$`valid_class`  == "1 - Valid non categorical values") %>%
     dplyr::filter(.data$`genericType`  == "character") 
   
   # init
@@ -1588,7 +1587,7 @@ summary_variables_date <- function(
   # init
   summary <-
     dataset_preprocess %>%
-    dplyr::filter(.data$`valid_class`  == "3_Valid other values") %>%
+    dplyr::filter(.data$`valid_class`  == "1 - Valid non categorical values") %>%
     dplyr::filter(.data$`genericType`  == "date") 
   
   # init
@@ -1742,7 +1741,7 @@ summary_variables_datetime <- function(
   # init
   summary <-
     dataset_preprocess %>%
-    dplyr::filter(.data$`valid_class`  == "3_Valid other values") %>%
+    dplyr::filter(.data$`valid_class`  == "1 - Valid non categorical values") %>%
     dplyr::filter(.data$`genericType`  == "datetime") 
   
   # init
@@ -1842,7 +1841,7 @@ summary_variables_numeric <- function(
   # init
   summary <-
     dataset_preprocess %>%
-    dplyr::filter(.data$`valid_class`  == "3_Valid other values") %>%
+    dplyr::filter(.data$`valid_class`  == "1 - Valid non categorical values") %>%
     dplyr::filter(.data$`genericType`  == "numeric") 
 
   # init
@@ -2037,16 +2036,16 @@ summary_variables_categorical <- function(
       rowwise() %>%
       mutate(
         name_var2 = ifelse(
-          .data$`valid_class` == "3_Valid other values",
+          .data$`valid_class` == "1 - Valid non categorical values",
           unlist(.data$`name_var` %>% str_split("\\{semicolon\\}"))[6],.data$`name_var`),
         name_var = ifelse(
-          .data$`valid_class` == "3_Valid other values",
+          .data$`valid_class` == "1 - Valid non categorical values",
           unlist(.data$`name_var` %>% str_split("\\{semicolon\\}"))[1:5] %>%
             paste0(collapse = "{semicolon}"),.data$`name_var`)
       ) %>%
       mutate(
         name_var = str_replace_all(.data$`name_var`,'\\{semicolon\\}NA',''),
-        name_var = ifelse(.data$`valid_class` == "3_Valid other values" &
+        name_var = ifelse(.data$`valid_class` == "1 - Valid non categorical values" &
                             !is.na(.data$`name_var2`),
                           paste0(.data$`name_var`," [...]"),
                           .data$`name_var`),
@@ -2057,10 +2056,10 @@ summary_variables_categorical <- function(
         cat_var_absence    =
           ifelse(.data$`n` == 0, .data$`cat_index`, ""),
         other_val_presence =
-          ifelse(.data$`valid_class` == "3_Valid other values",
+          ifelse(.data$`valid_class` == "1 - Valid non categorical values",
                  .data$`name_var`, ""),
         list_values        =
-          ifelse(.data$`valid_class` == "3_Valid other values", "",
+          ifelse(.data$`valid_class` == "1 - Valid non categorical values", "",
                  .data$`cat_index`),
         list_values        = na_if(.data$`list_values`,'{blank}'),
         n_perc             =
@@ -2072,13 +2071,13 @@ summary_variables_categorical <- function(
       group_by(.data$`valid_class`,.data$`categorical_index`) %>%
       mutate(
         "valid_class" = case_when(
-          .data$`valid_class` == "1_Valid values"       ~
+          .data$`valid_class` == "2 - Valid categorical values"       ~
             "Valid values : \n",
-          .data$`valid_class` == "2_Non-valid values"     ~
+          .data$`valid_class` == "3 - Missing categorical value"     ~
             "\nNon-valid values : \n",
-          .data$`valid_class` == "3_Valid other values" ~
+          .data$`valid_class` == "1 - Valid non categorical values" ~
             "\nOther values (non categorical)",
-          .data$`valid_class` == "4_Empty values"          ~
+          .data$`valid_class` == "4 - Empty values"          ~
             "\nEmpty values",
           TRUE                             ~ .data$`valid_class`)) %>%
       select(-'name_var') %>%
@@ -2132,7 +2131,7 @@ summary_variables_categorical <- function(
     
     if(nrow(dplyr::filter(
       summary_i,
-      .data$`valid_class` %in% c("1_Valid values","2_Non-valid values"))) > 0){
+      .data$`valid_class` %in% c("2 - Valid categorical values","3 - Missing categorical value"))) > 0){
       
       summary_i <-
         tibble(
