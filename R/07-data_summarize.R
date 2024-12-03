@@ -759,6 +759,7 @@ dataset_preprocess <- function(
     data_dict = data_dict_extract(dataset), 
     group_by = group_vars(dataset)){
   
+  
   # handle atomics
   # if(is.atomic(dataset) & length(dataset) == 0) return(summary_tbl) 
   if(is.atomic(dataset))
@@ -809,15 +810,17 @@ dataset_preprocess <- function(
   if(has_categories(data_dict_pps)){
     data_dict_pps[['Categories']] <- 
       data_dict_pps[['Categories']] %>%
-      group_by(pick("variable")) %>%
+      group_by(pick("variable","missing")) %>%
       add_index("cat_index", .force = TRUE) %>%
+      mutate(name_palette_valid_class = ifelse(missing == FALSE,paste0("cat_",cat_index),paste0("miss_cat_",cat_index))) %>%
       select("cat_index",
             "variable",
             "name",
             "label" = any_of(first_label_get(data_dict_pps)[["Variables"]]), # "madshapR::label_cat_long",
             starts_with("Category codes and labels"),
             starts_with("Category missing codes"),
-            "missing")
+            "missing",
+            name_palette_valid_class)
   }else{
     
     data_dict_pps[['Categories']] <- 
@@ -830,7 +833,8 @@ dataset_preprocess <- function(
         "Category codes and labels long" = as.character(),
         "Category codes and labels short" = as.character(),
         "Category missing codes long" = as.character(),
-        "Category missing codes short" = as.character())
+        "Category missing codes short" = as.character(),
+        "name_palette_valid_class" = as.character())
   }
   
   dataset_pps <-
@@ -921,7 +925,7 @@ dataset_preprocess <- function(
 
   col_palette_group <- 
     col_palette %>% 
-    filter(str_detect(.data$`values`,"group") & !str_detect(.data$`values`,"empty|total")) %>% 
+    filter(str_detect(.data$`values`,"group") & !str_detect(.data$`values`,"empty|total|no_group")) %>% 
     pull(color_palette)
 
   col_palette_group <-
@@ -934,7 +938,7 @@ dataset_preprocess <- function(
       color_palette_group = col_palette_group) %>%
     bind_rows(
       col_palette %>% 
-        filter(str_detect(.data$`values`,"group_empty|group_total")) %>% 
+        filter(str_detect(.data$`values`,"group_empty|group_total|no_group")) %>% 
         rename(
           "name_palette_group" = "values",
           "color_palette_group"  = "color_palette"))
@@ -943,7 +947,8 @@ dataset_preprocess <- function(
     group_tibble %>%
     mutate("name_palette_group" = ifelse(
       .data$`madshapR::group_occurence` == 0,
-      "group_empty",paste0("group_",.data$`madshapR::group_index`))) %>%
+      "group_empty",ifelse(.data$`madshapR::grouping_var` == "[No group]","no_group",
+        paste0("group_",.data$`madshapR::group_index`)))) %>%
     left_join(col_palette_group,by = "name_palette_group")
     
   data_dict_pps <- 
@@ -961,31 +966,55 @@ dataset_preprocess <- function(
       'madshapR::missing' = 'missing') %>%
     select("cat_index", "name_var","madshapR::code",
            "madshapR::missing","Category codes and labels long",
-           "Category codes and labels short")
+           "Category codes and labels short","name_palette_valid_class")
   
-  # add color palette to the group
-  nb_cat <- max(0,data_dict_pps[['Categories']] %>% group_by(pick("name_var")) %>% group_size())
+  # add color palette to the categories (missing = FALSE)
+  nb_cat <- max(0,data_dict_pps[['Categories']] %>% 
+                  dplyr::filter(.data$`madshapR::missing` == FALSE) %>%
+                  group_by(pick("name_var")) %>% group_size())
+  
+  
+  nb_miss <- max(0,data_dict_pps[['Categories']] %>% 
+                  dplyr::filter(.data$`madshapR::missing` == TRUE) %>%
+                  group_by(pick("name_var")) %>% group_size())
+  
   
   col_palette_cat <- 
     col_palette %>% 
-    filter(str_detect(.data$`values`,"cat")) %>% 
+    filter(str_detect(.data$`values`,"cat_")) %>% 
     pull(color_palette)
   
   col_palette_cat <-
     rep(col_palette_cat,ceiling(nb_group/length(col_palette_cat)))[seq_along(1:nb_cat)]
   
   names(col_palette_cat) <- paste0("cat_",seq_along(1:nb_cat))
-  
+
   col_palette_cat <-
     tibble(
       name_palette_valid_class  = names(col_palette_cat),
       color_palette_valid_class = col_palette_cat)
   
+  col_palette_miss <- 
+    col_palette %>% 
+    filter(str_detect(.data$`values`,"miss_cat_")) %>% 
+    pull(color_palette)
+  
+  col_palette_miss <-
+    rep(col_palette_miss,ceiling(nb_group/length(col_palette_miss)))[seq_along(1:nb_miss)]
+  
+  names(col_palette_miss) <- paste0("miss_cat_",seq_along(1:nb_miss))
+  
+  col_palette_miss <-
+    tibble(
+      name_palette_valid_class  = names(col_palette_miss),
+      color_palette_valid_class = col_palette_miss)
+  
+  col_palette_total <- bind_rows(col_palette_cat,col_palette_miss)
+  
   data_dict_pps[['Categories']] <-
     data_dict_pps[['Categories']] %>%
-    mutate("name_palette_valid_class" = paste0("cat_",.data$`cat_index`)) %>%
-    left_join(col_palette_cat,by = "name_palette_valid_class")
-
+    left_join(col_palette_total,by = "name_palette_valid_class")
+  
   summary_tbl <- tibble()
 
   for(i in names(select(dataset_pps, -"index_value"))){
@@ -1192,14 +1221,15 @@ dataset_preprocess <- function(
                    "name_palette_group","color_palette_group", "madshapR::group_index") %>%
             bind_rows(tibble(
               !! paste0('Grouping variable: ', group_name_short) := "(all)",
-              "name_palette_group"    = col_palette %>% filter(values == "group_total") %>% pull(values),
-              "color_palette_group"   = col_palette %>% filter(values == "group_total") %>% pull(color_palette),
+              "name_palette_group"    = ifelse(group_var == "madshapR::no_group", 
+                                               col_palette$values[col_palette$values == "no_group"], 
+                                               col_palette$values[col_palette$values == "group_total"]),
+              "color_palette_group"   = ifelse(group_var == "madshapR::no_group", 
+                                               col_palette$color_palette[col_palette$values == "no_group"], 
+                                               col_palette$color_palette[col_palette$values == "group_total"])
               )) %>% add_index("madshapR::group_index",.force = TRUE),
           by = paste0('Grouping variable: ', group_name_short)) %>%
         mutate("genericType" = as.character(.data$`genericType`))
-      # mutate(
-      #   "color_palette_group"       = ifelse(.data$`madshapR::group_occurence` == 0, '#FFFFFF',.data$`color_palette_group`),
-      #   "color_palette_valid_class" = ifelse(.data$`value_var_occur` == 0, '#FFFFFF',.data$`color_palette_valid_class`))
     })
   
   return(final_resume)
