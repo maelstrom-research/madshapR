@@ -526,7 +526,7 @@ data_dict_trim_labels <- function(
     if(data_dict$`Variables` %>%
         select(
           any_of(c('Variable name','Variable label')),
-          starts_with(c('Category codes and labels','Category missing codes'))) %>%
+          starts_with(c('Categories in data dictionary','Non-valid categories'))) %>%
       ncol == 6) return(data_dict)
   
   
@@ -540,7 +540,7 @@ data_dict_trim_labels <- function(
   data_dict$`Variables` <- 
     data_dict$`Variables` %>%
     select(-any_of(c('Variable name','Variable label'))) %>%
-    select(-starts_with(c('Category codes and labels','Category missing codes'))) %>%
+    select(-starts_with(c('Categories in data dictionary','Non-valid categories'))) %>%
     mutate('var_name' =  .data$`name`,
            'var_lab' =  !! as.symbol(labs[['Variables']])) %>%
     mutate(across(c('var_name', 'var_lab'), ~ as.character(.))) %>%
@@ -590,7 +590,7 @@ data_dict_trim_labels <- function(
     
     data_dict$`Categories` <- 
       data_dict$`Categories` %>%
-      select(-starts_with(c('Category codes and labels','Category missing codes'))) %>%
+      select(-starts_with(c('Categories in data dictionary','Non-valid categories'))) %>%
       mutate('var_name' =  .data$`variable`,
              'cat_name' =  .data$`name`, 
              'cat_lab' = !! as.symbol(labs[['Categories']]),
@@ -651,10 +651,10 @@ data_dict_trim_labels <- function(
           ifelse(isTRUE(silently_run(as_any_boolean(.data$cat_miss))) & 
                    class(silently_run(as_any_boolean(data_dict[['Categories']][['missing']]))) != 'try-error',
                  .data$`code_lab_long`,NA_character_)) %>%
-      rename('Category codes and labels short' = 'code_lab_short',
-             'Category codes and labels long' = 'code_lab_long',
-             'Category missing codes short' = 'code_missing_short',
-             'Category missing codes long' = 'code_missing_long') %>%
+      rename('Categories in data dictionary short' = 'code_lab_short',
+             'Categories in data dictionary long' = 'code_lab_long',
+             'Non-valid categories short' = 'code_missing_short',
+             'Non-valid categories long' = 'code_missing_long') %>%
       ungroup
      
     
@@ -669,10 +669,10 @@ data_dict_trim_labels <- function(
           tibble(
           "variable" = as.character(),
           "name" = as.character(),
-          "Category codes and labels short" = as.character(),
-          "Category codes and labels long" = as.character(),
-          "Category missing codes short" = as.character(),
-          "Category missing codes long" = as.character()))
+          "Categories in data dictionary short" = as.character(),
+          "Categories in data dictionary long" = as.character(),
+          "Non-valid categories short" = as.character(),
+          "Non-valid categories long" = as.character()))
     }
   }
   
@@ -695,23 +695,23 @@ data_dict_trim_labels <- function(
           dplyr::filter(!is.na(.data$`variable`)) %>%
           group_by(name = .data$`variable`) %>%
           mutate(across(
-            c('Category codes and labels short',
-              'Category codes and labels long',
-              'Category missing codes short',
-              'Category missing codes long'), ~ replace_na(.,""))) %>%
+            c('Categories in data dictionary short',
+              'Categories in data dictionary long',
+              'Non-valid categories short',
+              'Non-valid categories long'), ~ replace_na(.,""))) %>%
           reframe(across(
-            c('Category codes and labels short',
-              'Category codes and labels long',
-              'Category missing codes short',
-              'Category missing codes long'), ~ paste0(.,collapse = '\n'))) %>%
+            c('Categories in data dictionary short',
+              'Categories in data dictionary long',
+              'Non-valid categories short',
+              'Non-valid categories long'), ~ paste0(.,collapse = '\n'))) %>%
           mutate(
-            'Category missing codes short' = 
-              ifelse(str_squish(.data$`Category missing codes short`) == "",
-                     NA_character_,.data$`Category missing codes short`)) %>%
+            'Non-valid categories short' = 
+              ifelse(str_squish(.data$`Non-valid categories short`) == "",
+                     NA_character_,.data$`Non-valid categories short`)) %>%
           mutate(
-            'Category missing codes long' = 
-              ifelse(str_squish(.data$`Category missing codes long`) == "",
-                     NA_character_,.data$`Category missing codes long`)),
+            'Non-valid categories long' = 
+              ifelse(str_squish(.data$`Non-valid categories long`) == "",
+                     NA_character_,.data$`Non-valid categories long`)),
         by = 'name') 
     
   }else{
@@ -720,10 +720,10 @@ data_dict_trim_labels <- function(
       data_dict$Variables %>%
       bind_rows(
         tibble(
-          "Category codes and labels short" = as.character(),
-          "Category codes and labels long" = as.character(),
-          "Category missing codes short" = as.character(),
-          "Category missing codes long" = as.character()))
+          "Categories in data dictionary short" = as.character(),
+          "Categories in data dictionary long" = as.character(),
+          "Non-valid categories short" = as.character(),
+          "Non-valid categories long" = as.character()))
   }
     
   
@@ -734,19 +734,19 @@ data_dict_trim_labels <- function(
       select("name", 
              "Variable name", 
              "Variable label",
-             "Category codes and labels short",
-             "Category codes and labels short",
-             "Category missing codes short",
-             "Category missing codes long")
+             "Categories in data dictionary short",
+             "Categories in data dictionary short",
+             "Non-valid categories short",
+             "Non-valid categories long")
     
     if(has_categories(data_dict)){
       data_dict$`Categories` <- 
         data_dict$`Categories` %>%
         select("variable", "name",
-               "Category codes and labels short",
-               "Category codes and labels long",
-               "Category missing codes short",
-               "Category missing codes long")
+               "Categories in data dictionary short",
+               "Categories in data dictionary long",
+               "Non-valid categories short",
+               "Non-valid categories long")
       
     }
   }

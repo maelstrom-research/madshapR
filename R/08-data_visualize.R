@@ -554,8 +554,7 @@ variable_visualize <- function(
       summary_1 %>% 
         rowwise() %>%                                                           # [GF] NOTE : rowwise
         dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
-        select(-c("Index":"Category missing codes",                              
-                 "Categories in data dictionary"))))                            # [GF] NOTE : Categories in data dictionary ) enlever
+        select(-c("Index":"Non-valid categories"))))                            # [GF] NOTE : Categories in data dictionary ) enlever
   
   summary_1 <- 
     summary_1 %>%
@@ -592,7 +591,7 @@ variable_visualize <- function(
             summary_2 %>%
               rowwise() %>%                                                       # [GF] NOTE : rowwise
               dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
-              select(-c(1:"Number of distinct values")))) 
+              select(-c("Index":"Number of distinct values")))) 
         
         names(summary_2) <- 
           if(ncol(summary_2) == 1) "(all)" else
@@ -634,7 +633,7 @@ variable_visualize <- function(
             group_cat_long = group_cat_long) %>% 
             add_index(), by = 'group_cat_long') %>% arrange(index) %>%
         select(-any_of('Grouping'),-"index",-"group_cat_long",
-               -c(1:"Number of distinct values"))))
+               -c("Index":"Number of distinct values"))))
 
   names(summary_categories) <- 
     if(ncol(summary_categories) == 1) "(all)" else

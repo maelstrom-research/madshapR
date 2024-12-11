@@ -725,10 +725,12 @@ data_dict_evaluate <- function(
   
   # add label, valueType and missing if don't exist
   # if(is_data_dict_mlstr == TRUE){
-  
-  # data_dict[['Variables']] <-
-  #   data_dict[['Variables']] %>%
-  #   bind_rows(tibble(valueType = as.character()))
+  #   
+  #   data_dict[['Variables']] <-
+  #     data_dict[['Variables']] %>%
+  #     bind_rows(tibble(valueType = as.character()))
+  #   
+  # }
   
   first_lab_var <- first_label_get(data_dict)[['Variables']]
   data_dict_labels <- data_dict_trim_labels(data_dict)
@@ -782,7 +784,7 @@ data_dict_evaluate <- function(
   data_dict <- 
     data_dict %>% lapply(function(x) x %>% select(
       -any_of(c('Variable name','Variable label')),
-      -starts_with(c('Category codes and labels','Category missing codes'))))
+      -starts_with(c('Categories in data dictionary','Non-valid categories'))))
   
   if(is_data_dict_mlstr == TRUE){
     
@@ -1042,9 +1044,9 @@ data_dict_evaluate <- function(
       'Index' = 'index',
       'Variable name', 
       'Variable label',
-      # 'Variable valueType' = 'valueType',
-      'Category codes and labels' =     'Category codes and labels long',
-      'Category missing codes' =     'Category missing codes long') %>%
+      # 'Data dictionary valueType' = 'valueType',
+      'Categories in data dictionary' =     'Categories in data dictionary long',
+      'Non-valid categories' =     'Non-valid categories long') %>%
     mutate(Index = as.integer(replace_na(.data$`Index`,0)))
   
   # test_var_label
