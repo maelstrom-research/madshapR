@@ -488,7 +488,6 @@ dataset_evaluate <- function(
     bind_rows(test_unique_value) %>%
     bind_rows(test_existing_variable_category) %>%
     bind_rows(test_valueType) %>% 
-    # anchor
     left_join(
       data_dict_labels$`Variables` %>% select("name_var" = "name","index","Variable name"),
       relationship = "many-to-many",
@@ -522,11 +521,11 @@ dataset_evaluate <- function(
   message("    Generate report")
   
   if(nrow(report$`Dataset assessment`) == 0){
-    message("\n    The dataset contains no error/warning.")
+    message("\n    The dataset contains no errors/warnings.")
     report$`Dataset assessment` <-
       tibble(
         'Variable name' = '(all)',
-        'Dataset assessment' = "[INFO] - The dataset contains no error/warning.")
+        'Dataset assessment' = "[INFO] - The dataset contains no errors/warnings.")
   }
   
   message(bold(
@@ -1106,7 +1105,7 @@ data_dict_evaluate <- function(
   message("    Generate report")
   
   if(nrow(report$`Data dictionary assessment`) == 0){
-    message("\n    The data dictionary contains no error/warning.")
+    message("\n    The data dictionary contains no errors/warnings.")
     report$`Data dictionary assessment` <- NULL
   }
   

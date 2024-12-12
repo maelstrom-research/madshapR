@@ -879,7 +879,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
   if(sum(data_dict[["Variables"]][['madshapR::index']]) != 
      nrow(data_dict[["Variables"]]) * (nrow(data_dict[["Variables"]]) + 1)/2){
     stop(call. = FALSE,
-         "An error occured in data_dict_pivot_longer(). Please contact us.")
+         "An error occurred in data_dict_pivot_longer(). Please contact us.")
   }
   
   data_dict[["Variables"]] <- 

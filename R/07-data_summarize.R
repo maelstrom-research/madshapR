@@ -227,8 +227,6 @@ your dataset")}
     }
   }
 
-  # data_dict_labels <- data_dict_trim_labels(data_dict)
-  
   report$`Variables summary (all)` <-
     report$`Data dictionary summary` %>%
     left_join(
@@ -239,7 +237,6 @@ your dataset")}
       by = "Variable name") %>%
     full_join(dataset_valueType, by = "name_var") %>%
     full_join(suggested_valueType, by = "Variable name") 
-  # %>% mutate("Categories in data dictionary" = `Categories in data dictionary`)
 
   message("    Summarize the data type of each variable across the dataset")
   
@@ -269,6 +266,8 @@ your dataset")}
 
   if("datetime" %in% gT)  message("    Summarize information for datetime variables")
   summary_datetime <- dataset_preprocess %>% lapply(summary_variables_datetime)
+  
+  # anchor
   
   if(has_categories(data_dict)) message("    Summarize information for categorical variables")
   summary_category <- dataset_preprocess %>% lapply(summary_variables_categorical)
@@ -345,7 +344,7 @@ your dataset")}
       `Quality assessment comment` = ifelse(.data$`Variable class` %in% "col id",
       "[INFO] - Identifier variable.",.data$`Quality assessment comment`),      # [GF] QUESTION :wording to validate
       `Quality assessment comment` = ifelse(.data$`Variable class` %in% "group",
-      "[INFO] - Grouping variable.",.data$`Quality assessment comment`)) %>%        # [GF] QUESTION :wording to validate
+      "[INFO] - Grouping variable.",.data$`Quality assessment comment`)) %>%    
     select(any_of(minimum_cols))
     
   report$`Text variable summary` <-
@@ -516,6 +515,7 @@ your dataset")}
   
   for(i in names(Overview_group)[-1]){
 
+    # names(group) = "" # [GF] suggestion : enlever le nom du group en haut
     Overview_group[[i]][c(1:index),2] <- " "
     Overview_group[[i]][,1] <- NULL
   }
@@ -525,37 +525,72 @@ your dataset")}
     report$Overview %>%
     dplyr::filter(!.data$`(all)` %in% "madshapR::remove")
   
-  # if("[Unlabelled group]" %in% names(Overview_group)){                        # [GF] QUESTION : to validate
-  # 
-  #   qual_comment = "[INFO] - Grouping variable contains empty values (NA)."
-  # 
-  #   report[["Dataset assessment"]] <-
-  #     bind_rows(
-  #       report[["Dataset assessment"]],
-  #       tibble(
-  #         `Index` = Index_group_short,
-  #         `Variable name` = name_group_short,
-  #         `Dataset assessment` = qual_comment,
-  #         Value = '[Unlabelled group]')) %>% arrange(pick("Index"))
-  # }
+  report[["Dataset assessment"]] <-
+    report[["Dataset assessment"]] %>% filter(
+      .data$`Dataset assessment` != "[INFO] - The dataset contains no errors/warnings.")
   
-#   report[['Dataset assessment']] <- 
-#     report[['Dataset assessment']] %>%
-#     mutate(
-#       'Dataset assessment' = 
-#         ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
-#           .data$`Dataset assessment` , 
-# "Variable is categorical and has values defined in data dictionary that are not present in dataset"),
-# "[INFO] - Grouping variable has empty group (no participant).",                 # [GF] QUESTION : wording to validate
-#           .data$`Dataset assessment`),
-# 
-#       'Dataset assessment' = 
-#         ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
-#           .data$`Dataset assessment` , 
-# "Variable is defined as categorical in data dictionary but not in dataset"),
-# "[INFO] - Grouping variable is not defined as categorical in data dictionary.", # [GF] QUESTION : to validate
-#         .data$`Dataset assessment`))
+  if("[Unlabelled group]" %in% names(Overview_group)){  
+
+    qual_comment = "[INFO] - Grouping variable contains empty values (NA)."
+
+    report[["Dataset assessment"]] <-
+      bind_rows(
+        report[["Dataset assessment"]],
+        tibble(
+          `Index` = Index_group_short,
+          `Variable name` = name_group_short,
+          `Dataset assessment` = qual_comment,
+          Value = '[Unlabelled group]')) %>% arrange(pick("Index"))
+  }
+
+  test_group_categorical <-   
+    report[['Variables summary (all)']] %>%
+    filter(.data$`Quality assessment comment` == "[INFO] - Grouping variable.") %>%
+    pull(.data$`Categorical variable`) %>% unique %>% toString
+  
+  
+  # [GF] Comment : further dev : exclude mix variables
+  if(test_group_categorical == "no"){  
+    
+    qual_comment = "[INFO] - Grouping variable is not defined as categorical in data dictionary."
+    report[["Dataset assessment"]] <-
+      bind_rows(
+        report[["Dataset assessment"]],
+        tibble(
+          `Index` = Index_group_short,
+          `Variable name` = name_group_short,
+          `Dataset assessment` = qual_comment)) %>% arrange(pick("Index"))}
+  
+  report[['Dataset assessment']] <-
+    report[['Dataset assessment']] %>%
+    mutate(
+      'Dataset assessment' =
+        ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
+          .data$`Dataset assessment` ,
+"Variable is categorical and has values defined in data dictionary that are not present in dataset"),
+"[INFO] - Grouping variable has empty group (group with no participants).",                 
+          .data$`Dataset assessment`),
+
+      'Dataset assessment' =
+        ifelse(.data$`Variable name` %in% !! name_group_short & str_detect(
+          .data$`Dataset assessment` ,
+"Variable is defined as categorical in data dictionary but not in dataset"),
+"[INFO] - Grouping variable is not defined as categorical in data dictionary.", 
+        .data$`Dataset assessment`))
  
+  
+  if(nrow(report$`Dataset assessment`) == 0){
+    message("\n    The dataset contains no errors/warnings.")
+    report$`Dataset assessment` <-
+      tibble(
+        'Variable name' = '(all)',
+        'Dataset assessment' = "[INFO] - The dataset contains no errors/warnings.")
+  }
+
+  report$`Dataset assessment` <- 
+    report$`Dataset assessment` %>%
+    select(any_of("Index"),everything())
+  
   message("    Generate report\n")
   
   # create report structure
@@ -583,6 +618,9 @@ your dataset")}
   if(length(group_var) > 0){
     attributes(report)[['madshapR_group::group_by']] <- group_var    
   }
+  
+  
+  
 
   return(report)
 }
@@ -762,7 +800,6 @@ dataset_preprocess <- function(
     data_dict = data_dict_extract(dataset), 
     group_by = group_vars(dataset)){
   
-  
   # handle atomics
   # if(is.atomic(dataset) & length(dataset) == 0) return(summary_tbl) 
   if(is.atomic(dataset))
@@ -781,8 +818,6 @@ dataset_preprocess <- function(
   dataset <- as_dataset(ungroup(dataset))
   
   # check on arguments : data_dict. 
-  
-  # anchor
   as_data_dict_shape(data_dict)
   
   data_dict_labels <- data_dict_trim_labels(data_dict)
@@ -832,7 +867,7 @@ dataset_preprocess <- function(
         "variable" = as.character(),
         "name" = as.character(), # `madshapR::label_cat_long` = as.character(),
         "label" = as.character(),
-        "missing" = as.character(),
+        "missing" = as.logical(),
         "Categories in data dictionary long" = as.character(),
         "Categories in data dictionary short" = as.character(),
         "Non-valid categories long" = as.character(),
@@ -841,22 +876,39 @@ dataset_preprocess <- function(
   }
   
   dataset_pps <-
-    dataset %>%
+    dataset %>% 
     add_index("index_value",.force = TRUE) 
   
   if(length(group_var) == 0){
     
     dataset_pps <-
-      dataset_pps  %>%
+      dataset_pps %>% 
       mutate("madshapR::no_group" = as_category("[No group]"))
     
     group_var <- "madshapR::no_group"
+    data_dict_group <- 
+      data_dict_extract(dataset_pps[group_var]) %>% 
+      data_dict_trim_labels()
+    
+    data_dict_group <- 
+      data_dict_group[['Categories']] %>%
+      mutate(
+        cat_index = 1,
+        missing = FALSE,
+        "Categories in data dictionary short" = '[No group]',
+        "Categories in data dictionary long" = '[No group]',
+        name_palette_valid_class = "cat_1")
+    
+    data_dict_pps[['Categories']] <-
+      data_dict_pps[['Categories']] %>%
+      bind_rows(data_dict_group)
+    
   }
   
   data_dict_pps[['Variables']] <- 
     data_dict_pps[['Variables']] %>% 
-    add_index("Index", .force = TRUE) %>%
-    select("Index",
+    add_index("Index in data_dict", .force = TRUE) %>%
+    select("Index in data_dict",
            "name" = "name",
            "Variable name",
            "Variable label",
@@ -866,10 +918,10 @@ dataset_preprocess <- function(
            starts_with("Non-valid categories"))
   
   group_in_dataset <- 
-    dataset_pps[c(group_var)] %>%
+    dataset_pps[c(group_var)] %>% 
     distinct() %>%
     rename("madshapR::grouping_var" = all_of(group_var)) %>%
-    mutate("madshapR::group_occurence" = 1)
+    mutate("madshapR::group_occurrence" = 1)
   
   group_tibble <- 
     data_dict_pps$Categories %>% 
@@ -886,25 +938,43 @@ dataset_preprocess <- function(
     # unite("madshapR::group_label",c("madshapR::group_label",!! group_var),sep = " ", na.rm = TRUE,remove = FALSE) %>%
     # mutate(`Variable name`             = replace_na(`Variable name`,group_var)) %>%
     mutate("madshapR::grouping_var" = as_valueType(.data$`madshapR::grouping_var`,"text")) %>%
-    mutate("madshapR::group_occurence" = replace_na(.data$`madshapR::group_occurence`,0)) %>%
+    mutate("madshapR::group_occurrence" = replace_na(.data$`madshapR::group_occurrence`,0)) %>%
     mutate("madshapR::grouping_var" = replace_na(.data$`madshapR::grouping_var`,"[Unlabelled group]")) %>%
     add_index("madshapR::group_index",.force = TRUE) %>%
     select(
       "name" = "madshapR::grouping_var", 
       "variable","madshapR::group_index",
-      "label", "madshapR::group_occurence",
+      "label", "madshapR::group_occurrence",
       starts_with("Categories in data dictionary"),
-      starts_with("Non-valid categories")) 
-  
-  # group_name_short <- 
-  #   list(Variables = data_dict_pps$Variables %>%
-  #          filter(name == group_var),
-  #        Categories = group_tibble) %>%
-  #   data_dict_trim_labels()
+      starts_with("Non-valid categories"))
   
   group_name_short <- 
     data_dict_pps$Variables %>%
     filter(name == group_var) %>% pull("Variable name")
+  
+  group_tibble_labels <- 
+    list(
+    Variables = tibble(name = group_var),
+    Categories  = group_tibble %>% select(variable,name,label)) %>%
+    as_data_dict_mlstr() %>%
+    data_dict_trim_labels()
+  
+  group_tibble_labels = 
+    group_tibble_labels[['Categories']] %>%
+    bind_rows(tibble(
+      "name" = as.character(),
+      "Categories in data dictionary short" = as.character(),
+      "Categories in data dictionary long" = as.character(),)) %>%
+    mutate(across(
+      c("Categories in data dictionary short","Categories in data dictionary long"),
+      ~ ifelse(.data$`name` %in% c("[Unlabelled group]","[No group]"),.data$`name`,.))) %>%
+    mutate(across(
+      c("name"),
+      ~ ifelse(.data$`name` %in% c("[Unlabelled group]"),NA,.))) %>%
+    mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
+    rename("madshapR::grouping_var" = "name") %>%
+    select("madshapR::grouping_var","Categories in data dictionary short","Categories in data dictionary long")
+    
   
   group_tibble <-
     group_tibble %>%
@@ -920,11 +990,15 @@ dataset_preprocess <- function(
       "madshapR::grouping_var" = "name",
       "madshapR::group_label long"  = "Categories in data dictionary long",
       "madshapR::group_label short" = "Categories in data dictionary short",
-      "madshapR::group_occurence")
+      "madshapR::group_occurrence") %>% left_join(group_tibble_labels,by = "madshapR::grouping_var") %>%
+    mutate(
+      "madshapR::group_label long" = ifelse(is.na(.data$`madshapR::group_label long`),.data$`Categories in data dictionary long`,.data$`madshapR::group_label long`),
+      "madshapR::group_label short" = ifelse(is.na(.data$`madshapR::group_label short`),.data$`Categories in data dictionary short`,.data$`madshapR::group_label short`)) %>%
+    select(-c("Categories in data dictionary long","Categories in data dictionary short"))
   
   # add color palette to the group
   col_palette <- madshapR::color_palette_maelstrom
-  nb_group <- max(group_tibble[["madshapR::group_index"]])
+  nb_group <- max(0,group_tibble[["madshapR::group_index"]])
 
   col_palette_group <- 
     col_palette %>% 
@@ -932,7 +1006,7 @@ dataset_preprocess <- function(
     pull(color_palette)
 
   col_palette_group <-
-  rep(col_palette_group,ceiling(nb_group/length(col_palette_group)))[seq_along(1:nb_group)]
+    rep(col_palette_group,ceiling(nb_group/length(col_palette_group)))[seq_along(1:nb_group)]
   names(col_palette_group) <- paste0("group_",seq_along(1:nb_group))
   
   col_palette_group <-
@@ -948,10 +1022,13 @@ dataset_preprocess <- function(
 
   group_tibble <-
     group_tibble %>%
-    mutate("name_palette_group" = ifelse(
-      .data$`madshapR::group_occurence` == 0,
-      "group_empty",ifelse(.data$`madshapR::grouping_var` == "[No group]","no_group",
-        paste0("group_",.data$`madshapR::group_index`)))) %>%
+    mutate(across(where(is.logical), as.character)) %>%
+    mutate("name_palette_group" = case_when(
+      
+      .data$`madshapR::group_occurrence` == 0 ~ "group_empty",
+      .data$`madshapR::grouping_var` == "[No group]" ~ "no_group",
+      TRUE ~ paste0("group_",.data$`madshapR::group_index`))) %>%
+    mutate(across(where(is.logical), as.character)) %>%
     left_join(col_palette_group,by = "name_palette_group")
     
   data_dict_pps <- 
@@ -959,7 +1036,7 @@ dataset_preprocess <- function(
   
   data_dict_pps[['Variables']] <- 
     data_dict_pps[['Variables']] %>%
-    select('Index',"name_var" = 'name','valueType',"Variable name")
+    select('Index in data_dict',"name_var" = 'name','valueType',"Variable name")
   
   data_dict_pps[['Categories']] <- 
     data_dict_pps[['Categories']] %>%
@@ -988,9 +1065,10 @@ dataset_preprocess <- function(
     pull(color_palette)
   
   col_palette_cat <-
-    rep(col_palette_cat,ceiling(nb_group/length(col_palette_cat)))[seq_along(1:nb_cat)]
+    rep(col_palette_cat,ceiling(nb_cat/length(col_palette_cat)))[seq_len(nb_cat)]
   
-  names(col_palette_cat) <- paste0("cat_",seq_along(1:nb_cat))
+  if(length(col_palette_cat > 0))
+    names(col_palette_cat) <- paste0("cat_",seq_len(nb_cat))
 
   col_palette_cat <-
     tibble(
@@ -1003,9 +1081,10 @@ dataset_preprocess <- function(
     pull(color_palette)
   
   col_palette_miss <-
-    rep(col_palette_miss,ceiling(nb_group/length(col_palette_miss)))[seq_along(1:nb_miss)]
+    rep(col_palette_miss,ceiling(nb_miss/length(col_palette_miss)))[seq_len(nb_miss)]
   
-  names(col_palette_miss) <- paste0("miss_cat_",seq_along(1:nb_miss))
+  if(length(col_palette_miss > 0))
+    names(col_palette_miss) <- paste0("miss_cat_",seq_len(nb_miss))
   
   col_palette_miss <-
     tibble(
@@ -1023,32 +1102,64 @@ dataset_preprocess <- function(
   for(i in names(select(dataset_pps, -"index_value"))){
     # stop()}
     
-    col_set <- 
+    col_set <-
       dataset_pps %>% 
       select("index_value", "madshapR::var" = all_of(i),
              "madshapR::grouping_var" = all_of(group_var)) %>%
       mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)) %>%
       rename(!!i := "madshapR::var") %>% 
       mutate('name_var' = i) %>%  
+      # group_by(Species) %>% slice(1:2) %>% ungroup %>%
       full_join(
         data_dict_pps$Categories %>% 
           dplyr::filter(data_dict_pps$Categories$`name_var` == i) %>% 
           mutate(`madshapR::code` = as_valueType(`madshapR::code`,valueType_of(dataset_pps[[c(i)]]))) %>%
           rename(!!i := "madshapR::code"),
-        by = c(i, "name_var")) %>%
+        by = c(i, "name_var")) %>% 
       mutate("name_var" = i) %>%
-      mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`))
+      mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`)) %>%
+      mutate(across(c("index_value"),as.integer))
     
-    no_col_set <- 
-      col_set %>% 
-      filter(.data$`index_value` == 0) %>%
-      select(-"madshapR::grouping_var") %>%
-      cross_join(
-        group_tibble %>% 
-          select("madshapR::grouping_var")) %>%
-      mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`))
-      
     
+    # if(nrow(col_set == 0)){
+    
+      no_col_set <- 
+        col_set %>% 
+        filter(.data$`index_value` == 0) %>%
+        # select(-"madshapR::grouping_var") %>%
+        full_join(
+          group_tibble %>% 
+            select("madshapR::grouping_var") %>%
+            mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)),
+          by = "madshapR::grouping_var") %>%
+        mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)) %>%
+        mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`)) %>%
+        filter(!is.na(.data$`name_var`)) %>%
+        select(-"madshapR::grouping_var") %>%
+        cross_join(
+          group_tibble %>% 
+            select("madshapR::grouping_var") %>%
+            mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`))) %>%
+        mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)) %>%
+        mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`)) %>%
+        filter(!is.na(.data$`name_var`))
+        
+        
+    # }else{
+    #   no_col_set <- 
+    #     col_set %>% 
+    #     filter(.data$`index_value` == 0) %>%
+    #     select(-"madshapR::grouping_var") %>%
+    #     cross_join(
+    #       group_tibble %>% 
+    #         select("madshapR::grouping_var") %>%
+    #         mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`))) %>%
+    #       # by = "madshapR::grouping_var") %>%
+    #     mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)) %>%
+    #     mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`)) %>%
+    #     filter(!is.na(.data$`name_var`))      
+    # }
+
     col_set <- 
       col_set %>%
       filter(.data$`index_value` != 0) %>%
@@ -1058,17 +1169,19 @@ dataset_preprocess <- function(
         group_tibble[c("madshapR::grouping_var",
                        "madshapR::group_label long",
                        "madshapR::group_label short",
-                       "madshapR::group_occurence")] %>%
+                       "madshapR::group_occurrence")] %>%
           mutate("madshapR::grouping_var" = as.character(.data$`madshapR::grouping_var`)),
         by = "madshapR::grouping_var") %>% 
-      select(-"madshapR::grouping_var") %>%
+      select(-"madshapR::grouping_var") %>% 
+      mutate('name_var' = i) %>%  
       full_join(data_dict_pps$Variables[data_dict_pps$Variables$`name_var` == i,], 
-                by = c("name_var")) %>%
+                by = c("name_var")) %>%  
       full_join(group_tibble %>% select(
-        -c("madshapR::group_occurence", 
+        -c("madshapR::group_occurrence", 
            "name_palette_group",
-           "color_palette_group")), by = c("madshapR::group_label long","madshapR::group_label short")) %>% 
-      mutate(`value_var_occur` = ifelse(is.na(`madshapR::group_label long`),0,`value_var_occur`)) %>% 
+           "color_palette_group")), by = c("madshapR::group_label long","madshapR::group_label short")) %>%  
+      mutate(`value_var_occur` = ifelse(is.na(`madshapR::group_label long`),0,`value_var_occur`)) %>%
+      mutate(across(c("value_var_occur","index_value"), as.integer)) %>%
       # mutate(`value_var_occur` = ifelse(`index_value` == 0,1)) %>% 
       select(`value_var_occur`,everything()) %>%  
       mutate(`value_var long` = 
@@ -1082,21 +1195,25 @@ dataset_preprocess <- function(
                       "[Empty value]",
                       ifelse(!is.na(.data$`Categories in data dictionary short`),
                              .data$`Categories in data dictionary short`,
-                             as.character(!!as.name(i))))) 
-    
+                             as.character(!!as.name(i))))) %>%
+      mutate(across(c("value_var long","value_var short"), as.character)) %>%
+      mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`)) %>%
+      mutate("value_var_occur" = ifelse(is.na(.data$`value_var_occur`),0,.data$`value_var_occur`))
+
     col_set <- 
-      col_set %>% 
+      col_set %>%  
       mutate(
         "valid_class" = case_when(
           
-          `Variable name` == toString(col_id) & !is.na(.data$`index_value`)  ~ "0 - Col id",
-          `madshapR::missing` == FALSE                                       ~ "2 - Valid categorical values",
-          `madshapR::missing` == TRUE                                        ~ "3 - Missing categorical value",
-          ! is.na(!!as.name(i)) &   is.na(`Categories in data dictionary long`)  ~ "1 - Valid non categorical values",
-          is.na(!!as.name(i)) & !is.na(`index_value`)                        ~ "4 - Empty values",
-          TRUE                                                               ~ NA_character_)) %>%
+          `Variable name` == toString(col_id) & `index_value` != 0         ~ "0 - Col id",
+          `madshapR::missing` == FALSE                                     ~ "2 - Valid categorical values",
+          `madshapR::missing` == TRUE                                      ~ "3 - Missing categorical value",
+          is.na(!!as.name(i)) &  `index_value` != 0                        ~ "4 - Empty values",
+          is.na(`Categories in data dictionary long`) & `index_value` != 0 ~ "1 - Valid non categorical values",
+          # is.na(!!as.name(i))                                              ~ "4 - Empty values",
+          TRUE                                                             ~ NA_character_)) %>%
       arrange(pick("index_value"))
-    
+  
     # add the rest of the palette
     col_set <-
       col_set %>%
@@ -1106,6 +1223,11 @@ dataset_preprocess <- function(
                ifelse(is.na(.data$`color_palette_valid_class`),
                       .data$`color_palette`,
                       .data$`color_palette_valid_class`)) %>%
+      mutate(name_palette_valid_class =
+               ifelse(is.na(.data$`name_palette_valid_class`) & !is.na(.data$`color_palette_valid_class`),
+                      .data$`valid_class`,
+                      .data$`name_palette_valid_class`)) %>%
+      mutate(across(c("color_palette_valid_class"), as.character)) %>%
       select(-"color_palette")
     
     valid_statuses <- 
@@ -1128,12 +1250,13 @@ dataset_preprocess <- function(
         str_detect(toString(valid_statuses),"3 - Missing categorical value|2 - Valid categorical values") ~ "yes"   ,
         TRUE  ~ "ERROR")
     
+    
+    # [GF] If col id and group are the same might cause an error
     valid_class_status <- 
       case_when(
         
-        i %in% col_id                                                           ~ "col id",
         i %in% group_var                                                        ~ "group" ,
-        
+        i %in% col_id                                                           ~ "col id",
         valid_statuses == ""                                                    ~ "no"    ,
         toString(valid_statuses) == "1 - Valid non categorical values"          ~ "no"    ,
         
@@ -1149,7 +1272,7 @@ dataset_preprocess <- function(
       mutate("Categorical variable" = categorical_status) %>%
       mutate("Variable class" = valid_class_status) %>%
       select(
-        "Index",
+        "Index in data_dict",
         "name_var",
         "Variable name",
         "valueType",
@@ -1159,14 +1282,14 @@ dataset_preprocess <- function(
         "value_var long",
         "value_var short",
         "value_var_occur",
-        "valid_class",
         "cat_index",
-        "madshapR::group_label long",
-        "madshapR::group_label short",
-        "madshapR::group_occurence",
+        "valid_class",
         "name_palette_valid_class",
-        "color_palette_valid_class") 
-
+        "color_palette_valid_class",
+        "madshapR::group_occurrence",
+        "madshapR::group_label long",
+        "madshapR::group_label short")
+    
     summary_tbl <- 
       summary_tbl %>%
       bind_rows(col_set)
@@ -1192,7 +1315,7 @@ dataset_preprocess <- function(
           !! paste0('Grouping variable: ', group_name_short) := p,
           "madshapR::group_label short" = p,
           "madshapR::group_label long" = p) %>%
-        mutate("madshapR::group_occurence" = 1) 
+        mutate("madshapR::group_occurrence" = 1) 
     
     }else if(p == "madshapR::grouping_var"){
       
@@ -1209,14 +1332,17 @@ dataset_preprocess <- function(
 
     }else{
       final_resume[[p]] <- 
-        final_resume[[p]] %>% 
+        final_resume[[p]] %>%
         dplyr::filter(.data$`name_var` != group_var) %>%
         mutate(
           "value_var_occur" = 
             ifelse(.data$`madshapR::group_label long` %in% p ,                    # [GF] NOTE : long label
                    .data$`value_var_occur`,0)) %>%
         mutate(
-          !! paste0('Grouping variable: ', group_name_short) := p)
+          !! paste0('Grouping variable: ', group_name_short) := p) %>% 
+        mutate(
+          "madshapR::group_occurrence" = 
+            (group_tibble %>% filter(p == `madshapR::group_label long`) %>% pull(`madshapR::group_occurrence`))) 
       
     }}
   
@@ -1231,7 +1357,8 @@ dataset_preprocess <- function(
         mutate(
           "genericType" = ifelse(
             `Variable class` %in% c("yes","no","mix"),`genericType`,
-            `Variable class`)) %>% select("Index":"valueType","genericType",everything()) %>%
+            `Variable class`)) %>% select("Index in data_dict":"valueType","genericType",everything()) %>%
+        rename("Index" = "Index in data_dict") %>%
         left_join(
           group_tibble %>% 
             select(!! paste0('Grouping variable: ', group_name_short) := "madshapR::group_label long",
@@ -1388,7 +1515,6 @@ summary_variables <- function(
       summary_tbl <- bind_rows(summary_tbl, summary_i)
     }
 
-    
     # [GF] - messages to validate
         
     summary_tbl <-
@@ -1399,7 +1525,7 @@ summary_variables <- function(
           sum(bind_rows(dataset_preprocess) %>% pull(`value_var_occur`),na.rm = TRUE) == 0 ~         
             "[INFO] - The dataset has 0 rows." ,
           
-          sum(summary$`madshapR::group_occurence`) == 0 & 
+          sum(summary$`madshapR::group_occurrence`) == 0 & 
             "group" %in% (bind_rows(dataset_preprocess) %>% pull(`Variable class`))  ~
             "[INFO] - Empty group." ,
 
@@ -1888,7 +2014,6 @@ summary_variables_numeric <- function(
     data_dict = NULL,
     .dataset_preprocess = NULL){
   
-  # anchor
   # init
   summary <-
     dataset_preprocess %>%
@@ -2042,6 +2167,7 @@ summary_variables_categorical <- function(
   if(is.null(dataset_preprocess)) return(summary_tbl)
   if(!nrow(dataset_preprocess)) return(summary_tbl)
   
+  # anchor
   summary <-
     dataset_preprocess %>%
     dplyr::filter(!(.data$`value_var_occur` == 0 & is.na(.data$`cat_index`))) %>%
@@ -2190,17 +2316,17 @@ summary_variables_categorical <- function(
             unique(summary_i$`Variable name`),
           
           `Values present in dataset`                           =
-            if(sum(summary_i$`madshapR::group_occurence`) == 0) NA_character_ else
+            if(sum(summary_i$`madshapR::group_occurrence`) == 0) NA_character_ else
               if(summary_category$list_values == "") NA_character_ else
                 summary_category$list_values,
           
           `Data dictionary categories not present in dataset`   =
-            if(sum(summary_i$`madshapR::group_occurence`) == 0) NA_character_ else
+            if(sum(summary_i$`madshapR::group_occurrence`) == 0) NA_character_ else
               if(summary_category$cat_var_absence == "") NA_character_ else
                 summary_category$cat_var_absence,
           
           `Dataset values not present in data dictionary`        =
-            if(sum(summary_i$`madshapR::group_occurence`) == 0) NA_character_ else
+            if(sum(summary_i$`madshapR::group_occurrence`) == 0) NA_character_ else
               if(summary_category$other_val_presence == "") NA_character_ else
                 summary_category$other_val_presence
           
