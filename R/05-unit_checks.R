@@ -1177,9 +1177,10 @@ check_dataset_valueType <- function(
     vec2 <- data_dict[['Categories']][['name']][
       data_dict[['Categories']][['variable']] == i]
     if(length(vec2) > 0) vec <- c(vec,vec2)
+    # if(all(is.na(vec)))  vec <- as_valueType(vec,dataset_vT)
       
     # if valueType_guess, guess it, else do nothing.
-    if(isTRUE(valueType_guess)) vector_vT <- valueType_guess(vec)
+    if(isTRUE(valueType_guess) & !all(is.na(vec))) vector_vT <- valueType_guess(vec)
     
     # what is the value Type in the data dict ?
     data_dict_vT <-
@@ -1218,7 +1219,6 @@ check_dataset_valueType <- function(
                 (.data$data_dict_vT == .data$vector_vT & .data$data_dict_vT != .data$dataset_vT)                         
                                                                       ~ .data$dataset_vT,
                TRUE                                                   ~ .data$data_dict_vT),
-            
             
       suggestion = case_when(
               (.data$data_dict_vT == .data$dataset_vT & .data$dataset_vT == .data$vector_vT) |
