@@ -45,6 +45,8 @@
 #' @param is_data_dict_mlstr Whether the input data dictionary should be coerced 
 #' with specific format restrictions for compatibility with other 
 #' Maelstrom Research software. TRUE by default.
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. TRUE by default.
 #' @param taxonomy An optional data frame identifying a variable classification 
 #' schema.
 #' @param dataset_name A character string specifying the name of the dataset 
@@ -84,6 +86,7 @@ dataset_evaluate <- function(
     dataset,
     data_dict = NULL,
     is_data_dict_mlstr = TRUE,
+    valueType_guess = TRUE,
     taxonomy = NULL,
     dataset_name = NULL){
   
@@ -96,6 +99,9 @@ dataset_evaluate <- function(
   if(!is.logical(is_data_dict_mlstr))
     stop(call. = FALSE,
          '`is_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,
+         '`valueType_guess` must be TRUE or FALSE (TRUE by default)')
   
   # check on arguments : dataset
   as_dataset(dataset) # no col_id
@@ -150,7 +156,7 @@ dataset_evaluate <- function(
   col_id <- col_id(dataset)
   
   zap_dataset <- 
-    dataset_zap_data_dict(dataset) %>% 
+    dataset_zap_data_dict(dataset,zap_factor = TRUE) %>% 
     select(-all_of(col_id)) %>%
     mutate(across(where(is.character),tolower))
   
@@ -438,7 +444,8 @@ dataset_evaluate <- function(
       test_valueType <-
         check_dataset_valueType(
           dataset = zap_dataset, 
-          data_dict = data_dict['Variables'],valueType_guess = TRUE) %>%
+          data_dict = data_dict['Variables'],
+          valueType_guess = valueType_guess) %>%
         rename(
           # "Variable name" = "name_var",
           "name_var" = "name_var",
