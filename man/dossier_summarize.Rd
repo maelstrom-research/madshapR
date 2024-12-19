@@ -8,7 +8,7 @@ dossier_summarize(
   dossier,
   group_by = NULL,
   taxonomy = NULL,
-  valueType_guess = FALSE
+  valueType_guess = TRUE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ column.}
 schema.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
+valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
 A list of data frames containing overall assessment reports and summaries grouped by dataset.
