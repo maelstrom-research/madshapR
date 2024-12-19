@@ -172,7 +172,8 @@ dataset_summarize <- function(
       data_dict,
       taxonomy = taxonomy,
       dataset_name = dataset_name,
-      is_data_dict_mlstr = TRUE)
+      is_data_dict_mlstr = TRUE,
+      valueType_guess = valueType_guess)
   
   
   if(as_tibble(report[['Dataset assessment']]) %>% 
@@ -667,7 +668,7 @@ your dataset")}
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
 #' @param valueType_guess Whether the output should include a more accurate 
-#' valueType that could be applied to the dataset. FALSE by default.
+#' valueType that could be applied to the dataset. TRUE by default.
 #'
 #' @returns
 #' A list of data frames containing overall assessment reports and summaries grouped by dataset.
@@ -698,7 +699,7 @@ dossier_summarize <- function(
     dossier, 
     group_by = NULL,
     taxonomy = NULL, 
-    valueType_guess = FALSE){
+    valueType_guess = TRUE){
   
   # amelioration :rajouter taxonomy
   
@@ -707,7 +708,7 @@ dossier_summarize <- function(
   if(!is.null(taxonomy)) as_taxonomy(taxonomy)
   if(!is.logical(valueType_guess))
     stop(call. = FALSE,
-         '`as_data_dict_mlstr` must be TRUE or FALSE (TRUE by default)')
+         '`valueType_guess` must be TRUE or FALSE (TRUE by default)')
   
   if(!is.null(group_by)) 
     dossier <- dossier %>% lapply(function(x) group_by(x, !!as.name(group_by)))

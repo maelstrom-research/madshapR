@@ -8,6 +8,7 @@ dataset_evaluate(
   dataset,
   data_dict = NULL,
   is_data_dict_mlstr = TRUE,
+  valueType_guess = TRUE,
   taxonomy = NULL,
   dataset_name = NULL
 )
@@ -21,6 +22,9 @@ dataset. Automatically generated if not provided.}
 \item{is_data_dict_mlstr}{Whether the input data dictionary should be coerced
 with specific format restrictions for compatibility with other
 Maelstrom Research software. TRUE by default.}
+
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. TRUE by default.}
 
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
