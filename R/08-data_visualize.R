@@ -274,7 +274,7 @@ variable_visualize <- function(
     plot_histogramm <-    
       ggplot(x) + aes +
       geom_histogram(aes(y = after_stat(count)), color = "black") + 
-      geom_density(alpha = 0.8, color = "red", linewidth = 0.5) + 
+      # geom_density(alpha = 0.8, color = "red", linewidth = 0.5) + 
       facet_wrap(~group_label_short) + # Facet by species
       theme_minimal() +
       theme(legend.position = "none") +
@@ -532,7 +532,7 @@ variable_visualize <- function(
     if(valueType_guess == TRUE){
       vT_list[vT_list$valueType %in% 
                 valueType_guess(
-                  col_set_pps[col_set_pps$valid_class == '1 - Valid non categorical values',] %>% 
+                  col_set_pps[col_set_pps$valid_class == '1 - Valid non-categorical values',] %>% 
                     pull(`value_var short`)),c('valueType','genericType')]
     }else{
       unique(col_set_pps %>% select(c('valueType','genericType')))}
@@ -607,13 +607,20 @@ variable_visualize <- function(
     datatable(
       summary_table,
       options =
-        list(dom = 't',
+        list(
+          
+          # [GF] Comment : here is the place where the column names can be modified. 
+          # works in the console, but overwritten in the dataset visualize (due to 
+          # global parameter)
+          
+          dom = 't',
              scrollX = TRUE,
              pageLength = nrow(summary_table),
              ordering = FALSE,
              paging = TRUE),
       filter = 'none' ,
       escape = FALSE)
+
   
   #### summary_categories ####
   summary_categories <- NULL
@@ -662,7 +669,7 @@ variable_visualize <- function(
   
   #### preprocess elements ####
   preprocess_var_values <- 
-    col_set_pps[col_set_pps$valid_class == '1 - Valid non categorical values',] %>% 
+    col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))
@@ -674,7 +681,7 @@ variable_visualize <- function(
 
   # preprocess elements : categorical values
   preprocess_cat_values <- 
-    col_set_pps[col_set_pps$valid_class == '2 - Valid categorical values',] %>%
+    col_set_pps[col_set_pps$valid_class %in%  '2 - Valid categorical values',] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))
@@ -685,7 +692,6 @@ variable_visualize <- function(
     setNames(group_keys(preprocess_cat_values)[[1]])
 
   # preprocess elements : missing values  
-
   preprocess_miss_values <- 
     col_set_pps[col_set_pps$valid_class %in% c('3 - Missing categorical value','4 - Empty values'),] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
@@ -955,8 +961,7 @@ Please provide another name folder or delete the existing one.")}
       dataset_name,
       make_name_list(as.character(fargs[['dataset']]),
                            list_elem = list(NULL))))
-  
-  
+
   match_input_objects <- 
     suppressWarnings({
       data_dict_match_dataset(
@@ -977,10 +982,20 @@ Please provide another name folder or delete the existing one.")}
       taxonomy = taxonomy,
       dataset_name = dataset_name)}
 
-  data_dict$`Variables` <- 
-    data_dict$`Variables` %>% add_index(.force = TRUE)
+  data_dict <- 
+    data_dict_trim_labels(data_dict)
   
-
+  data_dict$`Variables` <- 
+    data_dict$`Variables` %>% 
+    add_index(.force = TRUE)
+  
+  if(has_categories(data_dict)){
+    data_dict$`Categories` <- 
+      data_dict$`Categories` %>%
+      left_join(
+        data_dict$`Variables` %>% select("variable" = "name", "Variable name"),
+        by = "variable")}
+  
   bookdown_template(path_to, overwrite = FALSE)
   if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(
@@ -1072,12 +1087,12 @@ datatable(Overview,
     rmd_file_name <-
       paste0(path_to,"/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
-             make.names(data_dict$`Variables`$`name`[i]),".Rmd")
+             make.names(data_dict$`Variables`$`Variable name`[i]),".Rmd")
     file.create(rmd_file_name)
     
     paste0(
       "# ", 
-      data_dict$`Variables`$`name`[i] %>%
+      data_dict$`Variables`$`Variable name`[i] %>%
       str_replace_all("(?=[^A-Za-z0-9])", "\\\\"),
       "{.unnumbered #var",i,"}\n\n") %>%
       
@@ -1090,14 +1105,12 @@ datatable(Overview,
           "echo = FALSE,message = FALSE,warning = FALSE,knitr.figure = TRUE}"),
         "\n
   
-  first_lab_var <- first_label_get(data_dict)[['Variables']]
-    
   datatable(t(
      data_dict$`Variables` %>%
-     dplyr::filter(`name` == '",data_dict$`Variables`$`name`[i],"') %>%
+     dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"') %>%
      select(
-      'Variable name' = 'name', 
-      'Variable label' = any_of(first_lab_var), 
+      'Variable name', 
+      'Variable label', 
       'Data dictionary valueType' = 'valueType')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
@@ -1107,8 +1120,8 @@ datatable(Overview,
       paste0("\n</div>\n\n") %>%
       paste0(ifelse(
         sum(nrow(
-          data_dict[['Categories']][data_dict[['Categories']][['variable']] == 
-                                      data_dict$`Variables`$`name`[i],])) > 0,
+          data_dict[['Categories']][data_dict[['Categories']][['Variable name']] == 
+                                      data_dict$`Variables`$`Variable name`[i],])) > 0,
         paste0("\n<p style= \"font-size: 140%;\"> **Categories** </p>","\n\n") %>%
           paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
           paste0(
@@ -1117,18 +1130,17 @@ datatable(Overview,
 
 
     n_cat <- data_dict$`Categories` %>% 
-      dplyr::filter(variable == '",data_dict$`Variables`$`name`[i],"')
+      dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"')
 
 if(nrow(n_cat) > 20){
 
   datatable(
     data_dict$`Categories` %>% 
-      dplyr::filter(variable == '",data_dict$`Variables`$`name`[i],"') %>%
+      dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"') %>%
     select(
-      'Variable name' = 'variable', 
-      'Categorie label' = any_of(first_lab_var), 
-      'Categorie code' = 'name', 
-      'missing') %>%
+      'Variable name',
+      'Categories in data dictionary' = 'Categories in data dictionary long', 
+      'Non-valid categories' = 'Non-valid categories long') %>%
     mutate(across(everything(), as.character)),
     options = list(scrollX = TRUE),rownames = FALSE)
 
@@ -1136,16 +1148,14 @@ if(nrow(n_cat) > 20){
 
   datatable(
     data_dict$`Categories` %>% 
-      dplyr::filter(variable == '",data_dict$`Variables`$`name`[i],"') %>%
+      dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"') %>%
     select(
-      'Variable name' = 'variable', 
-      'Categorie label' = any_of(first_lab_var), 
-      'Categorie code' = 'name', 
-      'missing') %>%
+      'Variable name',
+      'Categories in data dictionary' = 'Categories in data dictionary long', 
+      'Non-valid categories' = 'Non-valid categories long') %>%
     mutate(across(everything(), as.character)),
     options=list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
     filter = 'none' ,rownames = FALSE,escape = FALSE)
-
   }
 
                             ",
