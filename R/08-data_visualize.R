@@ -112,10 +112,8 @@ variable_visualize <- function(
     variable_summary = NULL,
     valueType_guess = TRUE){ # must be the same in dataset_summarize
   
-  plot_categories <- function(x){
+  plot_categories <- function(x,group_name_short){
   
-    # anchor
-    
     levels <- 
       unique(x %>%                                                              # [GF] NOTE : patch, mais ici il y a une erreur. a vérifier
       select("cat_index","value_var short") %>% distinct() %>%
@@ -127,6 +125,28 @@ variable_visualize <- function(
       group_by(pick(c("group_label_short","value_var short","value_var short","cat_index"))) %>%
       reframe(value_var_occur = sum(value_var_occur)) # %>% 
  
+    # anchor
+    # title <- paste0(' representation of `',unique(x$`Variable name`),'` (N obs. : ',sum(x$value_var_occur),')')
+    # 
+    # if(toString(unique(x$valid_class)) == "2 - Valid categorical values")
+    #   title <- str_replace(title,'\\` \\(N obs\\. \\: ','` (N missing obs. : ')
+    # if(group_name_short != '(all)') title <- paste0(title, ' - per `',group_name_short,"`")
+    
+    
+    # anchor
+    title <- 
+      if(toString(unique(x$valid_class)) == "2 - Valid categorical values")
+        paste0('Bar plot of valid categorical values in `',unique(x$`Variable name`),'`') else
+          paste0('Bar plot of missing (non-valid and empty) values in `',unique(x$`Variable name`),'`')
+
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- 
+      if(toString(unique(x$valid_class)) == "2 - Valid categorical values")
+        paste0(title,'\nTotal number of categorical valid values = ',n_val) else
+          paste0(title,'\nTotal number of missing (non-valid and empty) values = ',n_val)
+    
     aes <- 
       aes(x = fct_rev(as_category(
         x = !! as.symbol('value_var short'),
@@ -144,6 +164,9 @@ variable_visualize <- function(
             strip.background = element_rect(color = "white", fill="white")) +
       ylab(unique(x[[group_col_short]])) +
       xlab("") +
+      ggtitle(paste0(title,"\n")) +
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
       scale_fill_manual(values = 
                           x$color_palette_valid_class %>%
                           setNames(x$`value_var short`)) +
@@ -166,7 +189,7 @@ variable_visualize <- function(
 
     return(plot_x)
   }
-  plot_pie        <- function(x){
+  plot_pie        <- function(x,group_name_short){
   
     # levels <- 
     #   x %>% 
@@ -176,7 +199,7 @@ variable_visualize <- function(
     # names(levels) <- levels %>% str_remove_all("1 - |2 - |3 - |4 - ")
     # 
     # levels <- factor(levels)
-
+  
     x_sum <- 
       x %>% 
       select(-any_of("color_palette")) %>%
@@ -215,7 +238,14 @@ variable_visualize <- function(
         prop = prop/10000,
         pos = pos/10000,
         csum = csum/10000)
-
+    
+    # anchor
+    title <- paste0('Distribution of observation types in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of values = ',n_val)
+    
     aes <- 
       aes(
         x = "",
@@ -228,6 +258,7 @@ variable_visualize <- function(
         ~ group_label_short,ncol = 3) +
       geom_bar(stat='identity',width = 1,position = position_fill()) +
       theme_void() +
+      ggtitle(paste0(title,"\n")) +
       theme(
         legend.position = "right",
         legend.title = element_blank(),
@@ -251,7 +282,7 @@ variable_visualize <- function(
     return(plot_x_pie)
 
   }
-  plot_numeric    <- function(x){
+  plot_numeric    <- function(x,group_name_short){
     
     
     x <- x %>% 
@@ -264,6 +295,7 @@ variable_visualize <- function(
       ceiling(
       2 * IQR(x$`value_var short`, na.rm = TRUE) / 
       (length(x$`value_var short`)^(1/3)))
+  
     
     aes <-
       aes(
@@ -271,16 +303,26 @@ variable_visualize <- function(
         # y = !! as.symbol("value_var short"),
         fill =  !! as.symbol("group_label_short"))
    
+    # anchor
+    title <- paste0('Histogram of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+    
     plot_histogramm <-    
       ggplot(x) + aes +
       geom_histogram(aes(y = after_stat(count)), color = "black") + 
       # geom_density(alpha = 0.8, color = "red", linewidth = 0.5) + 
       facet_wrap(~group_label_short) + # Facet by species
+      theme_bw() +
       theme_minimal() +
-      theme(legend.position = "none") +
+      ggtitle(paste0(title,"\n")) +
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
       scale_fill_manual(values = 
                           x$color_palette_group %>%
-                          setNames(x$`group_label_short`)) + 
+                          setNames(x$`group_label_short`)) +
       xlab("") + 
       ylab("")
     
@@ -292,7 +334,15 @@ variable_visualize <- function(
         fill =  !! as.symbol("group_label_short"))
       
       
-    plot_whisker <-     
+    
+    # anchor
+    title <- paste0('Box plot of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+    
+    plot_boxplot <-     
       ggplot(x) + aes +
       # facet_wrap( ~ group_label_short) + # Facet by species
       geom_boxplot(
@@ -301,161 +351,210 @@ variable_visualize <- function(
       # coord_flip() + 
       theme(legend.position="none",plot.title = 
               element_text(size=8, face = "bold")) +
-      # ggtitle(paste0('Box plot', title)) +
+      ggtitle(paste0(title,"\n")) +
       ylab("") +
       xlab("") +
       scale_fill_manual(values = 
                           x$color_palette_group %>%
                           setNames(x$`group_label_short`))
     
-    return(list(plot_whisker = plot_whisker,plot_histogramm = plot_histogramm))
+    return(list(plot_boxplot = plot_boxplot,plot_histogramm = plot_histogramm))
   }
-  plot_boolean    <- function(x){
+  plot_boolean    <- function(x,group_name_short){
   
-    # preprocess elements : valid values
-    x <- 
-      x %>%
-      mutate(`value_var short` = ifelse(value_var_occur == 0, NA, `value_var short`)) %>%
-      mutate(`value_var short` = as_any_integer(`value_var short`)) %>%
-      mutate(`value_var short` = ifelse(is.na(`value_var short`), -1, `value_var short`))
-    # anchor
-    aes <- 
-      aes(
-        fill = as_factor(!! as.symbol("value_var short")),
-        x = fct_rev(as_category(
-          !! as.symbol("group_label_short"),
-          labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)))
+    # [GF] ENHANCE : change color of Boolean directly in the dataset_preprocess()
+    # [GF] ENHANCE : Treat the boolean as any categorical value in the visual report
     
+    # preprocess elements : valid values
+    
+    levels <- c('TRUE','FALSE')
+    
+    x_stacked <- 
+      x %>% 
+      group_by(pick(c("group_label_short","value_var short"))) %>%
+      reframe(value_var_occur = sum(value_var_occur))
+  
+    aes <- 
+      aes(x = fct_rev(as_category(
+        x = !! as.symbol('value_var short'),
+        labels = levels, 
+        as_factor = TRUE)), 
+        y = !! as.symbol('value_var_occur'), 
+        fill = !! as.symbol('value_var short'))
+  
+    # anchor
+    title <- paste0('Bar plot of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+      
     plot_x <- 
-      ggplot(x) + aes + 
-      geom_bar(position = 'fill', stat = "count") +
-      coord_flip() +
+      ggplot(x_stacked) + aes + 
+      geom_bar(stat = "identity") +  
+      theme_bw() + 
+      theme(legend.position="none",plot.title = 
+              element_text(size = 8, face = "bold"),
+            strip.background = element_rect(color = "white", fill="white")) +
+      ylab(unique(x[[group_col_short]])) +
       xlab("") +
-      ylab("") + 
-      scale_fill_manual(
-        guide = guide_legend(reverse = TRUE),
-        labels = c("", "FALSE","TRUE"),
-        values = c(
-          "1" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_1") %>% pull('color_palette')),
-          "0" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_2") %>% pull('color_palette')),
-          "-1" = "white")) +
-      theme_bw() +
-      theme(legend.position = "right",legend.title = element_blank())
+      ggtitle(paste0(title,"\n")) +
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      scale_fill_manual(values = c(
+                            "TRUE" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_1") %>% pull('color_palette')),
+                            "FALSE" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_2") %>% pull('color_palette')))) +
+                          # x$color_palette_valid_class %>%
+                          # setNames(x$`value_var short`)) +
+      scale_x_discrete(drop = FALSE) + 
+      coord_flip() +
+      stat_summary(
+        aes(label = after_stat(y)),
+        cex = 3,
+        fun = "sum", geom = "text", vjust = 0.33,
+        hjust = -0.24,
+        position = position_nudge(y = 0)) +
+      scale_y_continuous(
+        breaks = function(x){
+          if(max(x_stacked$value_var_occur) == 0) 
+            return(0) else
+              br = pretty(x, n=4) 
+            return(br)},
+        lim = c(0,max(x_stacked$value_var_occur)*1.2)) +
+      facet_wrap(~ group_label_short,ncol = 3)
+    
+    
+
+    # [GF] COMMENT : originally staked due to mis-intrepretation
+    # x <- 
+    #   x %>%
+    #   mutate(`value_var short` = ifelse(value_var_occur == 0, NA, `value_var short`)) %>%
+    #   mutate(`value_var short` = as_any_integer(`value_var short`)) %>%
+    #   mutate(`value_var short` = ifelse(is.na(`value_var short`), -1, `value_var short`))
+    # 
+    # # anchor
+    # title <- paste0('Bar plot of valid values in `',unique(x$`Variable name`),'`') 
+    # if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    # title <- paste0(title,'\nTotal number of valid values = ',sum(x$value_var_occur))
+    # 
+    # aes <- 
+    #   aes(
+    #     fill = as_factor(!! as.symbol("value_var short")),
+    #     x = fct_rev(as_category(
+    #       !! as.symbol("group_label_short"),
+    #       labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)))
+    
+    # plot_x <- 
+    #   ggplot(x) + aes + 
+    #   geom_bar(position = 'fill', stat = "count") +
+    #   coord_flip() +
+    #   ggtitle(paste0(title,"\n")) +
+    #   xlab("") +
+    #   ylab("") + 
+    #   scale_fill_manual(
+    #     guide = guide_legend(reverse = TRUE),
+    #     labels = c("", "FALSE","TRUE"),
+    #     values = c(
+    #       "1" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_1") %>% pull('color_palette')),
+    #       "0" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_2") %>% pull('color_palette')),
+    #       "-1" = "white")) +
+    #   theme_bw() +
+    #   theme(legend.position="right",
+    #         legend.title = element_blank(),
+    #         plot.title = element_text(size=8, face = "bold"))
+    
+    
+    # plot_x <- 
+    #   ggplot(x_stacked) + aes + 
+    #   geom_bar(stat = "identity") +  
+    #   theme_bw() + 
+    #   theme(legend.position="none",plot.title = 
+    #           element_text(size = 8, face = "bold"),
+    #         strip.background = element_rect(color = "white", fill="white")) +
+    #   ylab(unique(x[[group_col_short]])) +
+    #   xlab("") +
+    #   ggtitle(paste0('Bar plot', title,"\n")) +
+    #   theme(legend.position="none",plot.title = 
+    #           element_text(size=8, face = "bold")) +
+    #   scale_fill_manual(values = 
+    #                       x$color_palette_valid_class %>%
+    #                       setNames(x$`value_var short`)) +
+    #   scale_x_discrete(drop = FALSE) + 
+    #   coord_flip() +
+    #   stat_summary(
+    #     aes(label = after_stat(y)),
+    #     cex = 3,
+    #     fun = "sum", geom = "text", vjust = 0.33,
+    #     hjust = -0.24,
+    #     position = position_nudge(y = 0)) +
+    #   scale_y_continuous(
+    #     breaks = function(x){
+    #       if(max(x_stacked$value_var_occur) == 0) 
+    #         return(0) else
+    #           br = pretty(x, n=4) 
+    #         return(br)},
+    #     lim = c(0,max(x_stacked$value_var_occur)*1.2)) +
+    #   facet_wrap(~ group_label_short,ncol = 3)
+    
     
     return(plot_x)  
   }
-  plot_character  <- function(x){
+  plot_character  <- function(x,group_name_short){
     plot_x <- NULL
     return(plot_x)
   }
-  plot_date       <- function(x){
+  plot_date       <- function(x,group_name_short){
     
-    # 
-    # # convert dataset to wide format
-    # colset_span <- 
-    #   x %>%
-    #   dplyr::filter(
-    #     if_any("value_var short") %in% min(!! as.symbol("value_var short")) | 
-    #     if_any("value_var short") %in% max(!! as.symbol("value_var short"))) 
-    # 
-
-    # n_obs <- nrow(colset_values)
-    # 
-    # #### plot_1 date ####    
-    # 
-    # title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-    # if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    # # 
-    # aes <- 
-    #   aes(
-    #     x = !! as.symbol("value_var short"),
-    #     y = fct_rev(as_category(!! as.symbol("group_label_short"),labels = c('(all)',group_cat_long),as_factor = TRUE)))
-    # 
-    # 
-    # plot_x <- 
-    #   ggplot(colset_span) + aes +
-    #   geom_line() +
-    #   geom_point(size = 3) +
-    #   ggtitle(paste0('Span date', 'title')) +
-    #   theme_bw()+
-    #   theme(legend.position="none",plot.title = 
-    #           element_text(size=8,face = "bold")) +
-    #   ylab("") +
-    #   xlab("") +
-    #   scale_color_manual(values = x$color_palette_group) 
+    x_stacked <- 
+      x %>% 
+      mutate(across(
+        all_of('value_var short'), ~ as_valueType(.,vT_col$`valueType`))) %>%
+      mutate(`value_var short` = if_else(value_var_occur == 0,NA_Date_,`value_var short`)) %>%
+      group_by(group_label) %>%
+      filter(`value_var short` %in% min(`value_var short`,na.rm = TRUE) | 
+             `value_var short` %in% max(`value_var short`,na.rm = TRUE) | 
+              is.na(`value_var short`)) %>%
+      ungroup %>% distinct
     
-    #### plot_2 date ####    
+    # anchor
+    title <- paste0('Segment plot of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
     
-    # title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-    # if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    # 
-    # aes <-
-    #   if(group_by == ''){
-    #     aes(x = '',
-    #         y = !! as.symbol(col),
-    #         fill = '')}else{ 
-    #           
-    #           aes(x = fct_rev(!! as.symbol(group_by)),
-    #               y = !! as.symbol(col),
-    #               fill =  !! as.symbol(group_by))}
-    # 
-    # plot_2 <-
-    #   ggplot(colset_values) + aes +
-    #   geom_boxplot(outlier.color = 'red') +
-    #   theme_bw() +
-    #   coord_flip() + 
-    #   theme(legend.position="none",plot.title = 
-    #           element_text(size=8, face = "bold")) +
-    #   ggtitle(paste0('Box plot', title)) +
-    #   ylab("") +
-    #   xlab("") +
-    #   scale_fill_manual(values = (palette_values))
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+  
+    aes <- 
+      aes(
+        x = !! as.symbol("value_var short"),
+        color = fct_rev(as_category(
+          !! as.symbol("group_label_short"),
+          labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)),
+        y = fct_rev(as_category(
+          !! as.symbol("group_label_short"),
+          labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)))
     
+    plot_date <-
+      ggplot(x_stacked) + aes +
+      geom_line() +
+      geom_point(size = 2) +
+      theme_bw() +
+      # coord_flip() + 
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      ggtitle(paste0(title,"\n")) +
+      ylab("") +
+      xlab("") +
+      scale_color_manual(values = 
+                          x_stacked$color_palette_group %>%
+                          setNames(x_stacked$`group_label_short`)) +
+      scale_x_date(date_labels =  "%Y-%m-%d")
     
-    # n_obs <- nrow(colset_values)
-    # 
-    # title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-    # if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    # 
-    # aes <-
-    #   if(group_by == ''){
-    #     aes(x = !! as.symbol(col),
-    #         fill = '')
-    #   }else{
-    #     aes(
-    #       x = !! as.symbol(col),
-    #       fill = !! as.symbol(group_by))}
-    # 
-    # max_span <- 
-    #   max(ungroup(colset_span) %>%
-    #         pull(!! as.symbol(col))) -
-    #   min(ungroup(colset_span) %>%
-    #         pull(!! as.symbol(col))) + 1
-    # 
-    # bins <- ceiling(as.integer(max_span) / 365 / 5)
-    # 
-    # plot_2 <- 
-    #   ggplot(colset_values) + aes +
-    #   geom_histogram(bins = bins) +
-    #   theme_bw() +
-    #   ggtitle(paste0('Histogram', title)) +
-    #   theme(legend.position="none",plot.title = 
-    #           element_text(size=8,face = "bold"),
-    #         strip.background = element_rect(color = "white", fill="white")) +
-    #   ylab("") +
-    #   xlab("") +
-    #   scale_fill_manual(values = palette_values)
-    # # no coord flip
-    # 
-    # if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
-    
-    plot_x <- NULL
-
-    return(plot_x)
+    return(plot_date)
   } 
-  plot_datetime   <- function(x){
-    plot_x <- NULL
+  plot_datetime   <- function(x,group_name_short){
     
+    # [GF] Comment : not tested
+    plot_x <- NULL # plot_date(x,group_name_short)
     return(plot_x)
   }
 
@@ -669,10 +768,10 @@ variable_visualize <- function(
   
   #### preprocess elements ####
   preprocess_var_values <- 
-    col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>% 
+    col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>%  
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
-    group_by(pick("group_label_short"))
+    group_by(pick("group_label_short")) 
   
   preprocess_var_values <- 
     preprocess_var_values %>%
@@ -693,7 +792,7 @@ variable_visualize <- function(
 
   # preprocess elements : missing values  
   preprocess_miss_values <- 
-    col_set_pps[col_set_pps$valid_class %in% c('3 - Missing categorical value','4 - Empty values'),] %>% 
+    col_set_pps[col_set_pps$valid_class %in% c('3 - Non-valid categorical values','4 - Empty values'),] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))
@@ -705,7 +804,7 @@ variable_visualize <- function(
   
   # preprocess elements : valid_class  
   preprocess_valid_class <- 
-    col_set_pps %>% 
+    col_set_pps[!is.na(col_set_pps$valid_class),] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
     group_by(pick("group_label_short"))
@@ -722,51 +821,51 @@ variable_visualize <- function(
     
     if(vT_col$genericType == "numeric"){
       if(vT_col$valueType == "boolean"){
-      # anchor
-        plot_var_values_1 <- plot_boolean(bind_rows(preprocess_var_values))
+     
+        plot_var_values_1 <- plot_boolean(bind_rows(preprocess_var_values),group_name_short)
         
         }else{
-          plot_var_values   <- plot_numeric(bind_rows(preprocess_var_values))
-          plot_var_values_1 <- plot_var_values$plot_whisker
-          plot_var_values_2 <- plot_var_values$plot_histogramm          
+          plot_var_values   <- plot_numeric(bind_rows(preprocess_var_values),group_name_short)
+          plot_var_values_1 <- plot_var_values$plot_boxplot
+          plot_var_values_2 <- plot_var_values$plot_histogramm
           }
 
     }
     
     if(vT_col$genericType == "character"){
       
-      plot_var_values_1 <- plot_character(bind_rows(preprocess_var_values))
+      plot_var_values_1 <- plot_character(bind_rows(preprocess_var_values),group_name_short)
       
     }
     
     if(vT_col$genericType == "date"){
       
-      plot_var_values_1 <- plot_date(bind_rows(preprocess_var_values))
+      plot_var_values_1 <- plot_date(bind_rows(preprocess_var_values),group_name_short)
       
     }  
     
     if(vT_col$genericType == "datetime"){
-      plot_var_values_1 <- plot_datetime(bind_rows(preprocess_var_values))
+      plot_var_values_1 <- plot_datetime(bind_rows(preprocess_var_values),group_name_short)
     }
   }
   
   #### plot cat values ####
-  plot_cat_values <- NULL  
+  plot_cat_values <- NULL 
   # categorical values
   if(length(preprocess_cat_values) > 0)
-    plot_cat_values <- plot_categories(bind_rows(preprocess_cat_values))
+    plot_cat_values <- plot_categories(bind_rows(preprocess_cat_values),group_name_short)
 
   #### plot miss values ####
   plot_miss_values <- NULL 
   # missing values
   if(length(preprocess_miss_values) > 0)
-    plot_miss_values <- plot_categories(bind_rows(preprocess_miss_values))
+    plot_miss_values <- plot_categories(bind_rows(preprocess_miss_values),group_name_short)
   
   #### plot pie values ####
   plot_pie_values <- NULL 
   # missing values
   if(length(preprocess_valid_class) > 0)
-    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class))
+    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class),group_name_short)
   
   #### gather ####
   plots <- list(
