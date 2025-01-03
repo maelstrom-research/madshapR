@@ -1208,7 +1208,7 @@ dataset_preprocess <- function(
           
           `Variable name` == toString(col_id) & `index_value` != 0         ~ "0 - Col id",
           `madshapR::missing` == FALSE                                     ~ "2 - Valid categorical values",
-          `madshapR::missing` == TRUE                                      ~ "3 - Missing categorical value",
+          `madshapR::missing` == TRUE                                      ~ "3 - Non-valid categorical values",
           is.na(!!as.name(i)) &  `index_value` != 0                        ~ "4 - Empty values",
           is.na(`Categories in data dictionary long`) & `index_value` != 0 ~ "1 - Valid non-categorical values",
           # is.na(!!as.name(i))                                              ~ "4 - Empty values",
@@ -1236,7 +1236,7 @@ dataset_preprocess <- function(
         col_set %>%
           dplyr::filter(
             .data$`valid_class` %in%
-              c("2 - Valid categorical values","3 - Missing categorical value","1 - Valid non-categorical values")) %>%
+              c("2 - Valid categorical values","3 - Non-valid categorical values","1 - Valid non-categorical values")) %>%
           pull("valid_class")))) %>% toString
     
     categorical_status <- 
@@ -1248,7 +1248,7 @@ dataset_preprocess <- function(
         valid_statuses == ""                                                         ~ "no"    ,
         toString(valid_statuses) == "1 - Valid non-categorical values"               ~ "no"    ,
         str_detect(toString(valid_statuses),"1 - Valid non-categorical values")      ~ "mix"   ,
-        str_detect(toString(valid_statuses),"3 - Missing categorical value|2 - Valid categorical values") ~ "yes"   ,
+        str_detect(toString(valid_statuses),"3 - Non-valid categorical values|2 - Valid categorical values") ~ "yes"   ,
         TRUE  ~ "ERROR")
     
     
@@ -1262,7 +1262,7 @@ dataset_preprocess <- function(
         toString(valid_statuses) == "1 - Valid non-categorical values"          ~ "no"    ,
         
         str_detect(toString(valid_statuses),"1 - Valid non-categorical values")              ~ "mix"   ,
-        str_detect(toString(valid_statuses),"3 - Missing categorical value|2 - Valid categorical values") ~ "yes"   ,
+        str_detect(toString(valid_statuses),"3 - Non-valid categorical values|2 - Valid categorical values") ~ "yes"   ,
         TRUE  ~ "ERROR")
     
     if(categorical_status == "ERROR" | valid_class_status == "ERROR") 
@@ -1490,7 +1490,7 @@ summary_variables <- function(
           `Number of non-valid values` =
             sum(summary_i[
               summary_i$`valid_class` %in%
-                c("3 - Missing categorical value"),]$`value_var_occur`),
+                c("3 - Non-valid categorical values"),]$`value_var_occur`),
           
           `Number of empty values` =  
             sum(summary_i[
@@ -2250,7 +2250,7 @@ summary_variables_categorical <- function(
         "valid_class" = case_when(
           .data$`valid_class` == "2 - Valid categorical values"       ~
             "Valid values : \n",
-          .data$`valid_class` == "3 - Missing categorical value"     ~
+          .data$`valid_class` == "3 - Non-valid categorical values"     ~
             "\nNon-valid values : \n",
           .data$`valid_class` == "1 - Valid non-categorical values" ~
             "\nOther values (non-categorical)",
@@ -2308,7 +2308,7 @@ summary_variables_categorical <- function(
     
     if(nrow(dplyr::filter(
       summary_i,
-      .data$`valid_class` %in% c("2 - Valid categorical values","3 - Missing categorical value"))) > 0){
+      .data$`valid_class` %in% c("2 - Valid categorical values","3 - Non-valid categorical values"))) > 0){
       
       summary_i <-
         tibble(
