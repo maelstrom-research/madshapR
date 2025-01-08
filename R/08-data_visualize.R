@@ -643,6 +643,7 @@ variable_visualize <- function(
       "valueType","genericType","Categorical variable",
       "index_value","Index","name_var"))
   
+  
   #### summary_1 ####
   summary_1 <- 
     col_summary[
@@ -653,7 +654,7 @@ variable_visualize <- function(
       summary_1 %>% 
         rowwise() %>%                                                           # [GF] NOTE : rowwise
         dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
-        select(-c("Index":"Non-valid categories"))))                            # [GF] NOTE : Categories in data dictionary ) enlever
+        select(-c("Index":"Non-valid categories"))))                          # [GF] NOTE : Categories in data dictionary ) enlever
   
   summary_1 <- 
     summary_1 %>%
@@ -664,7 +665,7 @@ variable_visualize <- function(
     mutate(across(everything(),as.character)) 
   
   names(summary_1) <- 
-  if(ncol(summary_1) == 1) "(all)" else
+  if(ncol(summary_1) == 1 & length(group_var) == 0) "(all)" else
       group_cat_short[seq_len(min(length(names(summary_1)),length(group_cat_short)))+1]
   
   #### summary_2 ####
@@ -693,7 +694,7 @@ variable_visualize <- function(
               select(-c("Index":"Number of distinct values")))) 
         
         names(summary_2) <- 
-          if(ncol(summary_2) == 1) "(all)" else
+          if(ncol(summary_2) == 1 & length(group_var) == 0) "(all)" else
             group_cat_short[seq_len(min(length(names(summary_2)),length(group_cat_short)))+1]
         
       }else{summary_2 <- NULL}
@@ -742,7 +743,7 @@ variable_visualize <- function(
                -c("Index":"Number of distinct values"))))
 
   names(summary_categories) <- 
-    if(ncol(summary_categories) == 1) "(all)" else
+    if(ncol(summary_categories) == 1 & length(group_var)  == 0) "(all)" else
       group_cat_short[seq_len(min(length(names(summary_categories)),length(group_cat_short)))+1]
   
   summary_categories <-
