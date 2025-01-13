@@ -2156,7 +2156,7 @@ data dictionary")}}
     attributes(data_dict)$`madshapR::class` <- "data_dict"
     return(data_dict) }
   
-  # dataset shaping
+  # data_dict shaping
   data_dict[['Variables']] <-
     data_dict[['Variables']] %>%
     ungroup() %>%
@@ -2185,9 +2185,9 @@ data dictionary")}}
     
     data_dict[['Categories']] <-
       data_dict[['Categories']] %>%
-      ungroup() %>%
-      mutate(across(everything(),~str_squish(.))) %>%
-      mutate(across(everything(),~na_if(.,"")))
+      ungroup #%>%
+      # mutate(across(everything(),~str_squish(.))) %>%
+      # mutate(across(everything(),~na_if(.,"")))
     
     if(is_data_dict_mlstr){
       
@@ -2366,7 +2366,7 @@ data dictionary")}}
     lapply(function(x) {
       test_name <- as_valueType(x$`name`, unique(x$`madshapR::valueType`))
       
-      if(all(as.character(test_name) == as.character(x$`name`))){
+      if(all(as.character(test_name) %in% as.character(x$`name`))){
         x$`name` <- test_name}
       
       if(is_data_dict_mlstr){

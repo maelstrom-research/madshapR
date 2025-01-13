@@ -95,8 +95,8 @@ dataset_summarize <- function(
     data_dict = data_dict_extract(dataset),
     group_by = group_vars(dataset),
     taxonomy = NULL,
-    valueType_guess = TRUE,
-    dataset_name = NULL){ # must be the same in variable_visualize
+    valueType_guess = TRUE, # must be the same in variable_visualize
+    dataset_name = NULL){ 
 
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
@@ -934,6 +934,7 @@ dataset_preprocess <- function(
       "madshapR::group_index" = "cat_index") %>%
     full_join(group_in_dataset, by = "madshapR::grouping_var") %>%
     mutate("variable" = group_var) %>%
+    mutate("madshapR::grouping_var"  = ifelse(str_squish(.data$`madshapR::grouping_var`) == "",paste0("[",(.data$`madshapR::grouping_var`),"]"),.data$`madshapR::grouping_var`)) %>%
     mutate(label = ifelse(is.na(.data$`label`),as.character(.data$`madshapR::grouping_var`),.data$`label`)) %>%
     mutate("label" = replace_na(.data$`label`,"[Unlabelled group]")) %>%
     # mutate(across(starts_with("Categories in data dictionary"), ~ replace_na(.,"[Unlabelled group]"))) %>%
@@ -945,8 +946,10 @@ dataset_preprocess <- function(
     add_index("madshapR::group_index",.force = TRUE) %>%
     select(
       "name" = "madshapR::grouping_var", 
-      "variable","madshapR::group_index",
-      "label", "madshapR::group_occurrence",
+      "variable",
+      "madshapR::group_index",
+      "label", 
+      "madshapR::group_occurrence",
       starts_with("Categories in data dictionary"),
       starts_with("Non-valid categories"))
   
@@ -971,8 +974,14 @@ dataset_preprocess <- function(
       c("Categories in data dictionary short","Categories in data dictionary long"),
       ~ ifelse(.data$`name` %in% c("[Unlabelled group]","[No group]"),.data$`name`,.))) %>%
     mutate(across(
+      c("Categories in data dictionary short", "Categories in data dictionary long"),
+      ~ gsub("\\[\\[(.*?)\\]\\]", "[\\1]", .))) %>%
+    mutate(across(
       c("name"),
       ~ ifelse(.data$`name` %in% c("[Unlabelled group]"),NA,.))) %>%
+    mutate(across(
+      c("name"),
+      ~ gsub("\\[(.*?)\\]", "\\1", .))) %>%
     mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
     rename("madshapR::grouping_var" = "name") %>%
     select("madshapR::grouping_var","Categories in data dictionary short","Categories in data dictionary long")
@@ -986,6 +995,10 @@ dataset_preprocess <- function(
     mutate(across(
       c("name"),
       ~ ifelse(.data$`name` %in% c("[Unlabelled group]"),NA,.))) %>%
+    mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]])))%>%
+    mutate(across(
+      c("name"),
+      ~ gsub("\\[(.*?)\\]", "\\1", .))) %>%
     mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
     select(
       "madshapR::group_index",
@@ -1200,6 +1213,9 @@ dataset_preprocess <- function(
                       ifelse(!is.na(.data$`Categories in data dictionary short`),
                              .data$`Categories in data dictionary short`,
                              as.character(!!as.name(i))))) %>%
+      mutate(across(
+        c("value_var short","value_var long"),
+        ~ ifelse(str_squish(.) == "",paste0('[',.,']'),.))) %>%
       mutate(across(c("value_var long","value_var short"), as.character)) %>%
       mutate("index_value" = ifelse(is.na(.data$`index_value`),0,.data$`index_value`)) %>%
       mutate("value_var_occur" = ifelse(is.na(.data$`value_var_occur`),0,.data$`value_var_occur`))
@@ -2296,7 +2312,7 @@ summary_variables_categorical <- function(
     reframe(
       n = sum(as.integer(.data$`value_var_occur`))) %>%
     arrange(.data$`Index`, .data$`valid_class`,.data$`cat_index`) %>%
-    ungroup
+    ungroup 
   
   # if(nrow(summary) == 0) return(summary_tbl)
   
@@ -2324,6 +2340,7 @@ summary_variables_categorical <- function(
       arrange(.data$`valid_class`,.data$`cat_order`) %>%
       mutate(
         cat_index = replace_na(.data$`cat_index`,'{blank}'),
+        name_var  = ifelse(str_squish(.data$`name_var`) == "",paste0("[",(.data$`name_var`),"]"),.data$`name_var`),
         name_var  = str_replace(.data$`name_var`, "^NA$","")) %>%
       
       # ) %>% View
@@ -2437,17 +2454,17 @@ summary_variables_categorical <- function(
             unique(summary_i$`Variable name`),
           
           `Values present in dataset`                           =
-            if(sum(summary_i$`madshapR::group_occurrence`) == 0) NA_character_ else
+            if(sum(summary_i$`madshapR::group_occurrence`,na.rm = TRUE) == 0) NA_character_ else
               if(summary_category$list_values == "") NA_character_ else
                 summary_category$list_values,
           
           `Data dictionary categories not present in dataset`   =
-            if(sum(summary_i$`madshapR::group_occurrence`) == 0) NA_character_ else
+            if(sum(summary_i$`madshapR::group_occurrence`,na.rm = TRUE) == 0) NA_character_ else
               if(summary_category$cat_var_absence == "") NA_character_ else
                 summary_category$cat_var_absence,
           
           `Dataset values not present in data dictionary`        =
-            if(sum(summary_i$`madshapR::group_occurrence`) == 0) NA_character_ else
+            if(sum(summary_i$`madshapR::group_occurrence`,na.rm = TRUE) == 0) NA_character_ else
               if(summary_category$other_val_presence == "") NA_character_ else
                 summary_category$other_val_presence
           
