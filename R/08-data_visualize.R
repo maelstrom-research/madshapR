@@ -168,7 +168,7 @@ variable_visualize <- function(
       theme(legend.position="none",plot.title = 
               element_text(size=8, face = "bold")) +
       scale_fill_manual(values = 
-                          x$color_palette_valid_class %>%
+                          x$color_palette %>%
                           setNames(x$`value_var short`)) +
       scale_x_discrete(drop = FALSE) + 
       coord_flip() +
@@ -200,6 +200,7 @@ variable_visualize <- function(
     # 
     # levels <- factor(levels)
   
+    color_palette_maelstrom <- madshapR::color_palette_maelstrom
     x_sum <- 
       x %>% 
       select(-any_of("color_palette")) %>%
@@ -321,7 +322,7 @@ variable_visualize <- function(
       theme(legend.position="none",plot.title = 
               element_text(size=8, face = "bold")) +
       scale_fill_manual(values = 
-                          x$color_palette_group %>%
+                          x$color_palette %>%
                           setNames(x$`group_label_short`)) +
       xlab("") + 
       ylab("")
@@ -355,7 +356,7 @@ variable_visualize <- function(
       ylab("") +
       xlab("") +
       scale_fill_manual(values = 
-                          x$color_palette_group %>%
+                          x$color_palette %>%
                           setNames(x$`group_label_short`))
     
     return(list(plot_boxplot = plot_boxplot,plot_histogramm = plot_histogramm))
@@ -366,6 +367,8 @@ variable_visualize <- function(
     # [GF] ENHANCE : Treat the boolean as any categorical value in the visual report
     
     # preprocess elements : valid values
+    
+    color_palette_maelstrom <- madshapR::color_palette_maelstrom
     
     levels <- c('TRUE','FALSE')
     
@@ -404,7 +407,7 @@ variable_visualize <- function(
       scale_fill_manual(values = c(
                             "TRUE" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_1") %>% pull('color_palette')),
                             "FALSE" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_2") %>% pull('color_palette')))) +
-                          # x$color_palette_valid_class %>%
+                          # x$color_palette %>%
                           # setNames(x$`value_var short`)) +
       scale_x_discrete(drop = FALSE) + 
       coord_flip() +
@@ -477,7 +480,7 @@ variable_visualize <- function(
     #   theme(legend.position="none",plot.title = 
     #           element_text(size=8, face = "bold")) +
     #   scale_fill_manual(values = 
-    #                       x$color_palette_valid_class %>%
+    #                       x$color_palette %>%
     #                       setNames(x$`value_var short`)) +
     #   scale_x_discrete(drop = FALSE) + 
     #   coord_flip() +
@@ -545,7 +548,7 @@ variable_visualize <- function(
       ylab("") +
       xlab("") +
       scale_color_manual(values = 
-                          x_stacked$color_palette_group %>%
+                          x_stacked$color_palette %>%
                           setNames(x_stacked$`group_label_short`)) +
       scale_x_date(date_labels =  "%Y-%m-%d")
     
@@ -772,7 +775,7 @@ variable_visualize <- function(
     col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>%  
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
-    group_by(pick("group_label_short")) 
+    group_by(pick("group_label_short"))
   
   preprocess_var_values <- 
     preprocess_var_values %>%
@@ -789,7 +792,7 @@ variable_visualize <- function(
   preprocess_cat_values <- 
     preprocess_cat_values %>%
     group_split() %>% as.list %>%
-    setNames(group_keys(preprocess_cat_values)[[1]])
+    setNames(group_keys(preprocess_cat_values)[[1]]) 
 
   # preprocess elements : missing values  
   preprocess_miss_values <- 
