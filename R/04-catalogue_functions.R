@@ -885,10 +885,10 @@ as_valueType <- function(x, valueType = 'text'){
   # if x is already the output format, no need to go further
   if(str_detect(toString(class_x), c("^Date$"))    & valueType == "date")     return(x)
   if(str_detect(toString(class_x), c("POSIX"))     & valueType == "datetime") return(x)
-  if(is.integer(x)                               & valueType == "integer")  return(x)
+  if(is.integer(x)                                 & valueType == "integer")  return(x)
   if(str_detect(toString(class_x), c("^numeric$")) & valueType == "decimal")  return(x)
-  if(is.logical(x)                               & valueType == "boolean")  return(x)
-  if(is.na(valueType)                            | valueType == "text")     return(as.character.default(x))
+  if(is.logical(x)                                 & valueType == "boolean")  return(x)
+  if(is.na(valueType)                              | valueType == "text")     return(as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -970,14 +970,13 @@ data dictionary")}
     #       test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
     #     pull(.data$`test`) %>% all}
     
-    # [GF] NOTE : The test seems obsolete
-    # if(valueType %in% c("datetime")){
-    #   test_condition <-
-    #     test_condition %>%
-    #     mutate(
-    #       across(everything(), ~ as.POSIXct.default(.))) %>%
-    #     mutate(test = .data$`to_test` == .data$`original`) %>%
-    #     pull(.data$`test`) %>% all}
+    if(valueType %in% c("datetime")){
+      test_condition <-
+        test_condition %>%
+        mutate(
+          across(everything(), ~ as.POSIXct.default(.))) %>%
+        mutate(test = .data$`to_test` == .data$`original`) %>%
+        pull(.data$`test`) %>% all}
     
     }
 

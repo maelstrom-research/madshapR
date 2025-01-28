@@ -841,7 +841,7 @@ dataset_preprocess <- function(
   
   # if the group is not in the data dictionary, create it. Adds the 
   # group values that are in the dataset but not present in the data dictionary
-  # _pps -> preprocess
+  # _pps -> preprocess. the data_dict == data_dict_labels
   
   data_dict_pps <- data_dict
     # data_dict %>%
@@ -883,15 +883,21 @@ dataset_preprocess <- function(
   
   if(length(group_var) == 0){
     
+    # addition of a column "madshapR::no_group", which unique value is "[No group]"
     dataset_pps <-
       dataset_pps %>% 
       mutate("madshapR::no_group" = as_category("[No group]"))
     
+    # creation of the grouping variable "madshapR::no_group"
     group_var <- "madshapR::no_group"
+    
+    # extraction of the data_dictionary for this grouping variable + labels trimmed
     data_dict_group <- 
       data_dict_extract(dataset_pps[group_var]) %>% 
       data_dict_trim_labels()
     
+    # correction : "[No group]" instead of "[[No group]]" for values present in the 
+    # grouping variable + cat index. the palette used is "no_group"
     data_dict_group <- 
       data_dict_group[['Categories']] %>%
       mutate(
@@ -900,7 +906,8 @@ dataset_preprocess <- function(
         "Categories in data dictionary short" = '[No group]',
         "Categories in data dictionary long" = '[No group]',
         name_palette = "cat_1")
-    
+
+    # paste the line of categories to the existing data_dict_pps
     data_dict_pps[['Categories']] <-
       data_dict_pps[['Categories']] %>%
       bind_rows(data_dict_group)
@@ -919,12 +926,18 @@ dataset_preprocess <- function(
            starts_with("Categories in data dictionary"),
            starts_with("Non-valid categories"))
   
+  # at that step, the group_var always exists, taken from the dataset, so 
+  # occurence is always 1. creation of the column "madshapR::group_occurrence" and
+  # "madshapR::grouping_var".
   group_in_dataset <- 
     dataset_pps[c(group_var)] %>% 
     distinct() %>%
     rename("madshapR::grouping_var" = all_of(group_var)) %>%
     mutate("madshapR::group_occurrence" = 1)
   
+  # join grouping values declared in the data_dict and found in the dataset.
+  # at that step, data_dict_pps$Categories always exist, and the group too (created
+  # if no group). 
   group_tibble <- 
     data_dict_pps$Categories %>% 
     dplyr::filter(data_dict_pps$Categories$variable == group_var) %>%
@@ -953,9 +966,6 @@ dataset_preprocess <- function(
       starts_with("Categories in data dictionary"),
       starts_with("Non-valid categories"))
   
-  group_name_short <- 
-    data_dict_pps$Variables %>%
-    filter(name == group_var) %>% pull("Variable name")
   
   group_tibble_labels <- 
     list(
@@ -963,6 +973,11 @@ dataset_preprocess <- function(
     Categories  = group_tibble %>% select(variable,name,label)) %>%
     as_data_dict_mlstr() %>%
     data_dict_trim_labels()
+
+  # recuperation of group group_name_short
+  group_name_short <- 
+    group_tibble_labels$Variables %>%
+    filter(name == group_var) %>% pull("Variable name")
   
   group_tibble_labels <-
     group_tibble_labels[['Categories']] %>%
@@ -981,10 +996,10 @@ dataset_preprocess <- function(
       ~ ifelse(.data$`name` %in% c("[Unlabelled group]"),NA,.))) %>%
     mutate(across(
       c("name"),
-      ~ gsub("\\[(.*?)\\]", "\\1", .))) %>%
+      ~ ifelse(.data$`name` %in% c("[No group]"),.,gsub("\\[(.*?)\\]","\\1",.)))) %>%
     mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
     rename("madshapR::grouping_var" = "name") %>%
-    select("madshapR::grouping_var","Categories in data dictionary short","Categories in data dictionary long")
+    select("variable","madshapR::grouping_var","Categories in data dictionary short","Categories in data dictionary long")
     
   
   group_tibble <-
@@ -995,10 +1010,10 @@ dataset_preprocess <- function(
     mutate(across(
       c("name"),
       ~ ifelse(.data$`name` %in% c("[Unlabelled group]"),NA,.))) %>%
-    mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]])))%>%
+    mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
     mutate(across(
       c("name"),
-      ~ gsub("\\[(.*?)\\]", "\\1", .))) %>%
+      ~ ifelse(.data$`name` %in% c("[No group]"),.,gsub("\\[(.*?)\\]", "\\1",.)))) %>%
     mutate("name" = as_valueType(.data$name,valueType_of(dataset[[c(group_var)]]))) %>%
     select(
       "madshapR::group_index",
@@ -1319,6 +1334,7 @@ dataset_preprocess <- function(
     
   }
 
+  
   final_resume <- rep(list(summary_tbl), nrow(group_tibble) + 2)
   names(final_resume) <- 
     c(group_tibble$`madshapR::group_label long`,'(all)', "madshapR::grouping_var")  # [GF] NOTE : long label
@@ -1418,6 +1434,7 @@ dataset_preprocess <- function(
   #     left_join(col_palette %>% rename(name_palette = values))
   # 
   # }else{
+  }
     
   color_palette_maelstrom <- 
     madshapR::color_palette_maelstrom %>% 
@@ -1456,7 +1473,7 @@ dataset_preprocess <- function(
   
   col_palette_cat <-
     color_palette_maelstrom %>%
-    filter(str_detect(.data$`name_palette`,"cat_")) %>%
+    filter(str_detect(.data$`name_palette`,"^cat_")) %>%
     pull(color_palette)
   
   col_palette_cat <-
@@ -1472,7 +1489,7 @@ dataset_preprocess <- function(
   
   col_palette_miss <-
     color_palette_maelstrom %>%
-    filter(str_detect(.data$`name_palette`,"miss_cat_")) %>%
+    filter(str_detect(.data$`name_palette`,"^miss_cat_")) %>%
     pull(color_palette)
   
   col_palette_miss <-
@@ -1488,9 +1505,6 @@ dataset_preprocess <- function(
   
   col_palette_total <- 
     bind_rows(col_palette_group,col_palette_cat,col_palette_miss,color_palette_maelstrom) %>% distinct
-  
-  }
-  
   
   if(group_var != "madshapR::no_group"){
     
@@ -1755,8 +1769,8 @@ summary_variables_text <- function(
     .dataset_preprocess = NULL){
   
   # init
-  summary <-
-    dataset_preprocess %>%
+  summary <- 
+    dataset_preprocess %>% 
     dplyr::filter(.data$`valid_class`  == "1 - Valid non-categorical values") %>%
     dplyr::filter(.data$`genericType`  == "character") 
   
@@ -1768,7 +1782,7 @@ summary_variables_text <- function(
   
   # for(i in unique(summary$`Variable name`)){
   #   # stop()}
-  #   
+  # 
     
   for(i in unique(summary$`name_var`)){
     # stop()}
@@ -1788,8 +1802,8 @@ summary_variables_text <- function(
           `Most common values` =
             summary_i %>%
             count(.data$`value_var`) %>%
+            dplyr::filter(if_any(any_of("n"), ~ . == max(.,na.rm = TRUE))) %>%
             dplyr::filter(!is.na(.data$`value_var`)) %>%
-            dplyr::filter(if_any(any_of("n"), ~ . == max(.))) %>%
             slice(1:6) %>%
             mutate(
               value_var = str_trunc(value_var,width = 30,ellipsis = "..."),
@@ -1803,8 +1817,8 @@ summary_variables_text <- function(
           `Least common values` =
             summary_i %>%
             count(.data$`value_var`) %>%
+            dplyr::filter(if_any(any_of("n"), ~ . == min(.,na.rm = TRUE))) %>%
             dplyr::filter(!is.na(.data$`value_var`)) %>%
-            dplyr::filter(if_any(any_of("n"), ~ . == min(.))) %>%
             slice(1:6) %>%
             mutate(
               value_var = str_trunc(value_var,width = 30,ellipsis = "..."),
