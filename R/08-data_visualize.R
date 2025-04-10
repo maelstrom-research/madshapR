@@ -122,9 +122,10 @@ variable_visualize <- function(
     x_stacked <- 
       x %>% 
       # filter(!is.na(`value_var short`)) %>%
-      group_by(pick(c("group_label_short","value_var short","value_var short","cat_index"))) %>%
-      reframe(value_var_occur = sum(value_var_occur)) # %>% 
- 
+      group_by(pick(c("group_index", "group_label_short","value_var short","value_var short","cat_index"))) %>%
+      reframe(value_var_occur = sum(value_var_occur)) %>%
+      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
+    
     # anchor
     # title <- paste0(' representation of `',unique(x$`Variable name`),'` (N obs. : ',sum(x$value_var_occur),')')
     # 
@@ -205,17 +206,18 @@ variable_visualize <- function(
       x %>% 
       select(-any_of("color_palette")) %>%
       left_join(color_palette_maelstrom,by = c("valid_class" = "values")) %>%
-      group_by(pick(c("group_label_short","valid_class","color_palette"))) %>%
+      group_by(pick(c("group_index","group_label_short","valid_class","color_palette"))) %>%
       mutate("sum_var_occur" = sum(value_var_occur)) %>% ungroup %>%
-      select("group_label_short","valid_class","color_palette","value_var_occur") %>%
+      select("group_index","group_label_short","valid_class","color_palette","value_var_occur") %>%
       # filter(value_var_occur > 0) %>%
-      group_by(pick(c("group_label_short","valid_class","color_palette"))) %>%
+      group_by(pick(c("group_index","group_label_short","valid_class","color_palette"))) %>%
       reframe(sum_var_occur = sum(value_var_occur)) %>%
-      group_by(pick(c("group_label_short"))) %>%
-      arrange(pick(c("group_label_short","valid_class"))) %>%
+      group_by(pick(c("group_index","group_label_short"))) %>%
+      arrange(pick(c("group_index","valid_class"))) %>%
       mutate(
         prop = 10000*round(.data$`sum_var_occur`/sum(sum_var_occur),4),
-        prop = ifelse(is.na(prop),0,prop))
+        prop = ifelse(is.na(prop),0,prop)) %>%
+      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
     
     # handle total < 1
     if(nrow(x_sum) > 0){
@@ -286,12 +288,13 @@ variable_visualize <- function(
   plot_numeric    <- function(x,group_name_short){
     
     
-    x <- x %>% 
+    x <- 
+      x %>% 
       mutate(across(
         all_of('value_var short'), ~ as_valueType(.,vT_col$`valueType`))) %>%
-      mutate(`value_var short` = ifelse(value_var_occur == 0,NA,`value_var short`))
+      mutate(`value_var short` = ifelse(value_var_occur == 0,NA,`value_var short`)) %>%
+      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
     
-
     binwidth <- 
       ceiling(
       2 * IQR(x$`value_var short`, na.rm = TRUE) / 
@@ -374,8 +377,9 @@ variable_visualize <- function(
     
     x_stacked <- 
       x %>% 
-      group_by(pick(c("group_label_short","value_var short"))) %>%
-      reframe(value_var_occur = sum(value_var_occur))
+      group_by(pick(c("group_index", "group_label_short","value_var short","value_var short","cat_index"))) %>%
+      reframe(value_var_occur = sum(value_var_occur)) %>%
+      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
   
     aes <- 
       aes(x = fct_rev(as_category(
@@ -561,6 +565,9 @@ variable_visualize <- function(
     return(plot_x)
   }
 
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,'`valueType_guess` must be TRUE or FALSE (TRUE by default)')
+  
   #### Catch elements ####
   if(toString(group_by) == "") group_by <- group_vars(dataset)
   
@@ -589,25 +596,47 @@ variable_visualize <- function(
   if(length(group_var) > 0 
      # & toString(group_var) != col_var
      ){
+    
+    # group_tibble_temp <- 
+    #   col_set[group_var] %>%
+    #   as_dataset %>% 
+    #   mutate(across(all_of(group_var),as_category)) %>%
+    #   data_dict_extract() %>%
+    #   data_dict_trim_labels()
+    
     group_name_short <- 
       unique(col_set_pps[['madshapR::grouping_var']][["Variable name"]])
     group_col_short <- paste0("Grouping variable: ",group_name_short)
+    
+    group_cat_labs <-
+      bind_rows(col_set_pps) %>% 
+      rename("group" = starts_with('Grouping variable: ')) %>%
+      filter(`group` == `madshapR::group_label long`) %>%
+      select(`madshapR::group_label long`,`madshapR::group_label short`) %>%
+      distinct
+    
     group_cat_short <- 
-      unique(c(group_cat_short,
-               col_set_pps[['madshapR::grouping_var']] %>%
-                 select("cat_index","value_var short") %>%
-                 distinct() %>% arrange(pick("cat_index")) %>% 
-                 pull("value_var short")))
+      unique(c(group_cat_short,group_cat_labs$`madshapR::group_label short`))
+    
     group_cat_long <- 
-      unique(c(group_cat_long,
-               col_set_pps[['madshapR::grouping_var']] %>%
-                 select("cat_index","value_var long") %>% 
-                 distinct() %>% arrange(pick("cat_index")) %>% 
-                 pull("value_var long")))
+      unique(c(group_cat_long,group_cat_labs$`madshapR::group_label long`))
+    
+      # unique(c(group_cat_short,
+      #          col_set_pps[['madshapR::grouping_var']] %>%
+      #            select("cat_index","value_var short") %>%
+      #            distinct() %>% arrange(pick("cat_index")) %>%
+      #            pull("value_var short")))
+    # group_cat_long <- 
+    #   unique(c(group_cat_long,
+    #            col_set_pps[['madshapR::grouping_var']] %>%
+    #              select("cat_index","value_var long") %>% 
+    #              distinct() %>% arrange(pick("cat_index")) %>% 
+    #              pull("value_var long")))
   }
   
   group_label_tibble <- 
-    tibble(group_label_short = group_cat_short, group_label = group_cat_long)
+    tibble(group_label_short = group_cat_short, group_label = group_cat_long) %>%
+    add_index("group_index")
 
   if(is.null(variable_summary)){
     variable_summary <- 
@@ -645,8 +674,7 @@ variable_visualize <- function(
       "value_var long","madshapR::group_label long",
       "valueType","genericType","Categorical variable",
       "index_value","Index","name_var"))
-  
-  
+
   #### summary_1 ####
   summary_1 <- 
     col_summary[
@@ -668,7 +696,7 @@ variable_visualize <- function(
     mutate(across(everything(),as.character)) 
   
   names(summary_1) <- 
-  if(ncol(summary_1) == 1 & length(group_var) == 0) "(all)" else
+  if(ncol(summary_1) == 1 & (length(group_var) == 0 | toString(group_var) == col_var)) "(all)" else
       group_cat_short[seq_len(min(length(names(summary_1)),length(group_cat_short)))+1]
   
   #### summary_2 ####
@@ -697,7 +725,7 @@ variable_visualize <- function(
               select(-c("Index":"Number of distinct values")))) 
         
         names(summary_2) <- 
-          if(ncol(summary_2) == 1 & length(group_var) == 0) "(all)" else
+          if(ncol(summary_1) == 1 & (length(group_var) == 0 | toString(group_var) == col_var)) "(all)" else
             group_cat_short[seq_len(min(length(names(summary_2)),length(group_cat_short)))+1]
         
       }else{summary_2 <- NULL}
@@ -746,7 +774,7 @@ variable_visualize <- function(
                -c("Index":"Number of distinct values"))))
 
   names(summary_categories) <- 
-    if(ncol(summary_categories) == 1 & length(group_var)  == 0) "(all)" else
+    if(ncol(summary_1) == 1 & (length(group_var) == 0 | toString(group_var) == col_var)) "(all)" else
       group_cat_short[seq_len(min(length(names(summary_categories)),length(group_cat_short)))+1]
   
   summary_categories <-
@@ -775,48 +803,48 @@ variable_visualize <- function(
     col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>%  
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
-    group_by(pick("group_label_short"))
+    group_by(pick("group_index","group_label_short"))
   
   preprocess_var_values <- 
     preprocess_var_values %>%
     group_split() %>% as.list %>%
-    setNames(group_keys(preprocess_var_values)[[1]])
-
+    setNames(group_keys(preprocess_var_values)[[2]])
+  
   # preprocess elements : categorical values
   preprocess_cat_values <- 
     col_set_pps[col_set_pps$valid_class %in%  '2 - Valid categorical values',] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
-    group_by(pick("group_label_short"))
+    group_by(pick("group_index","group_label_short"))
   
   preprocess_cat_values <- 
     preprocess_cat_values %>%
     group_split() %>% as.list %>%
-    setNames(group_keys(preprocess_cat_values)[[1]]) 
-
+    setNames(group_keys(preprocess_cat_values)[[2]])
+    
   # preprocess elements : missing values  
   preprocess_miss_values <- 
     col_set_pps[col_set_pps$valid_class %in% c('3 - Non-valid categorical values','4 - Empty values'),] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
-    group_by(pick("group_label_short"))
+    group_by(pick("group_index","group_label_short"))
   
   preprocess_miss_values <- 
     preprocess_miss_values %>%
     group_split() %>% as.list %>%
-    setNames(group_keys(preprocess_miss_values)[[1]])
+    setNames(group_keys(preprocess_miss_values)[[2]])
   
   # preprocess elements : valid_class  
   preprocess_valid_class <- 
     col_set_pps[!is.na(col_set_pps$valid_class),] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     left_join(group_label_tibble, by = "group_label") %>%
-    group_by(pick("group_label_short"))
+    group_by(pick("group_index","group_label_short"))
   
   preprocess_valid_class <- 
     preprocess_valid_class %>%
     group_split() %>% as.list %>%
-    setNames(group_keys(preprocess_valid_class)[[1]])
+    setNames(group_keys(preprocess_valid_class)[[2]])
   
   #### plot var values ####
   plot_var_values_1 <- NULL
