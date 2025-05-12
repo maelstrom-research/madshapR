@@ -2570,7 +2570,7 @@ data dictionary")}
 
   # test if the typeof is usable to generate valueType
 
-  test_vT <- tibble()
+  test_vT <- tibble(name = as.character(),`madshapR::valueType` = as.character())
   for(i in seq_along(data_dict[['Variables']][['name']])){
     
     data_dict[['Variables']] <- 
@@ -2597,7 +2597,7 @@ data dictionary")}
     left_join(
       test_vT %>% select('name','madshapR::valueType'), 
       by = 'name') %>%
-    mutate(valueType = ifelse(
+    mutate(valueType = if_else(
       is.na(.data$`valueType`),.data$`madshapR::valueType`,.data$`valueType`)) %>%
     # mutate(across(c('valueType'), ~ replace_na(.,'character'))) %>%
     select(1:"typeof","valueType",everything(),-"madshapR::valueType")
