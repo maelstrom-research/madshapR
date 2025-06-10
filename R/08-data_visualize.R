@@ -176,7 +176,7 @@ variable_visualize <- function(
       scale_x_discrete(drop = FALSE) + 
       coord_flip() +
       stat_summary(
-        aes(label = after_stat("y")),
+        aes(label = after_stat(!!as.symbol("y"))),
         cex = 3,
         fun = "sum", geom = "text", vjust = 0.33,
         hjust = -0.24,
@@ -420,7 +420,7 @@ variable_visualize <- function(
       scale_x_discrete(drop = FALSE) + 
       coord_flip() +
       stat_summary(
-        aes(label = after_stat("y")),
+        aes(label = after_stat(!!as.symbol("y"))),
         cex = 3,
         fun = "sum", geom = "text", vjust = 0.33,
         hjust = -0.24,
@@ -434,8 +434,6 @@ variable_visualize <- function(
         limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
       facet_wrap(~ group_label_short,ncol = 3)
     
-    
-
     # [GF] COMMENT : originally staked due to mis-intrepretation
     # x <- 
     #   x %>%
