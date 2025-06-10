@@ -94,7 +94,7 @@ data_dict_expand <- function(
   rename_col <- make.unique(str_remove(names_col,name_prefix))
   
   data_dict[[to]] <-
-    tibble(name = as.character(),variable = as.character()) %>%
+    tibble(variable = as.character(),name = as.character()) %>%
     bind_rows(data_dict[[to]])
   
   for(i in names_col){
