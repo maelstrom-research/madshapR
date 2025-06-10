@@ -4,9 +4,9 @@
 \name{madshapR-package}
 \alias{madshapR}
 \alias{madshapR-package}
-\title{madshapR: Support Technical Processes Following 'Maelstrom Research' Standards}
+\title{madshapR: Functions to Support Technical Processes and Data Processing with Maelstrom Research tools}
 \description{
-Functions to support rigorous processes in data cleaning, evaluation, and documentation across datasets from different studies based on Maelstrom Research guidelines. The package includes the core functions to evaluate and format the main inputs that define the process, diagnose errors, and summarize and evaluate datasets and their associated data dictionaries. The main outputs are clean datasets and associated metadata, and tabular and visual summary reports. As described in Maelstrom Research guidelines for rigorous retrospective data harmonization (Fortier I and al. (2017) \doi{10.1093/ije/dyw075}).
+Functions to support data cleaning, evaluation, and description, developed for integration with Maelstrom Research software tools. 'madshapR' provides functions primarily to evaluate and manipulate datasets and data dictionaries in preparation for data harmonization with the package 'Rmonize' and to facilitate integration and transfer between RStudio servers and secure Opal environments. 'mapshapR' functions can be used independently but are optimized in conjunction with ‘Rmonize’ functions for streamlined and coherent harmonization processing.
 }
 \seealso{
 Useful links:
