@@ -93,7 +93,7 @@ valueType_of <- function(x){
     }
   })
   
-  if(length(valueType) == 0) valueType <- "text"
+  if(length(valueType) != 1) valueType <- "text"
 
   return(valueType)
 }
