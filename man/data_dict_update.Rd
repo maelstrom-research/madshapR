@@ -67,5 +67,5 @@ head(dataset)
 
 }
 \seealso{
-\code{\link[=data_dict_apply(), data_dict_extract]{data_dict_apply(), data_dict_extract()}}
+\code{\link[=data_dict_apply]{data_dict_apply()}},\code{\link[=data_dict_extract]{data_dict_extract()}}
 }

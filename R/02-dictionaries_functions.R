@@ -157,7 +157,7 @@ data_dict_expand <- function(
                        into = c("name", i),
                        sep = "__SEP_IN__") %>%
               dplyr::filter(is.na(!! i)) %>% 
-              pull(.data$`variable`) %>% toString)
+              pull("variable") %>% toString)
             
           })
         
@@ -574,7 +574,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
     select("taxonomy", "vocabulary") %>% distinct %>%
     unite(col = "taxonomy_id", c("taxonomy", "vocabulary"),
           na.rm = TRUE, sep = "::", remove = FALSE) %>%
-    pull(.data$`taxonomy_id`)
+    pull("taxonomy_id")
   
   if(paste0(attributes(taxonomy)$`madshapR::class`,"") == "taxonomy_mlstr"){
     
@@ -586,7 +586,7 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
                 c("taxonomy_scale", "vocabulary_scale"),
                 na.rm = TRUE, sep = "::", remove = FALSE) %>%
           dplyr::filter(.data$`area_scale_id` != "") %>%
-          pull(.data$`area_scale_id`))
+          pull("area_scale_id"))
   }
   
   wrong_names <- new_names[! new_names %in% authorized_names]
@@ -835,7 +835,7 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
             na.rm = TRUE, sep = "::", remove = FALSE) %>%
       select(.data$`area_scale_id`) %>%
       dplyr::filter(!is.na(.data$`area_scale_id`)) %>% distinct %>%
-      pull(.data$`area_scale_id`) %>%
+      pull("area_scale_id") %>%
       intersect(names(data_dict[['Variables']]))
     
     if(length(cols_scales) > 0){

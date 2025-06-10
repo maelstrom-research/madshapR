@@ -74,7 +74,8 @@ dataset <- madshapR_example$`dataset_example` \%>\%
   select(prg_ever)
 
 dataset_preprocess <- dataset_preprocess(dataset)
-summary_prep <- summary_variables_categorical(dataset_preprocess = dataset_preprocess)
+summary_prep <- summary_variables_categorical(
+  dataset_preprocess = dataset_preprocess[[1]])
 head(summary_prep)
 
 }

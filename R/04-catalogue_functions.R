@@ -810,7 +810,7 @@ valueType_guess <- function(x){
   #         .data$`valueType` == "date|datetime"                ~ "date"         ,
   #         .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
   #         TRUE                                              ~  .data$`valueType`
-  #       )) %>% pull(.data$`valueType`)
+  #       )) %>% pull("valueType")
   # 
   # if(test_vT == "") test_vT <- 'text'
   # 
@@ -957,7 +957,7 @@ data dictionary")}
         test_condition %>%
         mutate(across(everything(), ~ as.numeric(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
+        pull("test") %>% all}
 
     # [GF] NOTE : The test seems obsolete
     # if(valueType %in% c("date")){
@@ -968,7 +968,7 @@ data dictionary")}
     #       ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
     #     mutate(
     #       test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
-    #     pull(.data$`test`) %>% all}
+    #     pull("test") %>% all}
     
     if(valueType %in% c("datetime")){
       test_condition <-
@@ -976,7 +976,7 @@ data dictionary")}
         mutate(
           across(everything(), ~ as.POSIXct.default(.))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
+        pull("test") %>% all}
     
     }
 

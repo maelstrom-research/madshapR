@@ -14,6 +14,13 @@ summary_variables_numeric(
 \arguments{
 \item{dataset_preprocess}{A data frame which provides summary of the
 variables (for internal processes and programming).}
+
+\item{dataset}{A dataset object.}
+
+\item{data_dict}{A list of data frame(s) representing metadata of the input
+dataset. Automatically generated if not provided.}
+
+\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A data frame providing statistical description of 'numerical' variables
@@ -50,7 +57,8 @@ handled automatically by the function.
 # use madshapR_example provided by the package
 dataset <- madshapR_example$`dataset_example`
 dataset_preprocess <- dataset_preprocess(dataset)
-summary_prep <- summary_variables_numeric(dataset_preprocess = dataset_preprocess)
+summary_prep <- summary_variables_numeric(
+  dataset_preprocess = dataset_preprocess[[1]])
 head(summary_prep)
 
 }

@@ -481,7 +481,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #
   #   vT_text <-
   #     vT_list %>%
-  #     dplyr::filter(.data$`toValueType` == 'text') %>% pull(.data$`valueType`)
+  #     dplyr::filter(.data$`toValueType` == 'text') %>% pull("valueType")
   #
   #   data_dict_vt <-
   #     data_dict[['Variables']] %>%

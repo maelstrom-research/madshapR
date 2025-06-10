@@ -96,10 +96,11 @@
 #' }
 #'
 #' @import dplyr fabR
-#' @import ggplot2 tidytext janitor forcats
+#' @import ggplot2 janitor forcats
+#' @importFrom stats IQR
+#' @importFrom stats setNames
 #' @importFrom grDevices colorRampPalette
 #' @importFrom graphics hist
-#' @importFrom stats IQR
 #' @importFrom rlang .data
 #' @importFrom rlang :=
 #'
@@ -123,8 +124,9 @@ variable_visualize <- function(
       x %>% 
       # filter(!is.na(`value_var short`)) %>%
       group_by(pick(c("group_index", "group_label_short","value_var short","value_var short","cat_index"))) %>%
-      reframe(value_var_occur = sum(value_var_occur)) %>%
-      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
+      reframe(value_var_occur = sum(.data$`value_var_occur`)) %>%
+      mutate(group_label_short = 
+               as_category(.data$`group_label_short`,as_factor = TRUE))
     
     # anchor
     # title <- paste0(' representation of `',unique(x$`Variable name`),'` (N obs. : ',sum(x$value_var_occur),')')
@@ -174,7 +176,7 @@ variable_visualize <- function(
       scale_x_discrete(drop = FALSE) + 
       coord_flip() +
       stat_summary(
-        aes(label = after_stat(y)),
+        aes(label = after_stat("y")),
         cex = 3,
         fun = "sum", geom = "text", vjust = 0.33,
         hjust = -0.24,
@@ -185,7 +187,7 @@ variable_visualize <- function(
             return(0) else
               br = pretty(x, n=4) 
             return(br)},
-        lim = c(0,max(x_stacked$value_var_occur)*1.2)) +
+        limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
       facet_wrap(~ group_label_short,ncol = 3)
 
     return(plot_x)
@@ -207,17 +209,17 @@ variable_visualize <- function(
       select(-any_of("color_palette")) %>%
       left_join(color_palette_maelstrom,by = c("valid_class" = "values")) %>%
       group_by(pick(c("group_index","group_label_short","valid_class","color_palette"))) %>%
-      mutate("sum_var_occur" = sum(value_var_occur)) %>% ungroup %>%
+      mutate("sum_var_occur" = sum(.data$`value_var_occur`)) %>% ungroup %>%
       select("group_index","group_label_short","valid_class","color_palette","value_var_occur") %>%
-      # filter(value_var_occur > 0) %>%
+      # filter(.data$`value_var_occur` > 0) %>%
       group_by(pick(c("group_index","group_label_short","valid_class","color_palette"))) %>%
-      reframe(sum_var_occur = sum(value_var_occur)) %>%
+      reframe(sum_var_occur = sum(.data$`value_var_occur`)) %>%
       group_by(pick(c("group_index","group_label_short"))) %>%
       arrange(pick(c("group_index","valid_class"))) %>%
       mutate(
-        prop = 10000*round(.data$`sum_var_occur`/sum(sum_var_occur),4),
-        prop = ifelse(is.na(prop),0,prop)) %>%
-      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
+        prop = 10000*round(.data$`sum_var_occur`/sum(.data$`sum_var_occur`),4),
+        prop = ifelse(is.na(.data$`prop`),0,.data$`prop`)) %>%
+      mutate(group_label_short = as_category(.data$`group_label_short`,as_factor = TRUE))
     
     # handle total < 1
     if(nrow(x_sum) > 0){
@@ -232,15 +234,15 @@ variable_visualize <- function(
       bind_rows(x_sum) %>%
       group_by(pick("group_label_short")) %>%
       arrange(desc('valid_class')) %>%
-      mutate(valid_class = factor(valid_class %>% str_remove_all("1 - |2 - |3 - |4 - "))) %>%
+      mutate(valid_class = factor(.data$`valid_class` %>% str_remove_all("1 - |2 - |3 - |4 - "))) %>%
       mutate(
         csum = cumsum(.data$`prop`),
         pos = .data$`prop`/2 + lag(.data$`csum`, 1),
         pos = ifelse(is.na(.data$`pos`),.data$`prop`/2,.data$`pos`),
-        label = ifelse(floor(prop)/100 == 0 , "",paste0(floor(prop)/100,"%")),
-        prop = prop/10000,
-        pos = pos/10000,
-        csum = csum/10000)
+        label = ifelse(floor(.data$`prop`)/100 == 0 , "",paste0(floor(.data$`prop`)/100,"%")),
+        prop = .data$`prop`/10000,
+        pos = .data$`pos`/10000,
+        csum =.data$`csum`/10000)
     
     # anchor
     title <- paste0('Distribution of observation types in `',unique(x$`Variable name`),'`') 
@@ -292,8 +294,10 @@ variable_visualize <- function(
       x %>% 
       mutate(across(
         all_of('value_var short'), ~ as_valueType(.,vT_col$`valueType`))) %>%
-      mutate(`value_var short` = ifelse(value_var_occur == 0,NA,`value_var short`)) %>%
-      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
+      mutate(`value_var short` = 
+               ifelse(.data$`value_var_occur` == 0,NA,.data$`value_var short`)) %>%
+      mutate(group_label_short = 
+               as_category(.data$`group_label_short`,as_factor = TRUE))
     
     binwidth <- 
       ceiling(
@@ -378,8 +382,8 @@ variable_visualize <- function(
     x_stacked <- 
       x %>% 
       group_by(pick(c("group_index", "group_label_short","value_var short","value_var short","cat_index"))) %>%
-      reframe(value_var_occur = sum(value_var_occur)) %>%
-      mutate(group_label_short = as_category(group_label_short,as_factor = TRUE))
+      reframe(value_var_occur = sum(.data$`value_var_occur`)) %>%
+      mutate(group_label_short = as_category(.data$`group_label_short`,as_factor = TRUE))
   
     aes <- 
       aes(x = fct_rev(as_category(
@@ -416,7 +420,7 @@ variable_visualize <- function(
       scale_x_discrete(drop = FALSE) + 
       coord_flip() +
       stat_summary(
-        aes(label = after_stat(y)),
+        aes(label = after_stat("y")),
         cex = 3,
         fun = "sum", geom = "text", vjust = 0.33,
         hjust = -0.24,
@@ -427,7 +431,7 @@ variable_visualize <- function(
             return(0) else
               br = pretty(x, n=4) 
             return(br)},
-        lim = c(0,max(x_stacked$value_var_occur)*1.2)) +
+        limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
       facet_wrap(~ group_label_short,ncol = 3)
     
     
@@ -500,7 +504,7 @@ variable_visualize <- function(
     #         return(0) else
     #           br = pretty(x, n=4) 
     #         return(br)},
-    #     lim = c(0,max(x_stacked$value_var_occur)*1.2)) +
+    #     limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
     #   facet_wrap(~ group_label_short,ncol = 3)
     
     
@@ -516,11 +520,14 @@ variable_visualize <- function(
       x %>% 
       mutate(across(
         all_of('value_var short'), ~ as_valueType(.,vT_col$`valueType`))) %>%
-      mutate(`value_var short` = if_else(value_var_occur == 0,NA_Date_,`value_var short`)) %>%
-      group_by(group_label) %>%
-      filter(`value_var short` %in% min(`value_var short`,na.rm = TRUE) | 
-             `value_var short` %in% max(`value_var short`,na.rm = TRUE) | 
-              is.na(`value_var short`)) %>%
+      mutate(`value_var short` = 
+               if_else(.data$`value_var_occur` == 0,
+                       NA_Date_,
+                       .data$`value_var short`)) %>%
+      group_by(pick("group_label")) %>%
+      filter(.data$`value_var short` %in% min(.data$`value_var short`,na.rm = TRUE) | 
+               .data$`value_var short` %in% max(.data$`value_var short`,na.rm = TRUE) | 
+              is.na(.data$`value_var short`)) %>%
       ungroup %>% distinct
     
     # anchor
@@ -611,8 +618,8 @@ variable_visualize <- function(
     group_cat_labs <-
       bind_rows(col_set_pps) %>% 
       rename("group" = starts_with('Grouping variable: ')) %>%
-      filter(`group` == `madshapR::group_label long`) %>%
-      select(`madshapR::group_label long`,`madshapR::group_label short`) %>%
+      filter(.data$`group` == .data$`madshapR::group_label long`) %>%
+      select("madshapR::group_label long","madshapR::group_label short") %>%
       distinct
     
     group_cat_short <- 
@@ -670,7 +677,7 @@ variable_visualize <- function(
       vT_list[vT_list$valueType %in% 
                 valueType_guess(
                   col_set_pps[col_set_pps$valid_class == '1 - Valid non-categorical values',] %>% 
-                    pull(`value_var short`)),c('valueType','genericType')]
+                    pull("value_var short")),c('valueType','genericType')]
     }else{
       unique(col_set_pps %>% select(c('valueType','genericType')))}
   
@@ -777,7 +784,7 @@ variable_visualize <- function(
         left_join(
           tibble(
             group_cat_long = group_cat_long) %>% 
-            add_index(), by = 'group_cat_long') %>% arrange(index) %>%
+            add_index(), by = 'group_cat_long') %>% arrange(.data$`index`) %>%
         select(-any_of('Grouping'),-"index",-"group_cat_long",
                -c("Index":"Number of distinct values"))))
 
@@ -812,7 +819,7 @@ variable_visualize <- function(
     col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>%  
     rename("group_label" = starts_with(group_col_short)) %>%
     right_join(group_label_tibble, by = "group_label") %>%
-    filter(!is.na(`Variable name`)) %>%
+    filter(!is.na(.data$`Variable name`)) %>%
     group_by(pick("group_index","group_label_short"))
   
   preprocess_var_values <- 
@@ -825,7 +832,7 @@ variable_visualize <- function(
     col_set_pps[col_set_pps$valid_class %in%  '2 - Valid categorical values',] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     right_join(group_label_tibble, by = "group_label") %>%
-    filter(!is.na(`Variable name`)) %>%
+    filter(!is.na(.data$`Variable name`)) %>%
     group_by(pick("group_index","group_label_short"))
   
   preprocess_cat_values <- 
@@ -838,7 +845,7 @@ variable_visualize <- function(
     col_set_pps[col_set_pps$valid_class %in% c('3 - Non-valid categorical values','4 - Empty values'),] %>% 
     rename("group_label" = starts_with(group_col_short)) %>%
     right_join(group_label_tibble, by = "group_label") %>%
-    filter(!is.na(`Variable name`)) %>%
+    filter(!is.na(.data$`Variable name`)) %>%
     group_by(pick("group_index","group_label_short"))
   
   preprocess_miss_values <- 
@@ -851,7 +858,7 @@ variable_visualize <- function(
     col_set_pps[!is.na(col_set_pps$valid_class),] %>%
     rename("group_label" = starts_with(group_col_short)) %>%
     right_join(group_label_tibble, by = "group_label") %>%
-    filter(!is.na(`Variable name`)) %>%
+    filter(!is.na(.data$`Variable name`)) %>%
     group_by(pick("group_index","group_label_short"))
   
   preprocess_valid_class <- 

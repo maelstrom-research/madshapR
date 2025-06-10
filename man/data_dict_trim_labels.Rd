@@ -18,20 +18,23 @@ data_dict_trim_labels(
 \item{data_dict}{A data dictionary, typically a list containing 'Variables'
 and 'Categories' data frames.}
 
-\item{.keep_columns}{A boolean specifying if the output preserves the other
-columns of the data dictionary or not.}
-
-\item{max_length_name_var}{An integer specifying the maximum length for
+\item{max_length_var_name}{An integer specifying the maximum length for
 variable names (default is 10).}
 
-\item{max_length_total_var}{An integer specifying the maximum total length
-for variable names and labels combined (default is 25).}
+\item{max_length_var_label}{An integer specifying the maximum length for
+variable labels (default is 255).}
 
-\item{max_length_name_cat}{An integer specifying the maximum length for
+\item{max_length_cat_name}{An integer specifying the maximum length for
 category names (default is 10).}
 
-\item{max_length_total_cat}{An integer specifying the maximum total length
-for category names and labels combined (default is 15).}
+\item{max_length_cat_label_short}{An integer specifying the maximum total length
+for category labels (short) (default is 15).}
+
+\item{max_length_cat_label_long}{An integer specifying the maximum total length
+for category labels (long) (default is 63).}
+
+\item{.keep_columns}{A boolean specifying if the output preserves the other
+columns of the data dictionary or not.}
 }
 \value{
 A modified data dictionary with additional columns for shortened labels:

@@ -57,7 +57,8 @@ handled automatically by the function.
 # use madshapR_example provided by the package
 dataset <- madshapR_example$`dataset_example`
 dataset_preprocess <- dataset_preprocess(dataset)
-summary_prep <- summary_variables_text(dataset_preprocess = dataset_preprocess)
+summary_prep <- summary_variables_text(
+  dataset_preprocess = dataset_preprocess[[1]])
 head(summary_prep)
 
 }

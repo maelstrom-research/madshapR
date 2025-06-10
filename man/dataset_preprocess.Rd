@@ -15,6 +15,10 @@ dataset_preprocess(
 
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
+
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Elements will be grouped by this
+column.}
 }
 \value{
 A data frame providing summary elements of a dataset, including its values

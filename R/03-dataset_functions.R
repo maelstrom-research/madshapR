@@ -478,7 +478,7 @@ as_dataset <- function(object, col_id = NULL){
   # [GF] NOTE : col_id is lost when combines group_by and slice in that 
   # specific order
   # col_id(as_dataset(madshapR_example$`dataset_example`,col_id = "part_id") %>%
-  #        group_by('gndr') %>% slice(1))
+  #        group_by(pick('gndr')) %>% slice(1))
   
   # if only the data frame is given in parameter
   if(is.data.frame(object)) {

@@ -481,14 +481,16 @@ first_label_get <- function(data_dict){
 #'
 #' @param data_dict A data dictionary, typically a list containing 'Variables' 
 #' and 'Categories' data frames.
-#' @param max_length_name_var An integer specifying the maximum length for 
+#' @param max_length_var_name An integer specifying the maximum length for 
 #' variable names (default is 10).
-#' @param max_length_total_var An integer specifying the maximum total length 
-#' for variable names and labels combined (default is 25).
-#' @param max_length_name_cat An integer specifying the maximum length for 
+#' @param max_length_var_label An integer specifying the maximum length for 
+#' variable labels (default is 255).
+#' @param max_length_cat_name An integer specifying the maximum length for 
 #' category names (default is 10).
-#' @param max_length_total_cat An integer specifying the maximum total length 
-#' for category names and labels combined (default is 15).
+#' @param max_length_cat_label_short An integer specifying the maximum total length 
+#' for category labels (short) (default is 15).
+#' @param max_length_cat_label_long An integer specifying the maximum total length 
+#' for category labels (long) (default is 63).
 #' @param .keep_columns A boolean specifying if the output preserves the other 
 #' columns of the data dictionary or not.
 #'
@@ -512,8 +514,7 @@ first_label_get <- function(data_dict){
 #' @export
 data_dict_trim_labels <- function(
     data_dict, 
-    max_length_var_name = 31,
-    # max_length_var_name = 31, [GF] FURTHER DISCUSSION: cut the name short/long for summary/viz
+    max_length_var_name = 31,# [GF] FURTHER DISCUSSION: cut the name short/long for summary/viz
     max_length_var_label = 255, 
     max_length_cat_name = 15,
     max_length_cat_label_short = 15,
@@ -692,7 +693,7 @@ data_dict_trim_labels <- function(
       data_dict$Variables %>%
       left_join(
         data_dict$Categories %>%
-          select(-name) %>%
+          select(-"name") %>%
           dplyr::filter(!is.na(.data$`variable`)) %>%
           group_by(name = .data$`variable`) %>%
           mutate(across(
@@ -787,7 +788,7 @@ data_dict_trim_labels <- function(
 #' `variable` and `name`.
 #'
 #' @seealso
-#' [data_dict_apply(), data_dict_extract()]
+#' [data_dict_apply()],[data_dict_extract()]
 #'
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
