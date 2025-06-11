@@ -1,7 +1,7 @@
 Package: madshapR
 Type: Package
 Title: Functions to Support Technical Processes and Data Processing with Maelstrom Research tools
-Version: 1.1.0.9310
+Version: 1.1.0.9399
 Authors@R: 
     c(person(given = "Guillaume",
              family = "Fabre",
