@@ -914,6 +914,10 @@ data dictionary")}
 
     # x <- as.character(x)
     # if(length(x) == 0) return(as.Date(x))
+    if(str_detect(toString(class_x), c("POSIX")){
+      if(sum(hour(c(x)),minute(x),second(x)) == 0) as_any_date(x)
+        return(as_any_date(x))
+    }
     
     date_format <-
       guess_date_format(
