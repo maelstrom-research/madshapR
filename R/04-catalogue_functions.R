@@ -214,6 +214,10 @@ valueType_self_adjust <- function(...){
       # data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
       
       data_dict[['Variables']][['valueType']] <- vT$value
+      
+      if(nrow(data_dict[['Categories']]) == 0)
+        data_dict[['Categories']] <- NULL
+      
       dataset <- data_dict_apply(dataset, data_dict)
       
     }
