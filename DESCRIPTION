@@ -22,7 +22,8 @@ Description: Functions to support data cleaning, evaluation, and description,
      and coherent harmonization processing.
 License: GPL-3
 LazyData: true
-Depends: R (>= 3.4)
+Depends: 
+    R (>= 3.5)
 Imports: dplyr (>= 1.1.0),
     rlang,
     stringr,
