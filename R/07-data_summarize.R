@@ -72,9 +72,9 @@
 #' library(dplyr)
 #' 
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
-#' dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = 'part_id')
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' ###### Example 1: use madshapR_examples provided by the package
+#' dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = 'part_id')
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' 
 #' summary_dataset <- dataset_summarize(dataset, data_dict,group_by = "gndr")
 #' glimpse(summary_dataset)
@@ -233,11 +233,12 @@ your dataset")}
     left_join(
       data_dict_labels$`Variables` %>% select(
         "name_var" = "name","Variable name",
-        "Data dictionary valueType" = "valueType"),
+        # "Data dictionary valueType" = "valueType"
+        ),
       relationship = "many-to-many",
       by = "Variable name") %>%
     full_join(dataset_valueType, by = "name_var") %>%
-    full_join(suggested_valueType, by = "Variable name") 
+    full_join(suggested_valueType, by = "Variable name")
 
   message("    Summarize the data type of each variable across the dataset")
   
@@ -354,8 +355,8 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      -any_of("Categories in data dictionary"),
-      -any_of("Non-valid categories")
+      # -any_of("Categories in data dictionary"),
+      # -any_of("Non-valid categories")
       ) %>%
     inner_join(
       summary_text, 
@@ -368,8 +369,8 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      -any_of("Categories in data dictionary"),
-      -any_of("Non-valid categories")
+      # -any_of("Categories in data dictionary"),
+      # -any_of("Non-valid categories")
     ) %>%
     inner_join(
       summary_num, 
@@ -382,8 +383,8 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      -any_of("Categories in data dictionary"),
-      -any_of("Non-valid categories")
+      # -any_of("Categories in data dictionary"),
+      # -any_of("Non-valid categories")
     ) %>%
     inner_join(
       summary_date, 
@@ -396,8 +397,8 @@ your dataset")}
     select(
       -any_of("Dataset valueType"),
       -any_of("Suggested valueType"),
-      -any_of("Categories in data dictionary"),
-      -any_of("Non-valid categories")
+      # -any_of("Categories in data dictionary"),
+      # -any_of("Non-valid categories")
     ) %>%
     inner_join(
       summary_datetime, 
@@ -619,9 +620,6 @@ your dataset")}
   if(length(group_var) > 0){
     attributes(report)[['madshapR_group::group_by']] <- group_var    
   }
-  
-  
-  
 
   return(report)
 }
@@ -676,13 +674,13 @@ your dataset")}
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #'
 #' ###### Example : a dataset list is a dossier by definition.
 #'     
-#' dataset1 <- as_dataset(madshapR_example$`dataset_example` %>% group_by(pick('gndr')))
-#' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`, col_id = "part_id")
+#' dataset1 <- as_dataset(madshapR_examples$`dataset_example` %>% group_by(pick('gndr')))
+#' dataset2 <- as_dataset(madshapR_examples$`dataset_example - error`, col_id = "part_id")
 #' dossier <- dossier_create(list(dataset1,dataset2))
 #' 
 #' summary_dossier <- dossier_summarize(dossier)
@@ -789,8 +787,8 @@ dossier_summarize <- function(
 #' @examples
 #' {
 #'  
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' head(dataset_preprocess(dataset))
 #'
 #' }
@@ -1582,8 +1580,8 @@ dataset_preprocess <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables(dataset_preprocess = dataset_preprocess)
 #' head(summary_prep)
@@ -1763,8 +1761,8 @@ summary_variables <- function(
 #' @examples
 #' {
 #'    
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_text(
 #'   dataset_preprocess = dataset_preprocess[[1]])
@@ -1907,8 +1905,8 @@ summary_variables_text <- function(
 #' library(dplyr)
 #' library(fabR)
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example` %>%
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example` %>%
 #'   mutate(dob = as_any_date(dob)) %>%
 #'   select(dob)
 #' 
@@ -2065,8 +2063,8 @@ summary_variables_date <- function(
 #' library(lubridate)
 #' library(fabR)
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example` %>%
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example` %>%
 #'   mutate(dob = as_datetime(as_any_date(dob))) %>%
 #'   select(dob)
 #' 
@@ -2175,8 +2173,8 @@ summary_variables_datetime <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' dataset_preprocess <- dataset_preprocess(dataset)
 #' summary_prep <- summary_variables_numeric(
 #'   dataset_preprocess = dataset_preprocess[[1]])
@@ -2319,8 +2317,8 @@ summary_variables_numeric <- function(
 #' library(dplyr)
 #' library(fabR)
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example` %>%
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example` %>%
 #'   mutate(prg_ever = as_category(prg_ever)) %>%
 #'   select(prg_ever)
 #' 
