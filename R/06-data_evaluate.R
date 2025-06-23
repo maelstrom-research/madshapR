@@ -729,14 +729,14 @@ data_dict_evaluate <- function(
     data_dict[['Variables']] %>%
     add_index(.force = TRUE)
   
-  # add label, valueType and missing if don't exist
-  # if(is_data_dict_mlstr == TRUE){
-  #   
-  #   data_dict[['Variables']] <-
-  #     data_dict[['Variables']] %>%
-  #     bind_rows(tibble(valueType = as.character()))
-  #   
-  # }
+  # add valueType if don't exist
+  if(is_data_dict_mlstr == TRUE){
+
+    data_dict[['Variables']] <-
+      data_dict[['Variables']] %>%
+      bind_rows(tibble(valueType = as.character()))
+
+  }
   
   first_lab_var <- first_label_get(data_dict)[['Variables']]
   data_dict_labels <- data_dict_trim_labels(data_dict)
@@ -785,6 +785,7 @@ data_dict_evaluate <- function(
     test_missing_category <-
     tibble("name_var" = as.character())
   
+  # [GF] - to correct
 
   # suppress labels
   data_dict <- 
@@ -1050,7 +1051,7 @@ data_dict_evaluate <- function(
       'Index' = 'index',
       'Variable name', 
       'Variable label',
-      # 'Data dictionary valueType' = 'valueType',
+      'Data dictionary valueType' = 'valueType',
       'Categories in data dictionary' =     'Categories in data dictionary long',
       'Non-valid categories' =     'Non-valid categories long') %>%
     mutate(Index = as.integer(replace_na(.data$`Index`,0)))
