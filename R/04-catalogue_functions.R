@@ -981,7 +981,7 @@ data dictionary")}
       test_condition <-
         test_condition %>%
         mutate(
-          across(everything(), ~ as.POSIXct.default(.))) %>%
+          across(everything(), ~ as.POSIXct(as.character(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
         pull("test") %>% all}
     
