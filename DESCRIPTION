@@ -1,6 +1,6 @@
 Package: madshapR
 Type: Package
-Title: Functions to Support Technical Processes and Data Processing with Maelstrom Research tools
+Title: Functions to Support Data Management and Processing using the Maelstrom Research Approach
 Version: 1.1.0.9399
 Authors@R: 
     c(person(given = "Guillaume",
@@ -8,8 +8,8 @@ Authors@R:
              role = c("aut","cre"),
              email = "guijoseph.fabre@gmail.com",
              comment = c(ORCID = "0000-0002-0124-9970")),
-      person("Maelstrom-research group",
-             role=c("fnd","cph"),
+      person("Maelstrom Research",
+             role=c("aut","fnd","cph"),
              email="info@maelstrom-research.org"))
 Maintainer: Guillaume Fabre <guijoseph.fabre@gmail.com>
 Description: Functions to support data cleaning, evaluation, and description, 
