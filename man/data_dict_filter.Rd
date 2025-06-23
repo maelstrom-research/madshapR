@@ -47,12 +47,12 @@ the \code{variable} and \code{name} columns, with unique combination of
 
 library(dplyr)
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 # Data dictionary where the column 'table' is added to 
 # refer to the associated dataset.
 
 data_dict <- 
-  madshapR_example$`data_dict_example` \%>\% 
+  madshapR_examples$`data_dictionary_example` \%>\% 
   lapply(function(x) mutate(x,table = "dataset"))
 
 ###### Example 1 search and filter through a column in 'Variables' element

@@ -32,8 +32,8 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_example provided by the package
-dataset <- madshapR_example$`dataset_example`
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
 valueType_of(dataset[['part_id']])
 
 # any data frame can be dataset by definition

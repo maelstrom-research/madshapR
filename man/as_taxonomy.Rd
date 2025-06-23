@@ -30,8 +30,8 @@ taxonomies are
 \examples{
 {
 
-# use madshapR_example provided by the package
-taxonomy <- as_taxonomy(madshapR_example$`taxonomy_example`)
+# use madshapR_examples provided by the package
+taxonomy <- as_taxonomy(madshapR_examples$`taxonomy_example`)
 head(taxonomy)
 
 }

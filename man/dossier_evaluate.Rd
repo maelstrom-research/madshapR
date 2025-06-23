@@ -47,9 +47,9 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 
 library(dplyr)
 
-# use madshapR_example provided by the package
-dataset1 <- as_dataset(madshapR_example$`dataset_example`)
-dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+# use madshapR_examples provided by the package
+dataset1 <- as_dataset(madshapR_examples$`dataset_example`)
+dataset2 <- as_dataset(madshapR_examples$`dataset_example - error`,col_id = "part_id")
 dossier <- dossier_create(list(dataset1,dataset2))
 
 eval_dossier <- dossier_evaluate(dossier,is_data_dict_mlstr = TRUE)

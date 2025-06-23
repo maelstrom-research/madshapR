@@ -329,7 +329,7 @@ is_category <- function(x, threshold = NULL) {
 #'   
 #' has_categories(madshapR_examples$`dataset_example`)
 #' has_categories(dataset_with_cat)
-#' has_categories(madshapR_examples$`data_dict_example`)
+#' has_categories(madshapR_examples$`data_dictionary_example`)
 #' 
 #' ###### Example 2: any data frame can be a dataset
 #' has_categories(iris)
@@ -402,7 +402,7 @@ has_categories <- function(...){
 #' @examples
 #' {
 #'  # use madshapR_examples provided by the package
-#'  data_dict <- madshapR_examples$`data_dict_example`
+#'  data_dict <- madshapR_examples$`data_dictionary_example`
 #'  first_label_get(data_dict)
 #' 
 #' }
@@ -501,7 +501,7 @@ first_label_get <- function(data_dict){
 #' @examples{
 #' 
 #'  # use madshapR_examples provided by the package
-#'  data_dict <- madshapR_examples$`data_dict_example - errors`
+#'  data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #'  data_dict_with_short_labels <- data_dict_trim_labels(data_dict)
 #'  
 #'  attributes(data_dict_with_short_labels)
@@ -807,7 +807,7 @@ data_dict_trim_labels <- function(
 #' 
 #' # use madshapR_examples provided by the package
 #' dataset   <- madshapR_examples$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset <- data_dict_apply(dataset,data_dict)
 #' 
 #' # the data dictionary contains no categorical variable.

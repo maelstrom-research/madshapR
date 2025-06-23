@@ -26,9 +26,9 @@ to check if a column is categorical.
 
 library(dplyr)
 
-###### Example 1: use madshapR_example provided by the package
+###### Example 1: use madshapR_examples provided by the package
 dataset <-
-  madshapR_example$`dataset_example` \%>\%
+  madshapR_examples$`dataset_example` \%>\%
   mutate(prg_ever_cat = as_category(prg_ever)) \%>\%
   mutate(prg_ever_no_cat = drop_category(prg_ever))
   

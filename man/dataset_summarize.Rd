@@ -87,9 +87,9 @@ coerce the variable to the corresponding data type.
 library(dplyr)
 
 
-###### Example 1: use madshapR_example provided by the package
-dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = 'part_id')
-data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+###### Example 1: use madshapR_examples provided by the package
+dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = 'part_id')
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
 
 summary_dataset <- dataset_summarize(dataset, data_dict,group_by = "gndr")
 glimpse(summary_dataset)

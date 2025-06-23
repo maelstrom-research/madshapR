@@ -47,12 +47,12 @@ handled automatically by the function.
 
 library(dplyr)
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 dataset <- 
-  madshapR_example$`dataset_example - errors with data` \%>\% 
+  madshapR_examples$`dataset_example - errors with data` \%>\% 
   mutate(gndr = as_category(gndr))
 data_dict <- 
-  as_data_dict(madshapR_example$`data_dict_example - errors with data`)
+  as_data_dict(madshapR_examples$`data_dict_example - errors with data`)
 
 check_dataset_categories(dataset['gndr'] , data_dict)
 

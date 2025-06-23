@@ -40,9 +40,9 @@ data frame.
 
 library(dplyr)
 
-##### Example 1: use madshapR_example provided by the package
+##### Example 1: use madshapR_examples provided by the package
 dataset <-
-  madshapR_example$`dataset_example` \%>\%
+  madshapR_examples$`dataset_example` \%>\%
   mutate(prg_ever = as_category(prg_ever))
   
 head(dataset$prg_ever)

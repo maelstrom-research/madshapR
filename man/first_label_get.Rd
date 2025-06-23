@@ -39,8 +39,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 }
 \examples{
 {
- # use madshapR_example provided by the package
- data_dict <- madshapR_example$`data_dict_example`
+ # use madshapR_examples provided by the package
+ data_dict <- madshapR_examples$`data_dict_example`
  first_label_get(data_dict)
 
 }

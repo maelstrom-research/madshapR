@@ -35,13 +35,13 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 library(dplyr)
 library(stringr)
 
 ###### Example 1: a dataset list is a dossier by definition.
 dossier <- 
-  as_dossier(madshapR_example[str_detect(names(madshapR_example),"^dataset_example")])
+  as_dossier(madshapR_examples[str_detect(names(madshapR_examples),"^dataset_example")])
 glimpse(dossier)
    
 ###### Example 2: any list of data frame can be a dossier by 

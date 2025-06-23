@@ -67,8 +67,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
- # use madshapR_example provided by the package
- data_dict <- madshapR_example$`data_dict_example - errors`
+ # use madshapR_examples provided by the package
+ data_dict <- madshapR_examples$`data_dict_example - errors`
  data_dict_with_short_labels <- data_dict_trim_labels(data_dict)
  
  attributes(data_dict_with_short_labels)

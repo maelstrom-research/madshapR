@@ -84,7 +84,7 @@
 #'   group_by(pick('gndr')) %>% 
 #'   as_dataset(col_id = "part_id")
 #'   
-#' data_dict <- madshapR_examples$`data_dict_example`
+#' data_dict <- madshapR_examples$`data_dictionary_example`
 #' variable_summary <- dataset_summarize(dataset,data_dict)
 #'   
 #' plots <- variable_visualize(
@@ -1021,7 +1021,7 @@ variable_visualize <- function(
 #'   group_by(gndr) %>%
 #'   as_dataset(col_id = "part_id")
 #'   
-#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset <- data_dict_apply(dataset,data_dict)
 #' dataset_summary <- dataset_summarize(dataset,data_dict)
 #'  

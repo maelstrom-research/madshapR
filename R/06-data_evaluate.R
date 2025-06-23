@@ -65,7 +65,7 @@
 #' 
 #' ###### Example 1: use madshapR_examples provided by the package
 #' dataset <- madshapR_examples$`dataset_example - errors with data`
-#' data_dict <- madshapR_examples$`data_dict_example - errors with data`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
 #' 
 #' eval_dataset <- dataset_evaluate(dataset, data_dict)
 #' glimpse(eval_dataset)
@@ -688,7 +688,7 @@ dossier_evaluate <- function(
 #' library(dplyr)
 #' 
 #' # use madshapR_examples provided by the package
-#' data_dict <- madshapR_examples$`data_dict_example - errors`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #' eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
 #' 
 #' glimpse(eval_data_dict)

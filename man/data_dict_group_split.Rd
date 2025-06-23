@@ -40,15 +40,15 @@ the \code{variable} and \code{name} columns, with unique combination of
 
 library(dplyr)
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
 # data dictionary per say, but can be used as a structure which can be 
 # shaped into a data dictionary.
 
 data_dict_list <- list(
-  data_dict_1 = madshapR_example$`data_dict_example - collapsed`,
-  data_dict_2 = madshapR_example$`data_dict_example` )
+  data_dict_1 = madshapR_examples$`data_dictionary_example - collapsed`,
+  data_dict_2 = madshapR_examples$`data_dictionary_example` )
 
 data_dict_ns <-
   data_dict_list_nest(data_dict_list, name_group = "table") \%>\%

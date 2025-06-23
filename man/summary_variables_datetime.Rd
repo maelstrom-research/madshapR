@@ -58,8 +58,8 @@ library(dplyr)
 library(lubridate)
 library(fabR)
 
-# use madshapR_example provided by the package
-dataset <- madshapR_example$`dataset_example` \%>\%
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example` \%>\%
   mutate(dob = as_datetime(as_any_date(dob))) \%>\%
   select(dob)
 

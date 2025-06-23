@@ -33,8 +33,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 
 library(dplyr)
 
-# use madshapR_example provided by the package
-data_dict <- madshapR_example$`data_dict_example`
+# use madshapR_examples provided by the package
+data_dict <- madshapR_examples$`data_dictionary_example`
 data_dict <- as_data_dict_shape(data_dict)
 glimpse(data_dict)
 

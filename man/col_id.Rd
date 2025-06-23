@@ -29,12 +29,12 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 library(dplyr)
 library(fabR)
 
 ###### Example 1: A dataset can have an id column specified as an attribute. 
-dataset <- as_dataset(madshapR_example$`dataset_example`)
+dataset <- as_dataset(madshapR_examples$`dataset_example`)
 col_id(dataset)
 
 dataset <- as_dataset(dataset, col_id = "part_id")

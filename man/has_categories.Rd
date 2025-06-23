@@ -43,13 +43,13 @@ handled automatically by the function.
 
 library(dplyr)
 
-###### Example 1: use madshapR_example provided by the package
-dataset_with_cat <- madshapR_example$`dataset_example` \%>\%
+###### Example 1: use madshapR_examples provided by the package
+dataset_with_cat <- madshapR_examples$`dataset_example` \%>\%
   mutate(prg_ever_cat = as_category(prg_ever))
   
-has_categories(madshapR_example$`dataset_example`)
+has_categories(madshapR_examples$`dataset_example`)
 has_categories(dataset_with_cat)
-has_categories(madshapR_example$`data_dict_example`)
+has_categories(madshapR_examples$`data_dict_example`)
 
 ###### Example 2: any data frame can be a dataset
 has_categories(iris)

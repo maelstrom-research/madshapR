@@ -56,13 +56,13 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 
 ###### Example 1: The valueType of a dataset can be adjusted. each column is
 # evaluated as whole, and the best valueType match found is applied. If 
 # there is no better match found, the column is left as it is.
 
-dataset <- madshapR_example$`dataset_example`
+dataset <- madshapR_examples$`dataset_example`
 dataset <- valueType_self_adjust(dataset["gndr"])
 head(dataset)
 

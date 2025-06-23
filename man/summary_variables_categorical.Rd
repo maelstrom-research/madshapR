@@ -68,8 +68,8 @@ coerce the variable to the corresponding data type.
 library(dplyr)
 library(fabR)
 
-# use madshapR_example provided by the package
-dataset <- madshapR_example$`dataset_example` \%>\%
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example` \%>\%
   mutate(prg_ever = as_category(prg_ever)) \%>\%
   select(prg_ever)
 

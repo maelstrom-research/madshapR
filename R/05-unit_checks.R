@@ -26,7 +26,7 @@
 #' {
 #' 
 #' # use madshapR_examples provided by the package
-#' data_dict <- madshapR_examples$`data_dict_example - errors`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #' check_data_dict_variables(data_dict)
 #'
 #' }
@@ -108,7 +108,7 @@ check_data_dict_variables <- function(data_dict){
 #' {
 #' 
 #' # use madshapR_examples provided by the package
-#' data_dict <- madshapR_examples$`data_dict_example - errors`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #' check_data_dict_categories(data_dict)
 #'
 #' }
@@ -235,7 +235,7 @@ check_data_dict_categories <- function(data_dict){
 #' {
 #' 
 #' # use madshapR_examples provided by the package
-#' data_dict <- madshapR_examples$`data_dict_example - errors`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #' check_data_dict_missing_categories(data_dict)
 #'
 #' }
@@ -324,7 +324,7 @@ check_data_dict_missing_categories <- function(data_dict){
 #' 
 #' # use madshapR_examples provided by the package
 #' taxonomy <- madshapR_examples$`taxonomy_example`
-#' data_dict <- madshapR_examples$`data_dict_example`
+#' data_dict <- madshapR_examples$`data_dictionary_example`
 #' check_data_dict_taxonomy(data_dict, taxonomy)
 #'
 #' }
@@ -578,7 +578,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
 #' {
 #' 
 #' # use madshapR_examples provided by the package
-#' data_dict <- madshapR_examples$`data_dict_example - errors with data`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
 #' check_data_dict_valueType(data_dict)
 #'
 #' }
@@ -731,7 +731,7 @@ check_data_dict_valueType <- function(data_dict){
 #' 
 #' # use madshapR_examples provided by the package
 #' dataset <- madshapR_examples$`dataset_example - errors`
-#' data_dict <- madshapR_examples$`data_dict_example - errors`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #' check_dataset_variables(dataset,data_dict)
 #'
 #' }
@@ -829,7 +829,7 @@ check_dataset_variables <- function(dataset, data_dict = NULL){
 #'   madshapR_examples$`dataset_example - errors with data` %>% 
 #'   mutate(gndr = as_category(gndr))
 #' data_dict <- 
-#'   as_data_dict(madshapR_examples$`data_dict_example - errors with data`)
+#'   as_data_dict(madshapR_examples$`data_dictionary_example - errors with data`)
 #' 
 #' check_dataset_categories(dataset['gndr'] , data_dict)
 #' 
@@ -1095,7 +1095,7 @@ check_dataset_categories <- function(
 #' @examples
 #' {
 #'
-#' data_dict <- madshapR_examples$`data_dict_example - errors with data`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
 #' dataset <- madshapR_examples$`dataset_example`
 #' 
 #' check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
@@ -1283,7 +1283,7 @@ check_dataset_valueType <- function(
 #' 
 #' # use madshapR_examples provided by the package
 #' names_in_data_dict <- 
-#'   madshapR_examples$`data_dict_example - errors`$`Variables`$`name`
+#'   madshapR_examples$`data_dictionary_example - errors`$`Variables`$`name`
 #' check_name_standards(names_in_data_dict)
 #' check_name_standards(c("coucou", "cou cou", "$coucou",NA))
 #'

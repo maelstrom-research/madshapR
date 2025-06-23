@@ -61,8 +61,8 @@ handled automatically by the function.
 \examples{
 {
  
-# use madshapR_example provided by the package
-dataset <- madshapR_example$`dataset_example`
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
 head(dataset_preprocess(dataset))
 
 }

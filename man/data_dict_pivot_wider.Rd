@@ -47,9 +47,9 @@ taxonomies are
 
 library(dplyr)
 
-# use madshapR_example provided by the package
-data_dict <- madshapR_example$`data_dict_example`
-taxonomy  <- madshapR_example$`taxonomy_example`
+# use madshapR_examples provided by the package
+data_dict <- madshapR_examples$`data_dictionary_example`
+taxonomy  <- madshapR_examples$`taxonomy_example`
 data_dict_longer <- data_dict_pivot_longer(data_dict, taxonomy)
 data_dict_wider <- data_dict_pivot_wider(data_dict_longer, taxonomy)
 

@@ -42,7 +42,7 @@
 #' # from a data dictionary, you can use the function to extract and generate an 
 #' # empty dataset
 #' 
-#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset   <- data_extract(data_dict)
 #' 
 #' head(dataset)
@@ -138,7 +138,7 @@ will begenerated with compatible valueType.')
 #' # use madshapR_examples provided by the package
 #'
 #' dataset <- madshapR_examples$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset <- data_dict_apply(dataset,data_dict)
 #' unlabbeled_dataset <- dataset_zap_data_dict(dataset)
 #' 
@@ -251,7 +251,7 @@ dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
 #' {
 #'
 #' dataset = madshapR_examples$`dataset_example`
-#' data_dict = as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+#' data_dict = as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset_cat_as_labels(dataset, data_dict, col_names = 'gndr')
 #'
 #' }

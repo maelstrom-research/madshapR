@@ -30,10 +30,10 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 # any data frame can be a dataset by definition.
 
-is_dataset(madshapR_example$`dataset_example`)
+is_dataset(madshapR_examples$`dataset_example`)
 is_dataset(iris)
 is_dataset(AirPassengers)
 

@@ -49,11 +49,11 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 
 library(dplyr)
 
-###### Example 1: use madshapR_example provided by the package
+###### Example 1: use madshapR_examples provided by the package
 # download a dataset and its data dictionary
 # apply the data dictionary to its dataset
-dataset   <- madshapR_example$`dataset_example` 
-data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+dataset   <- madshapR_examples$`dataset_example` 
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 dataset   <- data_dict_apply(dataset,data_dict)
 
 # extract the data dictionary from the dataset

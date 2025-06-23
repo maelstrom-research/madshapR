@@ -56,8 +56,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 
 library(dplyr)
 
-# use madshapR_example provided by the package
-data_dict_collapsed <- madshapR_example$`data_dict_example - collapsed`
+# use madshapR_examples provided by the package
+data_dict_collapsed <- madshapR_examples$`data_dictionary_example - collapsed`
 
 data_dict_expanded <- data_dict_expand(data_dict_collapsed)
 glimpse(data_dict_expand(data_dict_expanded))

@@ -32,12 +32,12 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_example provided by the package
+# use madshapR_examples provided by the package
 library(dplyr)
 
 ###### Example 1: datasets can be gathered into a dossier which is a list.
-dataset_example1 <- madshapR_example$`dataset_example`
-dataset_example2 <- madshapR_example$`dataset_example - errors with data`
+dataset_example1 <- madshapR_examples$`dataset_example`
+dataset_example2 <- madshapR_examples$`dataset_example - errors with data`
 dossier <- dossier_create(list(dataset_example1,dataset_example2))
 
 glimpse(dossier)

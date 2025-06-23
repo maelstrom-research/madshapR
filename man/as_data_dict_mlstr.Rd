@@ -45,7 +45,7 @@ library(dplyr)
 ###### Example 1 : use the function to apply the attribute "data_dict" to the 
 # object. 
 data_dict <- 
-  as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+  as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 
 glimpse(data_dict)
 
@@ -54,7 +54,7 @@ glimpse(data_dict)
 # column into corresponding typeof/class columns in 'Variables', and converts
 # missing column into "na_values" column. 
 data_dict <- 
-  as_data_dict_mlstr(madshapR_example$`data_dict_example - as_data_dict`)
+  as_data_dict_mlstr(madshapR_examples$`data_dictionary_example - as_data_dict`)
   
 glimpse(data_dict)
 

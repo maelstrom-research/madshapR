@@ -399,7 +399,7 @@ valueType_self_adjust <- function(...){
 #'  
 #' # use madshapR_examples provided by the package
 #' dataset <- madshapR_examples$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' 
 #' dataset <- valueType_adjust(from = data_dict,to = dataset)
 #' head(dataset)
