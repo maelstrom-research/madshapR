@@ -21,7 +21,7 @@ Applies a data dictionary to a dataset, creating a labelled dataset with
 variable attributes. Any previous attributes will be preserved. For
 variables that are factors, variables will be transformed into
 haven-labelled variables. The data dictionary will be added as an attribute
-(attributes(dataset)\verb{madshapR::Data dictionary}) and can be extracted using
+(attributes(dataset)$\verb{madshapR::Data dictionary}) and can be extracted using
 the function \code{\link[=data_dict_extract]{data_dict_extract()}}
 }
 \details{
