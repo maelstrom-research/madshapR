@@ -38,11 +38,11 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # from a data dictionary, you can use the function to extract and generate an 
 #' # empty dataset
 #' 
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
 #' dataset   <- data_extract(data_dict)
 #' 
 #' head(dataset)
@@ -135,10 +135,10 @@ will begenerated with compatible valueType.')
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #'
-#' dataset <- madshapR_example$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' dataset <- madshapR_examples$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
 #' dataset <- data_dict_apply(dataset,data_dict)
 #' unlabbeled_dataset <- dataset_zap_data_dict(dataset)
 #' 
@@ -250,8 +250,8 @@ dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
 #' @examples
 #' {
 #'
-#' dataset = madshapR_example$`dataset_example`
-#' data_dict = as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' dataset = madshapR_examples$`dataset_example`
+#' data_dict = as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
 #' dataset_cat_as_labels(dataset, data_dict, col_names = 'gndr')
 #'
 #' }
@@ -377,12 +377,12 @@ dataset_cat_as_labels <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #'
 #' ###### Example 1: datasets can be gathered into a dossier which is a list.
-#' dataset_example1 <- madshapR_example$`dataset_example`
-#' dataset_example2 <- madshapR_example$`dataset_example - errors with data`
+#' dataset_example1 <- madshapR_examples$`dataset_example`
+#' dataset_example2 <- madshapR_examples$`dataset_example - errors with data`
 #' dossier <- dossier_create(list(dataset_example1,dataset_example2))
 #' 
 #' glimpse(dossier)
@@ -452,12 +452,12 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #' library(fabR)
 #'
 #' ###### Example 1: A dataset can have an id column specified as an attribute. 
-#' dataset <- as_dataset(madshapR_example$`dataset_example`, col_id = "part_id")
+#' dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = "part_id")
 #' print(attributes(dataset)$`madshapR::col_id`)
 #' glimpse(dataset)
 #' 
@@ -477,7 +477,7 @@ as_dataset <- function(object, col_id = NULL){
   
   # [GF] NOTE : col_id is lost when combines group_by and slice in that 
   # specific order
-  # col_id(as_dataset(madshapR_example$`dataset_example`,col_id = "part_id") %>%
+  # col_id(as_dataset(madshapR_examples$`dataset_example`,col_id = "part_id") %>%
   #        group_by(pick('gndr')) %>% slice(1))
   
   # if only the data frame is given in parameter
@@ -555,13 +555,13 @@ Please refer to documentation.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #' library(stringr)
 #'
 #' ###### Example 1: a dataset list is a dossier by definition.
 #' dossier <- 
-#'   as_dossier(madshapR_example[str_detect(names(madshapR_example),"^dataset_example")])
+#'   as_dossier(madshapR_examples[str_detect(names(madshapR_examples),"^dataset_example")])
 #' glimpse(dossier)
 #'    
 #' ###### Example 2: any list of data frame can be a dossier by 
@@ -639,10 +639,10 @@ Please refer to documentation."))
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # any data frame can be a dataset by definition.
 #' 
-#' is_dataset(madshapR_example$`dataset_example`)
+#' is_dataset(madshapR_examples$`dataset_example`)
 #' is_dataset(iris)
 #' is_dataset(AirPassengers)
 #' 
@@ -688,11 +688,11 @@ is_dataset <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # Any list of data frame can be a dossier by definition.
 #' library(stringr)
 #' 
-#' dossier <- madshapR_example[str_detect(names(madshapR_example),"^dataset_example")]
+#' dossier <- madshapR_examples[str_detect(names(madshapR_examples),"^dataset_example")]
 #' is_dossier(dossier)
 #' is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 #' is_dossier(iris)
@@ -738,12 +738,12 @@ is_dossier <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #' library(fabR)
 #' 
 #' ###### Example 1: A dataset can have an id column specified as an attribute. 
-#' dataset <- as_dataset(madshapR_example$`dataset_example`)
+#' dataset <- as_dataset(madshapR_examples$`dataset_example`)
 #' col_id(dataset)
 #' 
 #' dataset <- as_dataset(dataset, col_id = "part_id")

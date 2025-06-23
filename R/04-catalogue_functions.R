@@ -30,8 +30,8 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' valueType_of(dataset[['part_id']])
 #' 
 #' # any data frame can be dataset by definition
@@ -153,13 +153,13 @@ valueType_of <- function(x){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' 
 #' ###### Example 1: The valueType of a dataset can be adjusted. each column is
 #' # evaluated as whole, and the best valueType match found is applied. If 
 #' # there is no better match found, the column is left as it is.
 #' 
-#' dataset <- madshapR_example$`dataset_example`
+#' dataset <- madshapR_examples$`dataset_example`
 #' dataset <- valueType_self_adjust(dataset["gndr"])
 #' head(dataset)
 #' 
@@ -397,9 +397,9 @@ valueType_self_adjust <- function(...){
 #' 
 #' library(dplyr)
 #'  
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
 #' 
 #' dataset <- valueType_adjust(from = data_dict,to = dataset)
 #' head(dataset)
@@ -688,8 +688,8 @@ bold("\n\nUseful tip:"),
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
 #' 
@@ -853,8 +853,8 @@ valueType_guess <- function(x){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' as_valueType(head(dataset$dob),'date')
 #' 
 #' # as_valueType is compatible with tidyverse syntax
@@ -1031,8 +1031,8 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' taxonomy <- as_taxonomy(madshapR_example$`taxonomy_example`)
+#' # use madshapR_examples provided by the package
+#' taxonomy <- as_taxonomy(madshapR_examples$`taxonomy_example`)
 #' head(taxonomy)
 #' 
 #'}
@@ -1149,9 +1149,9 @@ is_valueType <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' is_taxonomy(madshapR_example$`taxonomy_example`)
-#' is_taxonomy(madshapR_example$`dataset_example`)
+#' # use madshapR_examples provided by the package
+#' is_taxonomy(madshapR_examples$`taxonomy_example`)
+#' is_taxonomy(madshapR_examples$`dataset_example`)
 #'
 #'}
 #'

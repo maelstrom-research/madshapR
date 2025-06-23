@@ -29,9 +29,9 @@
 #' 
 #' library(dplyr)
 #' 
-#' ##### Example 1: use madshapR_example provided by the package
+#' ##### Example 1: use madshapR_examples provided by the package
 #' dataset <-
-#'   madshapR_example$`dataset_example` %>%
+#'   madshapR_examples$`dataset_example` %>%
 #'   mutate(prg_ever = as_category(prg_ever))
 #'   
 #' head(dataset$prg_ever)
@@ -187,9 +187,9 @@ as_category <- function(
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
+#' ###### Example 1: use madshapR_examples provided by the package
 #' dataset <-
-#'   madshapR_example$`dataset_example` %>%
+#'   madshapR_examples$`dataset_example` %>%
 #'   mutate(prg_ever_cat = as_category(prg_ever)) %>%
 #'   mutate(prg_ever_no_cat = drop_category(prg_ever))
 #'   
@@ -254,9 +254,9 @@ drop_category <- function(x){
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
+#' ###### Example 1: use madshapR_examples provided by the package
 #' dataset <-
-#'   madshapR_example$`dataset_example` %>%
+#'   madshapR_examples$`dataset_example` %>%
 #'   mutate(prg_ever_cat = as_category(prg_ever)) %>%
 #'   mutate(prg_ever_no_cat = drop_category(prg_ever))
 #'   
@@ -323,13 +323,13 @@ is_category <- function(x, threshold = NULL) {
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
-#' dataset_with_cat <- madshapR_example$`dataset_example` %>%
+#' ###### Example 1: use madshapR_examples provided by the package
+#' dataset_with_cat <- madshapR_examples$`dataset_example` %>%
 #'   mutate(prg_ever_cat = as_category(prg_ever))
 #'   
-#' has_categories(madshapR_example$`dataset_example`)
+#' has_categories(madshapR_examples$`dataset_example`)
 #' has_categories(dataset_with_cat)
-#' has_categories(madshapR_example$`data_dict_example`)
+#' has_categories(madshapR_examples$`data_dict_example`)
 #' 
 #' ###### Example 2: any data frame can be a dataset
 #' has_categories(iris)
@@ -401,8 +401,8 @@ has_categories <- function(...){
 #'
 #' @examples
 #' {
-#'  # use madshapR_example provided by the package
-#'  data_dict <- madshapR_example$`data_dict_example`
+#'  # use madshapR_examples provided by the package
+#'  data_dict <- madshapR_examples$`data_dict_example`
 #'  first_label_get(data_dict)
 #' 
 #' }
@@ -500,8 +500,8 @@ first_label_get <- function(data_dict){
 #'
 #' @examples{
 #' 
-#'  # use madshapR_example provided by the package
-#'  data_dict <- madshapR_example$`data_dict_example - errors`
+#'  # use madshapR_examples provided by the package
+#'  data_dict <- madshapR_examples$`data_dict_example - errors`
 #'  data_dict_with_short_labels <- data_dict_trim_labels(data_dict)
 #'  
 #'  attributes(data_dict_with_short_labels)
@@ -805,9 +805,9 @@ data_dict_trim_labels <- function(
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
-#' dataset   <- madshapR_example$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' # use madshapR_examples provided by the package
+#' dataset   <- madshapR_examples$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
 #' dataset <- data_dict_apply(dataset,data_dict)
 #' 
 #' # the data dictionary contains no categorical variable.

@@ -45,8 +45,8 @@
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
-#' data_dict_collapsed <- madshapR_example$`data_dict_example - collapsed`
+#' # use madshapR_examples provided by the package
+#' data_dict_collapsed <- madshapR_examples$`data_dictionary_example - collapsed`
 #' 
 #' data_dict_expanded <- data_dict_expand(data_dict_collapsed)
 #' glimpse(data_dict_expand(data_dict_expanded))
@@ -228,8 +228,8 @@ Example:
 #' @examples
 #' {
 #'
-#' # use madshapR_example provided by the package
-#' data_dict <- madshapR_example$`data_dict_example`
+#' # use madshapR_examples provided by the package
+#' data_dict <- madshapR_examples$`data_dictionary_example`
 #' data_dict_collapsed <- data_dict_collapse(data_dict)
 #' head(data_dict_collapse(data_dict_collapsed))
 #'
@@ -353,9 +353,9 @@ data_dict_collapse <- function(
 #'
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
-#' data_dict <- madshapR_example$`data_dict_example`
-#' taxonomy  <- madshapR_example$`taxonomy_example`
+#' # use madshapR_examples provided by the package
+#' data_dict <- madshapR_examples$`data_dictionary_example`
+#' taxonomy  <- madshapR_examples$`taxonomy_example`
 #' data_dict_longer <- data_dict_pivot_longer(data_dict, taxonomy)
 #' data_dict_wider <- data_dict_pivot_wider(data_dict_longer, taxonomy)
 #' 
@@ -645,9 +645,9 @@ data_dict_pivot_wider <- function(data_dict, taxonomy = NULL){
 #' 
 #' library(dplyr)
 #'
-#' # use madshapR_example provided by the package
-#' data_dict <- madshapR_example$`data_dict_example`
-#' taxonomy  <- madshapR_example$`taxonomy_example`
+#' # use madshapR_examples provided by the package
+#' data_dict <- madshapR_examples$`data_dictionary_example`
+#' taxonomy  <- madshapR_examples$`taxonomy_example`
 #' data_dict_longer <- data_dict_pivot_longer(data_dict, taxonomy)
 #' 
 #' glimpse(data_dict_longer)
@@ -929,12 +929,12 @@ data_dict_pivot_longer <- function(data_dict, taxonomy = NULL){
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # Data dictionary where the column 'table' is added to 
 #' # refer to the associated dataset.
 #' 
 #' data_dict <- 
-#'   madshapR_example$`data_dict_example` %>% 
+#'   madshapR_examples$`data_dictionary_example` %>% 
 #'   lapply(function(x) mutate(x,table = "dataset"))
 #' 
 #' ###### Example 1 search and filter through a column in 'Variables' element
@@ -1039,15 +1039,15 @@ data_dict_filter <- function(
 #' 
 #' library(dplyr)
 #'
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 = madshapR_example$`data_dict_example - collapsed`,
-#'   data_dict_2 = madshapR_example$`data_dict_example` )
+#'   data_dict_1 = madshapR_examples$`data_dictionary_example - collapsed`,
+#'   data_dict_2 = madshapR_examples$`data_dictionary_example` )
 #' 
 #' data_dict_ns <-
 #'   data_dict_list_nest(data_dict_list, name_group = "table") %>%
@@ -1171,15 +1171,15 @@ cannot be found accross the variables declared in 'Variables'.")
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 = madshapR_example$`data_dict_example` ,
-#'   data_dict_2 = madshapR_example$`data_dict_example - collapsed`)
+#'   data_dict_1 = madshapR_examples$`data_dictionary_example` ,
+#'   data_dict_2 = madshapR_examples$`data_dictionary_example - collapsed`)
 #' 
 #' data_dict_ns <-
 #'   data_dict_list_nest(data_dict_list, name_group = "table") %>%
@@ -1304,15 +1304,15 @@ data_dict_list_nest <- function(data_dict_list, name_group = NULL){
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 = madshapR_example$`data_dict_example` ,
-#'   data_dict_2 = madshapR_example$`data_dict_example - collapsed`)
+#'   data_dict_1 = madshapR_examples$`data_dictionary_example` ,
+#'   data_dict_2 = madshapR_examples$`data_dictionary_example - collapsed`)
 #' 
 #' data_dict_ns <- 
 #'   data_dict_list_nest(data_dict_list, name_group = "table")
@@ -1410,15 +1410,15 @@ cannot be found accross the variables declared in 'Variables'.")
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' # Create a list of data dictionaries where the column 'table' is added to 
 #' # refer to the associated dataset. The object created is not a 
 #' # data dictionary per say, but can be used as a structure which can be 
 #' # shaped into a data dictionary.
 #' 
 #' data_dict_list <- list(
-#'   data_dict_1 = madshapR_example$`data_dict_example` ,
-#'   data_dict_2 = madshapR_example$`data_dict_example`)
+#'   data_dict_1 = madshapR_examples$`data_dictionary_example` ,
+#'   data_dict_2 = madshapR_examples$`data_dictionary_example`)
 #' 
 #' data_dict_nest <-
 #'   data_dict_list_nest(data_dict_list, name_group = "table") %>%
@@ -1493,9 +1493,9 @@ data_dict_ungroup <- function(data_dict){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' dataset   <- madshapR_example$`dataset_example`
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' # use madshapR_examples provided by the package
+#' dataset   <- madshapR_examples$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset   <- data_dict_apply(dataset, data_dict)
 #' 
 #' head(dataset)
@@ -1718,11 +1718,11 @@ your dataset")}
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
+#' ###### Example 1: use madshapR_examples provided by the package
 #' # download a dataset and its data dictionary
 #' # apply the data dictionary to its dataset
-#' dataset   <- madshapR_example$`dataset_example` 
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' dataset   <- madshapR_examples$`dataset_example` 
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset   <- data_dict_apply(dataset,data_dict)
 #' 
 #' # extract the data dictionary from the dataset
@@ -1900,9 +1900,9 @@ data_dict_extract <- function(dataset, as_data_dict_mlstr = TRUE){
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example`
-#' data_dict <- madshapR_example$`data_dict_example - errors`
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
+#' data_dict <- madshapR_examples$`data_dictionary_example - errors`
 #' 
 #' match_data_dict <- data_dict_match_dataset(dataset,data_dict,output = 'data_dict')
 #' match_dataset <- data_dict_match_dataset(dataset,data_dict,output = 'dataset')
@@ -2005,8 +2005,8 @@ Leave blank to get both in a list.")
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
-#' data_dict <- madshapR_example$`data_dict_example`
+#' # use madshapR_examples provided by the package
+#' data_dict <- madshapR_examples$`data_dictionary_example`
 #' data_dict <- as_data_dict_shape(data_dict)
 #' glimpse(data_dict)
 #'
@@ -2090,11 +2090,11 @@ Please refer to documentation.")
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
+#' # use madshapR_examples provided by the package
 #' ###### Example 1 : use the function to apply the attribute "data_dict" to the 
 #' # object. 
 #' data_dict <- 
-#'   as_data_dict(madshapR_example$`data_dict_example - as_data_dict`)
+#'   as_data_dict(madshapR_examples$`data_dictionary_example - as_data_dict`)
 #' 
 #' glimpse(data_dict)
 #' 
@@ -2102,7 +2102,7 @@ Please refer to documentation.")
 #' # data_dict_mlstr to data_dict object. The function mainly converts valueType 
 #' # column into corresponding typeof/class columns in 'Variables', and converts
 #' # missing column into "na_values" column. 
-#' data_dict <- as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' data_dict <- as_data_dict(data_dict)
 #' 
 #' glimpse(data_dict)
@@ -2448,7 +2448,7 @@ data dictionary")}}
 #' ###### Example 1 : use the function to apply the attribute "data_dict" to the 
 #' # object. 
 #' data_dict <- 
-#'   as_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#'   as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' 
 #' glimpse(data_dict)
 #' 
@@ -2457,7 +2457,7 @@ data dictionary")}}
 #' # column into corresponding typeof/class columns in 'Variables', and converts
 #' # missing column into "na_values" column. 
 #' data_dict <- 
-#'   as_data_dict_mlstr(madshapR_example$`data_dict_example - as_data_dict`)
+#'   as_data_dict_mlstr(madshapR_examples$`data_dictionary_example - as_data_dict`)
 #'   
 #' glimpse(data_dict)
 #'
@@ -2823,10 +2823,10 @@ investigations.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' is_data_dict_shape(madshapR_example$`data_dict_example - errors`)
-#' is_data_dict_shape(madshapR_example$`data_dict_example - errors with data`)
-#' is_data_dict_shape(madshapR_example$`data_dict_example`)
+#' # use madshapR_examples provided by the package
+#' is_data_dict_shape(madshapR_examples$`data_dictionary_example - errors`)
+#' is_data_dict_shape(madshapR_examples$`data_dictionary_example - errors with data`)
+#' is_data_dict_shape(madshapR_examples$`data_dictionary_example`)
 #' is_data_dict_shape(iris)
 #'
 #'}
@@ -2872,10 +2872,10 @@ is_data_dict_shape <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' is_data_dict(madshapR_example$`data_dict_example - errors`)
-#' is_data_dict(madshapR_example$`data_dict_example - errors with data`)
-#' is_data_dict(madshapR_example$`data_dict_example`)
+#' # use madshapR_examples provided by the package
+#' is_data_dict(madshapR_examples$`data_dictionary_example - errors`)
+#' is_data_dict(madshapR_examples$`data_dictionary_example - errors with data`)
+#' is_data_dict(madshapR_examples$`data_dictionary_example`)
 #' is_data_dict(iris)
 #'
 #'}
@@ -2925,10 +2925,10 @@ is_data_dict <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_example provided by the package
-#' is_data_dict_mlstr(madshapR_example$`data_dict_example - errors`)
-#' is_data_dict_mlstr(madshapR_example$`data_dict_example - errors with data`)
-#' is_data_dict_mlstr(madshapR_example$`data_dict_example`)
+#' # use madshapR_examples provided by the package
+#' is_data_dict_mlstr(madshapR_examples$`data_dictionary_example - errors`)
+#' is_data_dict_mlstr(madshapR_examples$`data_dictionary_example - errors with data`)
+#' is_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' is_data_dict_mlstr(iris)
 #'
 #'}

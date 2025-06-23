@@ -105,11 +105,11 @@ madshapR_website <- function(){
 #'  
 #' library(dplyr)
 #'  
-#' head(madshapR_example$`dataset_example`)
-#' glimpse(madshapR_example$`data_dict_example`)
+#' head(madshapR_examples$`dataset_example`)
+#' glimpse(madshapR_examples$`data_dictionary_example`)
 #'
 #' }
-"madshapR_example"
+"madshapR_examples"
 
 
 #' @title

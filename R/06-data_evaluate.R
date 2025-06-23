@@ -63,9 +63,9 @@
 #' 
 #' library(dplyr)
 #' 
-#' ###### Example 1: use madshapR_example provided by the package
-#' dataset <- madshapR_example$`dataset_example - errors with data`
-#' data_dict <- madshapR_example$`data_dict_example - errors with data`
+#' ###### Example 1: use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example - errors with data`
+#' data_dict <- madshapR_examples$`data_dict_example - errors with data`
 #' 
 #' eval_dataset <- dataset_evaluate(dataset, data_dict)
 #' glimpse(eval_dataset)
@@ -593,9 +593,9 @@ dataset_evaluate <- function(
 #' 
 #' library(dplyr)
 #'
-#' # use madshapR_example provided by the package
-#' dataset1 <- as_dataset(madshapR_example$`dataset_example`)
-#' dataset2 <- as_dataset(madshapR_example$`dataset_example - error`,col_id = "part_id")
+#' # use madshapR_examples provided by the package
+#' dataset1 <- as_dataset(madshapR_examples$`dataset_example`)
+#' dataset2 <- as_dataset(madshapR_examples$`dataset_example - error`,col_id = "part_id")
 #' dossier <- dossier_create(list(dataset1,dataset2))
 #' 
 #' eval_dossier <- dossier_evaluate(dossier,is_data_dict_mlstr = TRUE)
@@ -687,8 +687,8 @@ dossier_evaluate <- function(
 #' 
 #' library(dplyr)
 #' 
-#' # use madshapR_example provided by the package
-#' data_dict <- madshapR_example$`data_dict_example - errors`
+#' # use madshapR_examples provided by the package
+#' data_dict <- madshapR_examples$`data_dict_example - errors`
 #' eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
 #' 
 #' glimpse(eval_data_dict)
