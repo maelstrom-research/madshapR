@@ -98,7 +98,7 @@ dataset <-
   group_by(pick('gndr')) \%>\% 
   as_dataset(col_id = "part_id")
   
-data_dict <- madshapR_examples$`data_dict_example`
+data_dict <- madshapR_examples$`data_dictionary_example`
 variable_summary <- dataset_summarize(dataset,data_dict)
   
 plots <- variable_visualize(

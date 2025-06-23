@@ -44,7 +44,7 @@ coerce the variable to the corresponding data type.
 {
 
 # use madshapR_examples provided by the package
-data_dict <- madshapR_examples$`data_dict_example - errors with data`
+data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
 check_data_dict_valueType(data_dict)
 
 }

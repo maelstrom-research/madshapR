@@ -45,7 +45,7 @@ handled automatically by the function.
 
 # use madshapR_examples provided by the package
 dataset <- madshapR_examples$`dataset_example - errors`
-data_dict <- madshapR_examples$`data_dict_example - errors`
+data_dict <- madshapR_examples$`data_dictionary_example - errors`
 check_dataset_variables(dataset,data_dict)
 
 }

@@ -54,7 +54,7 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 library(dplyr)
 
 # use madshapR_examples provided by the package
-data_dict <- madshapR_examples$`data_dict_example - errors`
+data_dict <- madshapR_examples$`data_dictionary_example - errors`
 eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
 
 glimpse(eval_data_dict)

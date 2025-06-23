@@ -49,7 +49,7 @@ dataset_with_cat <- madshapR_examples$`dataset_example` \%>\%
   
 has_categories(madshapR_examples$`dataset_example`)
 has_categories(dataset_with_cat)
-has_categories(madshapR_examples$`data_dict_example`)
+has_categories(madshapR_examples$`data_dictionary_example`)
 
 ###### Example 2: any data frame can be a dataset
 has_categories(iris)

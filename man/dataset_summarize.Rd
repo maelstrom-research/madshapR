@@ -89,7 +89,7 @@ library(dplyr)
 
 ###### Example 1: use madshapR_examples provided by the package
 dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = 'part_id')
-data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dict_example`)
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 
 summary_dataset <- dataset_summarize(dataset, data_dict,group_by = "gndr")
 glimpse(summary_dataset)
