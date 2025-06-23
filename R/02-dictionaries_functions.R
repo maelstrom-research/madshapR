@@ -1457,7 +1457,7 @@ data_dict_ungroup <- function(data_dict){
 #' variable attributes. Any previous attributes will be preserved. For 
 #' variables that are factors, variables will be transformed into 
 #' haven-labelled variables. The data dictionary will be added as an attribute
-#' (attributes(dataset)`madshapR::Data dictionary`) and can be extracted using
+#' (attributes(dataset)$`madshapR::Data dictionary`) and can be extracted using
 #' the function [data_dict_extract()]
 #'
 #' @details
