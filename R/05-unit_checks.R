@@ -361,7 +361,7 @@ check_data_dict_taxonomy <- function(data_dict, taxonomy){
   #   return(test)
   # }
   
-  # data_dict <- data_dict_list$`data_dict_example - errors`
+  # data_dict <- data_dict_list$`data_dictionary_example - errors`
   
   # only works for mlstr_taxo
   
