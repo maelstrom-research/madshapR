@@ -1051,7 +1051,7 @@ data_dict_evaluate <- function(
       'Index' = 'index',
       'Variable name', 
       'Variable label',
-      'Data dictionary valueType' = 'valueType',
+      'Data dictionary valueType' = any_of('valueType'),
       'Categories in data dictionary' =     'Categories in data dictionary long',
       'Non-valid categories' =     'Non-valid categories long') %>%
     mutate(Index = as.integer(replace_na(.data$`Index`,0)))
