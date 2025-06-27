@@ -1,7 +1,7 @@
 Package: madshapR
 Type: Package
 Title: Functions to Support Data Management and Processing Using the Maelstrom Research Approach
-Version: 1.1.0.9499
+Version: 2.0.0
 Authors@R: 
     c(person(given = "Guillaume",
              family = "Fabre",
@@ -17,7 +17,7 @@ Description: Functions to support data cleaning, evaluation, and description,
      provides functions primarily to evaluate and manipulate datasets and 
      data dictionaries in preparation for data harmonization with the package 
      'Rmonize' and to facilitate integration and transfer between RStudio servers 
-     and secure Opal environments. 'mapshapR' functions can be used independently
+     and secure Opal environments. 'madshapR' functions can be used independently
      but are optimized in conjunction with ‘Rmonize’ functions for streamlined 
      and coherent harmonization processing.
 License: GPL-3
@@ -43,9 +43,7 @@ Imports: dplyr (>= 1.1.0),
     tidyr,
     fs,
     utils,
-    fabR (>= 2.1.0),
-    lifecycle
-Remotes: guifabre/fabR@testing-2
+    fabR (>= 2.1.1)
 URL: https://github.com/maelstrom-research/madshapR
 BugReports: https://github.com/maelstrom-research/madshapR/issues
 Roxygen: list(markdown = TRUE)

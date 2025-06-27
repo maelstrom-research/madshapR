@@ -2,7 +2,6 @@
 #' Validate and coerce any object as a categorical variable.
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Converts a vector object to a categorical object, typically a column in a 
 #' data frame.
 #'
@@ -172,7 +171,6 @@ as_category <- function(
 #' Validate and coerce any object as a non-categorical variable.
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Converts a vector object to a non-categorical object, typically a column in a 
 #' data frame. The categories come from valid values present in the 
 #' object and are suppressed from an associated data dictionary (when present).
@@ -237,7 +235,6 @@ drop_category <- function(x){
 #' Test and validate if an object is a categorical variable.
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Tests if the input object is a categorical variable. This function mainly helps 
 #' validate input within other functions of the package but could be used
 #' to check if a column is categorical.
@@ -288,7 +285,6 @@ is_category <- function(x, threshold = NULL) {
 #' Test if an object has categorical variables.
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Test if the object has categorical variables, typically a data frame or 
 #' categorical entries in the data dictionary. This function mainly helps 
 #' validate input within other functions of the package but could be used to 
@@ -369,10 +365,9 @@ has_categories <- function(...){
 }
 
 #' @title 
-#' Get First Label from Data Dictionary
+#' Get the first label from a data dictionary
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' This function retrieves the first variable and category labels from a data dictionary.
 #' It checks if the labels are present, and if not, returns empty strings. The function
 #' also determines the class of the data dictionary based on its attributes and structure.
@@ -456,10 +451,9 @@ first_label_get <- function(data_dict){
 
 
 #' @title
-#' Add Shortened Labels to Data Dictionary
+#' Add shortened labels to data dictionary
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' This function modifies a data dictionary by adding shortened labels for both 
 #' variables and categories. The shortened labels are created based on specified 
 #' maximum lengths for the variable and category names and labels.
@@ -762,7 +756,6 @@ data_dict_trim_labels <- function(
 #' Update a data dictionary from a dataset
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
 #' Updates a data dictionary from a dataset, creating a new data dictionary with
 #' updated content, from variables selected in the dataset. Any previous other
 #' meta data will be preserved. The new data dictionary can be applied to the 

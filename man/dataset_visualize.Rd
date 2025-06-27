@@ -90,7 +90,7 @@ taxonomies are
 \href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
 \examples{
-{
+\donttest{
 
 library(fs)
 library(dplyr)

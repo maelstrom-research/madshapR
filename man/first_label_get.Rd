@@ -2,7 +2,7 @@
 % Please edit documentation in R/experimental.R
 \name{first_label_get}
 \alias{first_label_get}
-\title{Get First Label from Data Dictionary}
+\title{Get the first label from a data dictionary}
 \usage{
 first_label_get(data_dict)
 }
@@ -18,7 +18,6 @@ A named character vector with the following elements:
 }
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This function retrieves the first variable and category labels from a data dictionary.
 It checks if the labels are present, and if not, returns empty strings. The function
 also determines the class of the data dictionary based on its attributes and structure.

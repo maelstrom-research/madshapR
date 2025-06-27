@@ -67,7 +67,7 @@
 #' A list of data frames containing assessment reports and summaries.
 #'
 #' @examples
-#' {
+#' \donttest{ 
 #' 
 #' library(dplyr)
 #' 
@@ -672,7 +672,7 @@ your dataset")}
 #' A list of data frames containing overall assessment reports and summaries grouped by dataset.
 #'
 #' @examples
-#' {
+#' \donttest{
 #' 
 #' # use madshapR_examples provided by the package
 #' library(dplyr)
@@ -1571,7 +1571,6 @@ dataset_preprocess <- function(
 #' @param group_by A character string identifying the column in the dataset
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A data frame providing statistical description of variables present in
@@ -1593,11 +1592,10 @@ dataset_preprocess <- function(
 #'
 #' @export
 summary_variables <- function(
-    dataset_preprocess = .dataset_preprocess,
+    dataset_preprocess,
     dataset = NULL,
     data_dict = NULL,
-    group_by = NULL,
-    .dataset_preprocess = NULL){
+    group_by = NULL){
 
   #  (for internal processes and programming).
   if(is.null(dataset_preprocess)) dataset_preprocess <- 
@@ -1752,7 +1750,6 @@ summary_variables <- function(
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A data frame providing statistical description of 'text' variables present
@@ -1775,10 +1772,9 @@ summary_variables <- function(
 #'
 #' @export
 summary_variables_text <- function(
-    dataset_preprocess = .dataset_preprocess,
+    dataset_preprocess,
     dataset = NULL,
-    data_dict = NULL,
-    .dataset_preprocess = NULL){
+    data_dict = NULL){
   
   # init
   summary <- 
@@ -1893,7 +1889,6 @@ summary_variables_text <- function(
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A data frame providing statistical description of 'date' variables present
@@ -1922,10 +1917,9 @@ summary_variables_text <- function(
 #'
 #' @export
 summary_variables_date <- function(
-    dataset_preprocess = .dataset_preprocess,
+    dataset_preprocess,
     dataset = NULL,
-    data_dict = NULL,
-    .dataset_preprocess = NULL){
+    data_dict = NULL){
 
   # init
   summary <-
@@ -2050,7 +2044,6 @@ summary_variables_date <- function(
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A data frame providing statistical description of 'datetime' variables present
@@ -2080,10 +2073,9 @@ summary_variables_date <- function(
 #'
 #' @export
 summary_variables_datetime <- function(
-    dataset_preprocess = .dataset_preprocess,
+    dataset_preprocess,
     dataset = NULL,
-    data_dict = NULL,
-    .dataset_preprocess = NULL){
+    data_dict = NULL){
   
   # init
   summary <-
@@ -2164,7 +2156,6 @@ summary_variables_datetime <- function(
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #' 
 #' @returns
 #' A data frame providing statistical description of 'numerical' variables
@@ -2188,10 +2179,9 @@ summary_variables_datetime <- function(
 #'
 #' @export
 summary_variables_numeric <- function(
-    dataset_preprocess = .dataset_preprocess,
+    dataset_preprocess,
     dataset = NULL,
-    data_dict = NULL,
-    .dataset_preprocess = NULL){
+    data_dict = NULL){
   
   # init
   summary <-
@@ -2305,7 +2295,6 @@ summary_variables_numeric <- function(
 #' @param dataset A dataset object.
 #' @param data_dict A list of data frame(s) representing metadata of the input 
 #' dataset. Automatically generated if not provided. 
-#' @param .dataset_preprocess `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A data frame providing statistical description of 'categorical' variables
@@ -2334,10 +2323,9 @@ summary_variables_numeric <- function(
 #'
 #' @export
 summary_variables_categorical <- function(
-    dataset_preprocess = .dataset_preprocess,
+    dataset_preprocess,
     dataset = NULL,
-    data_dict = NULL,
-    .dataset_preprocess = NULL){
+    data_dict = NULL){
   
   # init
   summary_tbl <- 

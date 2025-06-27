@@ -20,7 +20,6 @@ default.}
 A list of data frame(s) identifying a data dictionary.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Updates a data dictionary from a dataset, creating a new data dictionary with
 updated content, from variables selected in the dataset. Any previous other
 meta data will be preserved. The new data dictionary can be applied to the

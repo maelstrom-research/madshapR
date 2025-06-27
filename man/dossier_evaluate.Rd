@@ -43,7 +43,7 @@ The object may be specifically formatted to be compatible with additional
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
 \examples{
-{
+\donttest{
 
 library(dplyr)
 

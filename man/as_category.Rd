@@ -31,7 +31,6 @@ the levels will be preserved). FALSE by default.}
 A vector with class haven_labelled.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Converts a vector object to a categorical object, typically a column in a
 data frame.
 }

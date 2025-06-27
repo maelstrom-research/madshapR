@@ -59,7 +59,7 @@
 #' A list of data frames containing assessment reports.
 #'
 #' @examples
-#' {
+#' \donttest{
 #' 
 #' library(dplyr)
 #' 
@@ -589,7 +589,7 @@ dataset_evaluate <- function(
 #' A list of data frames containing assessment reports.
 #'
 #' @examples
-#' {
+#' \donttest{
 #' 
 #' library(dplyr)
 #'

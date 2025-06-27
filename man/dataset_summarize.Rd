@@ -82,7 +82,7 @@ types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
 \examples{
-{
+\donttest{ 
 
 library(dplyr)
 

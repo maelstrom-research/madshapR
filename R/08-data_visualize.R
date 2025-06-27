@@ -73,7 +73,7 @@
 #' be used to summarize visualize data.
 #' 
 #' @examples
-#' {
+#' \donttest{
 #' 
 #' library(dplyr)
 #' library(fs)
@@ -1010,7 +1010,7 @@ variable_visualize <- function(
 #' folder path.
 #'
 #' @examples
-#' {
+#' \donttest{
 #' 
 #' library(fs)
 #' library(dplyr)

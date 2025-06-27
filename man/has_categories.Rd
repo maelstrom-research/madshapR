@@ -13,7 +13,6 @@ has_categories(...)
 A logical.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Test if the object has categorical variables, typically a data frame or
 categorical entries in the data dictionary. This function mainly helps
 validate input within other functions of the package but could be used to

@@ -2,7 +2,7 @@
 % Please edit documentation in R/experimental.R
 \name{data_dict_trim_labels}
 \alias{data_dict_trim_labels}
-\title{Add Shortened Labels to Data Dictionary}
+\title{Add shortened labels to data dictionary}
 \usage{
 data_dict_trim_labels(
   data_dict,
@@ -44,7 +44,6 @@ A modified data dictionary with additional columns for shortened labels:
 }
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This function modifies a data dictionary by adding shortened labels for both
 variables and categories. The shortened labels are created based on specified
 maximum lengths for the variable and category names and labels.
