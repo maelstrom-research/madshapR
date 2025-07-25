@@ -45,9 +45,9 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-dataset = madshapR_DEMO$dataset_PARIS
-data_dict = as_data_dict_mlstr(madshapR_DEMO$data_dict_PARIS)
-dataset_cat_as_labels(dataset, data_dict, col_names = 'SEX')
+dataset = madshapR_examples$`dataset_example`
+data_dict = as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+dataset_cat_as_labels(dataset, data_dict, col_names = 'gndr')
 
 }
 

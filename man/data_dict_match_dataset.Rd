@@ -56,13 +56,17 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
 
-dataset <- madshapR_DEMO$dataset_MELBOURNE \%>\% select(-1)
-data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-head(data_dict_match_dataset(dataset, data_dict, out = 'dataset'))
-glimpse(data_dict_match_dataset(dataset, data_dict, out = 'data_dict'))
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
+data_dict <- madshapR_examples$`data_dictionary_example - errors`
+
+match_data_dict <- data_dict_match_dataset(dataset,data_dict,output = 'data_dict')
+match_dataset <- data_dict_match_dataset(dataset,data_dict,output = 'dataset')
+
+head(match_data_dict)
+glimpse(match_dataset)
 
 }
 

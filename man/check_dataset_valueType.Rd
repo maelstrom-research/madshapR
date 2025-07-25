@@ -57,7 +57,11 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-check_dataset_valueType(mtcars[2], valueType_guess = TRUE)
+data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
+dataset <- madshapR_examples$`dataset_example`
+
+check_dataset_valueType(dataset, data_dict, valueType_guess = TRUE)
+check_dataset_valueType(dataset, data_dict, valueType_guess = FALSE)
 
 }
 

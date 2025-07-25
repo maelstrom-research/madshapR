@@ -26,11 +26,11 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
+# use madshapR_examples provided by the package
+names_in_data_dict <- 
+  madshapR_examples$`data_dictionary_example - errors`$`Variables`$`name`
+check_name_standards(names_in_data_dict)
 check_name_standards(c("coucou", "cou cou", "$coucou",NA))
-check_name_standards(
- madshapR_DEMO$`data_dict_TOKYO - errors`$Variables$name)
 
 }
 

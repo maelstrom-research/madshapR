@@ -7,11 +7,10 @@
 dataset_summarize(
   dataset,
   data_dict = data_dict_extract(dataset),
-  group_by = NULL,
+  group_by = group_vars(dataset),
   taxonomy = NULL,
-  dataset_name = .dataset_name,
-  valueType_guess = FALSE,
-  .dataset_name = NULL
+  valueType_guess = TRUE,
+  dataset_name = NULL
 )
 }
 \arguments{
@@ -27,13 +26,11 @@ column.}
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. TRUE by default.}
+
 \item{dataset_name}{A character string specifying the name of the dataset
 (internally used in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
-\item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
-
-\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A list of data frames containing assessment reports and summaries.
@@ -85,14 +82,21 @@ types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
 \examples{
-{
+\donttest{ 
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
 
-#' ###### Example : Any data frame can be summarized
-dataset <- iris['Sepal.Width']
-glimpse(dataset_summarize(dataset))
+
+###### Example 1: use madshapR_examples provided by the package
+dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = 'part_id')
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+
+summary_dataset <- dataset_summarize(dataset, data_dict,group_by = "gndr")
+glimpse(summary_dataset)
+
+###### Example 2: Any data frame can be a dataset by definition
+summary_iris <- dataset_summarize(iris, group_by = "Species")
+glimpse(summary_iris)
  
 }
 

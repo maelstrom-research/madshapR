@@ -29,12 +29,21 @@ handled automatically by the function.
 \examples{
 {
 
-col_id(iris)
-
+# use madshapR_examples provided by the package
+library(dplyr)
 library(fabR)
-iris <- add_index(iris)
-iris <- as_dataset(iris, col_id = 'index')
-col_id(iris)
+
+###### Example 1: A dataset can have an id column specified as an attribute. 
+dataset <- as_dataset(madshapR_examples$`dataset_example`)
+col_id(dataset)
+
+dataset <- as_dataset(dataset, col_id = "part_id")
+col_id(dataset)
+
+###### Example 2: Any data frame can be a dataset by definition.
+dataset <- tibble(iris \%>\% add_index("my_index"))
+dataset <- as_dataset(dataset, "my_index")
+col_id(dataset)
 
 }
 

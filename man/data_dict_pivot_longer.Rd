@@ -45,11 +45,14 @@ taxonomies are
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+library(dplyr)
 
-data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
-taxonomy <- madshapR_DEMO$taxonomy_PARIS
-data_dict_pivot_longer(data_dict,taxonomy)
+# use madshapR_examples provided by the package
+data_dict <- madshapR_examples$`data_dictionary_example`
+taxonomy  <- madshapR_examples$`taxonomy_example`
+data_dict_longer <- data_dict_pivot_longer(data_dict, taxonomy)
+
+glimpse(data_dict_longer)
 
 }
 

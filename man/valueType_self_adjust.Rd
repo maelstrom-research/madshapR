@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-catalogue_functions.R
 \name{valueType_self_adjust}
 \alias{valueType_self_adjust}
-\title{Guess and attribute the valueType of a data dictionary or dataset variable}
+\title{Self-adjust the valueType from a data dictionary or a dataset.}
 \usage{
 valueType_self_adjust(...)
 }
@@ -14,10 +14,14 @@ Either a data frame, identifying the dataset, or a list of data frame(s)
 identifying a data dictionary, depending which the input refers to.
 }
 \description{
-Determines the valueType of an object based on \code{\link[base:typeof]{base::typeof()}} and
-\code{\link[base:class]{base::class()}}.
-The possible values returned are 'date', 'boolean', 'integer', 'decimal', and
-'text'.
+It is sometimes useful to take variable valueType’s from a dataset and
+attribute them to the associated data dictionary, or vice versa.
+\code{\link[=valueType_self_adjust]{valueType_self_adjust()}} takes the valueType guessed of the input and
+attributes it to itself. The parameter can be either a dataset or a
+data dictionary. Depending on the input provided, the valueType replaced is
+either in the 'valueType' column of the data dictionary or cast to a column
+in the dataset. The possible values of the valueTypes returned are
+'date','datetime', 'boolean', 'integer', 'decimal', and text'.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata
@@ -52,11 +56,19 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-###### Example : The valueType of a dataset can be adjusted. each column is
+# use madshapR_examples provided by the package
+
+###### Example 1: The valueType of a dataset can be adjusted. each column is
 # evaluated as whole, and the best valueType match found is applied. If 
 # there is no better match found, the column is left as it is.
 
-head(valueType_self_adjust(mtcars['cyl']))
+dataset <- madshapR_examples$`dataset_example`
+dataset <- valueType_self_adjust(dataset["gndr"])
+head(dataset)
+
+###### Example 2: Aany data frame can be dataset by definition
+dataset <- valueType_self_adjust(mtcars)
+head(dataset)
 
 }
 

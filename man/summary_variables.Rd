@@ -5,10 +5,10 @@
 \title{Provide descriptive statistics for variables in a dataset}
 \usage{
 summary_variables(
-  dataset_preprocess = .dataset_preprocess,
+  dataset_preprocess,
   dataset = NULL,
   data_dict = NULL,
-  .dataset_preprocess = NULL
+  group_by = NULL
 )
 }
 \arguments{
@@ -20,7 +20,9 @@ variables (used for internal processes and programming).}
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
 
-\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+\item{group_by}{A character string identifying the column in the dataset
+to use as a grouping variable. Elements will be grouped by this
+column.}
 }
 \value{
 A data frame providing statistical description of variables present in
@@ -54,11 +56,11 @@ handled automatically by the function.
 \examples{
 {
 
-library(dplyr)
-
-###### Example : Any data frame can be a dataset by definition.
-dataset_preprocess <- dataset_preprocess(dataset = iris)
-glimpse(summary_variables(dataset_preprocess = dataset_preprocess))
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
+dataset_preprocess <- dataset_preprocess(dataset)
+summary_prep <- summary_variables(dataset_preprocess = dataset_preprocess)
+head(summary_prep)
 
 }
 

@@ -43,10 +43,9 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-dataset <- madshapR_DEMO$`dataset_TOKYO - errors with data`
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example - errors`
+data_dict <- madshapR_examples$`data_dictionary_example - errors`
 check_dataset_variables(dataset,data_dict)
 
 }

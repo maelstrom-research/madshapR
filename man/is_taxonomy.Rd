@@ -29,9 +29,9 @@ taxonomies are
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-is_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+# use madshapR_examples provided by the package
+is_taxonomy(madshapR_examples$`taxonomy_example`)
+is_taxonomy(madshapR_examples$`dataset_example`)
 
 }
 

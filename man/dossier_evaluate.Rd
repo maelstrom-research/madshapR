@@ -4,7 +4,7 @@
 \alias{dossier_evaluate}
 \title{Generate an assessment report of a dossier}
 \usage{
-dossier_evaluate(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE)
+dossier_evaluate(dossier, taxonomy = NULL, is_data_dict_mlstr = TRUE)
 }
 \arguments{
 \item{dossier}{List of data frame, each of them being datasets.}
@@ -12,7 +12,7 @@ dossier_evaluate(dossier, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
-\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+\item{is_data_dict_mlstr}{Whether the input data dictionary should be coerced
 with specific format restrictions for compatibility with other
 Maelstrom Research software. TRUE by default.}
 }
@@ -43,20 +43,17 @@ The object may be specifically formatted to be compatible with additional
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
 \examples{
-{
+\donttest{
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example : a dataset list is a dossier by definition.
-   
-dataset <- as_dataset(
-   madshapR_DEMO$`dataset_TOKYO - errors with data`,
-   col_id = 'part_id') \%>\% slice(0)
+# use madshapR_examples provided by the package
+dataset1 <- as_dataset(madshapR_examples$`dataset_example`)
+dataset2 <- as_dataset(madshapR_examples$`dataset_example - error`,col_id = "part_id")
+dossier <- dossier_create(list(dataset1,dataset2))
 
-dossier <- as_dossier(list(dataset = dataset))
-
-glimpse(dossier_evaluate(dossier,as_data_dict_mlstr = FALSE))
+eval_dossier <- dossier_evaluate(dossier,is_data_dict_mlstr = TRUE)
+glimpse(eval_dossier)
 
 }
 

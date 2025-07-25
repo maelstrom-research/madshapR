@@ -54,10 +54,13 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+library(dplyr)
 
-data_dict <- madshapR_DEMO$`data_dict_PARIS - collapsed`
-data_dict_expand(data_dict)
+# use madshapR_examples provided by the package
+data_dict_collapsed <- madshapR_examples$`data_dictionary_example - collapsed`
+
+data_dict_expanded <- data_dict_expand(data_dict_collapsed)
+glimpse(data_dict_expand(data_dict_expanded))
 
 }
 

@@ -16,7 +16,11 @@ A list of data frame(s) with \code{madshapR::class} 'data_dict'.
 Checks if an object is a valid data dictionary and returns it with the
 appropriate \code{madshapR::class} attribute. This function mainly helps validate
 inputs within other functions of the package but could be used to check if
-an object is valid for use in a function.
+an object is valid for use in a function. If either the columns 'typeof' or
+'class' already exists in 'Variables', or 'na_values', 'labels' in
+'Categories', the function will return the same data dictionary. Otherwise,
+These columns will be added, using 'valueType' in 'Variables', and, 'label'
+and 'missing' in 'Categories.
 }
 \details{
 A data dictionary contains the list of variables in a dataset and metadata
@@ -31,10 +35,24 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+library(dplyr)
 
-data_dict <- madshapR_DEMO$data_dict_PARIS
-as_data_dict(data_dict)
+# use madshapR_examples provided by the package
+###### Example 1 : use the function to apply the attribute "data_dict" to the 
+# object. 
+data_dict <- 
+  as_data_dict(madshapR_examples$`data_dictionary_example - as_data_dict`)
+
+glimpse(data_dict)
+
+###### Example 2 : use the function to shape the data dictionary formatted as
+# data_dict_mlstr to data_dict object. The function mainly converts valueType 
+# column into corresponding typeof/class columns in 'Variables', and converts
+# missing column into "na_values" column. 
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+data_dict <- as_data_dict(data_dict)
+
+glimpse(data_dict)
 
 }
 

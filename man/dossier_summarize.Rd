@@ -8,7 +8,7 @@ dossier_summarize(
   dossier,
   group_by = NULL,
   taxonomy = NULL,
-  valueType_guess = FALSE
+  valueType_guess = TRUE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ column.}
 schema.}
 
 \item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
+valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
 A list of data frames containing overall assessment reports and summaries grouped by dataset.
@@ -59,16 +59,19 @@ types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
 \examples{
-{
+\donttest{
 
-# use madshapR_DEMO provided by the package
+# use madshapR_examples provided by the package
 library(dplyr)
 
-###### Example 1: Combine functions and summarize datasets.
-dossier <- list(iris = tibble())
+###### Example : a dataset list is a dossier by definition.
+    
+dataset1 <- as_dataset(madshapR_examples$`dataset_example` \%>\% group_by(pick('gndr')))
+dataset2 <- as_dataset(madshapR_examples$`dataset_example - error`, col_id = "part_id")
+dossier <- dossier_create(list(dataset1,dataset2))
 
-dossier_summary <- dossier_summarize(dossier)
-glimpse(dossier_summary)
+summary_dossier <- dossier_summarize(dossier)
+glimpse(summary_dossier)
 
 }
 

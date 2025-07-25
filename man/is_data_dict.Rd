@@ -30,10 +30,10 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-is_data_dict(data_dict)
+# use madshapR_examples provided by the package
+is_data_dict(madshapR_examples$`data_dictionary_example - errors`)
+is_data_dict(madshapR_examples$`data_dictionary_example - errors with data`)
+is_data_dict(madshapR_examples$`data_dictionary_example`)
 is_data_dict(iris)
 
 }

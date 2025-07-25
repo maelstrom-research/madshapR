@@ -5,10 +5,9 @@
 \title{Provide descriptive statistics for variables of type 'datetime' in a dataset}
 \usage{
 summary_variables_datetime(
-  dataset_preprocess = .dataset_preprocess,
+  dataset_preprocess,
   dataset = NULL,
-  data_dict = NULL,
-  .dataset_preprocess = NULL
+  data_dict = NULL
 )
 }
 \arguments{
@@ -19,8 +18,6 @@ variables (for internal processes and programming).}
 
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
-
-\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A data frame providing statistical description of 'datetime' variables present
@@ -54,19 +51,19 @@ handled automatically by the function.
 \examples{
 {
    
-# use madshapR_DEMO provided by the package
 library(dplyr)
 library(lubridate)
 library(fabR)
 
-dataset_preprocess <-
-  madshapR_DEMO$dataset_TOKYO \%>\%
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example` \%>\%
   mutate(dob = as_datetime(as_any_date(dob))) \%>\%
-  select(dob) \%>\%
-  head() \%>\%
-  dataset_preprocess
+  select(dob)
 
-glimpse(summary_variables_datetime(dataset_preprocess = dataset_preprocess))
+dataset_preprocess <- dataset_preprocess(dataset)
+summary_prep <- summary_variables_datetime(
+  dataset_preprocess = dataset_preprocess[[1]])
+head(summary_prep)
 
 }
 

@@ -5,13 +5,12 @@
 \title{Generate a list of charts, figures and summary tables of a variable}
 \usage{
 variable_visualize(
-  dataset = tibble(id = as.character()),
+  dataset,
   col,
-  data_dict = NULL,
-  group_by = NULL,
-  valueType_guess = FALSE,
-  variable_summary = .summary_var,
-  .summary_var = NULL
+  data_dict = data_dict_extract(dataset),
+  group_by = attributes(variable_summary)[["madshapR_group::group_by"]],
+  variable_summary = NULL,
+  valueType_guess = TRUE
 )
 }
 \arguments{
@@ -26,12 +25,10 @@ dataset. Automatically generated if not provided.}
 to use as a grouping variable. Elements will be grouped by this
 column.}
 
-\item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
-
 \item{variable_summary}{A summary list which is the summary of the variables.}
 
-\item{.summary_var}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. TRUE by default.}
 }
 \value{
 A list of up to seven elements (charts and figures and datatables) which can
@@ -41,17 +38,17 @@ be used to summarize visualize data.
 Analyses the content of a variable and its data dictionary (if any),
 identifies its data type and values accordingly and generates figures and
 summaries (datatable format). The figures and tables are representations of
-data distribution, statistics and valid/non valid/missing values (based on
+data distribution, statistics and valid/non valid/empty values (based on
 the data dictionary information if provided and the data type of the
 variable). This function can be used to personalize report parameters and is
 internally used in the function \code{\link[=dataset_visualize]{dataset_visualize()}}. Up to seven objects
 are generated which include : One datatable of the key elements of the
 data dictionary, one datatable summarizing statistics (such as mean,
-quartile, most seen value, most recent date, ... , depending on the
+quartile, most common values, most recent date, ... , depending on the
 data type of the variable), two graphs showing the distribution of the
 variable, One bar chart for categorical values (if any), One bar chart for
-missing values (if any), One pie chart for the proportion of valid and
-missing values (if any). The variable can be grouped using \code{group_by}
+non valid values (if any), One pie chart for the proportion of valid and
+non-valid values (if any). The variable can be grouped using \code{group_by}
 parameter, which is a (categorical) column in the dataset. The user may need
 to use \code{\link[=as_category]{as_category()}} in this context. To fasten the process (and allow
 recycling object in a workflow) the user can feed the function with a
@@ -90,24 +87,25 @@ types are available using \link{valueType_list}. The valueType can be used to
 coerce the variable to the corresponding data type.
 }
 \examples{
-{
+\donttest{
 
- library(dplyr)
- library(fs)
- 
- dataset <- madshapR_DEMO$dataset_TOKYO
- 
- variable_summary <- madshapR_DEMO$`dataset_summary`
+library(dplyr)
+library(fs)
+
+# use madshapR_examples provided by the package 
+dataset <- 
+  madshapR_examples$`dataset_example` \%>\% 
+  group_by(pick('gndr')) \%>\% 
+  as_dataset(col_id = "part_id")
   
- variable_visualize(
-   dataset, col = 'height',
-   variable_summary =  variable_summary,valueType_guess = TRUE)
+data_dict <- madshapR_examples$`data_dictionary_example`
+variable_summary <- dataset_summarize(dataset,data_dict)
   
- variable_visualize(
-   dataset, col = 'height',
-   variable_summary =  variable_summary,valueType_guess = TRUE)
-  
+plots <- variable_visualize(
+ dataset,data_dict, col = 'prg_ever',
+ variable_summary =  variable_summary,valueType_guess = TRUE)
  
+print(plots$main_values_1)
  
 }
 

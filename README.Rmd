@@ -19,30 +19,28 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/maelstrom-research/madshapR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The madshapR package provides functions for efficient data cleaning, evaluation, 
-and documentation across different datasets. It was developed to support work at 
-Maelstrom Research and includes functions to evaluate and summarize datasets and 
-their associated data dictionaries, identify potential issues in content and 
-structure, and prepare datasets and metadata for further processing. The key 
-outputs provided by the functions are formatted datasets, standardized metadata, 
-and tabular and visual summary reports.
+Functions to support data cleaning, evaluation, and description, 
+developed for integration with Maelstrom Research software tools. 'madshapR' 
+provides functions primarily to evaluate and manipulate datasets and 
+data dictionaries in preparation for data harmonization with the package 
+'Rmonize' and to facilitate integration and transfer between RStudio servers 
+and secure Opal environments. 'madshapR' functions can be used independently
+but are optimized in conjunction with ‘Rmonize’ functions for streamlined 
+and coherent harmonization processing.
 
 # Get started
 
 ## Install the package
 
 ```{r, eval=FALSE}
-# To install madshapR:
+# Install madshapR and load the package:
 install.packages('madshapR')
-
 library(madshapR)
+
 # If you need help with the package, please use:
 madshapR_website()
 
-# Downloadable templates are available here
-madshapR_templates()
-
-# Demo files are available here, along with an online demonstration process 
-madshapR_DEMO
+# Example objects are available here
+madshapR_examples
 
 ```

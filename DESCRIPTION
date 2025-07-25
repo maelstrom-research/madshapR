@@ -1,33 +1,34 @@
 Package: madshapR
 Type: Package
-Title: Support Technical Processes Following 'Maelstrom Research' Standards 
-Version: 1.1.0
+Title: Functions to Support Data Management and Processing Using the Maelstrom Research Approach
+Version: 2.0.0
 Authors@R: 
     c(person(given = "Guillaume",
              family = "Fabre",
-             role = c("aut", "cre"),
+             role = c("aut","cre"),
              email = "guijoseph.fabre@gmail.com",
              comment = c(ORCID = "0000-0002-0124-9970")),
-      person("Maelstrom-research group",
-             role=c("cph", "fnd")))
-Description: Functions to support rigorous processes in data cleaning, 
-     evaluation, and documentation across datasets from different studies based 
-     on Maelstrom Research guidelines. The package includes the core functions 
-     to evaluate and format the main inputs that define the process, diagnose 
-     errors, and summarize and evaluate datasets and their associated 
-     data dictionaries. The main outputs are clean datasets and associated 
-     metadata, and tabular and visual summary reports. As described in 
-     Maelstrom Research guidelines for rigorous retrospective data 
-     harmonization (Fortier I and al. (2017) <doi:10.1093/ije/dyw075>).
+      person("Maelstrom Research",
+             role=c("aut","fnd","cph"),
+             email="info@maelstrom-research.org"))
+Maintainer: Guillaume Fabre <guijoseph.fabre@gmail.com>
+Description: Functions to support data cleaning, evaluation, and description, 
+     developed for integration with Maelstrom Research software tools. 'madshapR' 
+     provides functions primarily to evaluate and manipulate datasets and 
+     data dictionaries in preparation for data harmonization with the package 
+     'Rmonize' and to facilitate integration and transfer between RStudio servers 
+     and secure Opal environments. 'madshapR' functions can be used independently
+     but are optimized in conjunction with ‘Rmonize’ functions for streamlined 
+     and coherent harmonization processing.
 License: GPL-3
 LazyData: true
-Depends: R (>= 3.4)
+Depends: 
+    R (>= 3.5)
 Imports: dplyr (>= 1.1.0),
     rlang,
     stringr,
     crayon,
     ggplot2,
-    tidytext,
     grDevices,
     graphics,
     lubridate,
@@ -42,8 +43,7 @@ Imports: dplyr (>= 1.1.0),
     tidyr,
     fs,
     utils,
-    fabR (>= 2.0.0),
-    lifecycle
+    fabR (>= 2.1.1)
 URL: https://github.com/maelstrom-research/madshapR
 BugReports: https://github.com/maelstrom-research/madshapR/issues
 Roxygen: list(markdown = TRUE)

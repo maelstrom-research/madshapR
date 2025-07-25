@@ -50,11 +50,13 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-dataset <- madshapR_DEMO$dataset_TOKYO
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
+valueType_of(dataset$dob)
 valueType_guess(dataset$dob)
 
+# any data frame can be a dataset by definition
+valueType_guess(mtcars$cyl)
 valueType_guess(mtcars$cyl)
 
 }

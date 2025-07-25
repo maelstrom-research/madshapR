@@ -7,11 +7,10 @@
 dataset_evaluate(
   dataset,
   data_dict = NULL,
-  valueType_guess = FALSE,
-  as_data_dict_mlstr = TRUE,
+  is_data_dict_mlstr = TRUE,
+  valueType_guess = TRUE,
   taxonomy = NULL,
-  dataset_name = .dataset_name,
-  .dataset_name = NULL
+  dataset_name = NULL
 )
 }
 \arguments{
@@ -20,20 +19,18 @@ dataset_evaluate(
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
 
-\item{valueType_guess}{Whether the output should include a more accurate
-valueType that could be applied to the dataset. FALSE by default.}
-
-\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+\item{is_data_dict_mlstr}{Whether the input data dictionary should be coerced
 with specific format restrictions for compatibility with other
 Maelstrom Research software. TRUE by default.}
+
+\item{valueType_guess}{Whether the output should include a more accurate
+valueType that could be applied to the dataset. TRUE by default.}
 
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
 \item{dataset_name}{A character string specifying the name of the dataset
 (used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
-\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A list of data frames containing assessment reports.
@@ -77,17 +74,21 @@ The object may be specifically formatted to be compatible with additional
 in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environments}.
 }
 \examples{
-{
+\donttest{
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
 
-###### Example : Any data frame can be summarized
-dataset <- as_dataset(
-  madshapR_DEMO$`dataset_TOKYO - errors with data`,
-  col_id = 'part_id') \%>\% slice(0)
- 
-glimpse(dataset_evaluate(dataset,as_data_dict_mlstr = FALSE))
+###### Example 1: use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example - errors with data`
+data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
+
+eval_dataset <- dataset_evaluate(dataset, data_dict)
+glimpse(eval_dataset)
+
+###### Example 2: Any data frame can be a dataset by definition
+eval_iris <- dataset_evaluate(iris)
+
+glimpse(eval_iris)
 
 }
 

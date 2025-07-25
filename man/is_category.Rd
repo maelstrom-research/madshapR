@@ -2,7 +2,7 @@
 % Please edit documentation in R/experimental.R
 \name{is_category}
 \alias{is_category}
-\title{Test if an object is a valid dataset}
+\title{Test and validate if an object is a categorical variable.}
 \usage{
 is_category(x, threshold = NULL)
 }
@@ -16,21 +16,26 @@ values in the input vector is lower.}
 A logical.
 }
 \description{
-Tests if the input object is a valid dataset. This function mainly helps
+Tests if the input object is a categorical variable. This function mainly helps
 validate input within other functions of the package but could be used
-to check if a dataset is valid.
-
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Test if vector object is a categorical variable, typically a column in a
-data frame. This function mainly helps validate input within other functions
-of the package.
+to check if a column is categorical.
 }
 \examples{
 {
 
 library(dplyr)
-iris \%>\% summarise(across(everything(), is_category))
-is_category(iris[['Species']])
+
+###### Example 1: use madshapR_examples provided by the package
+dataset <-
+  madshapR_examples$`dataset_example` \%>\%
+  mutate(prg_ever_cat = as_category(prg_ever)) \%>\%
+  mutate(prg_ever_no_cat = drop_category(prg_ever))
+  
+is_category(dataset[['prg_ever_cat']])
+is_category(dataset[['prg_ever_no_cat']])
+
+###### Example 2: any data frame can be a dataset
+iris \%>\% reframe(across(everything(), is_category))
 
 }
 

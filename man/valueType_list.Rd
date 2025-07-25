@@ -10,11 +10,11 @@
 A data frame with 12 rows and 7 columns:
 \describe{
 \item{valueType}{data type as described in Opal}
-\item{typeof}{data type provided by base::typeof}
-\item{class}{data class provided by base::class}
+\item{typeof}{data type provided by base::typeof(x)}
+\item{class}{data class provided by attributes(x)}
+\item{class}{data class provided by base::class(x) explicit class}
 \item{call}{function to transpose object according base::do.call function}
 \item{toValueType}{ensemble data type as described in Opal}
-\item{toTypeof}{ensemble data type provided by base::typeof}
 \item{genericType}{ensemble data type which valueType belongs}
 ...
 }
@@ -43,7 +43,7 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-print(valueType_list)
+head(valueType_list)
 
 }
 }

@@ -45,10 +45,14 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_examples provided by the package
+# from a data dictionary, you can use the function to extract and generate an 
+# empty dataset
 
-data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-data_extract(data_dict)
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+dataset   <- data_extract(data_dict)
+
+head(dataset)
 
 }
 

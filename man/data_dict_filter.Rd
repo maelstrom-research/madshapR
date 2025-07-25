@@ -45,31 +45,29 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-# Create a list of data dictionaries where the column 'table' is added to 
-# refer to the associated dataset. The object created is not a 
-# data dictionary per say, but can be used as a structure which can be 
-# shaped into a data dictionary.
 library(dplyr)
 
-data_dict_list <- list(
-  data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-  data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+# use madshapR_examples provided by the package
+# Data dictionary where the column 'table' is added to 
+# refer to the associated dataset.
 
-data_dict_nest <- data_dict_list_nest(data_dict_list, name_group = 'table')
+data_dict <- 
+  madshapR_examples$`data_dictionary_example` \%>\% 
+  lapply(function(x) mutate(x,table = "dataset"))
 
 ###### Example 1 search and filter through a column in 'Variables' element
-data_dict_filter(data_dict_nest,filter_var = "valueType == 'text'")
+data_dict_f1 <- data_dict_filter(data_dict,filter_var = "name == 'gndr'")
+glimpse(data_dict_f1)
 
 ###### Example 2 search and filter through a column in 'Categories' element
-data_dict_filter(data_dict_nest,filter_cat = "missing == TRUE")
+data_dict_f2 <- data_dict_filter(data_dict,filter_cat = "missing == TRUE")
+glimpse(data_dict_f2)
 
-###### Example 3 search and filter through* a column in 'Variables' element.
+###### Example 3 search and filter through a column across all elements.
 # The column must exist in both 'Variables' and 'Categories' and have the
 # same meaning
-data_dict_filter(data_dict_nest,filter_all = "table == 'dataset_TOKYO'")
+data_dict_f3 <- data_dict_filter(data_dict,filter_all = "table == 'dataset'")
+glimpse(data_dict_f3)
 
 }
 

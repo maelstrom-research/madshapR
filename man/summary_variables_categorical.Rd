@@ -5,10 +5,9 @@
 \title{Provide descriptive statistics for variables of categorical in a dataset}
 \usage{
 summary_variables_categorical(
-  dataset_preprocess = .dataset_preprocess,
+  dataset_preprocess,
   dataset = NULL,
-  data_dict = NULL,
-  .dataset_preprocess = NULL
+  data_dict = NULL
 )
 }
 \arguments{
@@ -19,8 +18,6 @@ summary_variables_categorical(
 
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
-
-\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A data frame providing statistical description of 'categorical' variables
@@ -66,10 +63,17 @@ coerce the variable to the corresponding data type.
 {
 
 library(dplyr)
+library(fabR)
 
-###### Example : Any data frame can be a dataset by definition.
-dataset_preprocess <- dataset_preprocess(dataset = iris['Species'])
-glimpse(summary_variables_categorical(dataset_preprocess = dataset_preprocess))
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example` \%>\%
+  mutate(prg_ever = as_category(prg_ever)) \%>\%
+  select(prg_ever)
+
+dataset_preprocess <- dataset_preprocess(dataset)
+summary_prep <- summary_variables_categorical(
+  dataset_preprocess = dataset_preprocess[[1]])
+head(summary_prep)
 
 }
 

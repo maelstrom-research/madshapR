@@ -33,24 +33,24 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+library(dplyr)
+
+# use madshapR_examples provided by the package
 # Create a list of data dictionaries where the column 'table' is added to 
 # refer to the associated dataset. The object created is not a 
 # data dictionary per say, but can be used as a structure which can be 
 # shaped into a data dictionary.
 
-library(dplyr)
-
 data_dict_list <- list(
-  data_dict_1 <- madshapR_DEMO$data_dict_TOKYO ,
-  data_dict_2 <- madshapR_DEMO$data_dict_MELBOURNE)
-names(data_dict_list) = c("dataset_TOKYO","dataset_MELBOURNE")
+  data_dict_1 = madshapR_examples$`data_dictionary_example` ,
+  data_dict_2 = madshapR_examples$`data_dictionary_example`)
 
 data_dict_nest <-
-  data_dict_list_nest(data_dict_list, name_group = 'table') \%>\%
+  data_dict_list_nest(data_dict_list, name_group = "table") \%>\%
   data_dict_group_by(col = "table")
 
- data_dict_ungroup(data_dict_nest)
+glimpse(data_dict_ungroup(data_dict_nest))
+
 }
 
 }

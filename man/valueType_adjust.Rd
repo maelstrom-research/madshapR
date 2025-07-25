@@ -7,7 +7,7 @@
 valueType_adjust(from, to = NULL)
 }
 \arguments{
-\item{from}{Object to be adjusted. Can be either a dataset or a data
+\item{from}{Object to take attributes from. Can be either a dataset or a data
 dictionary.}
 
 \item{to}{Object to be adjusted. Can be either a dataset or a data
@@ -18,12 +18,15 @@ Either a data frame, identifying the dataset, or a list of data frame(s)
 identifying a data dictionary, depending which is 'to'.
 }
 \description{
-Takes the valueType of the input (from) and attributes it to the output (to).
-The parameters 'from' and 'to' can be either a dataset or a data dictionary.
-Depending on the input provided, the valueType replaced is either in the
-'valueType' column of a data dictionary or cast to a column in a dataset.
-If 'to' is not provided, the function calls \code{\link[=valueType_self_adjust]{valueType_self_adjust()}}
-instead. The possible values returned are 'date', 'boolean', 'integer',
+It is sometimes useful to take variable valueType’s from a dataset and
+attribute them to the associated data dictionary, or vice versa.
+\code{\link[=valueType_adjust]{valueType_adjust()}} takes the valueType of the input (from) and
+attributes it to the output (to). The parameters 'from' and 'to' can be
+either a dataset or a data dictionary. Depending on the input provided,
+the valueType replaced is either in the 'valueType' column of a
+data dictionary or cast to a column in a dataset. If 'to' is not provided,
+the function calls \code{\link[=valueType_self_adjust]{valueType_self_adjust()}} instead. The possible values
+of the valueTypes returned are date','datetime', 'boolean', 'integer',
 'decimal', and text'.
 }
 \details{
@@ -59,16 +62,14 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
+ 
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 
-dataset <- madshapR_DEMO$dataset_TOKYO[c(1:4),'prg_ever']
-data_dict <-
-  madshapR_DEMO$data_dict_TOKYO \%>\%
-  data_dict_filter(filter_var = 'name == "prg_ever"') \%>\%
-  as_data_dict_mlstr()
-
-head(valueType_adjust(from = data_dict,to = dataset))
+dataset <- valueType_adjust(from = data_dict,to = dataset)
+head(dataset)
 
 }
 

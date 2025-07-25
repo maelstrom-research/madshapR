@@ -30,10 +30,9 @@ taxonomies are
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-###### Example
-as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+# use madshapR_examples provided by the package
+taxonomy <- as_taxonomy(madshapR_examples$`taxonomy_example`)
+head(taxonomy)
 
 }
 

@@ -38,11 +38,15 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
-#'
-#' data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-#' data_extract(data_dict)
-#'
+#' # use madshapR_examples provided by the package
+#' # from a data dictionary, you can use the function to extract and generate an 
+#' # empty dataset
+#' 
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+#' dataset   <- data_extract(data_dict)
+#' 
+#' head(dataset)
+#' 
 #' }
 #'
 #' @import dplyr tidyr haven
@@ -50,60 +54,55 @@
 #'
 #' @export
 data_extract <- function(data_dict, data_dict_apply = FALSE){
-
+  
   # tests
-  if(toString(attributes(data_dict)$`madshapR::class`) == "data_dict_mlstr"){
-    data_dict <- 
-      as_data_dict_mlstr(data_dict, as_data_dict = TRUE, name_standard = FALSE)
-    }else{
-      data_dict <- as_data_dict(data_dict)}
-
+  if(suppressWarnings(check_data_dict_valueType(data_dict)) %>% 
+     dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
+    
+    message(
+      '[INFO] - valueType is not compatible with variable categories. The dataset 
+will begenerated with compatible valueType.')
+    
+    data_dict <- valueType_self_adjust(data_dict)
+    
+  }
+  
   if(nrow(data_dict[['Variables']]) == 0){
     dataset <- tibble(.rows = 0)
     return(dataset)}
-
+  
   if(!is.logical(data_dict_apply))
     stop(call. = FALSE,
-'`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
-
-
+         '`data_dict_apply` must be TRUE of FALSE (FALSE by default)')
+  
+  
   # valueType/typeof() is needed to generate dataset, which will be all text if
   # not present
   vT_list <- madshapR::valueType_list
-
+  
   data_dict_temp <- data_dict
-
-  if(is.null(data_dict_temp[["Variables"]][['valueType']])){
-    data_dict_temp[["Variables"]] <-
-      data_dict_temp[["Variables"]] %>%
-      left_join(
-        vT_list %>%
-          select(
-            typeof = .data$`toTypeof`,
-            valueType = .data$`toValueType`) %>%
-          distinct, by = "typeof") %>%
-      mutate(valueType = replace_na(.data$`valueType`, "character"))}
-
+  
   dataset <-
     data_dict_temp[["Variables"]]  %>%
-    select(.data$`name`) %>%
-    pivot_wider(names_from = .data$`name`, values_from = .data$`name`) %>%
+    select("name") %>%
+    pivot_wider(names_from = "name", values_from = "name") %>%
     slice(0)
-
+  
   for(i in seq_len(ncol(dataset))){
     # stop()}
     dataset[i] <-
-      as_valueType(dataset[i], data_dict_temp[["Variables"]]$`valueType`[i])
+      as_valueType(dataset[i],data_dict_temp[["Variables"]]$`valueType`[i])
   }
-
+  
   if(data_dict_apply == TRUE){
     dataset <- data_dict_apply(dataset, data_dict)
     return(dataset)
   }
-
-  dataset <- as_dataset(dataset,attributes(dataset)$`madshapR::col_id`)
+  
+  dataset <- as_dataset(dataset)
   return(dataset)
 }
+
 
 #' @title
 #' Remove labels (attributes) from a data frame, leaving its unlabelled columns
@@ -127,6 +126,8 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' [haven::zap_labels()].
 #'
 #' @param dataset A dataset object.
+#' @param zap_factor Whether the factor column should be coerced with its 
+#' corresponding valueType. FALSE by default.
 #'
 #' @returns
 #' A data frame identifying a dataset.
@@ -134,12 +135,14 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_examples provided by the package
 #'
-#' dataset <- madshapR_DEMO$dataset_TOKYO
-#' data_dict <- as_data_dict_mlstr(madshapR_DEMO$data_dict_TOKYO)
+#' dataset <- madshapR_examples$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' dataset <- data_dict_apply(dataset,data_dict)
-#' head(dataset_zap_data_dict(dataset))
+#' unlabbeled_dataset <- dataset_zap_data_dict(dataset)
+#' 
+#' head(unlabbeled_dataset)
 #'
 #' }
 #'
@@ -148,26 +151,38 @@ data_extract <- function(data_dict, data_dict_apply = FALSE){
 #' @importFrom lubridate is.Date
 #'
 #' @export
-dataset_zap_data_dict <- function(dataset){
+dataset_zap_data_dict <- function(dataset, zap_factor = FALSE){
 
   # test input
-  as_dataset(dataset, attributes(dataset)$`madshapR::col_id`)
-  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+  if(!is.logical(zap_factor))
+    stop(call. = FALSE,
+         '`zap_factor` must be TRUE or FALSE (FALSE by default)')
 
-  dataset_init = dataset # = dataset_init
+  # preserve dataset
+  as_dataset(dataset, col_id(dataset))
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
+  categorical_variables <-
+    dataset %>%
+    ungroup() %>%
+    reframe(across(everything(), ~ is_category(.))) %>%
+    pivot_longer(everything()) %>%
+    dplyr::filter(.data$`value`) %>% pull("name")
+
+  dataset_init <- dataset # = dataset_init
 
   vec <- tibble(index = as.integer(), valueType = as.character())
   for(i in seq_len(length(dataset))){
     # stop()}
     vT_init <- valueType_of(dataset_init[[i]])
     if(vT_init %in% c('date','datetime')){
-      dataset[[i]] <- as.character(dataset[[i]])
-      vec <- vec %>% add_row(index = i, valueType = vT_init) }
-  }
+      dataset[[i]] <- as.character(dataset[[i]])}
+    vec <- vec %>% add_row(index = i, valueType = vT_init)}
   
   dataset <- 
-    dataset %>% lapply(as.vector) %>% as_tibble() %>%
-    as_dataset(col_id = preserve_attributes)
+    as_tibble(dataset %>% lapply(as.vector))
   
   for(i in seq_len(nrow(vec))){
     # stop()}
@@ -175,10 +190,23 @@ dataset_zap_data_dict <- function(dataset){
       expr = {dataset[[vec$`index`[[i]]]] <- 
       as_valueType(dataset[[vec$`index`[[i]]]],vec$`valueType`[[i]])},
       error = function(cond){
-        warning('column : ',names(dataset[vec$`index`[[i]]]))
+        warning('Column : ',names(dataset[vec$`index`[[i]]]),' as character.')
         dataset[[vec$`index`[[i]]]] <- as_valueType(dataset[[vec$`index`[[i]]]],'text')
       })
   }
+  
+  # if categorical, replace by factor
+  if(zap_factor == FALSE){
+  dataset <- 
+    dataset %>% 
+    mutate(across(any_of(categorical_variables),as.factor))}
+  
+  dataset <- 
+    dataset %>%
+    group_by(pick(any_of(preserve_group))) 
+  
+  # [GF] NOTE : attribute such as col_id may not be preserved here.
+  # %>% as_dataset(col_id = preserve_attributes) 
   
   return(dataset)
 }
@@ -222,9 +250,9 @@ dataset_zap_data_dict <- function(dataset){
 #' @examples
 #' {
 #'
-#' dataset = madshapR_DEMO$dataset_PARIS
-#' data_dict = as_data_dict_mlstr(madshapR_DEMO$data_dict_PARIS)
-#' dataset_cat_as_labels(dataset, data_dict, col_names = 'SEX')
+#' dataset = madshapR_examples$`dataset_example`
+#' data_dict = as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+#' dataset_cat_as_labels(dataset, data_dict, col_names = 'gndr')
 #'
 #' }
 #'
@@ -237,10 +265,14 @@ dataset_cat_as_labels <- function(
     data_dict = NULL,
     col_names = names(dataset)){
   
+  # preserve dataset
+  as_dataset(dataset, col_id(dataset))
+  preserve_attributes <- col_id(dataset)
+  preserve_group <- group_vars(dataset)
+  dataset <- as_dataset(ungroup(dataset))
+  
   # tests
-  dataset <- as_dataset(dataset) # no col_id
   dataset[col_names]
-  preserve_attributes <- attributes(dataset)$`madshapR::col_id`
   
   # if data_dict empty
   if(is.null(data_dict)){
@@ -254,70 +286,67 @@ dataset_cat_as_labels <- function(
       })
     }
 
-  if(sum(nrow(data_dict[['Categories']])) == 0) return(dataset)
+  if(has_categories(data_dict)){
   
-  for(i in col_names){
-    # stop()}
-    
-    message(paste0('Processing of : ',i))
-    col <- dataset_zap_data_dict(as_dataset(dataset[i]))
-    data_dict_temp <- suppressWarnings({
-      data_dict_match_dataset(col,data_dict)$data_dict})
-    
-    if(sum(nrow(data_dict_temp[['Categories']])) > 0){
-      names(col) <- '___values___'
-      label_name <- 
-        names(data_dict_temp[['Categories']] %>% 
-                select(
-                  matches(c("^label$","^label:[[:alnum:]]","^labels$"))[1]))
+  
+    for(i in col_names){
+      # stop()}
       
-      cat_col <- 
-        data_dict_temp$Categories %>% 
-        select('___values___' = "name", '___label___' = all_of(label_name))
+      message(paste0('Processing of : ',i))
+      col <- dataset_zap_data_dict(as_dataset(dataset[i]))
+      data_dict_temp <- suppressWarnings({
+        data_dict_match_dataset(col,data_dict)$data_dict})
       
-      col <- 
-        col %>% 
-        mutate(across(everything(), ~ str_squish(as.character(.)))) %>%
-        left_join(
-          cat_col %>% mutate(across(everything(),~str_squish(as.character(.)))),
-          by = intersect(names(col),names(cat_col))) %>%
-        mutate(
-          `___label___` = 
+      if(has_categories(data_dict_temp)){
+        names(col) <- '___values___'
+        
+        first_lab_var <- first_label_get(data_dict_temp)[['Categories']]
+        
+        cat_col <- 
+          data_dict_temp$`Categories` %>% 
+          select('___values___' = "name", '___label___' = all_of(first_lab_var))
+        
+        col <- 
+          col %>% 
+          mutate(across(everything(), ~ str_squish(as.character(.)))) %>%
+          left_join(
+            cat_col %>% mutate(across(everything(),~str_squish(as.character(.)))),
+            by = intersect(names(col),names(cat_col))) %>%
+          mutate(
+            `___label___` = 
             ifelse(is.na(.data$`___label___`),
                    .data$`___values___`,
                    .data$`___label___`)) %>%
-        select("___label___")
-    
-      # variable_names <- data_dict_temp[['Categories']]['name']
-      
-      data_dict_temp[['Categories']] <- 
-        data_dict_temp[['Categories']] %>%
-        mutate(
-          `___mlstr_name___` = .data$`name`,
-          name = !!as.symbol(label_name)) %>%
-        mutate(across(
-          any_of(label_name), 
-          ~ .data$`___mlstr_name___`)) %>% 
-        select(-'___mlstr_name___')
-      
-      names(col) <- i 
-      
-      vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$Categories$name)))
-    
-      col[[1]] <- as_valueType(col[[1]], vT_final)
-      data_dict_temp$Variables$valueType <- vT_final
-      dataset[i] <- data_dict_apply(col, data_dict_temp)
+          select("___label___")
+        
+        # variable_names <- data_dict_temp[['Categories']]['name']
+        
+        data_dict_temp[['Categories']] <- 
+          data_dict_temp[['Categories']] %>%
+          mutate(
+            `___mlstr_name___` = .data$`name`,
+            name = !!as.symbol(first_lab_var)) %>%
+          mutate(across(
+            any_of(first_lab_var), 
+            ~ .data$`___mlstr_name___`)) %>% 
+          select(-'___mlstr_name___')
+        
+        names(col) <- i 
+        
+        vT_final <- valueType_guess(unique(c(col[[1]],data_dict_temp$`Categories`$`name`)))
+        
+        col[[1]] <- as_valueType(col[[1]], vT_final)
+        data_dict_temp$`Variables`$valueType <- vT_final
+        dataset[i] <- data_dict_apply(col, data_dict_temp)
+      }
     }
   }
-  
+    
   dataset <- 
-    tibble(dataset) %>%
+    dataset %>%
+    group_by(pick(any_of(preserve_group))) %>% 
     as_dataset(col_id = preserve_attributes)
   
-  # if(preserve_data_dict == TRUE){
-  #   data_dict <- valueType_adjust(from = dataset,to = data_dict)
-  #   dataset <- data_dict_apply(dataset,data_dict)}
-  # 
   return(dataset)
 }
 
@@ -348,19 +377,19 @@ dataset_cat_as_labels <- function(
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #'
 #' ###### Example 1: datasets can be gathered into a dossier which is a list.
-#' dossier <- dossier_create(
-#'  dataset_list = list(
-#'    dataset_MELBOURNE = madshapR_DEMO$dataset_MELBOURNE,
-#'    dataset_PARIS = madshapR_DEMO$dataset_PARIS ))
+#' dataset_example1 <- madshapR_examples$`dataset_example`
+#' dataset_example2 <- madshapR_examples$`dataset_example - errors with data`
+#' dossier <- dossier_create(list(dataset_example1,dataset_example2))
 #' 
 #' glimpse(dossier)
 #'     
 #' ###### Example 2: Any data frame can be gathered into a dossier
-#' glimpse(dossier_create(list(iris, mtcars)))
+#' dossier <- dossier_create(list(iris,mtcars))
+#' glimpse(dossier)
 #'    
 #' }
 #'
@@ -423,15 +452,19 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
+#' library(fabR)
 #'
 #' ###### Example 1: A dataset can have an id column specified as an attribute. 
-#' dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
+#' dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = "part_id")
+#' print(attributes(dataset)$`madshapR::col_id`)
 #' glimpse(dataset)
 #' 
 #' ###### Example 2: Any data frame can be a dataset by definition.
-#' glimpse(as_dataset(iris, col_id = "Species"))
+#' dataset <- tibble(iris %>% add_index("my_index"))
+#' dataset <- as_dataset(dataset, "my_index")
+#' print(attributes(dataset)$`madshapR::col_id`)
 #' 
 #'}
 #'
@@ -441,6 +474,12 @@ dossier_create <- function(dataset_list, data_dict_apply = FALSE){
 #' @export
 as_dataset <- function(object, col_id = NULL){
 
+  
+  # [GF] NOTE : col_id is lost when combines group_by and slice in that 
+  # specific order
+  # col_id(as_dataset(madshapR_examples$`dataset_example`,col_id = "part_id") %>%
+  #        group_by(pick('gndr')) %>% slice(1))
+  
   # if only the data frame is given in parameter
   if(is.data.frame(object)) {
 
@@ -453,15 +492,15 @@ as_dataset <- function(object, col_id = NULL){
     # if(is.null(col_id)) col_id <- names(object)[[1]]
     # if !is.null(col_id) column must be present and completely filled
     if(class(silently_run(
-      object %>% select(!! all_of(col_id))))[1] == 'try-error')
+      ungroup(object) %>% select(!! all_of(col_id))))[1] == 'try-error')
       stop(call. = FALSE,
-           "All of your id column(s) must be present in your dataset.")
+           paste0("`",col_id,"` identifier column must be present in your dataset."))
 
-    if(sum(is.na(object %>% select(!! all_of(col_id)))) > 0)
+    if(sum(is.na(ungroup(object) %>% select(!! all_of(col_id)))) > 0)
       stop(call. = FALSE,
-           "Your id column(s) must not contain any NA values.")
+           paste0("`",col_id,"` identifier column must not contain any empty values."))
 
-    names_id <- names(object %>% select(!! all_of(col_id)))
+    names_id <- names(ungroup(object) %>% select(!! all_of(col_id)))
     if(length(names_id) == 0) names_id <- NULL
 
     object <-
@@ -469,14 +508,15 @@ as_dataset <- function(object, col_id = NULL){
     
     attributes(object)$`madshapR::class` <- "dataset"
     attributes(object)$`madshapR::col_id` <- names_id
+    # attributes(object)$`madshapR::Data dictionary` <- data_dict_extract(object)
 
     return(object)
   }
 
   # else
   stop(call. = FALSE,
-"\n\nThis object is not a dataset as defined by Maelstrom standards, which must 
-be a data frame. 
+"\n\nThis object is not a dataset as defined by the package, which must be a 
+data frame. 
 Please refer to documentation.")
 
 }
@@ -515,19 +555,19 @@ Please refer to documentation.")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_examples provided by the package
 #' library(dplyr)
 #' library(stringr)
 #'
 #' ###### Example 1: a dataset list is a dossier by definition.
 #' dossier <- 
-#'   as_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset_TOKYO")])
-#'   
+#'   as_dossier(madshapR_examples[str_detect(names(madshapR_examples),"^dataset_example")])
 #' glimpse(dossier)
 #'    
 #' ###### Example 2: any list of data frame can be a dossier by 
 #' # definition.
-#' glimpse(as_dossier(list(dataset_1 = iris, dataset_2 = mtcars)))
+#' dossier <- as_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
+#' glimpse(dossier)
 #' 
 #'}
 #'
@@ -599,10 +639,10 @@ Please refer to documentation."))
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_examples provided by the package
 #' # any data frame can be a dataset by definition.
 #' 
-#' is_dataset(madshapR_DEMO$dataset_MELBOURNE)
+#' is_dataset(madshapR_examples$`dataset_example`)
 #' is_dataset(iris)
 #' is_dataset(AirPassengers)
 #' 
@@ -648,11 +688,12 @@ is_dataset <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
+#' # use madshapR_examples provided by the package
 #' # Any list of data frame can be a dossier by definition.
 #' library(stringr)
 #' 
-#' is_dossier(madshapR_DEMO[str_detect(names(madshapR_DEMO),"dataset")])
+#' dossier <- madshapR_examples[str_detect(names(madshapR_examples),"^dataset_example")]
+#' is_dossier(dossier)
 #' is_dossier(list(dataset_1 = iris, dataset_2 = mtcars))
 #' is_dossier(iris)
 #' 
@@ -697,12 +738,21 @@ is_dossier <- function(object){
 #' @examples
 #' {
 #' 
-#' col_id(iris)
-#' 
+#' # use madshapR_examples provided by the package
+#' library(dplyr)
 #' library(fabR)
-#' iris <- add_index(iris)
-#' iris <- as_dataset(iris, col_id = 'index')
-#' col_id(iris)
+#' 
+#' ###### Example 1: A dataset can have an id column specified as an attribute. 
+#' dataset <- as_dataset(madshapR_examples$`dataset_example`)
+#' col_id(dataset)
+#' 
+#' dataset <- as_dataset(dataset, col_id = "part_id")
+#' col_id(dataset)
+#' 
+#' ###### Example 2: Any data frame can be a dataset by definition.
+#' dataset <- tibble(iris %>% add_index("my_index"))
+#' dataset <- as_dataset(dataset, "my_index")
+#' col_id(dataset)
 #' 
 #'}
 #'

@@ -5,17 +5,17 @@
 #' Analyses the content of a variable and its data dictionary (if any), 
 #' identifies its data type and values accordingly and generates figures and 
 #' summaries (datatable format). The figures and tables are representations of
-#' data distribution, statistics and valid/non valid/missing values (based on 
+#' data distribution, statistics and valid/non valid/empty values (based on 
 #' the data dictionary information if provided and the data type of the 
 #' variable). This function can be used to personalize report parameters and is 
 #' internally used in the function [dataset_visualize()]. Up to seven objects 
 #' are generated which include : One datatable of the key elements of the 
 #' data dictionary, one datatable summarizing statistics (such as mean, 
-#' quartile, most seen value, most recent date, ... , depending on the 
+#' quartile, most common values, most recent date, ... , depending on the 
 #' data type of the variable), two graphs showing the distribution of the 
 #' variable, One bar chart for categorical values (if any), One bar chart for 
-#' missing values (if any), One pie chart for the proportion of valid and 
-#' missing values (if any). The variable can be grouped using `group_by` 
+#' non valid values (if any), One pie chart for the proportion of valid and 
+#' non-valid values (if any). The variable can be grouped using `group_by` 
 #' parameter, which is a (categorical) column in the dataset. The user may need 
 #' to use [as_category()] in this context. To fasten the process (and allow 
 #' recycling object in a workflow) the user can feed the function with a 
@@ -60,10 +60,9 @@
 #' @param group_by A character string identifying the column in the dataset
 #' to use as a grouping variable. Elements will be grouped by this 
 #' column.
-#' @param valueType_guess Whether the output should include a more accurate 
-#' valueType that could be applied to the dataset. FALSE by default.
 #' @param variable_summary A summary list which is the summary of the variables.
-#' @param .summary_var `r lifecycle::badge("deprecated")`
+#' @param valueType_guess Whether the output should include a more accurate 
+#' valueType that could be applied to the dataset. TRUE by default.
 #'
 #' @seealso
 #' [DT::datatable()], [ggplot2::ggplot()]
@@ -74,1239 +73,867 @@
 #' be used to summarize visualize data.
 #' 
 #' @examples
-#' {
+#' \donttest{
 #' 
-#'  library(dplyr)
-#'  library(fs)
-#'  
-#'  dataset <- madshapR_DEMO$dataset_TOKYO
-#'  
-#'  variable_summary <- madshapR_DEMO$`dataset_summary`
+#' library(dplyr)
+#' library(fs)
+#' 
+#' # use madshapR_examples provided by the package 
+#' dataset <- 
+#'   madshapR_examples$`dataset_example` %>% 
+#'   group_by(pick('gndr')) %>% 
+#'   as_dataset(col_id = "part_id")
 #'   
-#'  variable_visualize(
-#'    dataset, col = 'height',
-#'    variable_summary =  variable_summary,valueType_guess = TRUE)
+#' data_dict <- madshapR_examples$`data_dictionary_example`
+#' variable_summary <- dataset_summarize(dataset,data_dict)
 #'   
-#'  variable_visualize(
-#'    dataset, col = 'height',
-#'    variable_summary =  variable_summary,valueType_guess = TRUE)
-#'   
+#' plots <- variable_visualize(
+#'  dataset,data_dict, col = 'prg_ever',
+#'  variable_summary =  variable_summary,valueType_guess = TRUE)
 #'  
+#' print(plots$main_values_1)
 #'  
 #' }
 #'
 #' @import dplyr fabR
-#' @import ggplot2 tidytext janitor forcats
+#' @import ggplot2 janitor forcats
+#' @importFrom stats IQR
+#' @importFrom stats setNames
 #' @importFrom grDevices colorRampPalette
 #' @importFrom graphics hist
-#' @importFrom stats IQR
 #' @importFrom rlang .data
 #' @importFrom rlang :=
 #'
 #' @export
 variable_visualize <- function(
-    dataset = tibble(id = as.character()),
+    dataset,
     col,
-    data_dict = NULL, 
-    group_by = NULL, 
-    valueType_guess = FALSE,
-    variable_summary = .summary_var,
-    .summary_var = NULL){
+    data_dict = data_dict_extract(dataset), 
+    group_by = attributes(variable_summary)[['madshapR_group::group_by']], 
+    variable_summary = NULL,
+    valueType_guess = TRUE){ # must be the same in dataset_summarize
   
-  if(toString(col_id(dataset)) == col) {
-    warning(call. = FALSE,'Your column is identifier. It will not be analysed.')
-    return(ggplot())}
-  
-  # dataset <- 
-  #   as_dataset(dataset) %>%
-  #   mutate(across(where(is.character),tolower))
-  
-  if(nrow(dataset) == 0) {
-    warning(call. = FALSE,'Your column has no observation.')
-    return(ggplot())}
-  
-  if(toString(substitute(group_by)) == '') group_by <- NULL
-  # attempt to catch group_by from the group_vars if the dataset is grouped
-  if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
-    group_by <- group_vars(dataset)
-  }
+  plot_categories <- function(x,group_name_short){
+    
+    levels <- 
+      unique(x %>%                                                              # [GF] NOTE : patch, mais ici il y a une erreur. a vérifier
+      select("cat_index","value_var short") %>% distinct() %>%
+      arrange(pick("cat_index")) %>% pull("value_var short"))
+    
+    x_stacked <- 
+      x %>% 
+      # filter(!is.na(`value_var short`)) %>%
+      group_by(pick(c("group_index", "group_label_short","value_var short","value_var short","cat_index"))) %>%
+      reframe(value_var_occur = sum(.data$`value_var_occur`)) %>%
+      mutate(group_label_short = 
+               as_category(.data$`group_label_short`,as_factor = TRUE))
+    
+    # anchor
+    # title <- paste0(' representation of `',unique(x$`Variable name`),'` (N obs. : ',sum(x$value_var_occur),')')
+    # 
+    # if(toString(unique(x$valid_class)) == "2 - Valid categorical values")
+    #   title <- str_replace(title,'\\` \\(N obs\\. \\: ','` (N missing obs. : ')
+    # if(group_name_short != '(all)') title <- paste0(title, ' - per `',group_name_short,"`")
+    
+    
+    # anchor
+    title <- 
+      if(toString(unique(x$valid_class)) == "2 - Valid categorical values")
+        paste0('Bar plot of valid categorical values in `',unique(x$`Variable name`),'`') else
+          paste0('Bar plot of missing (non-valid and empty) values in `',unique(x$`Variable name`),'`')
 
-  dataset <- as_dataset(ungroup(dataset))
-  
-  ## future dev
-  # theme_minimal() + 
-  # labs(title = "Change in Life Expectancy",
-  #      subtitle = "1952 to 2007",
-  #      x = "Life Expectancy (years)",
-  #      y = "")
-  
-  # attempt to catch col
-  colset_temp_1 <- tryCatch(
-    expr  = {dataset[toString(substitute(col))]},
-    error = function(cond){return(dataset[col])})
-  
-  # attempt to catch group_by
-  colset_temp_2 <- tryCatch(
-    expr  = {dataset[toString(substitute(group_by))]},
-    error = function(cond){return(dataset[group_by])})
-  
-  
-  if(toString(names(colset_temp_1)) == toString(names(colset_temp_2))){
-    colset <- colset_temp_1
-  } else {
-    colset <- bind_cols(colset_temp_1,colset_temp_2)}
-  
-  if(ncol(colset)== 1){col <- names(colset)[1] ; group_by <- ''}
-  if(ncol(colset)== 2){col <- names(colset)[1] ; group_by <- names(colset)[2]}
-  
-  if(group_by != ''){
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
     
-    if(!is_category(colset[[group_by]])) 
-      colset <- as_dataset(colset) %>% 
-        mutate(across(all_of(group_by), as_category))
-  }
-
-  if(!is.null(data_dict)){
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- 
+      if(toString(unique(x$valid_class)) == "2 - Valid categorical values")
+        paste0(title,'\nTotal number of categorical valid values = ',n_val) else
+          paste0(title,'\nTotal number of missing (non-valid and empty) values = ',n_val)
     
-      tryCatch(
-        expr = {
-          col_dict <- 
-            data_dict %>%
-            data_dict_match_dataset(dataset = colset,output = 'data_dict') %>%
-            as_data_dict_mlstr(name_standard = FALSE)
-        },
-        warning = function(cond){
-          stop(cond)
-        })
+    aes <- 
+      aes(x = fct_rev(as_category(
+        x = !! as.symbol('value_var short'),
+        labels = levels, 
+        as_factor = TRUE)), 
+        y = !! as.symbol('value_var_occur'), 
+        fill = !! as.symbol('value_var short'))
     
-  }else{
-    
-    col_dict <- 
-      data_dict_extract(colset,as_data_dict_mlstr = TRUE)
-  }
-  
-  if(! group_by %in% col_dict[['Categories']][['variable']] & group_by != ''){
-    
-    col_dict_group_by <- 
-      as_dataset(colset) %>% 
-      select(all_of(group_by)) %>% data_dict_extract()
-    
-    col_dict[['Categories']] <- 
-      bind_rows(
-        col_dict[['Categories']], 
-        col_dict_group_by$Categories)
-  }
-  
-  
-  if(group_by != ''){
-    
-    preprocess_var <- 
-      preprocess_group <- 
-      dataset_preprocess(dataset = colset[c(col,group_by)], data_dict = col_dict)
-    
-    preprocess_var <- preprocess_var[preprocess_var$name == col,] 
-    preprocess_group <- preprocess_group[preprocess_group$name == group_by,] 
-    
-  } else {
-    preprocess_var <- 
-      dataset_preprocess(dataset = colset[col], data_dict = col_dict)
-  }
-  
-  colset <- as_dataset(dataset_zap_data_dict(colset))
-
-  # if(group_by != ''){
-  #   if(toString(unique(preprocess_group$`Categorical variable`)) %in% 
-  #      c('mix','no'))
-  #     stop(call. = FALSE,
-  #          'Your grouping variable must be a categorical variable.')}
-  
-  preprocess_var_values <-
-    preprocess_var[preprocess_var$valid_class == '3_Valid other values',]
-  preprocess_var_cat_values <- 
-    preprocess_var[preprocess_var$valid_class == '1_Valid values',]
-  preprocess_var_cat_miss_values <- 
-    preprocess_var[preprocess_var$valid_class %in% 
-                     c('2_Missing values','4_NA values'),]
-
-  
-  if(group_by != ''){
-    
-    cat_lab <- 
-      col_dict[['Categories']] %>% 
-      dplyr::filter(if_any('variable') == group_by) %>%
-      select(
-        !! group_by := 'name', 
-        `___labels___` = matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-      mutate(!! as.symbol(group_by) := as.character(!!as.symbol(group_by))) %>%
-      add_index('___category_level___')
-    
-    colset <-  
-      colset %>%
-      mutate(!! group_by := as.character(!!as.symbol(group_by))) %>%
-      left_join(cat_lab,by = group_by) %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(group_by) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite(!! group_by,c(!! group_by,'___labels___'),sep = '', 
-            remove = TRUE,na.rm = TRUE)
-  }
-  
-  # levels if group_by
-  if(group_by != '') { 
-    cat_levels <- 
-      colset %>% 
-      arrange(.data$`___category_level___`) %>%
-      pull(group_by) %>% unique
-    
-    colset <- 
-      colset %>% 
-      mutate(across(!! group_by, ~ factor(.,levels=c(cat_levels)))) %>%
-      select(-'___category_level___')
-  }
-  
-  if(sum(preprocess_var$index_in_dataset,na.rm = TRUE)*2 / 
-     sum(!is.na(preprocess_var$index_in_dataset))-1 != 
-     max(preprocess_var$index_in_dataset,na.rm = TRUE)){
-    stop("error in the function variable_visualize(). Contact Maintainer")
-  }
-  
-  colset[[1]] <- 
-    preprocess_var %>%
-    arrange(.data$`index_in_dataset`) %>%
-    dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
-    pull('value_var') %>% as_valueType(valueType = valueType_of(colset[[1]]))
-    
-    # colset <- 
-    # colset %>%
-    # rename_with(.cols = any_of(names(colset)), 
-    #             .fn = ~ c("variable","group")[1:ncol(colset)]) %>%
-    # bind_cols(
-    #   preprocess_var %>%
-    #     arrange(.data$`index_in_dataset`) %>%
-    #     dplyr::filter(!is.na(.data$`index_in_dataset`)) %>%
-    #     select(c('valid_class','value_var'))) %>%
-    # mutate("variable" = 
-    #          ifelse(.data$`valid_class` == "3_Valid other values",
-    #                 .data$`value_var`,
-    #                 .data$`variable`)) %>%
-    # select(-c('valid_class','value_var')) %>%
-    # rename_with(.cols = c("variable","group")[1:ncol(colset)], 
-    #             .fn = ~ names(colset))
-    
-  if(is.null(variable_summary)){
-    temp_group <- if(group_by == ''){NULL}else{group_by}
-    variable_summary <- dataset_summarize(
-      dataset = as_dataset(dataset[c(names(colset))]),
-      data_dict = col_dict,
-      valueType_guess = valueType_guess,
-      group_by = temp_group, 
-      dataset_name = 'dataset')}
-  
-  colset_values <-
-    colset %>% 
-    mutate(temp_val = as.character(!! as.symbol(col))) %>%
-    dplyr::filter(.data$`temp_val` %in% 
-                    preprocess_var_values$value_var) %>%
-    select(-'temp_val')
-  
-  colset_cat_values <-
-    colset %>% 
-    mutate(temp_val = as.character(!! as.symbol(col))) %>%
-    dplyr::filter(.data$`temp_val` %in% 
-                    preprocess_var_cat_values$value_var) %>%
-    select(-'temp_val')
-  
-  colset_cat_miss_values <-
-    colset  %>% 
-    mutate(temp_val = as.character(!! as.symbol(col))) %>%
-    dplyr::filter(.data$`temp_val` %in% 
-                    preprocess_var_cat_miss_values$value_var) %>%
-    select(-'temp_val')
-  
-  # guess the generic valueType of the variable (excluding categories):
-
-  vT_col <-   
-  if(valueType_guess == TRUE){
-      madshapR::valueType_list[
-        madshapR::valueType_list$valueType %in% 
-          valueType_guess(dataset[[col]]),]    
-  }else{
-
-      madshapR::valueType_list[
-        madshapR::valueType_list$valueType %in% 
-          valueType_of(dataset[[col]]),] 
-  }
-  
-  n_part <- nrow(colset)
-  
-  `Variables summary (all)` <- variable_summary[
-    str_detect(names(variable_summary), "Variables summary \\(all\\)")][[1]]
-  
-  summary_1 <- 
-    as.data.frame(t(
-      
-      `Variables summary (all)` %>% 
-        dplyr::filter(.data$`name` %in% col) %>%
-        select(c("Total number of observations":last_col()))
-    ))
-  
-  if(group_by != ''){
-    names(summary_1) <- 
-      
-      unique(pull(
-        `Variables summary (all)` %>%
-          dplyr::filter(.data$`name` %in% col) %>%
-          select(starts_with('Grouping variable:'))
-      ))
-    
-  } else { names(summary_1) <- col}
-  
-  
-  #### summary_1 ####
-  summary_1 <-
-    summary_1 %>% 
-    mutate(col = row.names(summary_1)) %>%
-    mutate(across(-c("col"), 
-                  ~ ifelse(. == 0,NA_real_,.))) %>%
-    select(-'col') %>%
-    mutate(across(everything(),as.character))
-    
-  #### palettes ####
-  palette_mlstr <- c("#7ab51d","#e9b400","#cc071e","dodgerblue3")
-  palette_mlstr_fct <- colorRampPalette(palette_mlstr, 1)
-  
-  # levels if group_by
-  palette_mlstr_first <- palette_mlstr[(length(colset_values[[col]]) >= 1)*1]
-  palette_values <- 
-    c(palette_mlstr_first, 
-      palette_mlstr[seq_len(length(unique(colset_values[[group_by]])))],
-      sample(palette_mlstr_fct(length(unique(colset_values[[group_by]]))))
-      ) %>%
-    tolower() %>% unique
-
-  palette_values <- 
-    palette_values[(!palette_values %in% c(NA))][
-      unique(c(length(palette_mlstr_first),
-      seq_len(length(unique(colset_values[[group_by]])))))]
-  
-  palette_categories <- 
-    c(palette_values,
-      palette_mlstr[seq_len(length(palette_values) + 
-                              length(unique(colset_cat_values[[col]])))],
-      sample(palette_mlstr_fct(
-        length(unique(colset_cat_values[[col]])) +
-          length(palette_values)
-        ))) %>%
-    tolower() %>% unique
-  
-  palette_categories <- 
-    palette_categories[(!palette_categories %in% c(palette_values,NA))][
-      seq_len(length(unique(colset_cat_values[[col]])))]
-  
-  palette_group <- 
-    c(palette_values,palette_categories,
-      palette_mlstr[seq_len(length(palette_values)+length(palette_categories)+
-                              length(unique(colset[[group_by]])))],
-      sample(palette_mlstr_fct(
-        length(unique(colset[[group_by]])) +
-          length(palette_values) +
-          length(palette_categories)
-      ))) %>%
-    tolower() %>% unique
-  
-  palette_group <- 
-    palette_group[(!palette_group %in% 
-                     c(palette_values,palette_categories,NA))][seq_len(
-                       length(unique(colset[[group_by]])))]
-  
-  palette_NA <- "#afb1b2"
-  palette_missing     <- 
-    c("darkseagreen3", "lemonchiffon3","darksalmon","slategray3")
-  palette_missing_fct <- colorRampPalette(palette_missing, 1)
-  
-  palette_missing <- 
-    c(palette_NA, palette_missing,
-      palette_missing[seq_len(length(unique(colset_cat_miss_values[[col]])))],
-      sample(palette_mlstr_fct(
-        length(unique(colset_cat_miss_values[[col]])) +
-        length(palette_NA) +
-        length(palette_missing)
-      ))) %>%
-    tolower() %>% unique
-  
-  palette_missing <- 
-    palette_missing[(!palette_missing %in% c(palette_NA,NA))][
-      seq_len(length(unique(colset_cat_miss_values[[col]])))]
-  
-  # a ameliorer
-  # names(palette_missing) <- levels(colset_cat_miss_values[[col]])
-  # palette_missing['NA'] <- palette_NA
-  #FCDF5C
-  palette_pie <- c()
-  # palette_pie["Valid values"]       <- "#88C79A" # green
-  palette_pie["Valid values"]       <- "#FCDF5C" # yellow
-  palette_pie["Valid other values"] <- "#6581C0" # blue
-  palette_pie["Missing values"]     <- "#EE7765" # red
-  palette_pie["NA values"]          <- palette_NA # grey
-  
-  if(nrow(colset_values) > 0) {
-
-    if(vT_col$`genericType` == "numeric"){
-      
-      `Numerical variable summary` <- variable_summary[
-        str_detect(names(variable_summary), "Numerical variable summary")][[1]]
-
-      #### summary_2 numeric ####
-      summary_2 <- 
-        as.data.frame(t(
-          
-          `Numerical variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
-          
-          ))
-    
-      if(group_by != ''){
-        names(summary_2) <- 
-          
-          unique(pull(
-            `Numerical variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
-              select(starts_with('Grouping variable:'))
-          ))
-            
-      } else { names(summary_2) <- col}
-      
-      summary_2 <-
-        summary_2 %>% 
-        mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), ~ round(as.numeric(.),2))) %>%
-        select(-'col') %>%
-        mutate(across(everything(),as.character))
-      
-      ## PLOT graphs ##
-      colset_values <- 
-        colset_values %>% 
-        mutate(across(
-          all_of(col), ~ as_valueType(.,vT_col$`valueType`)))
-      
-      #### plot_1 numeric ####
-      n_obs <- nrow(colset_values)
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    
-      aes <-
-        if(group_by == ''){
-            aes(x = '',
-                y = !! as.symbol(col),
-                fill = '')}else{ 
-
-            aes(x = fct_rev(!! as.symbol(group_by)),
-                y = !! as.symbol(col),
-                fill =  !! as.symbol(group_by))}
-        
-      plot_1 <-
-        ggplot(colset_values) + aes +
-        geom_boxplot(outlier.color = 'red') +
-        theme_bw() +
-        coord_flip() + 
-        theme(legend.position="none",plot.title = 
-                element_text(size=8, face = "bold")) +
-        ggtitle(paste0('Box plot', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = palette_values)
-      
-      #### plot_2 numeric ####
-      aes <- 
-        if(group_by == ''){
-          aes(x     = !! as.symbol(col),group = '',fill  = ''
-          )
-        }else{
-            
-          aes(x     = !! as.symbol(col),
-              group = !! as.symbol(group_by),
-              fill  = !! as.symbol(group_by))
-        }
-    
-      if(vT_col$valueType == "decimal") {
-         geom_viz <- geom_density(color="black",na.rm = FALSE)
-         title <- paste0('Density graph', title)}
-      
-      if(vT_col$valueType %in% c("integer","boolean")) {
-        bin <- length(hist(colset_values[[col]],plot = FALSE)$breaks)
-        geom_viz <- geom_histogram(bins = bin)
-        title <- paste0('Histogram', title)}
-      
-        plot_2 <- 
-          ggplot(colset_values) + aes +
-          geom_viz +
-          theme_bw() +
-          ggtitle(paste0(title)) +
-          theme(legend.position = "none",plot.title = 
-                  element_text(size = 8, face = "bold"),
-                strip.background = element_rect(color="white", fill="white")) +
-          ylab("") +
-          xlab("") +
-          scale_fill_manual(values = palette_values)
-        # no coord flip
-        
-      if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
-        
-    }
-    
-    if(vT_col$`genericType` == "character"){
-      
-      `Text variable summary` <- variable_summary[
-        str_detect(names(variable_summary), "Text variable summary")][[1]]
-      
-      #### summary_2 character ####
-      summary_2 <- 
-        as.data.frame(t(
-          
-          `Text variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
-          
-        ))
-      
-      if(group_by != ''){
-        names(summary_2) <- 
-          
-          unique(pull(
-            `Text variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
-              select(starts_with('Grouping variable:'))
-          ))
-        
-      } else { names(summary_2) <- col}
-      
-      summary_2 <-
-        summary_2 %>% 
-        mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), 
-                      ~ str_trunc(.,width = 39,ellipsis = ' [...]'))) %>%
-        select(-'col') %>%
-        mutate(across(everything(),as.character))
-      
-      colset_values_main_word <- 
-        colset_values_all_word <- 
-        colset_values %>% 
-        mutate(across(
-          all_of(col), ~ as_valueType(.,vT_col$`valueType`)))
-      
-      if(group_by != ''){
-        colset_values_main_word <- 
-          colset_values_main_word %>%
-          group_by(!! as.symbol(group_by))}
-      
-      colset_values_main_word <- 
-        colset_values_main_word %>%
-        unnest_tokens(output = word, input = !! as.symbol(col)) %>%
-        anti_join(tidytext::stop_words,by = 'word') %>%
-        count(word, sort = TRUE) %>%
-        rename(`___n___` = last_col()) %>%
-        rename(!! as.symbol(col) := word) %>%
-        arrange(desc(.data$`___n___`)) %>%
-        slice(1:10)
-      
-      if(group_by != ''){
-        colset_values_all_word <- 
-          colset_values_all_word %>%
-          group_by(!! as.symbol(group_by))}
-      
-      colset_values_all_word <- 
-        colset_values_all_word %>%
-        count(!! as.symbol(col), sort = TRUE) %>%
-        rename(`___n___` = last_col()) %>%
-        mutate(!! as.symbol(col) := 
-                 str_trunc(!! as.symbol(col),
-                           width = 50,
-                           ellipsis = '...')) %>%
-        arrange(desc(.data$`___n___`)) %>%
-        slice(1:10)
-      
-      
-      #### plot_2 character ####      
-      n_obs <- nrow(colset_values)
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      group_n <- "___n___"
-      aes <- 
-        if(group_by == ''){
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n),
-            fill = '')
-        }else{
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n), 
-            fill = fct_rev(!! as.symbol(group_by)))}
-      
-      plot_1 <- 
-        ggplot(colset_values_all_word) + aes + 
-        geom_col() +
-        theme_bw() +
-        theme(legend.position = "none",plot.title =
-                element_text(size = 8,face = "bold"),
-              strip.background = element_rect(color = "white", fill="white")) +
-        ggtitle(paste0('Bar plot', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = rev(palette_values)) +
-        coord_flip()
-      
-      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(as.symbol(group_by))}
-      
-      #### plot_2 character ####      
-      
-      if(nrow(colset_values_main_word) == 0){
-        
-        plot_2 = NULL
-        
-      }else{
-        
-        n_obs <- nrow(colset_values)
-        
-        title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-        if(group_by != '') title <- paste0(title, ' - per ',group_by)
-        
-        group_n <- "___n___"
-        
-        aes <- 
-          if(group_by == ''){
-            aes(
-              x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-              y = !! as.symbol(group_n),
-              fill = '')
-          }else{
-            aes(
-              x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-              y = !! as.symbol(group_n), 
-              fill = fct_rev(!! as.symbol(group_by)))}
-        
-        plot_2 <- 
-            ggplot(colset_values_main_word) + aes + 
-            geom_col() +
-            theme_bw() +
-            theme(legend.position = "none",plot.title = 
-                    element_text(size = 8,face = "bold"),
-                  strip.background = element_rect(color = "white", fill="white")) +
-            ggtitle(paste0('Most common entry', title)) +
-            ylab("") +
-            xlab("") +
-            scale_fill_manual(values = rev(palette_values)) +
-            coord_flip()
-          
-          if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
-        }
-      
-      
-      
-      
-    }
-    
-    if(vT_col$`genericType` == "datetime"){
-    
-      `Datetime variable summary` <- variable_summary[
-        str_detect(names(variable_summary), "Datetime variable summary")][[1]]
-        
-      #### summary_2 datetime ####
-      summary_2 <- 
-        as.data.frame(t(
-          
-          `Datetime variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
-          
-        ))
-      
-      if(group_by != ''){
-        names(summary_2) <- 
-          
-          unique(pull(
-            `Datetime variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
-              select(starts_with('Grouping variable:'))
-          ))
-        
-      } else { names(summary_2) <- col}
-      
-      summary_2 <-
-        summary_2 %>% 
-        mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), 
-                      ~ str_trunc(.,width = 39,ellipsis = ' [...]'))) %>%
-        select(-'col') %>%
-        mutate(across(everything(),as.character))
-      
-      colset_values_main_word <- 
-        colset_values_all_word <- 
-        colset_values %>% 
-        mutate(across(
-          all_of(col), ~ as.character(.)))
-      
-      if(group_by != ''){
-        colset_values_main_word <- 
-          colset_values_main_word %>%
-          group_by(!! as.symbol(group_by))}
-      
-      colset_values_main_word <- 
-        colset_values_main_word %>%
-        unnest_tokens(output = word, input = !! as.symbol(col)) %>%
-        anti_join(tidytext::stop_words,by = 'word') %>%
-        count(word, sort = TRUE) %>%
-        rename(`___n___` = last_col()) %>%
-        rename(!! as.symbol(col) := word) %>%
-        arrange(desc(.data$`___n___`)) %>%
-        slice(1:10)
-      
-      if(group_by != ''){
-        colset_values_all_word <- 
-          colset_values_all_word %>%
-          group_by(!! as.symbol(group_by))}
-      
-      colset_values_all_word <- 
-        colset_values_all_word %>%
-        count(!! as.symbol(col), sort = TRUE) %>%
-        rename(`___n___` = last_col()) %>%
-        mutate(!! as.symbol(col) := 
-                 str_trunc(!! as.symbol(col),
-                           width = 50,
-                           ellipsis = '...')) %>%
-        arrange(desc(.data$`___n___`)) %>%
-        slice(1:10)
-      
-      #### plot_1 datetime ####      
-      n_obs <- nrow(colset_values)
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      group_n <- "___n___"
-      
-      aes <- 
-        if(group_by == ''){
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n),
-            fill = '')
-        }else{
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n), 
-            fill = fct_rev(!! as.symbol(group_by)))}
-      
-      plot_1 <- 
-        ggplot(colset_values_main_word) + aes + 
-        geom_col() +
-        theme_bw() +
-        theme(legend.position="none",plot.title = 
-                element_text(size=8,face = "bold"),
-              strip.background = element_rect(color = "white", fill="white")) +
-        ggtitle(paste0('Most common entry', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = rev(palette_values)) +
-        coord_flip()
-      
-      if(group_by != '') {plot_1 <- plot_1 + facet_wrap(as.symbol(group_by))}
-      
-      #### plot_2 datetime ####      
-      n_obs <- nrow(colset_values)
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      group_n <- "___n___"
-      aes <- 
-        if(group_by == ''){
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n),
-            fill = '')
-        }else{
-          aes(
-            x = fct_reorder(!! as.symbol(col),!! as.symbol(group_n)), 
-            y = !! as.symbol(group_n), 
-            fill = fct_rev(!! as.symbol(group_by)))}
-      
-      plot_2 <- 
-        ggplot(colset_values_all_word) + aes + 
-        geom_col() +
-        theme_bw() +
-        theme(legend.position="none",plot.title =
-                element_text(size=8,face = "bold"),
-              strip.background = element_rect(color = "white", fill="white")) +
-        ggtitle(paste0('Bar plot', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = rev(palette_values)) +
-        coord_flip()
-      
-      if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
-      
-    }
-    
-    if(vT_col$`genericType` == "date"){
-      
-      `Date variable summary` <- variable_summary[
-        str_detect(names(variable_summary), "Date variable summary")][[1]]
-      
-      #### summary_2 date ####    
-      summary_2 <- 
-        as.data.frame(t(
-          
-          `Date variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
-          
-        ))
-      
-      if(group_by != ''){
-        names(summary_2) <- 
-          
-          unique(pull(
-            `Date variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
-              select(starts_with('Grouping variable:'))
-          ))
-        
-      } else { names(summary_2) <- col}
-      
-      summary_2 <-
-        summary_2 %>% 
-        mutate(col = row.names(summary_2)) %>%
-        mutate(across(-c("col"), ~ .)) %>%
-        select(-'col') %>%
-        mutate(across(everything(),as.character))
-      
-      colset_values <- 
-        colset_values %>% 
-        mutate(across(
-          all_of(col), ~ as_valueType(.,vT_col$`valueType`)))
-      
-      if(group_by != '') {
-        colset_values <- colset_values %>% group_by(!! as.symbol(group_by))}
-      
-      # convert dataset to wide format
-      colset_span <- 
-        colset_values %>%
-        dplyr::filter(if_any(col) == min(!! as.symbol(col)) | 
-                 if_any(col) == max(!! as.symbol(col))) 
-      
-      n_obs <- nrow(colset_values)
-      
-      #### plot_1 date ####    
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      aes <-
-        if(group_by == ''){
-            aes(x = !! as.symbol(col),
-                y = '',
-                color = '')}else{
-
-            aes(x = !! as.symbol(col),
-                y = fct_rev(!! as.symbol(group_by)),
-                color = !! as.symbol(group_by))}
-
-      plot_1 <- 
-        ggplot(colset_span) + aes +
-        geom_line() +
-        geom_point(size = 3) +
-        ggtitle(paste0('Span date', title)) +
-        theme_bw()+
-        theme(legend.position="none",plot.title = 
-                element_text(size=8,face = "bold")) +
-        ylab("") +
-        xlab("") +
-        scale_color_manual(values = palette_values) 
-      
-      #### plot_2 date ####    
-      
-      title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      
-      aes <-
-        if(group_by == ''){
-          aes(x = '',
-              y = !! as.symbol(col),
-              fill = '')}else{ 
-                
-                aes(x = fct_rev(!! as.symbol(group_by)),
-                    y = !! as.symbol(col),
-                    fill =  !! as.symbol(group_by))}
-      
-      plot_2 <-
-        ggplot(colset_values) + aes +
-        geom_boxplot(outlier.color = 'red') +
-        theme_bw() +
-        coord_flip() + 
-        theme(legend.position="none",plot.title = 
-                element_text(size=8, face = "bold")) +
-        ggtitle(paste0('Box plot', title)) +
-        ylab("") +
-        xlab("") +
-        scale_fill_manual(values = (palette_values))
-      
-      
-      # n_obs <- nrow(colset_values)
-      # 
-      # title <- paste0(' representation of ',col,' (N obs. : ',n_obs,')')
-      # if(group_by != '') title <- paste0(title, ' - per ',group_by)
-      # 
-      # aes <-
-      #   if(group_by == ''){
-      #     aes(x = !! as.symbol(col),
-      #         fill = '')
-      #   }else{
-      #     aes(
-      #       x = !! as.symbol(col),
-      #       fill = !! as.symbol(group_by))}
-      # 
-      # max_span <- 
-      #   max(ungroup(colset_span) %>%
-      #         pull(!! as.symbol(col))) -
-      #   min(ungroup(colset_span) %>%
-      #         pull(!! as.symbol(col))) + 1
-      # 
-      # bins <- ceiling(as.integer(max_span) / 365 / 5)
-      # 
-      # plot_2 <- 
-      #   ggplot(colset_values) + aes +
-      #   geom_histogram(bins = bins) +
-      #   theme_bw() +
-      #   ggtitle(paste0('Histogram', title)) +
-      #   theme(legend.position="none",plot.title = 
-      #           element_text(size=8,face = "bold"),
-      #         strip.background = element_rect(color = "white", fill="white")) +
-      #   ylab("") +
-      #   xlab("") +
-      #   scale_fill_manual(values = palette_values)
-      # # no coord flip
-      # 
-      # if(group_by != '') {plot_2 <- plot_2 + facet_wrap(as.symbol(group_by))}
-      
-    }
-    
-  }else{plot_1 <- plot_2 <- summary_2 <- NULL}
-
-  # categorical part of variable
-  plot_3 <- NULL
-
-  if(nrow(colset_cat_values) > 0){
-    
-    n_obs <- nrow(colset_cat_values)
-    cat_lab_var <- 
-      col_dict[['Categories']] %>% 
-      dplyr::filter(if_any('variable') == col) %>%
-      select(
-        !!as.symbol(col) := 'name', 
-        `___labels___` = 
-          matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-      mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-      add_index('___category_level___')
-
-    colset_cat_values <-  
-      colset_cat_values %>%
-      mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-      left_join(cat_lab_var,by = col) %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(col) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite(!! col,c(col,'___labels___'),sep='', remove = TRUE,na.rm = TRUE) %>%
-      mutate(across(all_of(col), ~ na_if(.,'')))
-    
-    cat_var_levels <- 
-      colset_cat_values %>% 
-      arrange(.data$`___category_level___`) %>%
-      dplyr::filter(!is.na(!!as.symbol(col))) %>%
-      pull(col) %>% unique 
-    
-    if(length(cat_var_levels) == 0) cat_var_levels <- 0
-    
-    #### plot_3 categorical_values ####    
-    colset_cat_values <- 
-      colset_cat_values %>% 
-      mutate(across(!! as.symbol(col), ~factor(.,levels=c(cat_var_levels)))) %>%
-      select(-'___category_level___')
-    
-    title <- paste0(' representation of categorical values in ',col,
-                    ' (N obs. : ',n_obs,')')
-    if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    
-    aes <- aes(x    = fct_rev(!! as.symbol(col)), 
-               fill =  !! as.symbol(col))
-
-    plot_3 <- 
-      ggplot(colset_cat_values) + aes +
-      geom_bar() +
+    plot_x <- 
+      ggplot(x_stacked) + aes + 
+      geom_bar(stat = "identity") +  
       theme_bw() + 
       theme(legend.position="none",plot.title = 
               element_text(size = 8, face = "bold"),
             strip.background = element_rect(color = "white", fill="white")) +
-      ggtitle(paste0('Bar plot', title)) +
-      ylab("") +
+      ylab(unique(x[[group_col_short]])) +
       xlab("") +
-      scale_fill_manual(values = palette_categories) +
-      coord_flip()
-    
-      if(group_by != '') {plot_3 <- plot_3 + facet_wrap(as.symbol(group_by))}
-    }
+      ggtitle(paste0(title,"\n")) +
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      scale_fill_manual(values = 
+                          x$color_palette %>%
+                          setNames(x$`value_var short`)) +
+      scale_x_discrete(drop = FALSE) + 
+      coord_flip() +
+      stat_summary(
+        aes(label = after_stat(!!as.symbol("y"))),
+        cex = 3,
+        fun = "sum", geom = "text", vjust = 0.33,
+        hjust = -0.24,
+        position = position_nudge(y = 0)) +
+      scale_y_continuous(
+        breaks = function(x){
+          if(max(x_stacked$value_var_occur) == 0) 
+            return(0) else
+              br = pretty(x, n=4) 
+            return(br)},
+        limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
+      facet_wrap(~ group_label_short,ncol = 3)
 
-  plot_4 <- NULL
-  if(nrow(colset_cat_miss_values[col]) > 0 & 
-     nrow(unique(colset_cat_miss_values[col])) > 1){
-    
-    n_obs <- nrow(colset_cat_miss_values)
-    
-    if(sum(nrow(col_dict[['Categories']])) > 0){
-      
-      cat_lab_miss_var <- 
-        col_dict[['Categories']] %>% 
-        dplyr::filter(if_any('variable') == col) %>%
-        select(
-          !!as.symbol(col) := 'name', 
-          `___labels___` = 
-            matches(c("^label$","^label:[[:alnum:]]"))[1]) %>%
-        mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-        add_index('___category_level___')      
-      
-    } else { cat_lab_miss_var <- 
-      tibble(
-        col = as.character(),
-        `___labels___` = as.character(),
-        `___category_level___` = as.character()) %>%
-      rename(!!as.symbol(col) := col)}
-
-    colset_cat_miss_values <-  
-      colset_cat_miss_values %>%
-      mutate(!! as.symbol(col) := as.character(!!as.symbol(col))) %>%
-      left_join(cat_lab_miss_var,by = col) %>%
-      mutate(
-        `___labels___` = 
-          ifelse(!! as.symbol(col) == .data$`___labels___`,'',
-                 paste0(' [',str_trunc(.data$`___labels___`,width = 19,
-                                       ellipsis = '...'),']'))) %>%
-      unite(!! col,c(any_of(col),'___labels___'),sep = '', 
-            remove = TRUE,na.rm = TRUE) %>%
-      mutate(across(all_of(col), ~ na_if(.,'')))
-    
-    cat_var_levels <- 
-      colset_cat_miss_values %>% 
-      arrange(.data$`___category_level___`) %>%
-      dplyr::filter(!is.na(!!as.symbol(col))) %>%
-      pull(col) %>% unique 
-    
-    if(length(cat_var_levels) == 0) cat_var_levels <- 0
-    
-    colset_cat_miss_values <- 
-      colset_cat_miss_values %>% 
-      mutate(across(!! as.symbol(col), ~factor(.,levels=c(cat_var_levels)))) %>%
-      select(-'___category_level___')
-    
-    # a ameliorer
-    names(palette_missing) <- levels(colset_cat_miss_values[[col]])
-
-    #### plot_4 missing_values ####    
-    title <- paste0(' representation of missing categorical values in ',col,
-                    ' (N obs. : ',n_obs,')')
-    if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    
-    aes <- aes(x = fct_rev(!! as.symbol(col)), 
-               fill =  !! as.symbol(col))
-    
-    plot_4 <- 
-      ggplot(colset_cat_miss_values) + aes +
-      geom_bar() +
-      theme_bw() +
-      theme(legend.position = "none",plot.title = 
-              element_text(size = 8, face = "bold"),
-            strip.background = element_rect(color = "white", fill = "white")) +
-      ggtitle(paste0('Bar plot', title)) +
-      ylab("") +
-      xlab("") +
-      scale_fill_manual(na.value = palette_NA, values = palette_missing) +
-      coord_flip()
-    
-      if(group_by != '') {plot_4 <- plot_4 + facet_wrap(as.symbol(group_by))}
+    return(plot_x)
   }
-
-  # categorization of variable (valid/missing/others/NA)
-  preprocess_var <-
-    preprocess_var %>%
-    select('valid_class', 'value_var') %>% 
-    rename_with(.cols = 'valid_class', ~ '___valid_class___') %>%
-    rename_with(.cols = 'value_var', ~ col) %>%
-    distinct
+  plot_pie        <- function(x,group_name_short){
   
-  colset_valid <-
-    colset %>%
-    mutate(across(col,as.character)) %>%
-    left_join(preprocess_var,by = 
-                intersect(names(colset), names(preprocess_var))) %>%
-    select(- !! col) %>%
-    mutate(`___valid_class___` = str_sub(.data$`___valid_class___`,3)) %>%
-    rename_with(.cols = '___valid_class___', ~ col) %>% 
-    group_by(across(everything())) %>%
-    tally %>%
-    rename(`___n___` = last_col()) %>%
-    mutate(!! as.symbol(col) := factor(!! as.symbol(col),
-      levels = 
-        c('Valid values','Valid other values','Missing values','NA values')))
+    # levels <- 
+    #   x %>% 
+    #   select("valid_class") %>% distinct() %>%
+    #   arrange(desc(pick("valid_class"))) %>% pull("valid_class") 
+    # 
+    # names(levels) <- levels %>% str_remove_all("1 - |2 - |3 - |4 - ")
+    # 
+    # levels <- factor(levels)
   
-  plot_5 <- NULL
-  
-  if(length(unique(colset_valid[[col]])) > 1){
-    
-    #### plot_5 pie_values ####    
-    n_obs <- nrow(colset)
-    title <- paste0(' representation of validity values distribution in ',col,
-                    ' (N obs. : ',n_obs,')')
-    if(group_by != '') title <- paste0(title, ' - per ',group_by)
-    
-    group_n <- "___n___"
-    aes <- aes(x = '',y = !! as.symbol(group_n), fill = !! as.symbol(col))
-    
-    colset_valid <-
-      colset_valid %>% 
+    color_palette_maelstrom <- madshapR::color_palette_maelstrom
+    x_sum <- 
+      x %>% 
+      select(-any_of("color_palette")) %>%
+      left_join(color_palette_maelstrom,by = c("valid_class" = "values")) %>%
+      group_by(pick(c("group_index","group_label_short","valid_class","color_palette"))) %>%
+      mutate("sum_var_occur" = sum(.data$`value_var_occur`)) %>% ungroup %>%
+      select("group_index","group_label_short","valid_class","color_palette","value_var_occur") %>%
+      # filter(.data$`value_var_occur` > 0) %>%
+      group_by(pick(c("group_index","group_label_short","valid_class","color_palette"))) %>%
+      reframe(sum_var_occur = sum(.data$`value_var_occur`)) %>%
+      group_by(pick(c("group_index","group_label_short"))) %>%
+      arrange(pick(c("group_index","valid_class"))) %>%
       mutate(
-        prop = round((.data$`___n___`/sum(.data$`___n___`)),2),
-        csum = cumsum(.data$`prop`), 
+        prop = 10000*round(.data$`sum_var_occur`/sum(.data$`sum_var_occur`),4),
+        prop = ifelse(is.na(.data$`prop`),0,.data$`prop`)) %>%
+      mutate(group_label_short = as_category(.data$`group_label_short`,as_factor = TRUE))
+    
+    # handle total < 1
+    if(nrow(x_sum) > 0){
+      x_sum <- 
+      x_sum %>%
+      group_by(pick("group_label_short")) %>% group_split() %>%
+      lapply(function(x){
+        x$prop[[nrow(x)]] <- 10000 - sum(x$prop[-nrow(x)])
+        return(x)})}
+        
+    x_pie <- 
+      bind_rows(x_sum) %>%
+      group_by(pick("group_label_short")) %>%
+      arrange(desc('valid_class')) %>%
+      mutate(valid_class = factor(.data$`valid_class` %>% str_remove_all("1 - |2 - |3 - |4 - "))) %>%
+      mutate(
+        csum = cumsum(.data$`prop`),
         pos = .data$`prop`/2 + lag(.data$`csum`, 1),
-        pos = if_else(is.na(.data$`pos`), .data$`prop`/2, .data$`pos`)) %>%
-      group_by(across(any_of(group_by))) %>%
-      mutate(
-        label = paste0(as.character(round((
-          .data$`___n___`/sum(.data$`___n___`))*100,2)),"%"))
+        pos = ifelse(is.na(.data$`pos`),.data$`prop`/2,.data$`pos`),
+        label = ifelse(floor(.data$`prop`)/100 == 0 , "",paste0(floor(.data$`prop`)/100,"%")),
+        prop = .data$`prop`/10000,
+        pos = .data$`pos`/10000,
+        csum =.data$`csum`/10000)
     
-    plot_5 <-
-      ggplot(colset_valid) + aes +
+    # anchor
+    title <- paste0('Distribution of observation types in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of values = ',n_val)
+    
+    aes <- 
+      aes(
+        x = "",
+        y = !! as.symbol('sum_var_occur'), 
+        fill = !! as.symbol("valid_class"))
+      
+    plot_x_pie <-
+      ggplot(x_pie) + aes +
+      facet_wrap(
+        ~ group_label_short,ncol = 3) +
       geom_bar(stat='identity',width = 1,position = position_fill()) +
-      geom_text(
-        size = 2.5,
-        aes(x = 1.8,label = !! as.symbol('label')),
-        position = position_fill(vjust = 0.5)) +
-      coord_polar('y', start = 0) +
-      theme_void() + 
+      theme_void() +
+      ggtitle(paste0(title,"\n")) +
       theme(
         legend.position = "right",
+        legend.title = element_blank(),
         plot.title = element_text(size = 8,face = "bold")) +
-      ggtitle(paste0('Pie chart', title)) +
-      scale_fill_manual(values = palette_pie) +
       geom_segment(
-        aes(x = 1.500, 
-            y = !! as.symbol('pos'), 
-            xend = 1.450, 
-            yend = !! as.symbol('pos')), 
-        color = "black", linewidth = 1) 
+        aes(x = ifelse(abs(!! as.symbol('pos')) == 0, NA, 1.550),
+            xend = ifelse(abs(!! as.symbol('pos')) == 0, NA, 1.450),
+            y = abs(!! as.symbol('pos')),
+            yend = abs(!! as.symbol('pos'))),
+        color = "black", linewidth = 1) +
+      scale_fill_manual(
+        guide = guide_legend(reverse = TRUE),
+        values = x_pie$color_palette %>%
+                 setNames(x_pie$`valid_class`)) + 
+      geom_text(
+        cex = 2.5,
+        aes(x = 1.8, label = !! as.symbol('label')),
+        position = position_fill(vjust = 0.5)) +
+      coord_polar('y', start = 0)
     
-      if(group_by != '') {plot_5 <- plot_5 + facet_wrap(as.symbol(group_by))}
+    return(plot_x_pie)
 
   }
-  
-  if(is.null(plot_1)){plot_1 <- plot_3 ; plot_3 <- NULL} 
-  if(is.null(plot_2)){plot_2 <- plot_4 ; plot_4 <- NULL}
-  
-  # category table
-
-  if(length(variable_summary[
-    str_detect(names(variable_summary),"Categorical variable summary")]) == 1){
-
-    `Categorical variable summary` <- variable_summary[
-      str_detect(names(variable_summary), "Categorical variable summary")][[1]]
+  plot_numeric    <- function(x,group_name_short){
     
-    if(nrow(`Categorical variable summary` %>% 
-            dplyr::filter(.data$`name` %in% col)) > 0){
-      
-      summary_categories <- 
-        as.data.frame(t(
-          
-          `Categorical variable summary` %>%
-            dplyr::filter(.data$`name` %in% col) %>%
-            select(-c(1:"% Missing categorical values (if applicable)"))
-          
-        ))
-      
-      if(group_by != ''){
-        names(summary_categories) <- 
-          
-          unique(pull(
-            `Categorical variable summary` %>%
-              dplyr::filter(.data$`name` %in% col) %>%
-              select(starts_with('Grouping variable:'))
-          ))
-        
-      } else { names(summary_categories) <- col}
-      
-      summary_categories <-
-        summary_categories %>% 
-        mutate(col = row.names(summary_categories)) %>%
-        mutate(across(-c("col"), ~ str_replace_all(.,"\\n","<br>"))) %>%
-        select(-'col') %>%
-        mutate(across(everything(),as.character)) %>%
-        remove_empty('rows')
-      
-      if(is.null(summary_2)){
-        summary_2 <- summary_categories
-        summary_categories <- NULL
-        
-      } else {
-        summary_categories <-
-          datatable(summary_categories,
-                    options = 
-                      list(dom = 't', 
-                           scrollX = TRUE,
-                           pageLength = nrow(summary_categories),
-                           ordering = FALSE,
-                           paging = TRUE),
-                    filter = 'none' ,  
-                    escape = FALSE) 
-      }
-    } else { summary_categories <- NULL }
-  } else { summary_categories <- NULL }
+    
+    x <- 
+      x %>% 
+      mutate(across(
+        all_of('value_var short'), ~ as_valueType(.,vT_col$`valueType`))) %>%
+      mutate(`value_var short` = 
+               ifelse(.data$`value_var_occur` == 0,NA,.data$`value_var short`)) %>%
+      mutate(group_label_short = 
+               as_category(.data$`group_label_short`,as_factor = TRUE))
+    
+    binwidth <- 
+      ceiling(
+      2 * IQR(x$`value_var short`, na.rm = TRUE) / 
+      (length(x$`value_var short`)^(1/3)))
   
-  # assemble tables
-  summary_table <- 
-    bind_rows(summary_1,summary_2) %>%
-    remove_empty('rows')
+    
+    aes <-
+      aes(
+        x = !! as.symbol("value_var short"),
+        # y = !! as.symbol("value_var short"),
+        fill =  !! as.symbol("group_label_short"))
+   
+    # anchor
+    title <- paste0('Histogram of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+    
+    plot_histogramm <-    
+      ggplot(x) + aes +
+      geom_histogram(aes(y = after_stat(count)), color = "black") + 
+      # geom_density(alpha = 0.8, color = "red", linewidth = 0.5) + 
+      facet_wrap(~group_label_short) + # Facet by species
+      theme_bw() +
+      theme_minimal() +
+      ggtitle(paste0(title,"\n")) +
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      scale_fill_manual(values = 
+                          x$color_palette %>%
+                          setNames(x$`group_label_short`)) +
+      xlab("") + 
+      ylab("")
+    
+    
+    aes <-
+      aes(
+        x = !! as.symbol("value_var short"),
+        y = !! as.symbol("value_var short"),
+        fill =  !! as.symbol("group_label_short"))
+      
+      
+    
+    # anchor
+    title <- paste0('Box plot of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+    
+    plot_boxplot <-     
+      ggplot(x) + aes +
+      # facet_wrap( ~ group_label_short) + # Facet by species
+      geom_boxplot(
+        aes(y = fct_rev(!! as.symbol("group_label_short"))),outlier.color = 'red') +
+      theme_bw() +
+      # coord_flip() + 
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      ggtitle(paste0(title,"\n")) +
+      ylab("") +
+      xlab("") +
+      scale_fill_manual(values = 
+                          x$color_palette %>%
+                          setNames(x$`group_label_short`))
+    
+    return(list(plot_boxplot = plot_boxplot,plot_histogramm = plot_histogramm))
+  }
+  plot_boolean    <- function(x,group_name_short){
+  
+    # [GF] ENHANCE : change color of Boolean directly in the dataset_preprocess()
+    # [GF] ENHANCE : Treat the boolean as any categorical value in the visual report
+    
+    # preprocess elements : valid values
+    
+    color_palette_maelstrom <- madshapR::color_palette_maelstrom
+    
+    levels <- c('TRUE','FALSE')
+    
+    x_stacked <- 
+      x %>% 
+      group_by(pick(c("group_index", "group_label_short","value_var short","value_var short","cat_index"))) %>%
+      reframe(value_var_occur = sum(.data$`value_var_occur`)) %>%
+      mutate(group_label_short = as_category(.data$`group_label_short`,as_factor = TRUE))
+  
+    aes <- 
+      aes(x = fct_rev(as_category(
+        x = !! as.symbol('value_var short'),
+        labels = levels, 
+        as_factor = TRUE)), 
+        y = !! as.symbol('value_var_occur'), 
+        fill = !! as.symbol('value_var short'))
+  
+    # anchor
+    title <- paste0('Bar plot of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+      
+    plot_x <- 
+      ggplot(x_stacked) + aes + 
+      geom_bar(stat = "identity") +  
+      theme_bw() + 
+      theme(legend.position="none",plot.title = 
+              element_text(size = 8, face = "bold"),
+            strip.background = element_rect(color = "white", fill="white")) +
+      ylab(unique(x[[group_col_short]])) +
+      xlab("") +
+      ggtitle(paste0(title,"\n")) +
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      scale_fill_manual(values = c(
+                            "TRUE" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_1") %>% pull('color_palette')),
+                            "FALSE" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_2") %>% pull('color_palette')))) +
+                          # x$color_palette %>%
+                          # setNames(x$`value_var short`)) +
+      scale_x_discrete(drop = FALSE) + 
+      coord_flip() +
+      stat_summary(
+        aes(label = after_stat(!!as.symbol("y"))),
+        cex = 3,
+        fun = "sum", geom = "text", vjust = 0.33,
+        hjust = -0.24,
+        position = position_nudge(y = 0)) +
+      scale_y_continuous(
+        breaks = function(x){
+          if(max(x_stacked$value_var_occur) == 0) 
+            return(0) else
+              br = pretty(x, n=4) 
+            return(br)},
+        limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
+      facet_wrap(~ group_label_short,ncol = 3)
+    
+    # [GF] COMMENT : originally staked due to mis-intrepretation
+    # x <- 
+    #   x %>%
+    #   mutate(`value_var short` = ifelse(value_var_occur == 0, NA, `value_var short`)) %>%
+    #   mutate(`value_var short` = as_any_integer(`value_var short`)) %>%
+    #   mutate(`value_var short` = ifelse(is.na(`value_var short`), -1, `value_var short`))
+    # 
+    # # anchor
+    # title <- paste0('Bar plot of valid values in `',unique(x$`Variable name`),'`') 
+    # if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    # title <- paste0(title,'\nTotal number of valid values = ',sum(x$value_var_occur))
+    # 
+    # aes <- 
+    #   aes(
+    #     fill = as_factor(!! as.symbol("value_var short")),
+    #     x = fct_rev(as_category(
+    #       !! as.symbol("group_label_short"),
+    #       labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)))
+    
+    # plot_x <- 
+    #   ggplot(x) + aes + 
+    #   geom_bar(position = 'fill', stat = "count") +
+    #   coord_flip() +
+    #   ggtitle(paste0(title,"\n")) +
+    #   xlab("") +
+    #   ylab("") + 
+    #   scale_fill_manual(
+    #     guide = guide_legend(reverse = TRUE),
+    #     labels = c("", "FALSE","TRUE"),
+    #     values = c(
+    #       "1" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_1") %>% pull('color_palette')),
+    #       "0" = unname(color_palette_maelstrom %>% filter(.data$`values` == "cat_2") %>% pull('color_palette')),
+    #       "-1" = "white")) +
+    #   theme_bw() +
+    #   theme(legend.position="right",
+    #         legend.title = element_blank(),
+    #         plot.title = element_text(size=8, face = "bold"))
+    
+    
+    # plot_x <- 
+    #   ggplot(x_stacked) + aes + 
+    #   geom_bar(stat = "identity") +  
+    #   theme_bw() + 
+    #   theme(legend.position="none",plot.title = 
+    #           element_text(size = 8, face = "bold"),
+    #         strip.background = element_rect(color = "white", fill="white")) +
+    #   ylab(unique(x[[group_col_short]])) +
+    #   xlab("") +
+    #   ggtitle(paste0('Bar plot', title,"\n")) +
+    #   theme(legend.position="none",plot.title = 
+    #           element_text(size=8, face = "bold")) +
+    #   scale_fill_manual(values = 
+    #                       x$color_palette %>%
+    #                       setNames(x$`value_var short`)) +
+    #   scale_x_discrete(drop = FALSE) + 
+    #   coord_flip() +
+    #   stat_summary(
+    #     aes(label = after_stat(y)),
+    #     cex = 3,
+    #     fun = "sum", geom = "text", vjust = 0.33,
+    #     hjust = -0.24,
+    #     position = position_nudge(y = 0)) +
+    #   scale_y_continuous(
+    #     breaks = function(x){
+    #       if(max(x_stacked$value_var_occur) == 0) 
+    #         return(0) else
+    #           br = pretty(x, n=4) 
+    #         return(br)},
+    #     limits = c(0,max(x_stacked$value_var_occur)*1.2)) +
+    #   facet_wrap(~ group_label_short,ncol = 3)
+    
+    
+    return(plot_x)  
+  }
+  plot_character  <- function(x,group_name_short){
+    plot_x <- NULL
+    return(plot_x)
+  }
+  plot_date       <- function(x,group_name_short){
+    
+    x_stacked <- 
+      x %>% 
+      mutate(across(
+        all_of('value_var short'), ~ as_valueType(.,vT_col$`valueType`))) %>%
+      mutate(`value_var short` = 
+               if_else(.data$`value_var_occur` == 0,
+                       NA_Date_,
+                       .data$`value_var short`)) %>%
+      group_by(pick("group_label")) %>%
+      filter(.data$`value_var short` %in% min(.data$`value_var short`,na.rm = TRUE) | 
+               .data$`value_var short` %in% max(.data$`value_var short`,na.rm = TRUE) | 
+              is.na(.data$`value_var short`)) %>%
+      ungroup %>% distinct
+    
+    # anchor
+    title <- paste0('Segment plot of valid non-categorical values in `',unique(x$`Variable name`),'`') 
+    if(group_name_short != '(all)') title <- paste0(title, ', grouped by `',group_name_short,"`")
+    
+    n_val <- sum(x$value_var_occur[x$group_label == "(all)"])
+    title <- paste0(title,'\nTotal number of valid non-categorical values = ',n_val)
+  
+    aes <- 
+      aes(
+        x = !! as.symbol("value_var short"),
+        color = fct_rev(as_category(
+          !! as.symbol("group_label_short"),
+          labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)),
+        y = fct_rev(as_category(
+          !! as.symbol("group_label_short"),
+          labels = unique(c('(all)',group_cat_short)),as_factor = TRUE)))
+    
+    plot_date <-
+      ggplot(x_stacked) + aes +
+      geom_line() +
+      geom_point(size = 2) +
+      theme_bw() +
+      # coord_flip() + 
+      theme(legend.position="none",plot.title = 
+              element_text(size=8, face = "bold")) +
+      ggtitle(paste0(title,"\n")) +
+      ylab("") +
+      xlab("") +
+      scale_color_manual(values = 
+                          x_stacked$color_palette %>%
+                          setNames(x_stacked$`group_label_short`)) +
+      scale_x_date(date_labels =  "%Y-%m-%d")
+    
+    return(plot_date)
+  } 
+  plot_datetime   <- function(x,group_name_short){
+    
+    # [GF] Comment : not tested
+    plot_x <- NULL # plot_date(x,group_name_short)
+    return(plot_x)
+  }
+
+  if(!is.logical(valueType_guess))
+    stop(call. = FALSE,'`valueType_guess` must be TRUE or FALSE (TRUE by default)')
+  
+  #### Catch elements ####
+  if(toString(group_by) == "") group_by <- group_vars(dataset)
+  
+  group_var    <- names(as_dataset(dataset) %>% select(all_of(group_by)))
+  col_id       <- col_id(dataset)
+  dataset      <- ungroup(dataset) %>% as_dataset(col_id)
+  col_var      <- names(ungroup(dataset) %>% select(all_of(col)))
+  if(is.null(col_id)) dataset <- as_dataset(add_index(dataset, "madshapR::index", .force = TRUE),col_id = "madshapR::index")
+  col_id       <- names(dataset %>% select(all_of(col_id(dataset))))
+  col_set     <- as_dataset(dataset) %>% select(all_of(c(col_id,group_var,col_var)))
+  if(col_id == col_var) col_set <- as_dataset(col_set, col_id = col_id)
+  col_set_pps <- dataset_preprocess(col_set %>% select(all_of(c(group_var,col_var))), data_dict, group_var)
+  col_dict    <-
+    data_dict_match_dataset(col_set[col_var],data_dict,output = "data_dict") %>%
+    data_dict_trim_labels()
+  
+  if(toString(group_var) == col_var){
+    col_set_pps[['(all)']] <-  col_set_pps[['madshapR::grouping_var']]}
+  
+  col_name_short <- unique(col_set_pps[['(all)']][["Variable name"]])
+  
+  group_name_short <- "(all)"
+  group_col_short  <- "Grouping variable: "
+  group_cat_short  <- "(all)"
+  group_cat_long  <- "(all)"
+  if(length(group_var) > 0 
+     # & toString(group_var) != col_var
+     ){
+    
+    # group_tibble_temp <- 
+    #   col_set[group_var] %>%
+    #   as_dataset %>% 
+    #   mutate(across(all_of(group_var),as_category)) %>%
+    #   data_dict_extract() %>%
+    #   data_dict_trim_labels()
+    
+    group_name_short <- 
+      unique(col_set_pps[['madshapR::grouping_var']][["Variable name"]])
+    group_col_short <- paste0("Grouping variable: ",group_name_short)
+    
+    group_cat_labs <-
+      bind_rows(col_set_pps) %>% 
+      rename("group" = starts_with('Grouping variable: ')) %>%
+      filter(.data$`group` == .data$`madshapR::group_label long`) %>%
+      select("madshapR::group_label long","madshapR::group_label short") %>%
+      distinct
+    
+    group_cat_short <- 
+      unique(c(group_cat_short,group_cat_labs$`madshapR::group_label short`))
+    
+    group_cat_long <- 
+      unique(c(group_cat_long,group_cat_labs$`madshapR::group_label long`))
+    
+    # suppress (all) group from the list when there's only one group.
+    if(length(group_cat_short) == 2) {
+      group_cat_short <- group_cat_short[2]
+      group_cat_long  <- group_cat_long[2]
+    }
+      
+      # unique(c(group_cat_short,
+      #          col_set_pps[['madshapR::grouping_var']] %>%
+      #            select("cat_index","value_var short") %>%
+      #            distinct() %>% arrange(pick("cat_index")) %>%
+      #            pull("value_var short")))
+    # group_cat_long <- 
+    #   unique(c(group_cat_long,
+    #            col_set_pps[['madshapR::grouping_var']] %>%
+    #              select("cat_index","value_var long") %>% 
+    #              distinct() %>% arrange(pick("cat_index")) %>% 
+    #              pull("value_var long")))
+  }
+  
+  group_label_tibble <- 
+    tibble(group_label_short = group_cat_short, group_label = group_cat_long) %>%
+    add_index("group_index")
+
+  if(is.null(variable_summary)){
+    variable_summary <- 
+      dataset_summarize(
+        dataset = col_set,
+        data_dict = data_dict_match_dataset(col_set,data_dict,output = "data_dict") ,
+        valueType_guess = valueType_guess,
+        group_by = group_var, 
+        dataset_name = 'dataset')}
+  
+  col_summary <- 
+    variable_summary[str_detect(names(variable_summary),"(v|V)ariable")] %>%
+    lapply(function(x) x %>% filter(.data$`Variable name` == col_name_short))
+    
+  col_summary <- col_summary[col_summary %>% lapply(nrow) != 0]
+    
+  col_set_pps <- 
+    bind_rows(col_set_pps[!(names(col_set_pps) %in% 
+                              "madshapR::grouping_var")])
+
+  # guess the generic valueType of the variable (excluding categories):
+  vT_list <- madshapR::valueType_list
+  vT_col <-
+    if(valueType_guess == TRUE){
+      vT_list[vT_list$valueType %in% 
+                valueType_guess(
+                  col_set_pps[col_set_pps$valid_class == '1 - Valid non-categorical values',] %>% 
+                    pull("value_var short")),c('valueType','genericType')]
+    }else{
+      unique(col_set_pps %>% select(c('valueType','genericType')))}
+  
+  col_set_pps <- 
+    col_set_pps %>%
+    select(-c(
+      "value_var long","madshapR::group_label long",
+      "valueType","genericType","Categorical variable",
+      "index_value","Index","name_var"))
+
+  #### summary_1 ####
+  summary_1 <- 
+    col_summary[
+    str_detect(names(col_summary), "Variables summary \\(all\\)")][[1]]
+  
+  summary_1 <- 
+    as.data.frame(t(
+      summary_1 %>% 
+        rowwise() %>%                                                           # [GF] NOTE : rowwise
+        dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
+        select(-c("Index":"Non-valid categories"))))                          # [GF] NOTE : Categories in data dictionary ) enlever
+  
+  summary_1 <- 
+    summary_1 %>%
+    mutate(col = row.names(summary_1)) %>%
+    mutate(across(-c("col"), 
+                  ~ ifelse(. == 0,NA_real_,.))) %>%
+    select(-'col') %>%
+    mutate(across(everything(),as.character)) 
+  
+  names(summary_1) <- 
+  if((ncol(summary_1) == 1 & length(group_cat_short) == 1) &
+     (length(group_var) <= 1 | toString(group_var) == col_var)) group_cat_short else
+      group_cat_short[seq_len(min(length(names(summary_1)),length(group_cat_short)))+1]
+  
+  #### summary_2 ####
+  summary_2 <- col_summary[
+      str_detect(names(col_summary), "variable summary")]
+  
+  if(length(summary_2) > 0 
+     # & toString(group_var) != col_var
+     ){ 
+
+    summary_2 <- col_summary[
+      str_detect(names(col_summary), "variable summary")]
+
+    if(length(summary_2) == 1){ summary_2 <- NULL 
+    }else{
+      
+      summary_2 <- col_summary[
+        str_detect(names(col_summary), "variable summary")][[1]]
+      
+      if(nrow(summary_2) > 0){
+        summary_2 <- 
+          as.data.frame(t(
+            summary_2 %>%
+              rowwise() %>%                                                       # [GF] NOTE : rowwise
+              dplyr::filter(.data$`Variable name` %in% col_name_short) %>% ungroup %>%
+              select(-c("Index":"Number of distinct values")))) 
+        
+        names(summary_2) <- 
+          if((ncol(summary_2) == 1 & length(group_cat_short) == 1) &
+             (length(group_var) <= 1 | toString(group_var) == col_var)) group_cat_short else
+               group_cat_short[seq_len(min(length(names(summary_2)),length(group_cat_short)))+1]
+        
+      }else{summary_2 <- NULL}
+    }
+  }
+  
+  summary_table <- bind_rows(summary_1,summary_2)
   
   summary_table <-
-    datatable(summary_table,
-              options = 
-                list(dom = 't', 
-                     scrollX = TRUE,
-                     pageLength = nrow(summary_table),
-                     ordering = FALSE,
-                     paging = TRUE),
-              filter = 'none' ,  
-              escape = FALSE)
+    datatable(
+      summary_table,
+      options =
+        list(
+          
+          # [GF] Comment : here is the place where the column names can be modified. 
+          # works in the console, but overwritten in the dataset visualize (due to 
+          # global parameter)
+          
+          dom = 't',
+             scrollX = TRUE,
+             pageLength = nrow(summary_table),
+             ordering = FALSE,
+             paging = TRUE),
+      filter = 'none' ,
+      escape = FALSE)
+
   
+  #### summary_categories ####
+  summary_categories <- NULL
+  
+  if(!is.null(col_summary[["Categorical variable summary"]])){
+    
+  summary_categories <- 
+    col_summary[["Categorical variable summary"]]
+
+  summary_categories <- 
+    as.data.frame(t(
+      summary_categories %>%
+        bind_rows(tibble("Grouping" = as.character())) %>%
+        rename("group_cat_long" = starts_with("Grouping")[1]) %>%
+        left_join(
+          tibble(
+            group_cat_long = group_cat_long) %>% 
+            add_index(), by = 'group_cat_long') %>% arrange(.data$`index`) %>%
+        select(-any_of('Grouping'),-"index",-"group_cat_long",
+               -c("Index":"Number of distinct values"))))
+
+  names(summary_categories) <- 
+    if((ncol(summary_categories) == 1 & length(group_cat_short) == 1) &
+       (length(group_var) <= 1 | toString(group_var) == col_var)) group_cat_short else
+         group_cat_short[seq_len(min(length(names(summary_categories)),length(group_cat_short)))+1]
+  
+  summary_categories <-
+    summary_categories %>% 
+    mutate(col = row.names(summary_categories)) %>%
+    mutate(across(-c("col"), ~ str_replace_all(.,"\\n","<br>"))) %>%
+    select(-'col') %>%
+    mutate(across(everything(),as.character))
+    
+  summary_categories <-
+    datatable(
+      summary_categories,
+      options =
+        list(dom = 't',
+             scrollX = TRUE,
+             pageLength = nrow(summary_categories),
+             ordering = FALSE,
+             paging = TRUE),
+      filter = 'none' ,
+      escape = FALSE)
+    
+  }
+  
+  #### preprocess elements ####
+  preprocess_var_values <- 
+    col_set_pps[col_set_pps$valid_class %in% '1 - Valid non-categorical values',] %>%  
+    rename("group_label" = starts_with(group_col_short)) %>%
+    right_join(group_label_tibble, by = "group_label") %>%
+    filter(!is.na(.data$`Variable name`)) %>%
+    group_by(pick("group_index","group_label_short"))
+  
+  preprocess_var_values <- 
+    preprocess_var_values %>%
+    group_split() %>% as.list %>%
+    setNames(group_keys(preprocess_var_values)[[2]])
+  
+  # preprocess elements : categorical values
+  preprocess_cat_values <- 
+    col_set_pps[col_set_pps$valid_class %in%  '2 - Valid categorical values',] %>%
+    rename("group_label" = starts_with(group_col_short)) %>%
+    right_join(group_label_tibble, by = "group_label") %>%
+    filter(!is.na(.data$`Variable name`)) %>%
+    group_by(pick("group_index","group_label_short"))
+  
+  preprocess_cat_values <- 
+    preprocess_cat_values %>%
+    group_split() %>% as.list %>%
+    setNames(group_keys(preprocess_cat_values)[[2]])
+    
+  # preprocess elements : missing values  
+  preprocess_miss_values <- 
+    col_set_pps[col_set_pps$valid_class %in% c('3 - Non-valid categorical values','4 - Empty values'),] %>% 
+    rename("group_label" = starts_with(group_col_short)) %>%
+    right_join(group_label_tibble, by = "group_label") %>%
+    filter(!is.na(.data$`Variable name`)) %>%
+    group_by(pick("group_index","group_label_short"))
+  
+  preprocess_miss_values <- 
+    preprocess_miss_values %>%
+    group_split() %>% as.list %>%
+    setNames(group_keys(preprocess_miss_values)[[2]])
+  
+  # preprocess elements : valid_class  
+  preprocess_valid_class <- 
+    col_set_pps[!is.na(col_set_pps$valid_class),] %>%
+    rename("group_label" = starts_with(group_col_short)) %>%
+    right_join(group_label_tibble, by = "group_label") %>%
+    filter(!is.na(.data$`Variable name`)) %>%
+    group_by(pick("group_index","group_label_short"))
+  
+  preprocess_valid_class <- 
+    preprocess_valid_class %>%
+    group_split() %>% as.list %>%
+    setNames(group_keys(preprocess_valid_class)[[2]])
+  
+  #### plot var values ####
+  plot_var_values_1 <- NULL
+  plot_var_values_2 <- NULL
+  if(length(preprocess_var_values) > 0) {
+    
+    if(vT_col$genericType == "numeric"){
+      if(vT_col$valueType == "boolean"){
+     
+        plot_var_values_1 <- plot_boolean(bind_rows(preprocess_var_values),group_name_short)
+        
+        }else{
+          plot_var_values   <- plot_numeric(bind_rows(preprocess_var_values),group_name_short)
+          plot_var_values_1 <- plot_var_values$plot_boxplot
+          plot_var_values_2 <- plot_var_values$plot_histogramm
+          }
+
+    }
+    
+    if(vT_col$genericType == "character"){
+      
+      plot_var_values_1 <- plot_character(bind_rows(preprocess_var_values),group_name_short)
+      
+    }
+    
+    if(vT_col$genericType == "date"){
+      
+      plot_var_values_1 <- plot_date(bind_rows(preprocess_var_values),group_name_short)
+      
+    }  
+    
+    if(vT_col$genericType == "datetime"){
+      plot_var_values_1 <- plot_datetime(bind_rows(preprocess_var_values),group_name_short)
+    }
+  }
+  
+  #### plot cat values ####
+  plot_cat_values <- NULL 
+  # categorical values
+  if(length(preprocess_cat_values) > 0)
+    plot_cat_values <- plot_categories(bind_rows(preprocess_cat_values),group_name_short)
+
+  #### plot miss values ####
+  plot_miss_values <- NULL 
+  # missing values
+  if(length(preprocess_miss_values) > 0)
+    plot_miss_values <- plot_categories(bind_rows(preprocess_miss_values),group_name_short)
+  
+  #### plot pie values ####
+  plot_pie_values <- NULL 
+  # missing values
+  if(length(preprocess_valid_class) > 0)
+    plot_pie_values <- plot_pie(bind_rows(preprocess_valid_class),group_name_short)
+  
+  #### gather ####
   plots <- list(
     summary_table = summary_table,
     summary_categories = summary_categories,
-    main_values_1 = plot_1, 
-    main_values_2 = plot_2, 
-    cat_values = plot_3, 
-    missing_values = plot_4, 
-    pie_values = plot_5)
-
+    main_values_1 = plot_var_values_1,
+    main_values_2 = plot_var_values_2,
+    cat_values = plot_cat_values, 
+    missing_values = plot_miss_values, 
+    pie_values = plot_pie_values)
+  
   plots <- plots[
     vapply(X = plots,
            FUN = function(x) !is.null(x),
            FUN.VALUE = logical(1))]
   
   return(plots)
+  
 }
 
 #' @title
@@ -1376,8 +1003,6 @@ variable_visualize <- function(
 #' Using this parameter can save time in generating the visual report.
 #' @param dataset_name A character string specifying the name of the dataset 
 #' (used internally in the function [dossier_evaluate()]).
-#' @param .dataset_name `r lifecycle::badge("deprecated")`
-#' @param .summary_var `r lifecycle::badge("deprecated")`
 #'
 #' @returns
 #' A folder containing files for the bookdown site. To open the bookdown site 
@@ -1385,23 +1010,29 @@ variable_visualize <- function(
 #' folder path.
 #'
 #' @examples
-#' {
-#' 
-#' # You can use our demonstration files to run examples
+#' \donttest{
 #' 
 #' library(fs)
 #' library(dplyr)
-#' 
-#' dataset <- madshapR_DEMO$dataset_TOKYO['height'] %>% slice(0)
-#' dataset_summary <- madshapR_DEMO$`dataset_summary`
-#' 
+#'  
+#' # use madshapR_examples provided by the package 
+#' dataset <-
+#'   madshapR_examples$`dataset_example` %>%
+#'   group_by(gndr) %>%
+#'   as_dataset(col_id = "part_id")
+#'   
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+#' dataset <- data_dict_apply(dataset,data_dict)
+#' dataset_summary <- dataset_summarize(dataset,data_dict)
+#'  
 #' if(dir_exists(tempdir())) dir_delete(tempdir())
 #' bookdown_path <- tempdir()
-#' 
+#'  
 #' dataset_visualize(
-#'   dataset,
-#'   dataset_summary = dataset_summary,
-#'   bookdown_path = bookdown_path)
+#'  dataset,
+#'  data_dict,
+#'  dataset_summary = dataset_summary,
+#'  bookdown_path = bookdown_path)
 #'   
 #' # To open the file in browser, open 'bookdown_path/docs/index.html'. 
 #' # Or use bookdown_open(bookdown_path) function.
@@ -1417,13 +1048,11 @@ dataset_visualize <- function(
     dataset = tibble(id = as.character()),
     bookdown_path,
     data_dict = data_dict_extract(dataset),
-    group_by = NULL,
+    group_by = attributes(dataset_summary)[['madshapR_group::group_by']],
     valueType_guess = FALSE,
     taxonomy = NULL,
-    dataset_name = .dataset_name, 
-    dataset_summary = .summary_var,
-    .summary_var = NULL, 
-    .dataset_name = NULL){
+    dataset_summary = NULL,
+    dataset_name = NULL){
   
   # fargs <- list()
   fargs <- as.list(match.call(expand.dots = TRUE))
@@ -1452,16 +1081,27 @@ dataset_visualize <- function(
 "The path folder already exists. 
 Please provide another name folder or delete the existing one.")}
   
-  dataset <- as_dataset(dataset, col_id(dataset))
+  # test if enough dataset
+  as_dataset(dataset, col_id(dataset))
   col_id <- col_id(dataset)
   
-  if(toString(substitute(group_by)) == '') group_by <- NULL
+  # if data_dict empty
+  if(is.null(data_dict)){
+    data_dict <- 
+      data_dict_extract(dataset,as_data_dict_mlstr = TRUE) 
+  }else{
+    data_dict <- as_data_dict_mlstr(data_dict)}
+
+  # if(toString(substitute(group_by)) == '') group_by <- NULL
   # attempt to catch group_by from the group_vars if the dataset is grouped
-  if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
-    group_by <- group_vars(dataset)
-  }
-  
+  # if(length(group_vars(dataset)) == 1 & toString(substitute(group_by)) == ''){
+
+  group_var    <- names(as_dataset(dataset) %>% select(all_of(group_by)))
+  col_id       <- col_id(dataset)
   dataset <- as_dataset(ungroup(dataset),col_id)
+  
+  
+  # }
   
   dataset_name <- 
     suppressWarnings(
@@ -1470,83 +1110,45 @@ Please provide another name folder or delete the existing one.")}
       dataset_name,
       make_name_list(as.character(fargs[['dataset']]),
                            list_elem = list(NULL))))
-  
-  # attempt to catch group_by
-  if(toString(substitute(group_by)) != ''){
-    group_by <- tryCatch(
-      expr  = {toString(names(dataset[toString(substitute(group_by))]))},
-      error = function(cond){return(toString(names(dataset[group_by])))})    
-    
-    if(! group_by %in% data_dict[['Categories']][['variable']]) group_by <- ''
-    
-  }else{ group_by <- ''}
-  
-  dataset <-
+
+  match_input_objects <- 
     suppressWarnings({
       data_dict_match_dataset(
-        dataset,data_dict,
-        output = 'dataset') %>%
-        as_dataset(col_id)})
+        dataset,
+        data_dict, 
+        data_dict_apply = TRUE)})
   
-  data_dict <- 
-    suppressWarnings({
-      data_dict_match_dataset(
-        dataset,data_dict,
-        output = 'data_dict') %>%
-        as_data_dict_mlstr(name_standard = FALSE)})
+  dataset <- as_dataset(match_input_objects$dataset,col_id)
+  data_dict <- as_data_dict_mlstr(match_input_objects$data_dict)
   
   # summarize initial information
-  
   if(is.null(dataset_summary)){
-    temp_group <- if(group_by == ''){NULL}else{group_by}
     dataset_summary <- dataset_summarize(
       dataset = dataset,
       data_dict = data_dict,
-      group_by = temp_group,
+      group_by = group_var,
       valueType_guess = valueType_guess,
       taxonomy = taxonomy,
       dataset_name = dataset_name)}
 
-  data_dict$Variables <- 
-    data_dict$Variables %>% add_index(.force = TRUE)
+  data_dict <- 
+    data_dict_trim_labels(data_dict)
   
-  data_dict_flat <- data_dict
-  data_dict_flat[['Variables']] <- data_dict$Variables
+  data_dict$`Variables` <- 
+    data_dict$`Variables` %>% 
+    add_index(.force = TRUE)
   
-  if(sum(nrow(data_dict_flat[['Categories']])) > 0){
-    data_dict_flat[['Categories']] <- 
-      data_dict[['Categories']] %>% 
-      add_index("madshapR::index_original",.force = TRUE) %>%
-      group_by(.data$`variable`) %>%
-      slice(1:6) %>%
-      add_index("madshapR::index_group",.force = TRUE) %>%
-      mutate(across(
-        -c("variable","madshapR::index_group","madshapR::index_original"), ~ 
-        ifelse(.data$`madshapR::index_group` == 6,'[...]',.) )) %>%
-      ungroup() %>%
-      arrange(.data$`madshapR::index_original`) %>%
-      select(-"madshapR::index_group",-"madshapR::index_original")
-  }
-
-  data_dict_flat <- 
-    suppressWarnings(data_dict_collapse(data_dict_flat)[[1]]) %>%
-    bind_rows(tibble("Categories::label:zzz" = as.character())) %>%
-    select(
-      "index in data dict." = matches("index"),
-      "name",
-      matches(c("^label$","^label:[[:alnum:]]"))[1],
-      matches('valueType'),
-      Categories = matches(c("^Categories::labels$","^Categories::label$",
-                             "^Categories::label:[[:alnum:]]"))[1]) %>% 
-    mutate(Categories = str_replace_all(.data$`Categories`,"; \n","<br>")) %>%
-    mutate(Categories = str_replace_all(
-      .data$`Categories`,"\\[\\.\\.\\.\\] = \\[\\.\\.\\.\\]","[...]"))
-    
-
+  if(has_categories(data_dict)){
+    data_dict$`Categories` <- 
+      data_dict$`Categories` %>%
+      left_join(
+        data_dict$`Variables` %>% select("variable" = "name", "Variable name"),
+        by = "variable")}
+  
   bookdown_template(path_to, overwrite = FALSE)
   if(!dir.exists(paste0(path_to,"/src"))) dir.create(paste0(path_to,"/src"))
   save(
-    path_to,dataset, data_dict, group_by,data_dict_flat, dataset_summary,col_id,
+    path_to,dataset, data_dict, group_by, dataset_summary,col_id, # data_dict_flat,
     valueType_guess,
     file = paste0(path_to,"/src/r_env.RData"))
   
@@ -1567,7 +1169,7 @@ site: bookdown::bookdown_site
   
   ##### _bookdown.yml ##########
   paste0(
-    'book_filename: "bookdownproj"
+'book_filename: "bookdownproj"
 output_dir: docs
 delete_merged_file: false
 language:
@@ -1578,19 +1180,20 @@ language:
   
   ##### _output.yml ##########
   paste0(
-    'bookdown::gitbook:
+'bookdown::gitbook:
   css: style.css
   config:
     toc:
       before: |
-        <li><a href="./">','DATASET : ',toupper(dataset_name),'</a></li>
-      after: |
-        <li><a href="https://maelstrom-research.org" target="blank">Generated by Maelstrom</a></li>
+        <li><a href="./">',dataset_name,'</a></li>
+    sharing:
+    facebook: false
+    twitter: false
 
 ') %>% write_lines(file = paste0(path_to,"/_output.yml"),append = FALSE)
   
   paste0(
-    '# About the dataset {.unnumbered #about}
+'
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
@@ -1604,52 +1207,19 @@ library(stringr)
 load(file = paste0("', path_to,'/src/r_env.RData"))
 
 ```
---------------------------------------------------------------------------------
 
-
-## Overview
+# Overview {.unnumbered #about}
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 
-Overview <- dataset_summary[str_detect(names(dataset_summary), "Overview")][[1]]
+Overview <- dataset_summary[str_detect(names(dataset_summary), "Overview")][[1]] 
 
 datatable(Overview, 
     colnames = rep("",ncol(Overview)),
-    options = list(pageLength = nrow(Overview),scrollX = TRUE),
-    rownames = FALSE,escape = FALSE)
+    options = list(dom = "t", scrollX = TRUE, ordering = FALSE,paging = FALSE),
+    rownames = FALSE, filter = "none" ,  escape = FALSE)
 
 ```
-
---------------------------------------------------------------------------------
-
-
-## Variables summary
-
-
-```{r echo = FALSE, message = FALSE, warning = FALSE}
-
-
-# if(toc == "variables"){
-
-  datatable(
-    data_dict_flat %>%
-      mutate(
-        name = ifelse(name %in% col_id, name, paste0(
-        "<a href=\\"./var",`index in data dict.`,".html\\" >",name,"</a>"))),
-    options=list(scrollX = TRUE,pageLength=20),rownames = FALSE,escape = FALSE)
-
-# }else{
-# 
-#   datatable(
-#     data_dict_flat,
-#     options = 
-#       list(scrollX = TRUE, pageLength=20),rownames = FALSE,escape = FALSE)
-# 
-# }
-
-```
-
---------------------------------------------------------------------------------
 
 ') %>% write_lines(file = paste0(path_to,"/index.Rmd"),append = TRUE)
   
@@ -1658,27 +1228,25 @@ datatable(Overview,
   ##### CONTENT ##########
   
   increment <-
-    paste0(rep(0,nchar(nrow(data_dict$Variables))) %>% paste(collapse = ""))
+    paste0(rep(0,nchar(nrow(data_dict$`Variables`))) %>% paste(collapse = ""))
   
-  for(i in seq_len(nrow(data_dict$Variables))){
+  for(i in seq_len(nrow(data_dict$`Variables`))){
     # stop()}
     
     rmd_file_name <-
       paste0(path_to,"/",
              str_sub(paste0(increment,i),-(increment %>% nchar + 1),-1),"-",
-             make.names(data_dict$Variables$name[i]),".Rmd")
+             make.names(data_dict$`Variables`$`Variable name`[i]),".Rmd")
     file.create(rmd_file_name)
     
     paste0(
       "# ", 
-      data_dict$Variables$name[i] %>%
+      data_dict$`Variables`$`Variable name`[i] %>%
       str_replace_all("(?=[^A-Za-z0-9])", "\\\\"),
       "{.unnumbered #var",i,"}\n\n") %>%
       
       
-      paste0("\n**VARIABLE CHARACTERISTICS**\n") %>%
-      
-      
+      paste0("\n<p style= \"font-size: 140%;\">**VARIABLE CHARACTERISTICS**</p>\n") %>%
       paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
       paste0(
         "\n```{r ",
@@ -1687,8 +1255,12 @@ datatable(Overview,
         "\n
   
   datatable(t(
-     data_dict$Variables %>%
-     dplyr::filter(name == '",data_dict$Variables$name[i],"')),
+     data_dict$`Variables` %>%
+     dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"') %>%
+     select(
+      'Variable name', 
+      'Variable label', 
+      'Data dictionary valueType' = 'valueType')),
    options = list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
    rownames = TRUE, colnames = rep('', 2),filter = 'none' ,  escape = FALSE)",
         
@@ -1697,28 +1269,53 @@ datatable(Overview,
       paste0("\n</div>\n\n") %>%
       paste0(ifelse(
         sum(nrow(
-          data_dict[['Categories']][data_dict[['Categories']][['variable']] == 
-                                      data_dict$Variables$name[i],])) > 0,
-        paste0("\n* **Categories**: ","\n\n") %>%
+          data_dict[['Categories']][data_dict[['Categories']][['Variable name']] == 
+                                      data_dict$`Variables`$`Variable name`[i],])) > 0,
+        paste0("\n<p style= \"font-size: 140%;\"> **Categories** </p>","\n\n") %>%
           paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
           paste0(
-            "\n```{r echo = FALSE, message = FALSE, warning = FALSE}",
-            "\n
-                   
+"\n```{r echo = FALSE, message = FALSE, warning = FALSE}",
+"\n
+
+
+    n_cat <- data_dict$`Categories` %>% 
+      dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"')
+
+if(nrow(n_cat) > 20){
+
   datatable(
-    data_dict$Categories %>% 
-      dplyr::filter(variable == '",data_dict$Variables$name[i],"') %>%
-    select(variable, name, 
-    matches(c('^label$','^label:[[:alnum:]]'))[1], missing) %>%
+    data_dict$`Categories` %>% 
+      dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"') %>%
+    select(
+      'Variable name',
+      'Categories in data dictionary' = 'Categories in data dictionary long', 
+      'Non-valid categories' = 'Non-valid categories long') %>%
     mutate(across(everything(), as.character)),
-    options = list(scrollX = TRUE),rownames = FALSE)                          ",
+    options = list(scrollX = TRUE),rownames = FALSE)
+
+}else{
+
+  datatable(
+    data_dict$`Categories` %>% 
+      dplyr::filter(`Variable name` == '",data_dict$`Variables`$`Variable name`[i],"') %>%
+    select(
+      'Variable name',
+      'Categories in data dictionary' = 'Categories in data dictionary long', 
+      'Non-valid categories' = 'Non-valid categories long') %>%
+    mutate(across(everything(), as.character)),
+    options=list(dom = 't', scrollX = TRUE, ordering = FALSE,paging = FALSE),
+    filter = 'none' ,rownames = FALSE,escape = FALSE)
+  }
+
+                            ",
                         
                         "\n\n```\n") %>%
                       paste0("\n</div>\n\n") ,"")) %>%
       paste0("
 \n----------------------------------------------------------------------\n") %>%
       
-      paste0(ifelse(nrow(dataset[i]) > 0, "\n**SUMMARY STATISTICS**\n","")) %>%
+      paste0(ifelse(nrow(dataset[i]) > 0, 
+      "\n<p style= \"font-size: 140%;\">**SUMMARY STATISTICS**</p>\n","")) %>%
       
       paste0("\n<div style= \"display:flex; margin:auto\" > \n\n") %>%
       paste0(
@@ -1732,7 +1329,7 @@ datatable(Overview,
   col = '", names(dataset[i]),"',
   data_dict = data_dict, 
   group_by = '", group_by, "',
-  valueType_guess = '", valueType_guess, "',
+  valueType_guess = ", valueType_guess, ",
   variable_summary = dataset_summary)       
         
   if(!is.null(plots$summary_table))      plots$summary_table                  ",
@@ -1757,7 +1354,8 @@ datatable(Overview,
       paste0(
 "\n---------------------------------------------------------------------\n") %>%
       
-      paste0(ifelse(nrow(dataset[i]) > 0, "\n**VISUAL REPRESENTATION**\n","")) %>%
+      paste0(ifelse(nrow(dataset[i]) > 0, 
+      "\n<p style= \"font-size: 140%;\">**VISUAL REPRESENTATION**</p>\n","")) %>%
       
       paste0(
         "\n```{r, figures-plot12-",i,
@@ -1794,7 +1392,5 @@ if(!is.null(plots$pie_values))         plots$pie_values                       ",
 (Compatibility tested on Chrome, Edge and Mozilla)\n\n"))
   
   }
-  
-  
 }
 

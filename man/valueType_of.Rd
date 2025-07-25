@@ -14,7 +14,7 @@ A character string which is the valueType of the input object.
 }
 \description{
 Determines the valueType of an object based on \code{\link[=typeof]{typeof()}} and
-\code{\link[=class]{class()}}. The possible values returned are 'date', 'boolean',
+\code{\link[=class]{class()}}. The possible values returned are 'date', 'datetime', 'boolean',
 'integer', 'decimal', and 'text'.
 }
 \details{
@@ -32,11 +32,12 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
+valueType_of(dataset[['part_id']])
 
-dataset <- madshapR_DEMO$dataset_MELBOURNE
-valueType_of(dataset$Gender)
-valueType_of(iris$Sepal.Length)
+# any data frame can be dataset by definition
+valueType_of(iris[['Sepal.Length']])
 
 }
 

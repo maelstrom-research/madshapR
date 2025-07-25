@@ -3,7 +3,7 @@
 #'
 #' @description
 #' Determines the valueType of an object based on [typeof()] and 
-#' [class()]. The possible values returned are 'date', 'boolean', 
+#' [class()]. The possible values returned are 'date', 'datetime', 'boolean', 
 #' 'integer', 'decimal', and 'text'.
 #'
 #' @details
@@ -30,21 +30,22 @@
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
-#'
-#' dataset <- madshapR_DEMO$dataset_MELBOURNE
-#' valueType_of(dataset$Gender)
-#' valueType_of(iris$Sepal.Length)
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
+#' valueType_of(dataset[['part_id']])
+#' 
+#' # any data frame can be dataset by definition
+#' valueType_of(iris[['Sepal.Length']])
 #'
 #' }
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR haven stringr
 #' @importFrom rlang .data
 #'
 #' @export
 valueType_of <- function(x){
 
-  # check if the col is empty
+  # check if x is a column
   if(is.list(x) & sum(nrow(x)) <= 1)
     return(as_valueType(x = x[[1]], valueType))
 
@@ -52,22 +53,25 @@ valueType_of <- function(x){
   if(is.list(x))
     stop(call. = FALSE, "'list' object cannot be coerced to valueType")
 
-  type  <- x %>% typeof()
-  class <- class(x)[[max(length(class(x)))]]
-
+  type  <- typeof(x)
+  class <- class(zap_labels(x))
+  # class <- class(x)[[max(length(class(x)))]]
+  
   vT_list <- madshapR::valueType_list
 
   valueType <-
     unique(vT_list[
-      which(vT_list[['typeof']] == type &
-            vT_list[['class']]  == class),]$`toValueType`)
+      which(vT_list[['typeof']] == type),]$`toValueType`)
 
-  if(type %in% c("character","double") & class == "Date")    valueType <- "date"
-  if(type %in% c("character","double") & class == "POSIXt")  valueType <- "datetime"
+  if(str_detect(toString(class), c("^numeric$"))) valueType <- "decimal"
+  if(str_detect(toString(class), c("^Date$")))    valueType <- "date"
+  if(str_detect(toString(class), c("POSIX")))     valueType <- "datetime"
+  if(type == "logical")                           valueType <- "boolean"
 
   silently_run({
     if(class == "factor"){
       lvls <- attributes(x)$`levels` %>% as.character()
+      
       valueType <-
         try({as_valueType(lvls,"integer");valueType <- "integer"},silent = TRUE)
 
@@ -82,21 +86,30 @@ valueType_of <- function(x){
 
       if(class(valueType)[1] == "try-error") valueType <-
         try({                             valueType <- "text"   },silent = TRUE)
+      
+      test_vT_bool  <- all(str_detect(toupper(lvls),"T|F"))
+      if(valueType == "integer" & test_vT_bool) valueType <- "boolean" 
+      
     }
   })
-  if(length(valueType) == 0) valueType <- "text"
+  
+  if(length(valueType) != 1) valueType <- "text"
 
   return(valueType)
 }
 
 #' @title
-#' Guess and attribute the valueType of a data dictionary or dataset variable
+#' Self-adjust the valueType from a data dictionary or a dataset.
 #'
 #' @description
-#' Determines the valueType of an object based on [base::typeof()] and 
-#' [base::class()].
-#' The possible values returned are 'date', 'boolean', 'integer', 'decimal', and
-#' 'text'.
+#' It is sometimes useful to take variable valueType’s from a dataset and 
+#' attribute them to the associated data dictionary, or vice versa. 
+#' [valueType_self_adjust()] takes the valueType guessed of the input and 
+#' attributes it to itself. The parameter can be either a dataset or a 
+#' data dictionary. Depending on the input provided, the valueType replaced is 
+#' either in the 'valueType' column of the data dictionary or cast to a column 
+#' in the dataset. The possible values of the valueTypes returned are 
+#' 'date','datetime', 'boolean', 'integer', 'decimal', and text'.
 #'
 #' @details
 #' A data dictionary contains the list of variables in a dataset and metadata 
@@ -140,11 +153,19 @@ valueType_of <- function(x){
 #' @examples
 #' {
 #' 
-#' ###### Example : The valueType of a dataset can be adjusted. each column is
+#' # use madshapR_examples provided by the package
+#' 
+#' ###### Example 1: The valueType of a dataset can be adjusted. each column is
 #' # evaluated as whole, and the best valueType match found is applied. If 
 #' # there is no better match found, the column is left as it is.
 #' 
-#' head(valueType_self_adjust(mtcars['cyl']))
+#' dataset <- madshapR_examples$`dataset_example`
+#' dataset <- valueType_self_adjust(dataset["gndr"])
+#' head(dataset)
+#' 
+#' ###### Example 2: Aany data frame can be dataset by definition
+#' dataset <- valueType_self_adjust(mtcars)
+#' head(dataset)
 #'
 #' }
 #'
@@ -158,48 +179,54 @@ valueType_self_adjust <- function(...){
   if(is_dataset(...) & !is_data_dict(...)){
     
     dataset <- as_dataset(...,col_id = col_id(...))
-    {
-    if(ncol(dataset) == 0) return(dataset)
-    if(nrow(dataset) == 0) return(dataset)
     
+    # preserve dataset
     preserve_attributes <- col_id(dataset)
-
-    is_factor <-
-      dataset %>%
-      summarise(across(everything(), ~ toString(class(.)))) %>%
-      pivot_longer(everything()) %>%
-      dplyr::filter(.data$`value` %in% c("factor"))
-
-    data_dict <- data_dict_extract(dataset)
-    data_dict[['Categories']] <-
-      bind_rows(
-        Categories = tibble(name = as.character(),variable = as.character()),
-        data_dict[['Categories']])
-
-    vT <- 
-      dataset %>%
-      reframe(across(everything(),~ valueType_guess(.))) %>%
-      pivot_longer(everything())
+    preserve_group <- group_vars(dataset)
+    dataset <- as_dataset(ungroup(dataset))
     
-    for(i in names(dataset)) {
-      dataset[[i]] <-
-        as_valueType(
-          x = dataset[[i]],
-          valueType = vT$value[vT$name == i])
-      }
-
-    data_dict_final <- data_dict_extract(dataset)
-    data_dict[['Variables']]['valueType'] <- NULL
-    data_dict_final[['Variables']] <-
-      data_dict_final[['Variables']][c('name','valueType')] %>%
-      left_join(data_dict[['Variables']], by = c("name"))
-    data_dict_final <- c(data_dict_final['Variables'], data_dict['Categories'])
-
-    dataset <-
-      data_dict_apply(dataset, data_dict_final) %>%
-      mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
+    if(ncol(dataset) > 0 & nrow(dataset) > 0){
+    
+      # is_factor <-
+      #   dataset %>%
+      #   reframe(across(everything(), ~ toString(class(.)))) %>%
+      #   pivot_longer(everything()) %>%
+      #   rowwise() %>%                # [GF] NOTE : rowwise
+      #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup
+      
+      data_dict <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
+      
+      data_dict[['Categories']] <-
+        bind_rows(
+          Categories = tibble(name = as.character(),variable = as.character()),
+          data_dict[['Categories']])
+      
+      vT <- 
+        dataset %>%
+        reframe(across(everything(),~ valueType_guess(.))) %>%
+        pivot_longer(everything())
+      
+      # for(i in names(dataset)) {
+      #   dataset[[i]] <-
+      #     as_valueType(
+      #       x = dataset[[i]],
+      #       valueType = vT$value[vT$`name` == i])}
+      # data_dict_final <- data_dict_extract(dataset,as_data_dict_mlstr = TRUE)
+      
+      data_dict[['Variables']][['valueType']] <- vT$value
+      
+      if(nrow(data_dict[['Categories']]) == 0)
+        data_dict[['Categories']] <- NULL
+      
+      dataset <- data_dict_apply(dataset, data_dict)
+      
+    }
+    
+    dataset <- 
+      dataset %>%
+      group_by(pick(any_of(preserve_group))) %>% 
       as_dataset(col_id = preserve_attributes)
-}
+    
     return(dataset)
   }
 
@@ -211,7 +238,7 @@ valueType_self_adjust <- function(...){
     
     if(nrow(data_dict[['Variables']]) == 0) return(data_dict)
 
-    if(sum(nrow(data_dict[['Categories']])) == 0){
+    if(!has_categories(data_dict)){
       # warning("Your data dictionary contains no categorical variables.")
       return(data_dict)
 
@@ -230,7 +257,7 @@ valueType_self_adjust <- function(...){
         select(.data$`variable`,.data$`valueType`) %>%
         distinct %>%
         group_by(.data$`variable`) %>%
-        summarise(valueType = paste0(.data$`valueType`,collapse = "|"))
+        reframe(valueType = paste0(.data$`valueType`,collapse = "|"))
 
       category_outcomes <-
         data_dict[['Categories']] %>%
@@ -240,7 +267,7 @@ valueType_self_adjust <- function(...){
         lapply(function(x){
           test_vT <- str_detect(x$valueType[1], "\\|")
           if(test_vT) x <-
-              x %>% mutate(valueType = valueType_guess(unique(x$name)))
+              x %>% mutate(valueType = valueType_guess(unique(x$`name`)))
           return(x)
         }) %>%
         bind_rows() %>%
@@ -299,7 +326,7 @@ valueType_self_adjust <- function(...){
     return(data_dict)
   }
 
-  message("The argument is neither a dataset or a data dictionary.")
+  message("The argument is neither a dataset nor a data dictionary.")
   message("\nTesting dataset :")
   try(as_dataset(...))
   
@@ -312,12 +339,15 @@ valueType_self_adjust <- function(...){
 #' Attribute the valueType from a data dictionary to a dataset, or vice versa
 #'
 #' @description
-#' Takes the valueType of the input (from) and attributes it to the output (to).
-#' The parameters 'from' and 'to' can be either a dataset or a data dictionary.
-#' Depending on the input provided, the valueType replaced is either in the
-#' 'valueType' column of a data dictionary or cast to a column in a dataset.
-#' If 'to' is not provided, the function calls [valueType_self_adjust()] 
-#' instead. The possible values returned are 'date', 'boolean', 'integer', 
+#' It is sometimes useful to take variable valueType’s from a dataset and 
+#' attribute them to the associated data dictionary, or vice versa. 
+#' [valueType_adjust()] takes the valueType of the input (from) and 
+#' attributes it to the output (to). The parameters 'from' and 'to' can be 
+#' either a dataset or a data dictionary. Depending on the input provided, 
+#' the valueType replaced is either in the 'valueType' column of a 
+#' data dictionary or cast to a column in a dataset. If 'to' is not provided, 
+#' the function calls [valueType_self_adjust()] instead. The possible values 
+#' of the valueTypes returned are date','datetime', 'boolean', 'integer', 
 #' 'decimal', and text'.
 #'
 #' @details
@@ -353,7 +383,7 @@ valueType_self_adjust <- function(...){
 #' @seealso
 #' [valueType_self_adjust()]
 #'
-#' @param from Object to be adjusted. Can be either a dataset or a data 
+#' @param from Object to take attributes from. Can be either a dataset or a data 
 #' dictionary.
 #' @param to Object to be adjusted. Can be either a dataset or a data 
 #' dictionary. NULL by default.
@@ -365,16 +395,14 @@ valueType_self_adjust <- function(...){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
 #' library(dplyr)
+#'  
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
+#' data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
 #' 
-#' dataset <- madshapR_DEMO$dataset_TOKYO[c(1:4),'prg_ever']
-#' data_dict <-
-#'   madshapR_DEMO$data_dict_TOKYO %>%
-#'   data_dict_filter(filter_var = 'name == "prg_ever"') %>%
-#'   as_data_dict_mlstr()
-#' 
-#' head(valueType_adjust(from = data_dict,to = dataset))
+#' dataset <- valueType_adjust(from = data_dict,to = dataset)
+#' head(dataset)
 #' 
 #' }
 #'
@@ -395,10 +423,18 @@ valueType_adjust <- function(from, to = NULL){
 
     dataset <- from
     data_dict <- to
+    
+    is_data_dict <- 
+      toString(attributes(data_dict)$`madshapR::class`) == 'data_dict'
 
+    tryCatch({data_dict <-
+      as_data_dict_mlstr(data_dict)},
+      warning = function(cond){
+        stop(call. = FALSE,cond)})
+    
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 bold("\n\nUseful tip:"),
@@ -406,109 +442,107 @@ bold("\n\nUseful tip:"),
 )}
 
     if(ncol(dataset) == 0) return(data_dict)
-    
-    vT_data_dict <- 
+  
+    # clean valueType, typeof, class
+    vT_data_dict <-
       tibble(name = rep(names(dataset)),
              valueType = rep(NA_character_,ncol(dataset)))
       
     for(i in names(dataset)){
+      # stop()}
+
+      # category values in the data dictionary : check the data dictionary vT, 
+      # the dataset vT, and the combination of the two of them (categories in 
+      # the data dict but not in the dataset). 
+      data_dict_cat_i <- data_dict$`Categories`[data_dict$`Categories`[['variable']] == i,'name']$`name`
+      dataset_value_i <- unique(dataset[[i]])
+      vT_dataset_i <- valueType_of(dataset_value_i)
+      vec_i <- unique(c(as.character(data_dict_cat_i),as.character(dataset_value_i)))
       
-      cat_i <- data_dict$Categories[data_dict$Categories[['variable']] == i,'name']$`name`
+      vec_i_rect <- silently_run(as_valueType(vec_i,vT_dataset_i))
       
-      if(length(cat_i) == 0){
-        if(all(is.na(dataset[[i]]))){
-          dataset[[i]] <- 
-            as_valueType(dataset[[i]],
-                         
-              ifelse(
-                
-        is.null(data_dict$Variables[["valueType"]])|
-          toString(data_dict$Variables[
-          data_dict$Variables[["name"]] == i,][['valueType']]) %in% c("NA",""),
-        
-        valueType_of(dataset[[i]]),
-        data_dict$Variables[
-          data_dict$Variables[["name"]] == i,][['valueType']])
-        
-                   )}
-        
-        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- 
-          valueType_of(dataset[[i]])
-        
+      # if no problem, vT of the data dict <- vT of the dataset
+      if(class(vec_i_rect)[[1]] != 'try-error') {
+        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- vT_dataset_i
       }else{
         
-        test_vec <- silently_run(unique(c(cat_i,unique(dataset[[i]]))))
-        
-        if(class(test_vec)[[1]] == 'try-error')
-          test_vec <- unique(c(as.character(cat_i),as.character(unique(dataset[[i]])))) 
-        
-        if(all(is.na(dataset[[i]]))){
-          dataset[[i]] <- 
-            as_valueType(dataset[[i]],
-               ifelse(
-                 
-          is.null(data_dict$Variables[["valueType"]])|
-          is.na(data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]),
-          
-          valueType_guess(cat_i),
-          
-          data_dict$Variables[data_dict$Variables[["name"]] == i,][['valueType']]))
-          
+        # else, test if vT combined is integer, if yes, vT data dict <- vT integer
+        vec_i_rect <- silently_run(as_valueType(vec_i,"integer"))
+        if(class(vec_i_rect)[[1]] != 'try-error') {
+          vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- "integer"
         }else{
-          test_vT <- silently_run(as_valueType(test_vec,'integer'))
+          
+          # else, vT data dict <- guess the vT 
+          vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_guess(vec_i)
         }
-
-        if(class(test_vT)[[1]] == 'try-error')
-          test_vT <- as_valueType(test_vec,valueType_guess(test_vec))
         
-        vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']] <- valueType_of(test_vT)
-            
+        # once the vT of the data dict is set, vT dataset <- vT data dict. (go backward.)
+        dataset[[i]] <- as_valueType(dataset[[i]],vT_data_dict[vT_data_dict[["name"]] == i,][['valueType']])
       }
     }
-            
-    vT_list<- madshapR::valueType_list
-    vT_data_dict <-
-      left_join(vT_data_dict,vT_list, by = "valueType") %>%
-      select("name", valueType_data_dict = "valueType",typeof_data_dict = "typeof")
     
-    vT_dataset <-
-      dataset %>%
-      summarise(across(everything(), ~ valueType_of(.))) %>%
-      pivot_longer(cols = everything()) %>%
-      rename(valueType = "value") %>%
-      left_join(vT_list, by = "valueType") %>%
-      select("name", valueType_dataset = "valueType",typeof_dataset = "typeof")
+    # vT_list <- madshapR::valueType_list
+    # vT_data_dict <-
+    #   left_join(vT_data_dict,vT_list, by = "valueType") %>%
+    #   select("name", valueType_data_dict = "valueType")
 
-    vT_final <- 
-      vT_data_dict %>%
-      full_join(vT_dataset,by = join_by('name')) %>%
-      mutate(valueType = ifelse(
-        .data$`valueType_data_dict` == "integer",
-        .data$`valueType_dataset`,
-        .data$`valueType_data_dict`)) %>%
-      mutate(typeof = ifelse(
-        .data$`typeof_data_dict` == "integer",
-        .data$`typeof_dataset`,
-        .data$`typeof_data_dict`)) %>%
-      select('name','valueType','typeof')
+    # vT_dataset <-
+    #   dataset %>%
+    #   reframe(across(everything(), ~ valueType_of(.))) %>%
+    #   pivot_longer(cols = everything()) %>%
+    #   rename(valueType = "value") %>%
+    #   left_join(vT_list, by = "valueType") %>%
+    #   select("name", valueType_dataset = "valueType")
+
+    # before correction
+    # vT_final <-
+    #   vT_data_dict %>%
+    #   full_join(vT_dataset,by = join_by('name')) %>%
+    #   mutate(valueType = ifelse(
+    #     .data$`valueType_data_dict` == "integer",
+    #     .data$`valueType_dataset`,
+    #     .data$`valueType_data_dict`)) %>%
+    #   mutate(typeof = ifelse(
+    #     .data$`typeof_data_dict` == "integer",
+    #     .data$`typeof_dataset`,
+    #     .data$`typeof_data_dict`)) %>%
+    #   select('name','valueType','typeof')
+    #
+    # data_dict[['Variables']]['typeof'] <-
+    #   data_dict[['Variables']]['name'] %>%
+    #   left_join(vT_final %>%
+    #               select("name", "typeof"), by = "name") %>%
+    #   select("typeof")
     
-    
-    data_dict[['Variables']]['typeof'] <-
-      data_dict[['Variables']]['name'] %>%
-      left_join(vT_final %>%
-                  select("name", "typeof"), by = "name") %>%
-      select("typeof")
+    # vT_final <-
+    #   vT_data_dict %>%
+    #   full_join(vT_dataset,by = join_by('name')) %>%
+    #   mutate(valueType = .data$`valueType_data_dict`) %>%
+    #   select('name','valueType')
+
+    # data_dict[['Variables']]['typeof'] <-
+    #   data_dict[['Variables']]['name'] %>%
+    #   left_join(vT_final %>%
+    #               select("name", "typeof"), by = "name") %>%
+    #   select("typeof")
     # }
-
     # if(length(data_dict[['Variables']][['valueType']]) > 0){
+    
+    # vT_final <-
+    #   vT_data_dict %>%
+    #   full_join(vT_dataset,by = join_by('name')) %>%
+    #   mutate(valueType = .data$`valueType_dataset`) %>%
+    #   select('name','valueType')
+    
     data_dict[['Variables']]['valueType'] <-
       data_dict[['Variables']]['name'] %>%
-      left_join(vT_final %>%
+      left_join(vT_data_dict %>%
                   select("name", "valueType"), by = "name") %>%
       select("valueType")
     # }
-
-    data_dict <- as_data_dict_mlstr(data_dict)
+    
+    if(is_data_dict)
+      data_dict <- as_data_dict(data_dict)
 
     return(data_dict)
     # }
@@ -516,57 +550,63 @@ bold("\n\nUseful tip:"),
 
   if(is_data_dict(from) & is_dataset(to)){
 
-  
     # test data_dict
     tryCatch({data_dict <-
-      as_data_dict_mlstr(from, name_standard = FALSE)},
+      as_data_dict_mlstr(from)},
       warning = function(cond){
         stop(call. = FALSE,cond)})
 
-    # test dataset
-    dataset <- as_dataset(to,col_id = attributes(to)$`madshapR::col_id`)
-    preserve_attributes <- attributes(dataset)$`madshapR::col_id`
+    # preserve dataset
+    as_dataset(to, col_id(to))
+    preserve_attributes <- col_id(to)
+    preserve_group <- group_vars(to)
+    dataset <- as_dataset(ungroup(to))
 
     # dataset must match
     if(suppressWarnings(check_dataset_variables(dataset, data_dict)) %>% 
-       dplyr::filter(str_detect(.data$`condition`,"\\[ERR\\]")) %>% nrow > 0){
+       dplyr::filter(str_detect(.data$`condition`,"\\[ERROR\\]")) %>% nrow > 0){
       stop(call. = FALSE,
 "Names across your data dictionary differ from names across the dataset.",
 bold("\n\nUseful tip:"),
 " Use dataset_evaluate(dataset, data_dict) for a full assessment of the dataset"
 )}
 
-    if(ncol(dataset) == 0) return(dataset)
+    if(ncol(dataset) > 0){
     
-    data_dict_data <-
-      data_dict_extract(dataset) %>%
-      as_data_dict_mlstr(name_standard = FALSE)
+    # data_dict_data <-
+    #   data_dict_extract(dataset) %>%
+    #   as_data_dict_mlstr()
 
-    is_factor <-
+    # is_factor <-
+    #   dataset %>%
+    #   reframe(across(everything(), ~ toString(class(.)))) %>%
+    #   pivot_longer(everything()) %>%
+    #   rowwise() %>%                # [GF] NOTE : rowwise
+    #   dplyr::filter(.data$`value` %in% c("factor")) %>% ungroup 
+
+    # data_dict_data[['Variables']] <-
+    #   data_dict_data[['Variables']] %>%
+    #   select(-"valueType") %>%
+    #   left_join(data_dict[['Variables']] %>%
+    #               select("name", "valueType"),by = "name")
+
+      for(i in names(dataset)){
+        dataset[[i]] <-
+          as_valueType(
+            x = dataset[[i]],
+            valueType = data_dict[['Variables']][[
+              which(data_dict[['Variables']]$`name` == i),
+              'valueType']])}
+      
+      dataset <- data_dict_apply(dataset, data_dict)
+
+    } 
+    
+    dataset <- 
       dataset %>%
-      reframe(across(everything(), ~ class(.))) %>%
-      pivot_longer(everything()) %>%
-      dplyr::filter(.data$`value` == "factor")
-
-    data_dict_data[['Variables']] <-
-      data_dict_data[['Variables']] %>%
-      select(-"valueType") %>%
-      left_join(data_dict[['Variables']] %>%
-                  select("name", "valueType"),by = "name")
-
-    for(i in names(dataset)){
-      dataset[[i]] <-
-        as_valueType(
-          x = dataset[[i]],
-          valueType = data_dict[['Variables']][[
-            which(data_dict[['Variables']]$`name` == i),
-            'valueType']])}
-
-    dataset <-
-      data_dict_apply(dataset, data_dict_data) %>%
-      mutate(across(c(is_factor$`name`), ~ as.factor(.))) %>%
+      group_by(pick(any_of(preserve_group))) %>% 
       as_dataset(col_id = preserve_attributes)
-
+    
     return(dataset)
   }
 
@@ -648,11 +688,13 @@ bold("\n\nUseful tip:"),
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
-#'
-#' dataset <- madshapR_DEMO$dataset_TOKYO
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
+#' valueType_of(dataset$dob)
 #' valueType_guess(dataset$dob)
 #' 
+#' # any data frame can be a dataset by definition
+#' valueType_guess(mtcars$cyl)
 #' valueType_guess(mtcars$cyl)
 #' 
 #'}
@@ -663,7 +705,7 @@ bold("\n\nUseful tip:"),
 #' @export
 valueType_guess <- function(x){
 
-  # check if the col is empty
+  # check if x is a column
   if(is.list(x) & sum(nrow(x)) <= 1)
     return(valueType_guess(x = x[[1]]))
   
@@ -682,13 +724,11 @@ valueType_guess <- function(x){
 
   test_vT_integer  <- 
     silently_run(as_valueType(as.character(x),"integer"))
+  
+  test_vT_bool  <- all(str_detect(toupper(x),"T|F"))
 
   if(class(test_vT_integer)[[max(length(class(test_vT_integer)))]][1] == 'integer'){
-    
-    if(is.logical(x)){
-      return('boolean')}
-      
-      return('integer')
+    if(test_vT_bool) return('boolean') else return('integer')
   }
     
   test_vT_decimal  <- 
@@ -759,7 +799,7 @@ valueType_guess <- function(x){
   # 
   #     ) %>%
   #   dplyr::filter(.data$`class` != "try-error") %>%
-  #   summarise(
+  #   reframe(
   #     valueType = paste0(.data$`valueType`,collapse = "|"),
   #     class = paste0(.data$`class`,collapse = "|")) %>%
   #   mutate(
@@ -774,7 +814,7 @@ valueType_guess <- function(x){
   #         .data$`valueType` == "date|datetime"                ~ "date"         ,
   #         .data$`valueType` == "boolean|integer|decimal|date" ~ valueType_of(x),
   #         TRUE                                              ~  .data$`valueType`
-  #       )) %>% pull(.data$`valueType`)
+  #       )) %>% pull("valueType")
   # 
   # if(test_vT == "") test_vT <- 'text'
   # 
@@ -813,41 +853,46 @@ valueType_guess <- function(x){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
-#'
-#' dataset <- madshapR_DEMO$dataset_TOKYO
+#' # use madshapR_examples provided by the package
+#' dataset <- madshapR_examples$`dataset_example`
 #' as_valueType(head(dataset$dob),'date')
 #' 
-#' # as_valueType is compatible with tidyverse philosophy
+#' # as_valueType is compatible with tidyverse syntax
 #' library(dplyr)
-#' mtcars %>% mutate(cyl = as_valueType(cyl,'integer')) %>% head()
+#' dataset <- 
+#'   tibble(mtcars) %>%
+#'   mutate(cyl = as_valueType(cyl,'integer'))
+#' 
+#' head(dataset)
 #' 
 #'}
 #'
-#' @import dplyr tidyr fabR
+#' @import dplyr tidyr fabR haven stringr
 #' @importFrom crayon bold
 #' @importFrom rlang .data
 #'
 #' @export
 as_valueType <- function(x, valueType = 'text'){
 
-  # check if the col is empty
-  if(is.list(x) & sum(nrow(x)) <= 1) return(as_valueType(x = x[[1]], valueType))
+  # check if x is a column
+  if(is.list(x) & sum(nrow(x)) <= 1) 
+    return(as_valueType(x = x[[1]], valueType))
 
   # check if the col is a vector
   if(is.list(x))
     stop(call. = FALSE,"'list' object cannot be coerced to valueType")
 
-  class_x <- class(x)[[max(length(class(x)))]]
+  class_x <- class(zap_labels(x))
+  # class_x <- class(x)[[max(length(class(x)))]]
   x_init <- x
   
   # if x is already the output format, no need to go further
-  if(class_x == "Date"    & valueType == "date")     return(x)
-  if(class_x == "POSIXt"  & valueType == "datetime") return(x)
-  if(is.integer(x)        & valueType == "integer")  return(x)
-  if(class_x == "numeric" & valueType == "decimal")  return(x)
-  if(is.logical(x)        & valueType == "boolean")  return(x)
-  if(is.na(valueType)     | valueType == "text")     return(as.character.default(x))
+  if(str_detect(toString(class_x), c("^Date$"))    & valueType == "date")     return(x)
+  if(str_detect(toString(class_x), c("POSIX"))     & valueType == "datetime") return(x)
+  if(is.integer(x)                                 & valueType == "integer")  return(x)
+  if(str_detect(toString(class_x), c("^numeric$")) & valueType == "decimal")  return(x)
+  if(is.logical(x)                                 & valueType == "boolean")  return(x)
+  if(is.na(valueType)                              | valueType == "text")     return(as.character.default(x))
 
   vT_list <- madshapR::valueType_list
   # check if valueType exists
@@ -860,44 +905,52 @@ data dictionary")}
 
   dataType <- vT_list[[which(vT_list['valueType'] == valueType),'call']]
 
-  if(dataType     == "as_any_date")     x <- 
-    as.character.default(x)
-  if(dataType     == "as_any_boolean")  x <- 
-    return(as_any_boolean(as.character.default(x)))
+  # if integer
   if(dataType     == "as_any_integer")  x <- 
     return(as_any_integer(as.character.default(x)))
-  if(class(x)[1]  == "factor")          x <- 
-    as.character.default(x)
   
+  # if boolean
+  if(dataType     == "as_any_boolean")  x <- 
+    return(as_any_boolean(as.character.default(x)))
+
+  # if date
   if(dataType     == "as_any_date"){
-    
-    if(class_x == "POSIXt"){
-      x <- 
-        as_valueType(x,'integer') %>%
-        as.POSIXct.numeric(tz = 'UTC') %>%
-        as.character()
+
+    # x <- as.character(x)
+    # if(length(x) == 0) return(as.Date(x))
+    if(str_detect(toString(class_x), c("POSIX"))){
+      if(sum(hour(x),minute(x),second(x)) == 0) return(as_any_date(x))
     }
     
     date_format <-
       guess_date_format(
-        tibble(as.character.default(
+        tibble(x = as.character.default(
           sample(x[!is.na(x)], size = min(length(x[!is.na(x)]),20)))))
 
     if(date_format$`% values formated` == 100){
-      x_temp <- as_any_date(as.character.default(x), date_format$`Date format`)
-      }else{x_temp <- NA}
+      
+      return(as_any_date(as.character.default(x), date_format$`Date format`))
+      
+    }else{x <- NA}}
+  
+  # if none of the above
+  
+  # if datetime  
+  if(dataType == "as.POSIXct") 
+    x <- as.POSIXct(as.character(x))
+  # if factor
+  if(class(x)[1]  == "factor") 
+    x <- as.character.default(x)
+  
+  x_to_test <- do.call(dataType, list(x)) %>% unlist
 
-  }else{
-    x_temp <- do.call(dataType, list(x)) %>% unlist
-    }
+  condition <- tibble(to_test = x_to_test, original = x_init)
 
-  condition <- tibble(to_test = x_temp, original = x)
-
-  if(length(x_temp) == 0){
-    return(x_temp)}
+  if(length(x_to_test) == 0){
+    return(x_to_test)}
 
   if(valueType %in% c("text","locale","point","linestring","polygon","binary")){
-    return(x_temp)}
+    return(x_to_test)}
 
   if(!all(is.na(condition$`to_test`) == is.na(condition$`original`))){
     test_condition <- FALSE
@@ -906,38 +959,32 @@ data dictionary")}
     test_condition <-
       distinct(condition[which(!is.na(condition['original'])),])
 
-    if(valueType %in% c("integer","decimal")){
+    if(valueType %in% c("decimal")){
       test_condition <- 
         test_condition %>%
         mutate(across(everything(), ~ as.numeric(as.character.default(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
+        pull("test") %>% all}
 
-    if(valueType %in% c("boolean")){
-      test_condition <- 
-        test_condition %>%
-        mutate(
-          across(everything(), ~ as_any_boolean(as.character.default(.)))) %>%
-        mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
-
-    if(valueType %in% c("date")){
-      test_condition <-
-        test_condition %>%
-        mutate(across(
-          "original",
-          ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
-        mutate(
-          test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
-        pull(.data$`test`) %>% all}
+    # [GF] NOTE : The test seems obsolete
+    # if(valueType %in% c("date")){
+    #   test_condition <-
+    #     test_condition %>%
+    #     mutate(across(
+    #       "original",
+    #       ~ as_any_date(as.character.default(.),date_format$`Date format`))) %>%
+    #     mutate(
+    #       test = toString(.data$`to_test`) == toString(.data$`original`)) %>%
+    #     pull("test") %>% all}
     
     if(valueType %in% c("datetime")){
-      test_condition <- 
+      test_condition <-
         test_condition %>%
         mutate(
-          across(everything(), ~ as.POSIXct.default(.))) %>%
+          across(everything(), ~ as.POSIXct(as.character(.)))) %>%
         mutate(test = .data$`to_test` == .data$`original`) %>%
-        pull(.data$`test`) %>% all}
+        pull("test") %>% all}
+    
     }
 
   # test if dataset and data_dict content match
@@ -952,7 +999,7 @@ bold("\n\nUseful tip:"),
 For further investigation, you can use dataset_evaluate(dataset, data_dict).")
   }
 
-  return(x_temp)
+  return(x_to_test)
 }
 
 #' @title
@@ -984,10 +1031,9 @@ For further investigation, you can use dataset_evaluate(dataset, data_dict).")
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
-#'
-#' ###### Example
-#' as_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+#' # use madshapR_examples provided by the package
+#' taxonomy <- as_taxonomy(madshapR_examples$`taxonomy_example`)
+#' head(taxonomy)
 #' 
 #'}
 #'
@@ -1001,7 +1047,7 @@ as_taxonomy <- function(object){
   if(sum(names(object) %in% c("taxonomy","vocabulary" ,"term")) != 3){
     stop(call. = FALSE,
 "\n
-This object is not a taxonomy as defined by Maelstrom standards, which must 
+This object is not a taxonomy as defined by the package, which must 
 be a data frame containing at least 'taxonomy', 'vocabulary' and 'term' columns. 
 Please refer to documentation.",
 
@@ -1058,7 +1104,7 @@ Please refer to documentation.",
 #' {
 #'
 #' is_valueType('integer')
-#' is_valueType('integre')
+#' is_valueType('intereg')
 #'
 #'}
 #'
@@ -1103,9 +1149,9 @@ is_valueType <- function(object){
 #' @examples
 #' {
 #' 
-#' # use madshapR_DEMO provided by the package
-#'
-#' is_taxonomy(madshapR_DEMO$taxonomy_PARIS)
+#' # use madshapR_examples provided by the package
+#' is_taxonomy(madshapR_examples$`taxonomy_example`)
+#' is_taxonomy(madshapR_examples$`dataset_example`)
 #'
 #'}
 #'
@@ -1121,4 +1167,170 @@ is_taxonomy <- function(object){
   if(class(test)[1] == 'try-error')    return(FALSE)
   return(TRUE)
 
+}
+
+#' @title
+#' Convert typeof (and class if any) into its corresponding valueType
+#'
+#' @description
+#' The function converts a given typeof string into its corresponding valueType 
+#' representation. This function is particularly useful for mapping different 
+#' data types to their equivalent value types in contexts such as data modeling 
+#' and data dictionary creation. An optional class parameter allows for more 
+#' specific conversions when necessary.
+#'
+#' @details
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
+#'
+#' @param typeof A string representing the type to be converted. 
+#' Supported values include "character", "integer", "double", "logical".
+#' 
+#' @param class An optional parameter that specifies a class context. 
+#' If provided, the function may return a more refined value type based on the 
+#' class type; if not, the function will return a general equivalent. 
+#' Supported values include "character", "integer","numeric","logical","Date" 
+#' and "POSIXct". NULL is the default.
+#'
+#' @returns
+#' A character vector, named 'valueType'.
+#'
+#' @examples
+#' {
+#'
+#' typeof_convert_to_valueType(typeof = "character")
+#' typeof_convert_to_valueType(typeof = "double")
+#' typeof_convert_to_valueType(typeof = "double", class = "Date")
+#'
+#'}
+#'
+#' @import dplyr stringr
+#' @importFrom rlang .data
+#'
+#' @export
+typeof_convert_to_valueType <- function(typeof, class = NA_character_){
+  
+  # check if params are a column
+  if((is.list(typeof) & sum(nrow(typeof)) <= 1) & 
+     (is.list(class) & sum(nrow(class)) <= 1))
+    return(typeof_convert_to_valueType(typeof = typeof[[1]], class[[1]]))
+  
+  # check if the col is a vector
+  if(is.list(typeof) | is.list(class))
+    stop(call. = FALSE,"'list' object cannot be coerced to valueType")
+  
+  if(!is.character(typeof))
+    stop(call. = FALSE,'`typeof` must be a character string.')
+  
+  if(!is.character(class))
+      stop(call. = FALSE,'`class` must be a character string.')
+  
+  vT_list <- 
+    madshapR::valueType_list %>%
+    rowwise %>%
+    mutate(class = paste0(.data$`class`, collapse = " _; ")) %>%
+    mutate(class = na_if(.data$`class`,"NA")) 
+  
+  typeof_test <- 
+    vT_list %>%
+    dplyr::filter(.data$typeof == !! toString(typeof)) %>%
+    select("typeof","class","toValueType") %>% distinct
+  
+  if(!is.na(class)){
+    typeof_test <-
+      typeof_test %>%
+      dplyr::filter(.data$class == !! toString(class)) %>%
+      select("typeof","class","toValueType") %>% distinct
+    }
+  
+  if(nrow(typeof_test) == 1) return(c(valueType = typeof_test$toValueType))
+  if(nrow(typeof_test) == 0) stop(call. = FALSE,
+"
+The provided typeof/class combination has no valueType equivalent. Please see
+documentation or print(madshapR::valueType_list)")
+
+  if(typeof == "double") return(c(valueType = "decimal"))
+  
+}
+
+#' @title
+#' Convert valueType into its corresponding typeof and class in R representation
+#'
+#' @description
+#' The function converts a given valueType string into its corresponding typeof 
+#' representation. This function is particularly useful for mapping different 
+#' data types to their equivalent value types in contexts such as data modeling 
+#' and data dictionary creation. The class is provided and allows for more 
+#' specific conversions when necessary.
+#'
+#' @details
+#' The valueType is a declared property of a variable that is required in 
+#' certain functions to determine handling of the variables. Specifically, 
+#' valueType refers to the 
+#' [OBiBa data type of a variable](https://opaldoc.obiba.org/en/dev/variables-data.html#value-types). 
+#' The valueType is specified in a data dictionary in a column 'valueType' and 
+#' can be associated with variables as attributes. Acceptable valueTypes 
+#' include 'text', 'integer', 'decimal', 'boolean', datetime', 'date'. The full 
+#' list of OBiBa valueType possibilities and their correspondence with R data 
+#' types are available using [valueType_list]. The valueType can be used to 
+#' coerce the variable to the corresponding data type.
+#'
+#' @param valueType  A character string of the valueType to convert.
+#'
+#' @returns
+#' A character vector, named 'typeof' and 'class'.
+#'
+#' @examples
+#' {
+#'
+#' valueType_convert_to_typeof(valueType = NA)
+#' valueType_convert_to_typeof(valueType = "text")
+#' valueType_convert_to_typeof(valueType = "date")
+#' valueType_convert_to_typeof(valueType = "decimal")
+#'
+#'}
+#'
+#' @import dplyr
+#' @importFrom rlang .data
+#'
+#' @export
+valueType_convert_to_typeof <- function(valueType){
+  
+  # check if valueType is a column
+  if(is.list(valueType) & sum(nrow(valueType)) <= 1)
+    return(valueType_convert_to_typeof(valueType = valueType[[1]]))
+  
+  # check if the col is a vector
+  if(is.list(valueType))
+    stop(call. = FALSE,"'list' object cannot be coerced to typeof/class")
+  
+  # check if all is na
+  if(all(is.na(valueType))) return(c(typeof = "character",class = NA))
+  
+  # check if character
+  if(!is.character(valueType))
+    stop(call. = FALSE,'`typeof` must be a character string.')
+  
+  vT_list <- madshapR::valueType_list
+  
+  vT_test <- 
+    vT_list %>%
+    rowwise() %>%                # [GF] NOTE : rowwise 
+    dplyr::filter(.data$valueType %in% !! toString(valueType)) %>% ungroup %>%
+    select("typeof","class") %>% distinct
+  
+  if(nrow(vT_test) == 0) stop(call. = FALSE,
+"
+The provided valueType combination has no typeof/class equivalent. Please see
+documentation or print(madshapR::valueType_list)")
+  
+  return(c(typeof = vT_test$typeof,class = vT_test$class))
 }

@@ -52,11 +52,11 @@ madshapR_website <- function(){
 #' A data frame with 12 rows and 7 columns:
 #' \describe{
 #'   \item{valueType}{data type as described in Opal}
-#'   \item{typeof}{data type provided by base::typeof}
-#'   \item{class}{data class provided by base::class}
+#'   \item{typeof}{data type provided by base::typeof(x)}
+#'   \item{class}{data class provided by attributes(x)}
+#'   \item{class}{data class provided by base::class(x) explicit class}
 #'   \item{call}{function to transpose object according base::do.call function}
 #'   \item{toValueType}{ensemble data type as described in Opal}
-#'   \item{toTypeof}{ensemble data type provided by base::typeof}
 #'   \item{genericType}{ensemble data type which valueType belongs}
 #'   ...
 #' }
@@ -64,46 +64,72 @@ madshapR_website <- function(){
 #' @examples
 #' {
 #'
-#' print(valueType_list)
+#' head(valueType_list)
 #'
 #' }
 "valueType_list"
 
 #' @title
-#' Built-in material allowing the user to test the package with demo data
+#' Built-in material allowing the user to test the package with example data
 #'
 #' @description
-#' Demo datasets and data dictionaries, and taxonomy, to provide illustrative 
+#' Example datasets and data dictionaries, and taxonomy, to provide illustrative 
 #' examples of objects used by madshapR.
 #'
 #' @format ## `list`
-#' A list with 12 elements (data frames and lists) providing example objects 
+#' A list with 9 elements (data frames and lists) providing example objects 
 #' for testing the package:
 #'
 #' \describe{
-#'   \item{data_dict_MELBOURNE}{Example Data dictionary for Melbourne dataset}
-#'   \item{data_dict_PARIS}{Example Data dictionary for Paris dataset}
-#'   \item{data_dict_PARIS - collapsed}{Example Data dictionary for Paris 
-#'   with collapsed categories}
-#'   \item{data_dict_TOKYO}{Example Data dictionary for Tokyo dataset}
-#'   \item{data_dict_TOKYO - errors}{Data dictionary for Tokyo dataset 
+#'   \item{dataset_example}{Dataset for example dataset}
+#'   \item{data_dictionary_example - as_data_dict}{Data dictionary for example 
+#'   dataset where the structure is a data dictionary}
+#'   \item{data_dictionary_example - as_data_dict_mlstr}{Data dictionary for 
+#'   example dataset where the structure is a data dictionary compliant with 
+#'   Maelstrom}
+#'   \item{dataset_example - errors with data}{Dataset of example 
+#'   with errors with example data dictionary}
+#'   \item{data_dictionary_example - errors with data}{Data Dictionary for example 
+#'   dataset with errors with example dataset}
+#'   \item{data_dictionary_example - errors}{Data dictionary for example dataset 
 #'   with errors}
-#'   \item{data_dict_TOKYO - errors with data}{Example Data Dictionary for Tokyo 
-#'   dataset with errors with Tokyo dataset}
-#'   \item{dataset_MELBOURNE}{Example Dataset for MELBOURNE dataset}
-#'   \item{dataset_PARIS}{Example Dataset for PARIS dataset}
-#'   \item{dataset_TOKYO}{Example Dataset for TOKYO dataset}
-#'   \item{dataset_TOKYO - errors with data}{Example dataset of Tokyo 
-#'   with errors with Tokyo data dictionary}
-#'   \item{taxonomy_PARIS}{Example Taxonomy for Paris dataset}
-#'   \item{dataset_summary}{Example of dataset summary}
+#'   \item{data_dictionary_example - collapsed}{Data dictionary for example 
+#'   with collapsed categories}
+#'   \item{taxonomy_example}{Taxonomy for example dataset}
+#'   \item{summary - dataset_example}{Dataset example summary}
+#'   ...
+#' }
+#'
+#' @examples
+#' {
+#'  
+#' library(dplyr)
+#'  
+#' head(madshapR_examples$`dataset_example`)
+#' glimpse(madshapR_examples$`data_dictionary_example`)
+#'
+#' }
+"madshapR_examples"
+
+
+#' @title
+#' Built-in data frame of colors used in the graphs and charts.
+#'
+#' @description
+#' Provides a built-in data frame of the colors used in the graphs and charts.
+#'
+#' @format ## `data.frame`
+#' A data frame with 51 rows and 2 columns:
+#' \describe{
+#'   \item{values}{possible class value in a dataset.}
+#'   \item{color_palette}{associated color}
 #'   ...
 #' }
 #'
 #' @examples
 #' {
 #'
-#'  print(madshapR_DEMO$dataset_TOKYO)
+#' head(color_palette_maelstrom)
 #'
 #' }
-"madshapR_DEMO"
+"color_palette_maelstrom"

@@ -4,14 +4,10 @@
 \alias{as_data_dict_mlstr}
 \title{Validate and coerce any object as an Opal data dictionary format}
 \usage{
-as_data_dict_mlstr(object, as_data_dict = FALSE, name_standard = FALSE)
+as_data_dict_mlstr(object, name_standard = FALSE)
 }
 \arguments{
 \item{object}{A potential valid data dictionary to be coerced.}
-
-\item{as_data_dict}{Whether the input data dictionary should not be coerced
-with specific format restrictions for compatibility with other
-Maelstrom Research software. FALSE by default.}
 
 \item{name_standard}{Whether the input data dictionary has variable names
 compatible with Maelstrom Research ecosystem, including Opal)or not.
@@ -44,10 +40,23 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+library(dplyr)
 
-data_dict <- madshapR_DEMO$data_dict_MELBOURNE
-as_data_dict_mlstr(madshapR_DEMO$data_dict_MELBOURNE)
+###### Example 1 : use the function to apply the attribute "data_dict" to the 
+# object. 
+data_dict <- 
+  as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+
+glimpse(data_dict)
+
+###### Example 2 : use the function to shape the data dictionary formatted as
+# data_dict_mlstr to data_dict object. The function mainly converts valueType 
+# column into corresponding typeof/class columns in 'Variables', and converts
+# missing column into "na_values" column. 
+data_dict <- 
+  as_data_dict_mlstr(madshapR_examples$`data_dictionary_example - as_data_dict`)
+  
+glimpse(data_dict)
 
 }
 

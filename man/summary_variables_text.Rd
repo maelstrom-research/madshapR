@@ -4,12 +4,7 @@
 \alias{summary_variables_text}
 \title{Provide descriptive statistics for variables of type 'text' in a dataset}
 \usage{
-summary_variables_text(
-  dataset_preprocess = .dataset_preprocess,
-  dataset = NULL,
-  data_dict = NULL,
-  .dataset_preprocess = NULL
-)
+summary_variables_text(dataset_preprocess, dataset = NULL, data_dict = NULL)
 }
 \arguments{
 \item{dataset_preprocess}{A data frame which provides summary of the variables
@@ -19,8 +14,6 @@ summary_variables_text(
 
 \item{data_dict}{A list of data frame(s) representing metadata of the input
 dataset. Automatically generated if not provided.}
-
-\item{.dataset_preprocess}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A data frame providing statistical description of 'text' variables present
@@ -54,11 +47,12 @@ handled automatically by the function.
 \examples{
 {
    
-###### Example : Any data frame can be a dataset by definition.
-library(dplyr)
-
-dataset_preprocess <- dataset_preprocess(dataset = starwars['homeworld'])
-glimpse(summary_variables_text(dataset_preprocess = dataset_preprocess))
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
+dataset_preprocess <- dataset_preprocess(dataset)
+summary_prep <- summary_variables_text(
+  dataset_preprocess = dataset_preprocess[[1]])
+head(summary_prep)
 
 }
 

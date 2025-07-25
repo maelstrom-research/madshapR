@@ -8,13 +8,11 @@ dataset_visualize(
   dataset = tibble(id = as.character()),
   bookdown_path,
   data_dict = data_dict_extract(dataset),
-  group_by = NULL,
+  group_by = attributes(dataset_summary)[["madshapR_group::group_by"]],
   valueType_guess = FALSE,
   taxonomy = NULL,
-  dataset_name = .dataset_name,
-  dataset_summary = .summary_var,
-  .summary_var = NULL,
-  .dataset_name = NULL
+  dataset_summary = NULL,
+  dataset_name = NULL
 )
 }
 \arguments{
@@ -36,16 +34,12 @@ valueType that could be applied to the dataset. FALSE by default.}
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
-\item{dataset_name}{A character string specifying the name of the dataset
-(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
-
 \item{dataset_summary}{A list which identifies an existing
 summary produced by \code{\link[=dataset_summarize]{dataset_summarize()}} of the dataset.
 Using this parameter can save time in generating the visual report.}
 
-\item{.summary_var}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
-
-\item{.dataset_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+\item{dataset_name}{A character string specifying the name of the dataset
+(used internally in the function \code{\link[=dossier_evaluate]{dossier_evaluate()}}).}
 }
 \value{
 A folder containing files for the bookdown site. To open the bookdown site
@@ -96,23 +90,29 @@ taxonomies are
 \href{https://opaldoc.obiba.org/en/latest/web-user-guide/administration/taxonomies.html}{available online}.
 }
 \examples{
-{
-
-# You can use our demonstration files to run examples
+\donttest{
 
 library(fs)
 library(dplyr)
-
-dataset <- madshapR_DEMO$dataset_TOKYO['height'] \%>\% slice(0)
-dataset_summary <- madshapR_DEMO$`dataset_summary`
-
+ 
+# use madshapR_examples provided by the package 
+dataset <-
+  madshapR_examples$`dataset_example` \%>\%
+  group_by(gndr) \%>\%
+  as_dataset(col_id = "part_id")
+  
+data_dict <- as_data_dict_mlstr(madshapR_examples$`data_dictionary_example`)
+dataset <- data_dict_apply(dataset,data_dict)
+dataset_summary <- dataset_summarize(dataset,data_dict)
+ 
 if(dir_exists(tempdir())) dir_delete(tempdir())
 bookdown_path <- tempdir()
-
+ 
 dataset_visualize(
-  dataset,
-  dataset_summary = dataset_summary,
-  bookdown_path = bookdown_path)
+ dataset,
+ data_dict,
+ dataset_summary = dataset_summary,
+ bookdown_path = bookdown_path)
   
 # To open the file in browser, open 'bookdown_path/docs/index.html'. 
 # Or use bookdown_open(bookdown_path) function.

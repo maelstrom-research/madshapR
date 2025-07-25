@@ -4,7 +4,7 @@
 \alias{data_dict_evaluate}
 \title{Generate an assessment report for a data dictionary}
 \usage{
-data_dict_evaluate(data_dict, taxonomy = NULL, as_data_dict_mlstr = TRUE)
+data_dict_evaluate(data_dict, taxonomy = NULL, is_data_dict_mlstr = TRUE)
 }
 \arguments{
 \item{data_dict}{A list of data frame(s) representing metadata to be evaluated.}
@@ -12,7 +12,7 @@ data_dict_evaluate(data_dict, taxonomy = NULL, as_data_dict_mlstr = TRUE)
 \item{taxonomy}{An optional data frame identifying a variable classification
 schema.}
 
-\item{as_data_dict_mlstr}{Whether the input data dictionary should be coerced
+\item{is_data_dict_mlstr}{Whether the input data dictionary should be coerced
 with specific format restrictions for compatibility with other
 Maelstrom Research software. TRUE by default.}
 }
@@ -51,11 +51,13 @@ in particular \href{https://www.obiba.org/pages/products/opal/}{Opal environment
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
 library(dplyr)
 
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
-glimpse(data_dict_evaluate(data_dict))
+# use madshapR_examples provided by the package
+data_dict <- madshapR_examples$`data_dictionary_example - errors`
+eval_data_dict <- data_dict_evaluate(data_dict,is_data_dict_mlstr = TRUE)
+
+glimpse(eval_data_dict)
 
 }
 

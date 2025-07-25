@@ -1,52 +1,255 @@
+
+# madshapR 2.0.0 (release : 2025-06-15)
+
+> Attention: Some changes to functions in the current version of
+> madshapR may require updates of existing code.
+
+## Superseded object.
+
+| previous version (1.1.0 and older) | version 2.0.0     |
+|------------------------------------|-------------------|
+| madshapR_DEMO                      | madshapR_examples |
+
+## Superseded parameters.
+
+| previous version (1.1.0 and older) | current version (2.0.0) |
+|----|----|
+| dataset_evaluate(**as**\_data_dict_mlstr) | dataset_evaluate(**is**\_data_dict_mlstr) |
+| data_dict_evaluate(**as**\_data_dict_mlstr) | data_dict_evaluate(**is**\_data_dict_mlstr) |
+| dossier_evaluate(**as**\_data_dict_mlstr) | dossier_evaluate(**is**\_data_dict_mlstr) |
+
+## Superseded function behaviors and/or output structures.
+
+In `dataset_evaluate()`, `data_dict_evaluate()` and
+`dossier_evaluate()`, the columns generated in the outputs have been
+renamed as follows :
+
+| previous version (1.1.0 and older) | current version (2.0.0)       |
+|------------------------------------|-------------------------------|
+| index                              | Index                         |
+| name                               | Variable name                 |
+| label                              | Variable label                |
+| valueType                          | Data dictionary valueType     |
+| Categories::label                  | Categories in data dictionary |
+| Categories::missing                | Non-valid categories          |
+
+In `dataset_summarize()` and `dossier_summarize()`, the columns
+generated in the outputs have been renamed as follows :
+
+| previous version (1.1.0 and older) | current version (2.0.0)    |
+|------------------------------------|----------------------------|
+| index in data dict.name            | Index                      |
+| name                               | Variable name              |
+| label                              | Variable label             |
+| Estimated dataset valueType        | Suggested valueType        |
+| Actual dataset valueType           | Dataset valueType          |
+| Total number of observations       | Number of rows             |
+| Nb. distinct values                | Number of distinct values  |
+| Nb. valid values                   | Number of valid values     |
+| Nb. non-valid values               | Number of non-valid values |
+| Nb. NA                             | Number of empty values     |
+| % total Valid values               | % Valid values             |
+| % Non-valid values                 | % Non-valid values         |
+| % NA                               | % Empty values             |
+| ————————————                       | ———————————                |
+
+## Bug fixes and improvements
+
+- The package now handles the valueType **datetime**, which formerly was
+  considered either as a **text** or **date**.
+
+<https://github.com/maelstrom-research/madshapR/issues/123>
+
+<https://github.com/maelstrom-research/madshapR/issues/112>
+
+<https://github.com/maelstrom-research/madshapR/issues/75>
+
+- The valueType object (present in columns in a data dictionary or as an
+  attribute of a variable) had some errors and bugs that have been
+  corrected.
+
+<https://github.com/maelstrom-research/madshapR/issues/87>
+
+<https://github.com/maelstrom-research/madshapR/issues/82>
+
+<https://github.com/maelstrom-research/madshapR/issues/81>
+
+<https://github.com/maelstrom-research/madshapR/issues/76>
+
+- When a column in a dataset is all NA (empty), the previous version had
+  some issues that have been has been corrected.
+
+<https://github.com/maelstrom-research/madshapR/issues/116>
+
+<https://github.com/maelstrom-research/madshapR/issues/115>
+
+<https://github.com/maelstrom-research/madshapR/issues/109>
+
+- A bug in `data_dict_pivot_longer()` when ‘Source’ or ‘Target’ column
+  was not present has been corrected.
+
+<https://github.com/maelstrom-research/madshapR/issues/86>
+
+- The SPSS format, which `haven` package uses to produce labelled
+  variables, define integers different form madshapR, which ultimately .
+  That has been taken in account and corrected.
+
+- The SPSS format in the `haven` package used to produce labelled
+  variables defines integers differently from madshapR, which was
+  causing errors. The difference has been taken into account.
+
+<https://github.com/maelstrom-research/madshapR/issues/83>
+
+## The group_by parameter has been redesigned.
+
+- `dataset_preprocess()` now handles grouped dataset, using parameter
+  “group_by”.
+
+- Users can now define groups in summaries and visual reports using a
+  variable that is not categorical or has empty values.
+
+<https://github.com/maelstrom-research/madshapR/issues/47>
+
+- Previously, the “group_by” argument had some flaws, resulting in bugs
+  that have been corrected.
+
+<https://github.com/maelstrom-research/madshapR/issues/114>
+
+<https://github.com/maelstrom-research/madshapR/issues/113>
+
+<https://github.com/maelstrom-research/madshapR/issues/110>
+
+<https://github.com/maelstrom-research/madshapR/issues/105>
+
+## Enhancements in the assessment and summary reports!
+
+- The assessment and summary reports had some updates, such as renamed
+  columns and bug corrections.
+
+<https://github.com/maelstrom-research/madshapR/issues/126>
+
+<https://github.com/maelstrom-research/madshapR/issues/104>
+
+<https://github.com/maelstrom-research/madshapR/issues/98>
+
+<https://github.com/maelstrom-research/madshapR/issues/97>
+
+<https://github.com/maelstrom-research/madshapR/issues/96>
+
+<https://github.com/maelstrom-research/madshapR/issues/95>
+
+<https://github.com/maelstrom-research/madshapR/issues/94>
+
+<https://github.com/maelstrom-research/madshapR/issues/93>
+
+<https://github.com/maelstrom-research/madshapR/issues/92>
+
+<https://github.com/maelstrom-research/madshapR/issues/91>
+
+<https://github.com/maelstrom-research/madshapR/issues/90>
+
+<https://github.com/maelstrom-research/madshapR/issues/89>
+
+<https://github.com/maelstrom-research/madshapR/issues/88>
+
+<https://github.com/maelstrom-research/madshapR/issues/85>
+
+<https://github.com/maelstrom-research/madshapR/issues/80>
+
+<https://github.com/maelstrom-research/madshapR/issues/79>
+
+## Enhancements in the visual reports!
+
+- The visual reports have been improved, including better visual outputs
+  and color palettes, and new features such as total number of rows next
+  to the bar charts.
+
+<https://github.com/maelstrom-research/madshapR/issues/108>
+
+<https://github.com/maelstrom-research/madshapR/issues/107>
+
+<https://github.com/maelstrom-research/madshapR/issues/106>
+
+<https://github.com/maelstrom-research/madshapR/issues/100>
+
+<https://github.com/maelstrom-research/madshapR/issues/84>
+
+<https://github.com/maelstrom-research/madshapR/issues/64>
+
+## New functions
+
+- `typeof_convert_to_valueType()` converts typeof (and class if any)
+  into its corresponding valueType.
+
+- `valueType_convert_to_typeof()` converts valueType into its
+  corresponding typeof and class in R representation.
+
+- `data_dict_update()` updates a data dictionary from a dataset.
+
+- `data_dict_trim_labels()` adds shortened labels to data dictionary.
+
+- `first_label_get()` gets the first label from a data dictionary.
+
+- `has_categories()` tests if a dataset has categorical variables.
+
 # madshapR 1.1.0
-
-
-# madshapR 1.1.0 (release : 2024-04-22)
 
 ## Bug fixes and improvements
 
 - for assessment, summary and visualization, the character columns in
   dataset are put to lower to avoid duplicated informations in outputs.
-  <https://github.com/maelstrom-research/madshapR/issues/63>
+
+<https://github.com/maelstrom-research/madshapR/issues/63>
 
 - bug in the function `variable_visualize()` when the column was empty
   after removing internally stopwords.
-  <https://github.com/maelstrom-research/Rmonize/issues/53>
-  <https://github.com/maelstrom-research/Rmonize/issues/49>
+
+<https://github.com/maelstrom-research/Rmonize/issues/53>
+
+<https://github.com/maelstrom-research/Rmonize/issues/49>
 
 - Some elements were missing in the reports in `dataset_evaluate()`
-  <https://github.com/maelstrom-research/madshapR/issues/66>
+
+<https://github.com/maelstrom-research/madshapR/issues/66>
 
 - Problem with names containing underscores in variables when visualized
-  fixed. <https://github.com/maelstrom-research/madshapR/issues/62>
+  fixed.
+
+<https://github.com/maelstrom-research/madshapR/issues/62>
 
 - Functions involving valueType (such as
   `data_dict_apply()`,`valueType_guess()` and `valueType_adujst()`) have
   been corrected to be more consistent in the usage of these functions.
-  <https://github.com/maelstrom-research/madshapR/issues/61>
+
+<https://github.com/maelstrom-research/madshapR/issues/61>
 
 - The bug affecting tibbles which contain a variable named “test” has
   been corrected in the package fabR.
-  <https://github.com/maelstrom-research/madshapR/issues/60>
+
+<https://github.com/maelstrom-research/madshapR/issues/60>
 
 - functions such as `data_dict_summarize()` and `dataset_evaluate()`
   have cells in tibble generated that can have more than accepted
   characters in a cell in Excel. the function truncates the cells in
   tibbles to a maximum of 10000 characters.
-  <https://github.com/maelstrom-research/madshapR/issues/59>
+
+<https://github.com/maelstrom-research/madshapR/issues/59>
 
 - Problem with dataType in the function `dataset_cat_as_labels()` when
   the values found in the dataset are not in the data dictionary, and
   the valueType is text, and the dataType is “integer” has been fixed.
-  <https://github.com/maelstrom-research/madshapR/issues/58>
+
+<https://github.com/maelstrom-research/madshapR/issues/58>
 
 - Functions involving date formatted variables have been corrected in
   the package fabR.
-  <https://github.com/maelstrom-research/madshapR/issues/57>
+
+<https://github.com/maelstrom-research/madshapR/issues/57>
 
 - The inconsistent error in `dataset_evaluate()` has been corrected in
   the package fabR.
-  <https://github.com/maelstrom-research/madshapR/issues/46>
+
+<https://github.com/maelstrom-research/madshapR/issues/46>
 
 ## deprecated functions
 

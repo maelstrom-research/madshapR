@@ -4,29 +4,52 @@
 \alias{as_category}
 \title{Validate and coerce any object as a categorical variable.}
 \usage{
-as_category(x)
+as_category(
+  x,
+  labels = as.vector(c(na.omit(unique(x)))),
+  na_values = NULL,
+  as_factor = FALSE
+)
 }
 \arguments{
 \item{x}{A vector object to be coerced to categorical.}
+
+\item{labels}{An optional vector of the unique values (as character strings)
+that x might have taken. The default is the unique set of values taken by
+as.character(x), sorted into increasing order of x. Note that this set can be
+specified as smaller than sort(unique(x)).}
+
+\item{na_values}{An optional vector of the unique values (as character strings)
+among labels, for which the value is considered as missing. The default
+is NULL. Note that this set can be specified as smaller than labels.}
+
+\item{as_factor}{Whether the output is a categorical variable (haven labelled
+object) or is a factor (labels and na_values will be lost, but the order of
+the levels will be preserved). FALSE by default.}
 }
 \value{
 A vector with class haven_labelled.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Converts a vector object to a categorical object, typically a column in a
-data frame. The categories come from non-missing values present in the
-object and are added to an associated data dictionary (when present).
+data frame.
 }
 \examples{
 {
 
 library(dplyr)
-mtcars <- tibble(mtcars)
-as_category(mtcars[['cyl']])
 
-head(mtcars \%>\% mutate(cyl = as_category(cyl)))
+##### Example 1: use madshapR_examples provided by the package
+dataset <-
+  madshapR_examples$`dataset_example` \%>\%
+  mutate(prg_ever = as_category(prg_ever))
+  
+head(dataset$prg_ever)
 
+###### Example 2: any data frame can be a dataset
+cat_cyl <- as_category(mtcars[['cyl']])
+
+head(cat_cyl)
 
 }
 

@@ -31,9 +31,8 @@ the \code{variable} and \code{name} columns, with unique combination of
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
+# use madshapR_examples provided by the package
+data_dict <- madshapR_examples$`data_dictionary_example - errors`
 check_data_dict_variables(data_dict)
 
 }

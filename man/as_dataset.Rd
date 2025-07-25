@@ -34,15 +34,19 @@ handled automatically by the function.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
+# use madshapR_examples provided by the package
 library(dplyr)
+library(fabR)
 
 ###### Example 1: A dataset can have an id column specified as an attribute. 
-dataset <- as_dataset(madshapR_DEMO$dataset_MELBOURNE, col_id = "id")
+dataset <- as_dataset(madshapR_examples$`dataset_example`, col_id = "part_id")
+print(attributes(dataset)$`madshapR::col_id`)
 glimpse(dataset)
 
 ###### Example 2: Any data frame can be a dataset by definition.
-glimpse(as_dataset(iris, col_id = "Species"))
+dataset <- tibble(iris \%>\% add_index("my_index"))
+dataset <- as_dataset(dataset, "my_index")
+print(attributes(dataset)$`madshapR::col_id`)
 
 }
 

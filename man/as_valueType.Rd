@@ -33,14 +33,17 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-dataset <- madshapR_DEMO$dataset_TOKYO
+# use madshapR_examples provided by the package
+dataset <- madshapR_examples$`dataset_example`
 as_valueType(head(dataset$dob),'date')
 
-# as_valueType is compatible with tidyverse philosophy
+# as_valueType is compatible with tidyverse syntax
 library(dplyr)
-mtcars \%>\% mutate(cyl = as_valueType(cyl,'integer')) \%>\% head()
+dataset <- 
+  tibble(mtcars) \%>\%
+  mutate(cyl = as_valueType(cyl,'integer'))
+
+head(dataset)
 
 }
 

@@ -43,9 +43,8 @@ coerce the variable to the corresponding data type.
 \examples{
 {
 
-# use madshapR_DEMO provided by the package
-
-data_dict <- madshapR_DEMO$`data_dict_TOKYO - errors`
+# use madshapR_examples provided by the package
+data_dict <- madshapR_examples$`data_dictionary_example - errors with data`
 check_data_dict_valueType(data_dict)
 
 }
